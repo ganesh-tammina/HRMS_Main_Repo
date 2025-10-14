@@ -1,0 +1,56 @@
+.top-nav {
+  border-bottom: 1px solid #ddd;
+  min-height: 48px;
+
+  .nav-links ion-button {
+    --color: #555;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-size: 14px;
+    text-transform: none;
+
+    &.active {
+      font-weight: bold;
+      --color: #3b82f6;
+      border-bottom: 2px solid #3b82f6;
+      border-radius: 0;
+    }
+  }
+}
+
+/* Sub Navbar */
+.sub-nav {
+  border-bottom: 1px solid #ddd;
+  min-height: 40px;
+  background: #fafafa;
+
+  .nav-links ion-button {
+    --color: #555;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 13px;
+    text-transform: none;
+
+    &.active {
+      font-weight: bold;
+      --color: #3b82f6;
+      border-bottom: 2px solid #3b82f6;
+      border-radius: 0;
+    }
+  }
+}
+
+
+
+.calendar-month-grid {
+    color: #000;
+}
+.filter-item{
+    color: #000 !important;
+}
+
+ion-button.active-btn {
+ border-bottom: 2px solid #3b82f6;
+ background-color: transparent;
+color:#3b82f6
+}

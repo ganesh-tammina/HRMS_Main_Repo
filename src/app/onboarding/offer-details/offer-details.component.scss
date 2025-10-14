@@ -1,0 +1,69 @@
+.offer-container {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  height: 100%;
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    padding: 16px;
+    flex: 1;
+  }
+
+  .template-preview {
+    flex: 2;
+    overflow-y: auto;
+
+    .company-logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0070c0;
+      margin-bottom: 10px;
+    }
+
+    .template-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+    }
+  }
+
+  .controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    ion-list {
+      background: transparent;
+    }
+
+    .dropdown-section,
+    .upload-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      ion-label {
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      input[type="file"] {
+        margin-top: 4px;
+      }
+    }
+
+    .workflow {
+      margin-top: 20px;
+      font-size: 14px;
+
+      p {
+        color: gray;
+        margin: 4px 0 0 0;
+      }
+    }
+  }
+}

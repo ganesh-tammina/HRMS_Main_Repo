@@ -1,0 +1,435 @@
+@import './../../theme/variables.scss';
+ion-content {
+ --background: #D9D9D9;
+}
+
+.keka-navbar {
+  height: 56px;
+
+  .navbar-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 16px;
+  --background: #bb4b72;
+  display: grid;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      height: 30px;
+      margin-right: 8px;
+    }
+
+    .company-name {
+      font-size: 14px;
+      color: white;
+      font-weight: 500;
+    }
+  }
+
+  .navbar-center {
+    // flex: 1;
+    // display: flex;
+    // justify-content: center;
+
+    .search-box {
+      --border-radius: 9999px;
+      --background: white;
+      --color: #444;
+      --icon-color: #666;
+      max-width: 480px;
+      width: 100%;
+      padding: 0 10px;
+    }
+  }
+
+  .navbar-right {
+    display: flex;
+    align-items: center;
+
+    .nav-icon {
+      font-size: 24px;
+      color: white;
+      margin-right: 16px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+  }
+}
+.sc-ion-searchbar-md{
+  padding-inline-start: 2.375rem;
+}
+
+
+
+.quick-access-card {
+  border-radius: 5px;
+  margin: 0;
+  width: 100%;
+  box-shadow: -2px -2px 11.6px 0px #00000033;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.page-title {
+  @include page-header();
+}
+.card-title {
+  @include body-text();
+}
+
+.section-title {
+  @include card-sub-title();
+}
+
+.on-leave-user {
+  padding-left: 0;
+  --padding-start: 0;
+  --min-height: 40px;
+  --background: transparent !important;
+}
+
+ion-avatar {
+  width: 38px;
+  height: 38px;
+  margin-right: 8px;
+}
+
+.card-main-header {
+  @include card-header();
+  color: $text-color;
+}
+.avatar-section {
+  width: 100%;
+  ion-row {
+    width: 100%;
+    ion-col {
+      width: 50%;
+    }
+  }
+  .on-leave-user {
+    ion-img {
+      width: 100px;
+    }
+  }
+  }
+  .label-block {
+    img {
+      border-radius: 50%;
+      height: auto;
+      width: 38px;
+    }
+    ion-label {
+      display: block;
+      text-align: center;
+      text-align: center;
+      text-overflow: ellipsis;
+      width: 85%;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+
+  // Holidays section style
+  .holidays-section {
+    @extend .quick-access-card;
+      height: 365px;
+      background-size: cover;
+      background-position: center center; 
+      .section-title, .card-main-header, p {
+        color: #B01712;        
+      }
+      a {
+        color: #B01712; 
+        text-decoration:none;   
+      }
+      p{
+        @include text-style-normal();
+      }
+  }
+.week-card {
+  // .text-ellipsis {
+  //   width: 35px;
+  //   overflow: hidden;
+  //   text-overflow: ellipsis;
+  //   @include text-bold();   
+  //   white-space: nowrap;
+
+  // }
+  .complete {
+    .progress {
+      background: $primary-color;
+      height: 10px;
+      width: 35px;      
+      border-radius: 12px;
+    }
+//  @extend .text-ellipsis ;
+ width: 100%;
+ padding-right: 16px;
+ text-align: center;
+  }
+  
+  .remaining {
+    .progress {
+      background: gray;
+      height: 10px;
+      width: 35px;
+      border-radius: 12px;      
+    }
+    color: gray;
+    // @extend .text-ellipsis ;
+    width: 100%;
+    padding-right: 16px;
+    text-align: center;
+  }
+  ion-item {
+    --padding-start: 0px;
+    --inner-padding-end: 0px;
+  }
+  .text-color {
+    color: #1F90CF;
+  }
+}
+ 
+
+.time-actions {
+  --background: #122E44;
+    color: #fff;
+    .clock {
+      @include card-header();
+    }
+    .info {
+      @include text-style-bold();
+    }
+    .time {
+      @include page-header();
+      margin-block-start: 10px;
+    }
+    ion-button.btn-clockin {
+      --background: #B01712;
+    }
+    ion-button.btn-clockout {
+      --border: 1px solid#fff;
+      --background: #fff;
+      --color: #B01712;
+    }
+    ion-button#popover-button {
+      --border: 1px solid#fff;
+      --background: #fff;
+      --color: #2d2d2d;
+    }
+}
+
+.welcome-block {
+  background: #00568F;  
+  border-radius: 8px;
+  p{
+    color: #DADEE4;
+    @include card-header();
+    font-weight: 700; 
+    padding-left: 24px;
+  }
+  img {
+    height: 72px;
+    padding-top: 5px;
+    padding-right: 15px;
+    @media screen and (max-width: 767px) {
+       display: none;
+    }
+  }
+}
+
+.reporting-block {
+  .left-block {
+    border-right: 1px solid #9E9E9E;
+    img {
+      border-radius: 50%;
+    }
+    .name {
+      @include card-sub-title();
+      color: #3498DB;
+    }
+    .designation {
+      @include text-style-bold();
+      color: #696969;
+    }
+  }
+  .right-block {
+   padding-left: 12px;
+   .name {
+    @include card-sub-title();
+    color: #3498DB;
+  }
+  }
+}
+
+.announce-card {
+  p {
+    margin-block-end: 0px;
+  }
+  img {
+    margin: auto;
+    display: flex;
+    margin-bottom: 30px;
+  }
+}
+
+.balance-card {
+  ion-row {
+    ion-col {   
+      border-radius: 12px;
+      text-align: center;
+      display: block; 
+      box-shadow: -1px -1px 6px 0px #00000033;
+      padding: 12px 8px;
+      margin-inline-end: 15px !important;
+      .text {
+        @include normal-text();
+        color: #1F90CF;
+      }
+
+    }
+  }  
+}
+
+.tabs-block{
+  height: 500px;
+  margin-top: 0;
+  ion-tabs {
+    display: block;
+    position: relative;
+    height: fit-content;
+  ion-tab-bar {
+    border-bottom: 1px solid #C2C2C2;
+    height: 60px;
+    display: flex;
+    justify-content: space-evenly;
+    ion-tab-button {
+      max-width: fit-content;
+      div {
+        p {
+          @include card-sub-title();
+        }
+      }
+      &.tab-selected {
+        border-bottom: 2px solid #0054e9;
+      }
+    }
+  }
+  ion-tab{
+  ion-content {
+    height: 342px;
+    --background: #ffffff;
+    ion-row {
+      ion-col {
+        padding-left: 51px; 
+        .section-header {
+          @include text-style-normal();
+          margin-top: 30px;
+        }
+        .label-block {
+          margin-right: 24px;
+           ion-label {
+            @include body-text();
+           }
+           span {
+            @include body-text();
+            color: #1371BF;
+            &.gray {
+              color: #767676;
+            } 
+           }
+        }
+        ion-img {
+          width: fit-content;
+        }
+      }
+    }    
+   
+  }
+}
+}
+}
+
+.main-block {
+  margin-inline-start: 0;
+  margin-inline-end: 0px;
+  .main-left-block, .main-right-block {
+    padding-inline-start: 0;
+    padding-inline-end: 0px;
+  }
+}
+
+.post-title {
+  @extend .section-title;
+    border-bottom: 1px solid #C2C2C2;
+    height: 60px;      
+    padding-left: 26px;
+    display: flex;
+    align-items: center;
+}
+.post-block {
+  ion-card {
+    
+    .post-content {
+      border: 1px solid #80808099;
+      border-radius: 4px 4px 0px 0px;
+      border-bottom: 0px;
+      margin: 16px;
+      margin-bottom: 0;
+    }
+   .text-time {
+     @include text-style-normal();
+     margin: 0;
+   }
+   h2{
+      @include text-style-bold();
+   }
+   .comment-text {
+      @include normal-text-unbold();
+   }
+   .comment-box {
+    border: 1px solid #80808099;
+    margin: 0px 16px;
+    padding-top: 0px;
+    padding-bottom: 0px; 
+   }
+   ion-input {
+    border: 1px solid #80808066;
+    border-radius: 4px;
+    margin: 12px;
+    margin-right: 0;
+   }
+  }
+}
+.Create-post-block {
+  ion-card {
+    .post-content {
+      padding-top: 0px;
+    ion-textarea {
+    border: 1px solid #80808066;
+    border-radius: 4px;
+   height: calc(100vh - 516px) !important;
+   .native-textarea.sc-ion-textarea-md {
+    grid-area: 1 / 1 / 4 / 2 !important; 
+   }
+   }
+   .textarea-wrapper.sc-ion-textarea-md textarea.sc-ion-textarea-md  {
+    height: calc(100vh - 519px);
+  }
+  }
+  .action-btns {
+    text-align: right;
+    padding: 12px 0px;
+  }
+  }
+}

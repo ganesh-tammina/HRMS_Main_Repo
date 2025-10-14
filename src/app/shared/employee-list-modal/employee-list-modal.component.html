@@ -1,0 +1,32 @@
+
+<ion-header>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Search employee by name"
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearch()"
+      debounce="400"
+    >
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="searchResults.length > 0">
+    <ion-item
+      *ngFor="let emp of searchResults"
+      (click)="openEmployeeProfile(emp)"
+      button
+      detail
+    >
+      <ion-label>
+        <h2>{{ emp.personalDetails?.FirstName }} {{ emp.personalDetails?.LastName }}</h2>
+        <p>{{ emp.jobDetailsForm?.JobTitle }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="searchResults.length === 0 && searchQuery.length >= 3" class="no-results">
+    <ion-text color="danger">No employees found.</ion-text>
+  </div>
+</ion-content>

@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Start Preboarding</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+<div class="candidate-card">
+    <div class="avatar">
+ <div class="avatar">{{ candidate.personalDetails.initials }}</div>
+    </div>
+    <div class="info">
+   <h6 style="font-size: 16px;">{{ candidate.personalDetails.FirstName}}</h6>
+    <p class="designation">{{ candidate.jobDetailsForm.JobTitle}}</p>
+    </div>
+    <div class="info">
+      <p class="meta">Pending since</p>
+      <p class="meta">20 Aug 2025</p>
+    </div>
+    <div class="info">
+            <p class="meta">Department</p>
+            <p class="meta">{{ candidate.jobDetailsForm.Department}}</p>
+    </div>
+       <div class="info">
+            <p class="meta">Location</p>
+            <p class="meta">{{ candidate.jobDetailsForm.JobLocation}}</p>
+    </div>
+  </div>
+
+  <!-- Contact Details -->
+  <div class="section">
+    <h3>Confirm contact details:</h3>
+
+    <ion-grid>
+  <ion-row>
+    <ion-col>
+          <ion-item class="input-item">
+      <ion-label position="stacked">Personal email</ion-label>
+      <ion-input value="{{candidate.personalDetails.email}}" disabled></ion-input>
+    </ion-item>
+    </ion-col>
+    <ion-col>
+    <ion-item class="input-item">
+      <ion-label position="stacked">Mobile number</ion-label>
+      <ion-input value="{{candidate.personalDetails.PhoneNumber}}" disabled></ion-input>
+    </ion-item>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+
+
+
+    <ion-item lines="none" class="checkbox-item">
+      <ion-checkbox slot="start" checked="true"></ion-checkbox>
+      <ion-label>
+        Candidate will receive email / SMS invite to onboard and receive details to complete tasks
+      </ion-label>
+    </ion-item>
+  </div>
+
+  <!-- Task Section -->
+  <!-- <div class="section">
+    <h3>Tasks available to assign (0)</h3>
+    <ion-button expand="block" fill="outline" color="primary">
+      Go to Task Templates
+    </ion-button>
+    <p class="note">Tasks can be created for candidates either before or after onboarding</p>
+  </div> -->
+
+  <!-- Bottom Button -->
+  <div class="footer">
+    <ion-button expand="block" color="primary" (click)="createOffer()">Move to create offer</ion-button>
+  </div>
+
+
+
+</ion-content>

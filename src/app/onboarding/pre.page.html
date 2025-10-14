@@ -1,0 +1,377 @@
+<ion-header>
+    <!-- <app-header></app-header> -->
+  <!-- Main Navbar -->
+  <app-onboarding-mainheader></app-onboarding-mainheader>
+</ion-header>
+
+<ion-content class="page-containerOn">
+  <div class="page-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <ion-list>
+        <ion-item class="active" (click)="openCard('personal')">
+          <ion-label>
+            <h3>Welcome Page</h3>
+            <p>Setup what employees see the first time...</p>
+          </ion-label>
+        </ion-item>
+        <ion-item (click)="openCard('offer')">
+          <ion-label>
+            <h3>Offer templates</h3>
+            <p>List of all templates that are used to creat...</p>
+          </ion-label>
+        </ion-item>
+        <ion-item (click)="openCard('Policy')">
+          <ion-label>
+            <h3>Candidate Portal</h3>
+            <p>Setup the candidate portal where...</p>
+          </ion-label>
+        </ion-item>
+        <ion-item (click)="openCard('reason')">
+          <ion-label>
+            <h3>Archived / Declined reasons</h3>
+            <p>You can define reasons for archiving the...</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="employee-welcome" *ngIf="selectedCard === 'personal'">
+      <div class="header-row">
+        <div>
+          <h2>Employee welcome page</h2>
+          <p class="subtitle">
+            Setup what employees see the first time after being onboarded into Keka portal.
+          </p>
+        </div>
+        <ion-button class="btn-preview">Preview</ion-button>
+      </div>
+      <!-- Welcome Message Card -->
+       <div class="pre_onboarding_card">
+        <div>
+           <ion-card>
+        <ion-card-header>
+          <ion-card-title>Welcome message</ion-card-title>
+          <ion-button fill="clear" class="edit-btn" size="small">Edit</ion-button>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="card-subtitle">
+            Give a brief introduction to the onboarding employee about the organisation
+          </p>
+          <div class="inner-card">
+            We are so excited to join as in our team! We believe that you can use your
+            skills and talent in making our company reach new heights. Welcome aboard new buddy!
+          </div>
+        </ion-card-content>
+      </ion-card>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Employee introduction</ion-card-title>
+          <ion-button fill="clear" class="edit-btn" size="small">Edit</ion-button>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="card-subtitle">
+            Create interesting profile pages for your employees by asking them a maximum of 5 questions.
+          </p>
+        </ion-card-content>
+      </ion-card>
+      </div>
+      <div>
+        <ion-card>
+        <ion-card-header>
+          <ion-card-title>Onboarding reachouts</ion-card-title>
+          <ion-button fill="clear" class="add-btn" size="small">+Add</ion-button>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-icon name="people-outline" class="icon"></ion-icon>
+          <p>Assign people who will assist joinees during the onboarding process</p>
+        </ion-card-content>
+      </ion-card>
+            <ion-card>
+        <ion-card-header>
+          <ion-card-title>My Team</ion-card-title>
+          <ion-toggle checked></ion-toggle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="avatars">
+            <div class="avatar">SM</div>
+            <div class="avatar">HG</div>
+            <div class="avatar">DK</div>
+            <div class="avatar more">+2</div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+      </div>
+       </div>
+   
+    </div>
+    <div class="offers-template" *ngIf="selectedCard === 'offer'">
+      <app-offer-template></app-offer-template>
+    </div>
+    <div class="" *ngIf="selectedCard === 'Policy'">
+      <app-candiate-portal></app-candiate-portal>
+    </div>
+        <div class="" *ngIf="selectedCard === 'reason'">
+       <app-decline-resons></app-decline-resons>
+    </div>
+    </div>
+  </div>
+</ion-content>
+<!-- <ion-header [translucent]="true">
+  <app-header></app-header>
+ <ion-toolbar color="light" class="top-nav">
+    <ion-buttons slot="start" class="nav-links">
+      <ion-button fill="clear">Dashboard</ion-button>
+      <ion-button fill="clear">Employees</ion-button>
+      <ion-button fill="clear">Org Structure</ion-button>
+      <ion-button fill="clear" class="active">Onboarding</ion-button>
+      <ion-button fill="clear">Exits</ion-button>
+      <ion-button fill="clear">Expenses & Travel</ion-button>
+      <ion-button fill="clear">Documents</ion-button>
+      <ion-button fill="clear">Engage</ion-button>
+      <ion-button fill="clear">Assets</ion-button>
+      <ion-button fill="clear">Helpdesk</ion-button>
+      <ion-button fill="clear">Settings</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar color="light" class="sub-nav">
+    <ion-buttons slot="start" class="nav-links">
+      <ion-button fill="clear">Setup</ion-button>
+      <ion-button fill="clear">Preboarding</ion-button>
+      <ion-button fill="clear">New Joiners</ion-button>
+      <ion-button fill="clear" class="active">Past Offers</ion-button>
+      <ion-button fill="clear">Onboarding Tasks</ion-button>
+      <ion-button fill="clear">Task Templates</ion-button>
+      <ion-button fill="clear">Background Verification</ion-button>
+      <ion-button fill="clear">Archived</ion-button>
+      <ion-button fill="clear">Settings</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="card-grid">
+    <div class="card-tile" (click)="openCard('personal')">
+      <h3>Personal Information</h3>
+    </div>
+    <div class="card-tile" (click)="openSalaryModal()">
+      <h3>Salary Information</h3>
+    </div>
+    <div class="card-tile" (click)="openCard('offer')">
+      <h3>Offer Confirmation</h3>
+    </div>
+    <div class="card-tile" (click)="openCard('Policy')">
+      <h3>Policy Acknowledgment</h3>
+    </div>
+  </div>
+
+  <form [formGroup]="personalForm">
+    <div formGroupName="personalDetails" class="card" *ngIf="selectedCard === 'personal'">
+      <h2>Personal Information</h2>
+
+      <ion-item>
+        <ion-input placeholder="Full Name" formControlName="fullName"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input type="date" formControlName="dob"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select formControlName="gender" placeholder="Gender">
+          <ion-select-option value="male">Male</ion-select-option>
+          <ion-select-option value="female">Female</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input placeholder="Phone Number" formControlName="phone" type="tel"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input placeholder="Email Address" formControlName="email" type="email"></ion-input>
+      </ion-item>
+
+      <div class="btn-group">
+        <ion-button type="button" (click)="nextFromPersonal()">Next</ion-button>
+        <ion-button color="medium" type="button" (click)="onCancel()">Cancel</ion-button>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="selectedCard === 'offer'">
+      <h2>Offer Confirmation</h2>
+      <form [formGroup]="offerForm">
+        <ion-item>
+          <ion-label>Offer Validity (days)</ion-label>
+          <ion-select formControlName="offerValidity" placeholder="Select Validity">
+            <ion-select-option value="2">2 Days</ion-select-option>
+            <ion-select-option value="7">7 Days</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Date of Joining</ion-label>
+          <ion-input type="date" formControlName="dateOfJoining"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Template</ion-label>
+          <ion-select formControlName="template" placeholder="Select Template">
+            <ion-select-option value="template1">Template 1</ion-select-option>
+            <ion-select-option value="template2">Template 2</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          color="primary"
+          type="button"
+          (click)="previewOfferLetter()"
+          [disabled]="!canPreviewOffer()"
+        >
+          Preview Offer Letter
+        </ion-button>
+      </form>
+
+      <div class="btn-group">
+        <ion-button
+          color="secondary"
+          type="button"
+          (click)="goToPolicy()"
+          [disabled]="!canPreviewOffer()"
+          style="margin-top: 10px;"
+        >
+          Next
+        </ion-button>
+        <ion-button color="medium" type="button" (click)="onCancel()">Cancel</ion-button>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="selectedCard === 'Policy'">
+      <h2>Policy Acknowledgment</h2>
+      <p>Please read and accept the policy documents.</p>
+
+      <form [formGroup]="policyForm">
+        <ion-item>
+          <ion-label>Offer Status</ion-label>
+          <ion-select formControlName="offerStatus" placeholder="Select Status">
+            <ion-select-option value="hold">Hold</ion-select-option>
+            <ion-select-option value="release">Release</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-checkbox formControlName="policyAccepted" label-placement="end"></ion-checkbox>
+          <ion-label>I accept the policies</ion-label>
+        </ion-item>
+      </form>
+
+      <ion-button color="success" (click)="sendOfferStatus()">
+        Send Offer
+      </ion-button>
+    </div>
+  </form>
+
+  <ion-modal [isOpen]="isSalaryModalOpen" (didDismiss)="closeSalaryModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Salary Information</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeSalaryModal()">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form [formGroup]="salaryForm" (ngSubmit)="saveSalary()">
+          <ion-item>
+            <ion-label position="floating">Gross Salary</ion-label>
+            <ion-input type="number" formControlName="grossSalary"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Basic Salary</ion-label>
+            <ion-input type="number" formControlName="basicSalary"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">HRA</ion-label>
+            <ion-input type="number" formControlName="hra"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Health</ion-label>
+            <ion-input type="number" formControlName="health"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">EPF Contribution (Employee)</ion-label>
+            <ion-input type="number" formControlName="epfEmployee"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">EPF Contribution (Employer)</ion-label>
+            <ion-input type="number" formControlName="epfEmployer" readonly></ion-input>
+          </ion-item>
+
+          <ion-button expand="block" type="submit">Save</ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="isOfferPreviewOpen" (didDismiss)="isOfferPreviewOpen = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Offer Letter Preview</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isOfferPreviewOpen = false">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+   <div *ngIf="offerLetter">
+  <ng-container [ngSwitch]="offerLetter.template">
+
+    <div *ngSwitchCase="'template1'">
+      <h2>Offer Letter – Template 1</h2>
+      <p>Dear {{ offerLetter.name }},</p>
+      <p>
+        We are pleased to offer you the position at our company. Your date of joining is 
+        {{ offerLetter.dateOfJoining }} and your offer is valid for 
+        {{ offerLetter.offerValidity }} days.
+      </p>
+      <p>Gross Salary: ₹{{ offerLetter.salary.gross }}</p>
+      <p>Basic: ₹{{ offerLetter.salary.basic }}</p>
+      <p>HRA: ₹{{ offerLetter.salary.hra }}</p>
+    </div>
+
+    <div *ngSwitchCase="'template2'">
+      <h2>Appointment Letter – Template 2</h2>
+      <p>Hello {{ offerLetter.name }},</p>
+      <p>
+        Welcome aboard! Please confirm your acceptance before 
+        {{ offerLetter.offerValidity }} days. Your joining date will be 
+        {{ offerLetter.dateOfJoining }}.
+      </p>
+      <ul>
+        <li>Gross: ₹{{ offerLetter.salary.gross }}</li>
+        <li>Basic: ₹{{ offerLetter.salary.basic }}</li>
+        <li>HRA: ₹{{ offerLetter.salary.hra }}</li>
+      </ul>
+    </div>
+
+    <div *ngSwitchDefault>
+      <p>No template selected.</p>
+    </div>
+
+  </ng-container>
+</div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content> -->

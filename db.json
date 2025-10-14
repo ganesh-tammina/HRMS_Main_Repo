@@ -1,0 +1,452 @@
+{
+  "candidates": [
+    {
+      "personalDetails": {
+        "FirstName": "Siva",
+        "MiddleName": "Devi",
+        "LastName": "Ganesh",
+        "PhoneNumber": "9876543210",
+        "email": "ganesh@gmail.com",
+        "gender": "male"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Visakhapatnam",
+        "WorkType": "Perminate",
+        "BussinessUnit": "Tech Tammina"
+      },
+      "id": "1"
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Devi ",
+        "MiddleName": "Ganesh",
+        "LastName": "Meesala",
+        "PhoneNumber": "9876543210",
+        "email": "ganesh@gmail.com",
+        "gender": "male",
+        "initials": "DM"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "2",
+      "offerDetails": {
+        "DOJ": "06/09/2025",
+        "offerValidity": "2",
+        "JoiningDate": "07/11/2025"
+      },
+      "employeeCredentials": {
+        "companyEmail": "Devi@tammina.com",
+        "password": "123456"
+      },
+      "packageDetails": {
+        "salary": 50000
+      },
+      "salaryForm": {
+        "annualSalary": 50000,
+        "salaryStructure": {
+          "basic": 20000,
+          "hra": 8000,
+          "medical": 15000,
+          "transport": 19200,
+          "special": -12200,
+          "subtotal": 50000,
+          "pfEmployer": 2400,
+          "pfEmployee": 2400,
+          "total": 52400
+        }
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Ram",
+        "MiddleName": "Rahim",
+        "LastName": "Rabot",
+        "PhoneNumber": "9876543210",
+        "email": "Ram@gmail.com",
+        "gender": "male",
+        "initials": "RR"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "Finance",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "3",
+      "offerDetails": {
+        "DOJ": "20/09/2025",
+        "offerValidity": "2",
+        "JoiningDate": "30/09/2025"
+      },
+      "employeeCredentials": {
+        "companyEmail": "ram@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Rajesh",
+        "MiddleName": "Varam",
+        "LastName": "Tammina",
+        "PhoneNumber": "9876543210",
+        "email": "rajesh@gmail.com",
+        "gender": "male",
+        "initials": "RT"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "4",
+      "offerDetails": {
+        "DOJ": "25/09/2025",
+        "offerValidity": "7",
+        "JoiningDate": "30/09/2025"
+      },
+      "employeeCredentials": {
+        "companyEmail": "Rajesh@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Ravi",
+        "MiddleName": "Kumar",
+        "LastName": "Meesala",
+        "PhoneNumber": "9876543210",
+        "email": "ravi@gmail.com",
+        "gender": "male",
+        "initials": "RM"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Site 1 - Hyderabad - Night Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "5",
+      "offerDetails": {
+        "DOJ": "30/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "ravi@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Siva Ganesh",
+        "MiddleName": "Meesala",
+        "LastName": "Tammina",
+        "PhoneNumber": "9876543210",
+        "email": "meesalag85@gmail.com",
+        "gender": "male",
+        "initials": "ST"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "UI Developer",
+        "Department": "IT Development",
+        "JobLocation": "Site 2 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Tech Tammina Visakhapatnam"
+      },
+      "id": "ZDS8seV",
+      "offerDetails": {
+        "DOJ": "30/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "SivaGanesh@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Manikanta",
+        "MiddleName": "Tammina",
+        "LastName": "Tammina",
+        "PhoneNumber": "9876543210",
+        "email": "tharak37@gmail.com",
+        "gender": "male",
+        "initials": "MT"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "uMbmVbq",
+      "offerDetails": {
+        "DOJ": "24/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "manikanta@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Siva meesala",
+        "MiddleName": "meesala",
+        "LastName": "tammina",
+        "PhoneNumber": "9876543210",
+        "email": "meesalag85@gmail.com",
+        "gender": "male",
+        "initials": "ST"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Tech Tammina Visakhapatnam"
+      },
+      "id": "0AGRTrj",
+      "offerDetails": {
+        "DOJ": "24/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "Devi@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Bipul",
+        "MiddleName": "Sardhar",
+        "LastName": "Tammina",
+        "PhoneNumber": "9876543210",
+        "email": "bipulsardar091@gmail.com",
+        "gender": "male",
+        "initials": "BT"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "UI Developer",
+        "Department": "Finance",
+        "JobLocation": "Site 1 - Hyderabad - Night Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Tech Tammina Visakhapatnam"
+      },
+      "id": "LvzJ0RL",
+      "offerDetails": {
+        "DOJ": "12/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "Devi@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "moulika",
+        "MiddleName": "cheekati",
+        "LastName": "shya,",
+        "PhoneNumber": "9876543210",
+        "email": "moulika.cheekati@gamil.com",
+        "gender": "female",
+        "initials": "MS"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "Software Engineer",
+        "Department": "IT Development",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "udygno4",
+      "offerDetails": {
+        "DOJ": "30/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "Moulika@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Moulika",
+        "MiddleName": "Cheekati",
+        "LastName": "Tammina",
+        "PhoneNumber": "99876543210",
+        "email": "moulika.cheekati@gmail.com",
+        "gender": "female",
+        "initials": "MT"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "UI Developer",
+        "Department": "Finance",
+        "JobLocation": "Site 1 - Hyderabad - Night Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "3s1_ulU",
+      "offerDetails": {
+        "DOJ": "24/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "moulika@tammina.com",
+        "password": "123456"
+      },
+      "salary": {
+        "annualSalary": 600000,
+        "salaryStructure": {
+          "basic": 240000,
+          "hra": 96000,
+          "medical": 15000,
+          "transport": 19200,
+          "special": 229800,
+          "subtotal": 600000,
+          "pfEmployer": 28800,
+          "pfEmployee": 28800,
+          "total": 628800
+        }
+      },
+      "packageDetails": {
+        "salary": 900000
+      },
+      "salaryForm": {
+        "annualSalary": 900000,
+        "salaryStructure": {
+          "basic": 360000,
+          "hra": 144000,
+          "medical": 15000,
+          "transport": 19200,
+          "special": 361800,
+          "subtotal": 900000,
+          "pfEmployer": 43200,
+          "pfEmployee": 43200,
+          "total": 943200
+        }
+      }
+    },
+    {
+      "id": "2205",
+      "personalDetails": {
+        "FirstName": "praveena",
+        "MiddleName": "raja",
+        "LastName": "G",
+        "PhoneNumber": "9874563210",
+        "email": "praveenag6161@gamil.com",
+        "gender": "female",
+        "initials": "PG"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "UI Developer",
+        "Department": "IT Development",
+        "JobLocation": "Site 3 - Visakhapatnam - Day Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Tech Tammina Visakhapatnam"
+      },
+      "offerDetails": {
+        "DOJ": "19/09/2025",
+        "offerValidity": "7"
+      },
+      "packageDetails": {
+        "salary": 900000
+      },
+      "salaryForm": {
+        "annualSalary": 900000,
+        "salaryStructure": {
+          "basic": 360000,
+          "hra": 144000,
+          "medical": 15000,
+          "transport": 19200,
+          "special": 361800,
+          "subtotal": 900000,
+          "pfEmployer": 43200,
+          "pfEmployee": 43200,
+          "total": 943200
+        }
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "HR",
+        "MiddleName": "HR",
+        "LastName": "Tammina",
+        "PhoneNumber": "9876543210",
+        "email": "leepakshi@gmail.com",
+        "gender": "male",
+        "initials": "LT"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "UI Developer",
+        "Department": "HR",
+        "JobLocation": "Site 1 - Hyderabad - Night Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Sri Tech Tammina Visakhapatnam"
+      },
+      "id": "vQXP-hj",
+      "offerDetails": {
+        "DOJ": "26/09/2025",
+        "offerValidity": "7"
+      },
+      "employeeCredentials": {
+        "companyEmail": "leepakshi@tammina.com",
+        "password": "123456"
+      }
+    },
+    {
+      "personalDetails": {
+        "FirstName": "Ganesh",
+        "MiddleName": "Gani",
+        "LastName": "Meesala",
+        "PhoneNumber": "9876543210",
+        "email": "ganesh@gmail.com",
+        "gender": "male",
+        "initials": "GM"
+      },
+      "jobDetailsForm": {
+        "JobTitle": "UI Developer",
+        "Department": "Finance",
+        "JobLocation": "Site 1 - Hyderabad - Night Shift",
+        "WorkType": "Perminent",
+        "BussinessUnit": "Tech Tammina Visakhapatnam"
+      },
+      "id": "fihys45",
+      "offerDetails": {
+        "DOJ": "20/09/2025",
+        "offerValidity": "7"
+      },
+      "packageDetails": {
+        "salary": 1000000
+      },
+      "salaryForm": {
+        "annualSalary": 1000000,
+        "salaryStructure": {
+          "basic": 400000,
+          "hra": 160000,
+          "medical": 15000,
+          "transport": 19200,
+          "special": 405800,
+          "subtotal": 1000000,
+          "pfEmployer": 48000,
+          "pfEmployee": 48000,
+          "total": 1048000
+        }
+      }
+    }
+  ],
+  "attendanceLogs": []
+}
+ 

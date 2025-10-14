@@ -1,0 +1,46 @@
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Employee Profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Avatar with status dot -->
+  <div class="profile-container">
+    <ion-avatar class="profile-avatar">
+      <img [src]="employee.personalDetails?.profileImage || 'assets/default-avatar.png'" />
+      <span class="status-dot" [ngClass]="employee.isAvailable ? 'available' : 'unavailable'"></span>
+    </ion-avatar>
+  </div>
+
+  <!-- Name + Job Title -->
+  <div class="profile-info">
+    <h2>{{ employee.personalDetails?.FirstName }} {{ employee.personalDetails?.LastName }}</h2>
+    <p class="job-title">{{ employee.jobDetailsForm?.JobTitle }}</p>
+  </div>
+
+  <!-- Contact & Job Details -->
+  <ion-list>
+    <ion-item>
+      <ion-icon name="call-outline" slot="start"></ion-icon>
+      <ion-label>{{ employee.personalDetails?.PhoneNumber }}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="mail-outline" slot="start"></ion-icon>
+      <ion-label>{{ employee.employeeCredentials?.companyEmail }}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="location-outline" slot="start"></ion-icon>
+      <ion-label>{{ employee.jobDetailsForm?.JobLocation }}</ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+

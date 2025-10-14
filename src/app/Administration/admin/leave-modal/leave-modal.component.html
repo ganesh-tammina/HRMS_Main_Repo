@@ -1,0 +1,25 @@
+<div class="modal-backdrop">
+  <div class="modal">
+    <h2>Enter Leave Details</h2>
+
+    <label>
+      Sick Leaves:
+      <input type="number" [(ngModel)]="sickLeaves" />
+    </label>
+
+    <label>
+      Paid Leaves:
+      <input type="number" [(ngModel)]="paidLeaves" />
+    </label>
+
+    <label>
+      Marriage Leaves:
+      <input type="number" [(ngModel)]="marriageLeaves" />
+    </label>
+
+    <div class="buttons">
+      <button (click)="onSave()">Save</button>
+      <button style="margin-left: 20px;" (click)="onClose()">Cancel</button>
+    </div>
+  </div>
+</div>

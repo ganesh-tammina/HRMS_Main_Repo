@@ -1,0 +1,145 @@
+<ion-header [translucent]="true">
+  <!-- <app-header></app-header> -->
+  <app-employee-header></app-employee-header>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid class="ion-no-padding">
+    <div class="dashboard">
+      <ion-row class="attendance-block">
+        <ion-col  size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+          <!-- Attendance Status -->
+          <ion-card class="attendance-status">
+            <ion-card-header>
+              <ion-card-title>Attendance Status</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              Status: <strong>{{ status }}</strong><br>
+              <ion-grid class="days-grid ion-no-padding">
+                <ion-row>
+                  <ion-col class="row-left">
+
+                    <img src="../../assets/user.svg" width="25">
+                    <p class="pl-5"> Me</p>
+
+                  </ion-col>
+                  <ion-col>
+                    <div>
+                      <p> Gross Hours:</p>
+                      <p> <strong>{{ grossHours }}</strong></p>
+                    </div>
+                  </ion-col>
+                  <ion-col>
+                    <div>
+                      <p> Effective Hours:</p>
+                      <p> <strong>{{ effectiveHours }}</strong></p>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col  size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+          <!-- Timings -->
+          <ion-card class="timings-card">
+            <ion-card-header>
+              <ion-card-title>Timings</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-grid class="days-grid ion-no-padding mb-30">
+                <ion-row>
+                  <ion-col *ngFor="let day of days" class="ion-text-center">
+                    <div class="day-container" [ngClass]="{'highlight-today': isToday(day)}">
+                      <p class="day-of-week">{{ day | date:'E' }}</p>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+              <p>Today (9:30 AM - 6:30 PM)</p>
+
+              <ion-progress-bar value="0.85"></ion-progress-bar>
+
+              <small>Duration: 9h 0m | Break: 60m</small>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col  size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+
+          <ion-card class="actions">
+            <ion-card-header>
+              <ion-card-title>Actions</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <!-- Actions -->
+              <ion-row class="actions-card">
+                <ion-col size="4">
+                  <h5 class="clock">{{ currentTime }}</h5>
+                  <div class="info">{{ currentDate }}</div>
+                </ion-col>
+
+                <ion-col size="6">
+                  <app-clock-button></app-clock-button>
+                  <div class="info m-5 ion-text-center" *ngIf="record?.isClockedIn">
+                    Since Last Login: {{ timeSinceLastLogin }}
+                  </div>
+                  <ion-button fill="clear" class="clear" *ngIf="!record?.isClockedIn">
+                    <img src="../../assets/Icons/attendance-icons/remote.svg" width="16" height="16">
+                    Remote Clock-In
+                  </ion-button>
+                  <ion-button fill="clear" class="clear" *ngIf="!record?.isClockedIn">
+                    <img src="../../assets/Icons/attendance-icons/wfh clockin.svg" width="16" height="16">
+                    WFH Clock-In
+                  </ion-button>
+                  <ion-button fill="clear" class="clear">
+                    <img src="../../assets/Icons/attendance-icons/WFH.svg" width="16" height="16">
+                    Work From Home
+                  </ion-button>
+                  <ion-button fill="clear" class="clear">
+                    <img src="../../assets/Icons/attendance-icons/partial day rq.svg" width="16" height="16">
+                    Partial Day Request
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
+
+
+
+    </div>
+  </ion-grid>
+
+  <div class="attendance-log-card">
+    <h2>Logs & Requests</h2>
+    <!-- logs & request Tabs -->
+    <div class="tabs-container custom-tabs">
+      <button [class.active]="activeTab === 'log'" (click)="setTab('log')">Attendance Log</button>
+      <button [class.active]="activeTab === 'calendar'" (click)="setTab('calendar')">Calendar</button>
+      <button [class.active]="activeTab === 'requests'" (click)="setTab('requests')">Attendance Requests</button>
+    </div>
+<!-- Attedance Log Tab -->
+    <div *ngIf="activeTab === 'log'">
+          <app-attendance-log></app-attendance-log>     
+    </div>
+<!-- Calendar Tab -->
+    <div *ngIf="activeTab === 'calendar'">
+        <app-calendar></app-calendar>
+    </div>
+    
+   <!-- Attendance Requests Tab -->
+
+<div *ngIf="activeTab === 'requests'">
+  <app-attendance-request></app-attendance-request>
+</div>
+
+
+  </div>
+</ion-content>

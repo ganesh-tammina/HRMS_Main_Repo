@@ -1,0 +1,55 @@
+ion-card {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.salary-table {
+  font-size: 14px;
+
+  .table-header {
+    font-weight: 600;
+    background: #f4f4f4;
+    border-bottom: 1px solid #ccc;
+  }
+
+  ion-row {
+    border-bottom: 1px solid #eee;
+    padding: 6px 0;
+
+    ion-col {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .subtotal {
+    font-weight: 600;
+    background: #fafafa;
+  }
+
+  .total {
+    font-weight: bold;
+    background: #e9f9e9;
+    color: #0a7d0a;
+  }
+}
+
+.deductions {
+  margin-top: 20px;
+
+  h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #444;
+  }
+
+  ion-row {
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    padding: 6px 0;
+  }
+}
+
+.view-structure {
+  margin-top: 16px;
+}

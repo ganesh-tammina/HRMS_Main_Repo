@@ -1,0 +1,172 @@
+<ion-header>
+    <!-- <app-header></app-header> -->
+  <app-onboarding-mainheader></app-onboarding-mainheader>
+</ion-header>
+
+<div class="app-header">
+  <ion-toolbar>
+    <ion-title>Onboarding tasks</ion-title>
+  </ion-toolbar>
+</div>
+
+<ion-content fullscreen>
+  <div class="sub-text">
+    Track employees who are assigned onboarding tasks and employees whose onboarding is not initiated.
+    <a href="#">Know more</a>
+  </div>
+
+  <!-- Filters row -->
+  <ion-grid class="filters-grid">
+    <ion-row class="ion-align-items-center">
+
+      <!-- Department -->
+      <ion-col class="selected-dropdown" size="12" size-md="1.5">
+        <ion-item fill="outline" class="filter-item">
+          <ion-select placeholder="Department"></ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Location -->
+      <ion-col class="selected-dropdown" size="12" size-md="2.5">
+        <ion-item fill="outline" class="filter-item">
+          <ion-select placeholder="Location"></ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Worker Type -->
+      <ion-col class="selected-dropdown" size="12" size-md="2.5">
+        <ion-item fill="outline" class="filter-item">
+          <ion-select placeholder="Worker Type"></ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Business Unit -->
+      <ion-col class="selected-dropdown" size="12" size-md="2.5">
+        <ion-item fill="outline" class="filter-item">
+          <ion-select placeholder="Business Unit"></ion-select>
+        </ion-item>
+      </ion-col>
+
+      <!-- Search -->
+      <ion-col class="selected-dropdown" size="12" size-md="2.5">
+        <div class="search-wrap">
+          <ion-icon name="search-outline"></ion-icon>
+          <input placeholder="Search" />
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Metrics Cards -->
+  <ion-grid class="metrics">
+    <ion-row>
+      <!-- Overall onboarded -->
+      <ion-col size="12" size-md="3">
+        <div class="card">
+          <div class="title">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Overall onboarded</span>
+          </div>
+          <div class="value">94</div>
+          <div class="note">in last 30 days</div>
+        </div>
+      </ion-col>
+
+      <!-- Avg onboarding time -->
+      <ion-col size="12" size-md="3">
+        <div class="card">
+          <div class="title">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Avg. onboarding time</span>
+            <ion-icon name="information-circle-outline" class="info"></ion-icon>
+          </div>
+          <div class="value">296d 23h</div>
+        </div>
+      </ion-col>
+
+      <!-- Task completion rate -->
+      <ion-col size="12" size-md="3">
+        <div class="card">
+          <div class="title">
+            <ion-icon name="trending-up-outline"></ion-icon>
+            <span>Task completion rate</span>
+            <ion-icon name="information-circle-outline" class="info"></ion-icon>
+          </div>
+          <div class="value">53.21%</div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  <div class="tabs">
+    <div class="tab active">Not Initiated <span>53</span></div>
+    <div class="tab">In Progress <span>247</span></div>
+    <div class="tab">Completed <span>6</span></div>
+    <div class="tab">Skipped <span>20</span></div>
+  </div>
+
+  <!-- Bulk actions -->
+  <div class="actions-bar">
+    <ion-checkbox></ion-checkbox>
+    <span class="select-all">Select all</span>
+    <ion-button size="small" shape="round" fill="solid" color="primary">Initiate onboarding</ion-button>
+    <ion-button size="small" shape="round" fill="outline">Skip onboarding</ion-button>
+  </div>
+
+  <!-- Table -->
+  <ion-grid class="onboard-table">
+    <ion-row class="header">
+      <ion-col size="4">Name & Job Title</ion-col>
+      <ion-col size="4">Dept & Location</ion-col>
+      <ion-col size="2">Joining Date</ion-col>
+      <ion-col size="2">Actions</ion-col>
+    </ion-row>
+
+    <!-- Row 1 -->
+    <ion-row class="body">
+      <ion-col size="4" class="user-col">
+        <ion-checkbox></ion-checkbox>
+        <div class="avatar">AR</div>
+        <div class="info">
+          <div class="name">A Ramarao</div>
+          <div class="role">Supervisor</div>
+        </div>
+      </ion-col>
+      <ion-col size="4">Operations<br /><span class="muted">Site 2 - SVS</span></ion-col>
+      <ion-col size="2">28 Dec 2017</ion-col>
+      <ion-col size="2" class="actions">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+        <div class="dropdown">
+          <div>Initiate onboarding</div>
+          <div>Skip onboarding</div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <!-- Row 2 -->
+    <ion-row class="body">
+      <ion-col size="4" class="user-col">
+        <ion-checkbox></ion-checkbox>
+        <div class="avatar orange">AV</div>
+        <div class="info">
+          <div class="name">A V S K Pramod</div>
+          <div class="role">Sr. Tech Lead</div>
+        </div>
+      </ion-col>
+      <ion-col size="4">IT Services Technology<br /><span class="muted">Site 2 - SVS</span></ion-col>
+      <ion-col size="2">22 Oct 2014</ion-col>
+      <ion-col size="2" class="actions">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+        <div class="dropdown">
+          <div>Initiate onboarding</div>
+          <div>Skip onboarding</div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <!-- Add more rows as needed -->
+  </ion-grid>
+
+
+</ion-content>

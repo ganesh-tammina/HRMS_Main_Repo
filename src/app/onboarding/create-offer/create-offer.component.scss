@@ -1,0 +1,66 @@
+.page-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr; // Left form bigger than right card
+  gap: 20px;
+  padding: 16px;
+}
+
+.left-section {
+  ion-item {
+    margin-bottom: 12px;
+  }
+}
+
+.right-section {
+  ion-card {
+    border-left: 4px solid #2d2de8; // Blue vertical line like in screenshot
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .candidate-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #2d2de8;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+    }
+  }
+
+  .candidate-info {
+    font-size: 14px;
+    line-height: 1.6;
+
+    p {
+      margin: 4px 0;
+    }
+  }
+}
+
+.button-container {
+  padding: 16px;
+  display: flex;
+  justify-content: flex-end;
+}

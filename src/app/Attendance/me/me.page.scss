@@ -1,0 +1,347 @@
+@import './../../../theme/variables.scss';
+// .keka-navbar {
+//   height: 56px;
+  
+//   .navbar-toolbar {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     height: 100%;
+//     padding: 0 16px;
+//     --background: #bb4b72;
+//     display: grid;
+//   }
+
+//   .navbar-left {
+//     display: flex;
+//     align-items: center;
+
+//     .logo {
+//       height: 30px;
+//       margin-right: 8px;
+//     }
+
+//     .company-name {
+//       font-size: 14px;
+//       color: white;
+//       font-weight: 500;
+//     }
+//   }
+
+//   .navbar-center {
+//     // flex: 1;
+//     // display: flex;
+//     // justify-content: center;
+
+//     .search-box {
+//       --border-radius: 9999px;
+//       --background: white;
+//       --color: #444;
+//       --icon-color: #666;
+//       max-width: 480px;
+//       width: 100%;
+//       padding: 0 10px;
+//     }
+//   }
+
+//   .navbar-right {
+//     display: flex;
+//     align-items: center;
+
+//     .nav-icon {
+//       font-size: 24px;
+//       color: white;
+//       margin-right: 16px;
+//     }
+
+//     .avatar {
+//       width: 32px;
+//       height: 32px;
+//       border-radius: 50%;
+//     }
+//   }
+// }
+
+// .sc-ion-searchbar-md {
+//   padding-inline-start: 2.375rem;
+// }
+
+.dashboard {
+  background-color: #E6F1FF;
+  padding: 20px;
+  gap: 20px;
+.attendance-block {
+  ion-card {
+    border-radius: 12px;
+    box-shadow: 0 3px 8px #00000036;
+    height: 250px;
+    padding: 8px;
+    ion-card-title {
+     @include card-sub-title();
+     text-align: left;
+    }
+}
+}
+// Timings style
+.days-grid {
+  padding: 10px;
+}
+
+.day-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  width: 30px;
+
+  .day-of-week {
+    font-weight: bold;
+    font-size: 0.9em;
+    margin: 0;
+    text-overflow: initial;
+    width: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    letter-spacing: 10px;
+    margin-left: 2px;
+  }
+  
+}
+
+.highlight-today {
+  background-color: #3498DB;;
+  color: #fff;
+  border-color: var(--ion-color-primary);
+  .day-of-week {
+    color: #fff;
+  }
+}
+}
+ ion-progress-bar {
+    height: 6px;
+    border-radius: 6px;
+    --background: #E4E4E4 !important;
+    --progress-background: #3498db !important;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+/* Individual cards */
+.card-pannel {
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+/* Attendance Stats */
+.attendance-status .header {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.attendance-status .entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.attendance-status .entry .icon {
+  background-color: #fcd462;
+  border-radius: 50%;
+  padding: 8px;
+  color: #fff;
+}
+
+.attendance-status .entry .icon.team {
+  background-color: #5daee0;
+}
+
+/* Timings */
+.timings .days {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.timings .days div {
+  background: #f0f1f4;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-weight: bold;
+}
+
+.timings .days .active {
+  background-color: #87d1d8;
+  color: #fff;
+}
+
+.timings .duration-bar {
+  height: 8px;
+  background: #a0dde6;
+  border-radius: 4px;
+  margin-top: 10px;
+  width: 100%;
+  position: relative;
+}
+
+.timings .break {
+  position: absolute;
+  height: 8px;
+  background: #d0ebf1;
+  width: 20%;
+  left: 40%;
+}
+
+/* Actions */
+
+
+
+.actions { 
+  text-align: center;
+
+  .actions-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    
+    .clock {
+      font-size: 18px;
+      font-weight: 400;
+      border: 1px solid #dee2e6 !important;
+      border-radius: 4px;
+      margin-top: 0;
+      padding: 8px;
+    }
+    
+    .clear {
+      min-height: auto;
+     @include body-text();
+     font-size: 13px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      --padding-start: 0;
+      --padding-end: 0;
+      display: block;
+      text-align: left;
+      text-transform: capitalize;
+      justify-self: flex-start;
+      &:hover {
+        --background: transparent; 
+      }
+      img {
+        margin-right: 8px;
+      }
+    }
+    .info {
+      font-size: 14px;
+      // margin-top: 10px;
+      color: #555;
+      text-align: left;
+    }
+    .links {
+      color: #d35c6b;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  }
+ 
+}
+// Custom tab
+.custom-tabs {
+  width: fit-content;
+  button {
+    &:first-child {
+      border-bottom-left-radius: 8px;
+      border-top-left-radius: 8px;
+    }
+    &:last-child {
+      border-bottom-right-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+    padding: 12px 24px;
+    background: #fff;
+    border: 0.5px solid #DEDEDE;
+    @include normal-text-unbold();
+    &.active {
+      background: #3498DB;
+      color: #fff;      
+    } 
+  
+  }
+}
+
+
+ 
+ 
+
+// attendance-log
+.attendance-log-card {
+  background-color: #E6F1FF;
+  padding: 20px;
+  gap: 20px;
+}
+
+
+ion-modal {
+  --height: 70%;
+  --border-radius: 16px;
+}
+
+
+//   tab style
+
+
+ 
+
+
+
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  .table-header {
+    font-weight: 600;
+    background: #f7f7f7;
+  }
+
+  .table-row {
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+  }
+
+  ion-col {
+    padding: 0.5rem;
+  }
+
+  .status {
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    &.approved {
+      background: #e6f9f0;
+      color: #0a8754;
+    }
+    &.pending {
+      background: #fff4e5;
+      color: #d48806;
+    }
+    &.rejected {
+      background: #fdecea;
+      color: #d93025;
+    }
+  }
+}

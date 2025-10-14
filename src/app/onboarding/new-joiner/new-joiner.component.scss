@@ -1,0 +1,124 @@
+@import "../../../global.scss";
+:host {
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+}
+
+ion-content {
+  --background: var(--bg);
+}
+
+.app-header {
+  ion-toolbar {
+    --background: var(--card);
+    --border-color: var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  ion-title {
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .subtitle {
+    font-size: 13px;
+    padding-inline: 16px;
+  }
+}
+
+/* Filters */
+.filters {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+.filters-grid {
+  padding: 10px 12px;
+}
+.filter-chip {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex; align-items: center; gap: 8px;
+  background: #fff;
+  font-weight: 600; font-size: 14px;
+  color: #111827;
+  justify-content: space-between;
+}
+.search-wrap {
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 10px;
+  display: flex; align-items: center; gap: 8px;
+  background: #fff;
+  input {
+    border: none; outline: none; flex: 1;
+    font-size: 14px; background: transparent;
+  }
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  padding-left: 16px;
+  background: var(--card);
+}
+.tab {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.tab.active {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+}
+.count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Table */
+.table {
+.table-header {
+  --background: #f7f8fb;
+  ion-col {
+    @include normal-text();
+    height: 40px;
+    padding: 0 16px;
+    color: #2d2d2d;
+  }
+}
+.table-row {
+  ion-col {
+      @include normal-text-unbold();
+      height: 52px;
+      padding: 0 16px;
+      color: #2d2d2d;
+  }
+}
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .table-row,
+  .table-head {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .table-head { display: none; }
+  .cell { padding: 6px 0; }
+}

@@ -1,0 +1,61 @@
+@import '../global.scss';
+.main-content-block {
+  margin-top: 85px;
+}
+ion-menu {
+  --width: 100px;
+  --background: #122E44;
+  --overflow: hidden;
+  .sidenav-content {
+    --background: #122E44 !important;
+    ion-item {
+      --min-height: 63px;
+      --background: #122E44 !important;
+      --color: #CFCFCF !important;
+      text-align: center;
+      align-items: center;
+      &.selected.ion-activatable {
+        --background: #00568F !important; 
+        --color: #ffffff !important;    
+      }
+      &.selected.ion-activated {
+        --background: #00568F !important; 
+        --color: #ffffff !important; 
+        --transition: unset; 
+        
+      }
+      &:hover, &:focus, &:active {
+        --background-activated: transparent !important;
+        --background-focused: transparent !important;
+        --background-hover: transparent !important;
+        --background-activated-opacity: 0!important; 
+    --background-focused-opacity: 0!important; 
+    --background-hover-opacity: 0!important; 
+    --transition: unset;
+
+      }
+      .text-center {
+        text-align: center;
+        width: 100%;
+      }
+    }
+    ion-label {
+    @include normal-text-unbold();
+    }
+  }
+}
+.menu-dropdown {     
+  left: 87px;
+  top: -54px;
+  --backdrop-opacity: 0;
+  --width: 170px;
+  --border-radius: 0px !important;
+  ion-menu-toggle {
+    ion-item {
+      --background: #122E44 !important;
+     --color: #fff;
+    }
+  }
+}
+
+

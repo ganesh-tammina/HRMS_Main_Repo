@@ -1,0 +1,68 @@
+<ion-grid class="create-offer-header">
+  <ion-row style="align-items: center;">
+    <!-- Title -->
+    <ion-col size="2">
+      <ion-toolbar>
+        <ion-title>Create Offer</ion-title>
+      </ion-toolbar>
+    </ion-col>
+
+    <!-- Navigation Tabs -->
+    <ion-col size="8">
+      <ion-button fill="clear" (click)="navigate('CreateOffer')" [class.active-btn]="activeTab === 'salaryStaructure'">
+        JOB DETAILS
+      </ion-button>
+
+      <ion-button fill="clear" (click)="navigate('salaryStaructure')"
+        [class.active-btn]="activeTab === 'salaryStaructure'">
+        COMPENSATION
+      </ion-button>
+
+      <ion-button fill="clear" (click)="navigate('OfferDetailsComponent')"
+        [class.active-btn]="activeTab === 'salaryStaructure'">
+        OFFER DETAILS
+      </ion-button>
+
+      <ion-button fill="clear" (click)="navigate('preview_send')" [class.active-btn]="activeTab === 'preview_send'">
+        PREVIEW & SEND
+      </ion-button>
+    </ion-col>
+
+    <!-- Continue Button -->
+    <ion-col size="2">
+      <div class="button-container">
+        <ion-button expand="block" (click)="onContinue()" color="primary">
+          Continue
+        </ion-button>
+        <ion-button expand="block" (click)="onCreateOfferemail()" color="primary">
+          Create Offer
+        </ion-button>
+      </div>
+    </ion-col>
+
+
+
+    <!-- <ion-col size="2">
+      <div class="button-container">
+    
+        <ion-button
+          *ngIf="!isPreviewSend"
+          expand="block"
+          (click)="onContinue()"
+          color="primary">
+          Continue
+        </ion-button>
+
+ 
+        <ion-button
+          *ngIf="isPreviewSend"
+          expand="block"
+          color="primary"
+          (click)="onCreateOffer()">
+          Create Offer
+        </ion-button>
+      </div>
+    </ion-col> -->
+
+  </ion-row>
+</ion-grid>

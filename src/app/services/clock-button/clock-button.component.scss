@@ -1,0 +1,13 @@
+.btn-clockout, .btn-clockin{      
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    // margin: 10px 0;
+  }
+  .btn-clockout {
+    --background: #F95F5F;
+  }
+  .btn-clockin {
+    --background: #1870B9;
+  }

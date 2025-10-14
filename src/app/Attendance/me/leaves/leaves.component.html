@@ -1,0 +1,234 @@
+<ion-header [translucent]="true">
+  <app-employee-header></app-employee-header>
+</ion-header>
+
+<ion-content fullscreen class="leaves-block">
+<!-- <ion-header class="app-header" mode="md">
+  <ion-toolbar>
+    <div class="header-left" *ngIf="currentCandidate">
+      <h1 class="greeting">Hi, {{currentCandidate.personalDetails.FirstName}} No pending leave requests</h1>
+      <p class="subtle">Plan your leaves for the year ✨</p>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button class="btn-outline tiny" fill="outline">Leave Policy / Pay Structure</ion-button>
+      <ion-button class="btn-primary tiny">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Request Leave
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header> -->
+
+<div  class="request-btn">
+    <ion-button (click)="openLeaveModal()">        
+        Request Leave
+      </ion-button>
+</div>
+<ion-modal [isOpen]="IsOpenleavePopup" (didDismiss)="closeleavePopup()" class="custom-popup">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Apply Leave</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeleavePopup()"><ion-icon name="close-outline"></ion-icon></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form class="form-block">          
+            <div>
+                <label>Leave Type</label>
+                <ion-select label-placement="fixed" placeholder="Select Leave Type">
+                  <ion-select-option value="casual-leaves">Casual Leaves</ion-select-option>
+                  <ion-select-option value="marriage-leaves">Marriage Leaves</ion-select-option>
+                  <ion-select-option value="sick-leaves">Sick Leaves</ion-select-option>
+                  <ion-select-option value="comp-offs">Comp-Offs</ion-select-option>
+                  <ion-select-option value="unpaid-leaves">Unpaid Leaves</ion-select-option>
+                </ion-select>
+              </div>
+              <div>
+                  <label>From</label>
+                  <ion-input type="date" formControlName="fromdate" placeholder="Select Date"></ion-input>
+                </div>
+              <div>
+                  <label>To</label>
+                  <ion-input type="date" formControlName="todate" placeholder="Select Date"></ion-input>
+                </div>
+                <div>
+                    <label>Leave Reason</label>
+                    <ion-textarea row="6" formControlName="leave-reason" placeholder="State for your reason for leave"></ion-textarea>
+                  </div>
+                  <div>
+                      <label>Notify</label>
+                      <ion-input type="text" formControlName="notify" placeholder="Search employee"></ion-input>
+                    </div>
+               
+
+          <ion-button expand="block" type="submit">Request Leave</ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-grid class="card-tabs-block">
+    <p class="card-header">Leave Balances</p>
+    <ion-row>
+      <ion-col size="2" class="card-block">
+          <p class="card-header">Casual Leaves</p>
+          <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
+          <p class="number">9/12</p>
+          <p class="label">days available</p>
+      </ion-col>
+      <ion-col size="2" class="card-block">
+          <p class="card-header">Marriage Leaves</p>
+          <ion-img src="../../../assets/leave-icons/ML.svg"></ion-img>
+          <p class="number">2/2</p>
+          <p class="label">days available</p>
+      </ion-col>
+      <ion-col size="2" class="card-block">
+          <p class="card-header">Sick Leaves</p>
+          <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
+          <p class="number">1/6</p>
+          <p class="label">days available</p>
+      </ion-col>
+      <ion-col size="2" class="card-block">
+          <p class="card-header">Comp Offs</p>
+          <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
+          <p class="number">1/3</p>
+          <p class="label">days available</p>
+      </ion-col>
+      <ion-col size="2" class="card-block">
+          <p class="card-header">Unpaid Leaves</p>
+          <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
+          <p class="number">1/12</p>
+          <p class="label">days available</p>
+      </ion-col>
+    </ion-row>    
+  </ion-grid>
+
+   <ion-grid class="card-tabs-block table-block">
+     <div class="row-space-between">
+       <div class="row-left">
+          <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
+          <p class="header-title">Casual Leaves</p>          
+       </div>       
+           <p>Last days</p>
+      </div>
+
+     <ion-row class="table-header">
+       <ion-col size="2">
+          <p>Period</p>
+       </ion-col>
+       <ion-col size="1">
+          <p>Days</p>
+        </ion-col>
+        <ion-col size="3">
+            <p>Reason</p>
+          </ion-col>
+          <ion-col  size="2">
+              <p>Submitted On</p>
+            </ion-col>
+            <ion-col  size="2">
+                <p>Applied to</p>
+              </ion-col>
+              <ion-col  size="2">
+                  <p>Status</p>
+                </ion-col>
+      </ion-row>
+      <ion-row class="table-cell">
+          <ion-col size="2">
+             <p>July 27 - July 27</p>
+          </ion-col>
+          <ion-col size="1">
+             <p>1</p>
+           </ion-col>
+           <ion-col size="3">
+               <p>Feaver</p>
+             </ion-col>
+             <ion-col  size="2">
+                 <p>July 26</p>
+               </ion-col>
+               <ion-col  size="2">
+                   <p>Hr</p>
+                 </ion-col>
+                 <ion-col  size="2">
+                     <p class="pending">Pending</p>
+                   </ion-col>
+         </ion-row>
+         <ion-row class="table-cell">
+            <ion-col size="2">
+               <p>July 27 - July 27</p>
+            </ion-col>
+            <ion-col size="1">
+               <p>1</p>
+             </ion-col>
+             <ion-col size="3">
+                 <p>Feaver</p>
+               </ion-col>
+               <ion-col  size="2">
+                   <p>July 26</p>
+                 </ion-col>
+                 <ion-col  size="2">
+                     <p>Hr</p>
+                   </ion-col>
+                   <ion-col  size="2">
+                       <p class="approved">Approved</p>
+                     </ion-col>
+           </ion-row>
+           <ion-row class="table-cell">
+              <ion-col size="2">
+                 <p>July 27 - July 27</p>
+              </ion-col>
+              <ion-col size="1">
+                 <p>1</p>
+               </ion-col>
+               <ion-col size="3">
+                   <p>Feaver</p>
+                 </ion-col>
+                 <ion-col  size="2">
+                     <p>July 26</p>
+                   </ion-col>
+                   <ion-col  size="2">
+                       <p>Hr</p>
+                     </ion-col>
+                     <ion-col  size="2">
+                         <p class="rejected">Rejected</p>
+                       </ion-col>
+             </ion-row>
+   
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <ion-col class="card-tabs-block additinal-block">
+        <p class="card-header mb-30">Leave Requests</p>
+        <div class="row-left">
+          <img src="../../../assets/leave-icons/check-circle.svg">
+            <div class="pl-15">
+                <p>Your leave request for Mar 10 has been approved</p> 
+                <p>1 day ago</p> 
+            </div>
+        </div>         
+      </ion-col>
+      <ion-col class="card-tabs-block additinal-block">
+          <p class="card-header">Upcoming Holidays</p>
+        <div class="row-space-between p-8">
+          <div>
+              <p>21 October 2025</p>
+              <p>Dassara</p>
+          </div>
+              <p>15 days left</p>
+         </div>
+         <div class="row-space-between p-8">
+            <div>
+                <p>21 October 2025</p>
+                <p>Diwali</p>
+            </div>
+                <p>33 days left</p>
+           </div>        
+        </ion-col>
+    </ion-row>  
+  </ion-grid>
+  
+</ion-content>

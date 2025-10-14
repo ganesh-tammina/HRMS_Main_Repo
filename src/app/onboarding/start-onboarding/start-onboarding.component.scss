@@ -1,0 +1,72 @@
+.candidate-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  justify-content: space-evenly;
+
+  .avatar {
+    color: #888;
+    margin-right: 16px;
+  }
+
+  .info {
+    h2 {
+      font-size: 1.2rem;
+      margin: 0;
+      font-weight: 600;
+    }
+    .designation {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 4px 0 8px;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 2px 0;
+    }
+  }
+}
+
+.section {
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .input-item {
+    margin-bottom: 12px;
+  }
+
+  .checkbox-item {
+    --inner-padding-end: 0;
+    ion-label {
+      font-size: 0.9rem;
+      color: #444;
+    }
+  }
+
+  .note {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 8px;
+  }
+}
+
+.footer {
+  margin-top: 30px;
+}
+
+
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #a5d6a7; color: #0b3d20;
+  display: grid; place-items: center;
+  font-weight: 700; letter-spacing: 0.4px;
+}

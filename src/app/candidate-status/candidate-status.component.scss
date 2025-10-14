@@ -1,0 +1,105 @@
+@import '../../global.scss';
+$blue-background: #007bff; // A nice, modern blue
+
+.sign-in-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  
+  // Ionic specific styling for full screen
+  --ion-background-color: #fff; 
+  --ion-text-color: #2d2d2d;
+}
+
+.sign-in-left, .sign-in-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.sign-in-left {
+  background-color: $blue-background;
+  color: #fff;
+  text-align: center;
+  
+  .logo-container {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    text-align: left;
+    .logo {
+      width: 150px;
+      margin-right: 0.5rem;
+    }    
+  }
+  
+  .welcome-message {
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+  }
+}
+.sign-in-block {
+  border: 1px solid #ddd;
+  width: 55%;
+  padding: 50px;
+  ion-icon {
+    fill: #888;
+    font-size: 64px;
+    margin: auto;
+    display: flex;
+    padding: 8px;
+  }
+  .form-control {
+    margin: 8px 0px;
+    border: 1px solid #888 !important;
+    padding: 0 8px !important;
+  }
+}
+
+  
+  
+  .footer-text {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #888;
+    p {
+      margin: 0;
+    }
+  }
+
+
+.primry-button {
+   --background: #007bff;
+   color: #fff;
+   width: 100%;
+}
+// Media query for smaller screens
+@media (max-width: 768px) {
+  .sign-in-container {
+    flex-direction: column;
+    .sign-in-left {
+      height: 30vh;
+      .logo-container {
+        position: static;
+        padding-top: 2rem;
+        text-align: center;
+      }
+    }
+    .sign-in-right {
+      flex: none;
+      height: 70vh;
+      justify-content: flex-start;
+      padding-top: 5rem;
+
+    }
+  }
+}

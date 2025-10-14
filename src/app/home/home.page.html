@@ -1,0 +1,509 @@
+<ion-header [translucent]="true">
+  <!-- <app-header></app-header> -->
+</ion-header>
+<ion-content [fullscreen]="true">
+
+  <ion-grid class="ion-margin ion-margin-horizontal">
+    <ion-row>
+      <ion-col size="6" class="welcome-block ion-no-padding row-space-between">
+        <div class="row-left">
+          <p>Welcome {{currentCandidate.personalDetails.FirstName}}</p>
+        </div>
+        <img  class="bg2"  src="../../assets/bg-welcome1.svg" />
+      </ion-col>
+    </ion-row>
+    <ion-row class="main-block">
+      <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" class="main-left-block">
+        <ion-card>
+          <ion-card-content>
+            <p class="card-main-header ion-padding-bottom">Overview</p>
+
+            <div class="quick-access-card">
+              <ion-item-divider>
+                <div class="avatar-section">
+                  <p class="section-title">On Leave Today</p>
+                  <ion-row class="row-space-between">
+                    <ion-col lines="none" size="12" size-sm="12" size-md="12" size-lg="8" size-xl="8" class="d-flex">
+
+                      <div class="pr-5 label-block">
+                        <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
+
+                        <ion-label>vamsi kumar</ion-label>
+                      </div>
+
+                      <div class="pr-5 label-block">
+                        <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
+
+                        <ion-label>vamsi kumar</ion-label>
+                      </div>
+
+                    </ion-col>
+                    <ion-col lines="none" size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" class="on-leave-user">
+                      <ion-img src="../../assets/onleave-img.svg" alt="On Leave"></ion-img>
+                    </ion-col>
+                  </ion-row>
+                </div>
+              </ion-item-divider>
+              <div class="avatar-section ion-padding">
+                <p class="section-title">Work From Home</p>
+                <ion-row class="row-space-between">
+                  <ion-col lines="none" size="8" class="d-flex">
+
+                    <div class="pr-5 label-block">
+                      <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
+
+                      <ion-label>vamsi kumar</ion-label>
+                    </div>
+
+                    <div class="pr-5 label-block">
+                      <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
+
+                      <ion-label>vamsi kumar</ion-label>
+                    </div>
+
+                  </ion-col>
+                  <ion-col lines="none" size="4" class="on-leave-user">
+
+                    <ion-img src="../../assets/WFH-img.svg" alt="WFH" width="110"></ion-img>
+
+                  </ion-col>
+                </ion-row>
+              </div>
+            </div>
+            <!-- Holiday Section -->
+            <div class="holidays-section" [style.backgroundImage]="'url(' + backgroundImageUrl + ')'">
+
+              <div class="row-space-between mb-30">
+                <p class="section-title">Upcoming Holidays</p>
+                <a>View All</a>
+              </div>
+
+              <h2 class="card-main-header mb-30">Christmas</h2>
+              <p>Thu, 25 December, 2025</p>
+
+            </div>
+            <!-- Attendance side block -->
+            <div class="quick-access-card week-card ">
+              <p class="section-title pb-8">Attendance</p>
+              <div class="row-left">
+                <h2 class="page-title">95%</h2>
+                <p class="pl-5 text-color">+2% vs Last Month</p>
+              </div>
+
+              <div class="p-8">
+                <ion-list lines="none" class="row-left">
+                  <ion-item *ngFor="let day of days">
+                    <ion-label>
+                      <div [ngClass]="day.status === 'Complete' ? 'complete' : 'remaining'">
+                        <p class="progress"></p>
+                        <p class="text-ellipsis">{{ day.date }}</p>
+                      </div>
+                    </ion-label>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </div>
+
+            <!-- Leave balance side block -->
+            <div class="quick-access-card balance-card ">
+
+              <div class="row-space-between">
+                <p class="section-title">Leave balance</p><a class="pl-5 text-color">Request Leave</a>
+              </div>
+
+              <div class="p-8">
+                <ion-row lines="none" class="row-left">
+                  <ion-col size="3">
+                    <p class="card-main-header">19</p>
+                    <p class="text">Total</p>
+                    <p class="card-title">24 Leaves</p>
+                  </ion-col>
+                  <ion-col size="3">
+                    <p class="card-main-header">19</p>
+                    <p class="text">Total</p>
+                    <p class="card-title">24 Leaves</p>
+                  </ion-col>
+                  <ion-col size="3">
+                    <p class="card-main-header">19</p>
+                    <p class="text">Total</p>
+                    <p class="card-title">24 Leaves</p>
+                  </ion-col>
+                </ion-row>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <!-- Right side block -->
+      <ion-col size="12" size-sm="12" size-md="12" size-lg="8" size-xl="8" class="main-right-block">
+        <ion-card class="time-actions ion-padding">
+          <div class="card-pannel">
+            <ion-row class="actions-card row-space-between">
+              <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" >
+                <p class="clock mb-30">Time Today </p>
+                <p class="time">{{currentTime }}</p>
+              </ion-col>
+
+              <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" class="row-right">
+                <app-clock-button></app-clock-button>              
+
+                <ion-button id="popover-button">Others<img src="../../assets/Icons/chevron-down-outline.svg"
+                    width="20"></ion-button>
+                <ion-popover trigger="popover-button" [dismissOnSelect]="true">
+                  <ng-template>
+                    <ion-content>
+                      <ion-list>
+                        <ion-item [button]="true" [detail]="false">Remote Clock-in</ion-item>
+                        <ion-item [button]="true" [detail]="false">Work From Home</ion-item>
+                        <ion-item [button]="true" [detail]="false">Partial Day</ion-item>
+                      </ion-list>
+                    </ion-content>
+                  </ng-template>
+                </ion-popover>
+
+
+              </ion-col>
+            </ion-row>
+          </div>
+        </ion-card>
+        <!-- reporting section -->
+        <ion-card class="reporting-block ion-padding">
+          <ion-row>
+            <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" class="left-block">
+              <p class="card-main-header mb-30">Reporting manager </p>
+              <div class="row-left">
+                <img alt="Silhouette of a person's head" src="../../assets/user.svg" width="46" />
+
+                <ion-label class="pl-5 ">
+                  <p class="name pb-8">Viswanatha Sastry Kvsj</p>
+                  <p class="designation">VP of Delivery Technology </p>
+                </ion-label>
+              </div>
+            </ion-col>
+            <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" class="right-block">
+              <p class="card-main-header mb-30">Your Clients </p>
+              <div class="row-space-between">
+                <div>
+                  <img alt="Silhouette of a person's head" src="../../assets/user.svg" width="46" />
+                  <p class="name">Client</p>
+                </div>
+
+                <img alt="Silhouette of a person's head" src="../../assets/undraw_global-team_8jok 1.svg" />
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-card>
+        <!-- Performance section -->
+        <ion-card class="week-card ion-padding">
+          <ion-row>
+            <ion-col size="12" size-sm="12" size-md="5" size-lg="5" size-xl="5" class="left-block">
+              <p class="card-main-header pb-8">Performance</p>
+              <div class="row-left">
+                <h2 class="page-title">88%</h2>
+                <p class="pl-5 text-color">+3% vs Last Quarter</p>
+              </div>
+            </ion-col>
+            <ion-col size="12" size-sm="12" size-md="7" size-lg="7" size-xl="7" class="left-block">
+              <img src="../../assets/chart-graphic.svg">
+            </ion-col>
+          </ion-row>
+
+        </ion-card>
+        <!-- Announcements section -->
+        <ion-card class="week-card ion-padding">
+          <p class="card-main-header pb-8">Announcements</p>
+          <div class="pb-8 row-center">
+            <img class="pb-8" src="../../assets/undraw_letter_ombg 1.svg">
+          </div>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+
+    <!-- Tabs section -->
+    <ion-card class="tabs-block ion-padding">
+      <ion-row class="">
+        <ion-col size="12">
+          <ion-tabs>
+            <ion-tab-bar slot="top">
+              <ion-tab-button tab="birthday">
+                <div class="row-left">
+                  <img src="../../assets/Icons/cake.svg" width="24" height="24">
+                  <p class="pl-5">0 Birthday</p>
+                </div>
+              </ion-tab-button>
+              <ion-tab-button tab="Work">
+                <div class="row-left">
+                  <img src="../../assets/Icons/celebration.svg" width="24" height="24">
+                  <p class="pl-5">0 Work Anniversaries</p>
+                </div>
+              </ion-tab-button>
+              <ion-tab-button tab="new-joiners">
+                <div class="row-left">
+                  <img src="../../assets/Icons/groups.svg" width="24" height="24">
+                  <p class="pl-5"> 0 New Joiners</p>
+                </div>
+              </ion-tab-button>
+              <ion-tab-button tab="praise">
+                <div class="row-left">
+                  <img src="../../assets/Icons/license.svg" width="24" height="24">
+                  <p class="pl-5">0 Praise</p>
+                </div>
+              </ion-tab-button>
+            </ion-tab-bar>
+            <ion-tab tab="birthday">
+              <div id="birthday-page">
+                <ion-content>
+                  <div class="avatar-section">
+
+                    <ion-row class="d-flex">
+                      <ion-col lines="none" size="6">
+                        <p class="section-header">Birthdays Today</p>
+                        <div class="d-flex">
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Raj</ion-label>
+                            <span>Wish</span>
+                          </div>
+
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                          </div>
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span>Wish</span>
+                          </div>
+                        </div>
+                        <p class="section-header">Upcoming Birthdays</p>
+                        <div class="d-flex">
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">09 Sep</span>
+                          </div>
+
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">07 Mar</span>
+                          </div>
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">05 Sept</span>
+                          </div>
+                        </div>
+                      </ion-col>
+                      <ion-col lines="none" size="6" class="on-leave-user">
+                        <ion-img src="../../assets/birthday-pic.svg" alt="On Leave"></ion-img>
+                      </ion-col>
+                    </ion-row>
+                  </div>
+
+
+                </ion-content>
+              </div>
+            </ion-tab>
+            <ion-tab tab="Work">
+              <div id="Work-page">
+
+                <ion-content>
+                  <div class="avatar-section">
+
+                    <ion-row class="d-flex">
+                      <ion-col lines="none" size="6">
+                        <p class="section-header">Work Anniversaries today
+
+                        </p>
+                        <div class="d-flex">
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Raj</ion-label>
+                            <span>Wish</span>
+                          </div>
+
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                          </div>
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span>Wish</span>
+                          </div>
+                        </div>
+                        <p class="section-header">Upcoming Work Anniversaries</p>
+                        <div class="d-flex">
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">09 Sep</span>
+                          </div>
+
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">07 Mar</span>
+                          </div>
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">05 Sept</span>
+                          </div>
+                        </div>
+                      </ion-col>
+                      <ion-col lines="none" size="6" class="on-leave-user">
+                        <ion-img src="../../assets/birthday-pic.svg" alt="On Leave"></ion-img>
+                      </ion-col>
+                    </ion-row>
+                  </div>
+
+                </ion-content>
+              </div>
+            </ion-tab>
+            <ion-tab tab="new-joiners">
+              <div id="new-joiners-page">
+
+                <ion-content>
+                  <div class="avatar-section">
+
+                    <ion-row class="d-flex">
+                      <ion-col lines="none" size="6">
+                        <p class="section-header">New joinees today
+                        </p>
+                        <div class="d-flex">
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Raj</ion-label>
+                            <span>Wish</span>
+                          </div>
+
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                          </div>
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span>Wish</span>
+                          </div>
+                        </div>
+                        <p class="section-header">Recent joinees</p>
+                        <div class="d-flex">
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">09 Sep</span>
+                          </div>
+
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">07 Mar</span>
+                          </div>
+                          <div class="pr-5 label-block">
+                            <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
+
+                            <ion-label>Ravi</ion-label>
+                            <span class="gray">05 Sept</span>
+                          </div>
+                        </div>
+                      </ion-col>
+                      <ion-col lines="none" size="6" class="on-leave-user">
+                        <ion-img src="../../assets/birthday-pic.svg" alt="On Leave"></ion-img>
+                      </ion-col>
+                    </ion-row>
+                  </div>
+                </ion-content>
+              </div>
+            </ion-tab>
+            <ion-tab tab="praise">
+              <div id="praise-page">
+
+                <ion-content>
+                  <div class="example-content">praise content</div>
+                </ion-content>
+              </div>
+            </ion-tab>
+
+
+          </ion-tabs>
+        </ion-col>
+      </ion-row>
+
+    </ion-card>
+
+    <ion-row>
+      <ion-col size="6" class="post-block">
+        <ion-card>
+          <p class="post-title">Posts</p>
+          <div class="post-content d-flex ion-align-items-start ion-padding">
+            <img src="../../assets/user.svg" width="35">
+            <div class="pl-30">
+              <p class="text-time">Ranjeeth Kumar Mantrala praised Yogesh Rajendra Dixit</p>
+              <h2>a year ago</h2>
+              <p class="comment-text">Your tireless efforts in supporting both clients and internal projects are
+                commendable. Your dedication is truly appreciated.
+
+                Thank you for going above and beyond!</p>
+            </div>
+          </div>
+          <ion-row class="comment-box p-8">
+            <ion-col size="6" class=" row-left">
+              <div class="row-left">
+                <img src="../../assets/Icons/thumb-up.svg">
+                <p class="pl-5">Like</p>
+              </div>
+              <div class="row-left pl-15">
+                <img src="../../assets/Icons/chat-bubble-outline.svg">
+                <p class="pl-5">Comment</p>
+              </div>
+            </ion-col>
+            <ion-col size="6" class=" row-right">
+              <p>38 reactions</p>
+              <p class="pl-15">0 comments</p>
+            </ion-col>
+          </ion-row>
+
+          <ion-item>
+            <img src="../../assets/user.svg">
+            <ion-input label="" placeholder="Write your comment here"></ion-input>
+          </ion-item>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6" class="Create-post-block">
+        <ion-card>
+          <p class="post-title">Create Post</p>
+          <div class="post-content ion-padding">
+            <ion-textarea label="" placeholder="Write your post here"></ion-textarea>
+            <div class="action-btns">
+              <ion-button>Cancel</ion-button>
+              <ion-button>Post</ion-button>
+            </div>
+          </div>
+
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>

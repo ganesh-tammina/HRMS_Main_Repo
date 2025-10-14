@@ -1,0 +1,219 @@
+
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+// @import '@ionic/angular/css/palettes/dark.system.css';
+@import 'theme/variables.scss';
+
+ion-split-pane{
+    --side-min-width: 70px !important;
+    --side-max-width: 100px !important;
+}
+
+ion-list{
+    padding: 0 !important;
+}
+.main-content{
+    ion-list-header, ion-item{
+      --background: #0a1d2c !important;
+    }
+}
+ion-list-header, ion-item{
+      border: none;
+      border-radius: 0 !important;
+      min-height: 0;
+        --padding:0px !important;
+        --padding-end:0px !important;
+}
+
+  ion-item a {
+      display: grid !important;
+    place-content: center;
+}
+
+@media (min-width: 1200px) {
+    .grid-fixed {
+        width: 100vw;
+    }
+}
+.header-collapse-condense{
+ display: block !important;
+}
+
+.d-flex {
+  display: flex;
+}
+
+
+:host(.menu-pane-visible.split-pane-side.menu-enabled) {
+    display: flex
+;
+    flex-shrink: 0;
+    min-width: 150px;
+}
+
+
+.searchbar-input.sc-ion-searchbar-md {
+    -webkit-padding-end: 1.4375rem  !important;
+    padding-inline-end: 1.4375rem !important;
+        padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+}
+.page-containerOn{
+        --background: #f9fafc;
+}
+.row-left {
+   display: flex;
+   align-items: center;
+   justify-content: left;
+   flex-direction: row;
+}
+.row-right {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    flex-direction: row;
+}
+.row-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+.row-space-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+.pl-5 {
+    padding-left: 5px;
+}
+.pl-15 {
+    padding-left: 15px;
+}
+.pl-30 {
+    padding-left: 30px;
+}
+.pr-5 {
+    padding-right: 5px;
+}
+.pr-15 {
+    padding-right: 15px;
+}
+.pr-30 {
+    padding-right: 30px;
+}
+.mb-30 {
+    margin-bottom: 30px !important;
+}
+.p-8 {
+    padding: 8px;
+}
+.pb-8 {
+    padding-bottom: 8px;
+}
+.m-auto {
+    margin: auto !important;
+}
+.mt-8 {
+  margin-top: 8px !important;
+}
+// Modal popup
+.custom-popup {
+    ion-header {
+        box-shadow: none;
+        ion-title {
+            @include card-header();
+        }
+    }
+  .form-block {
+      padding: 0px 24px;
+      ion-select {
+        border: 1px solid #C4C4C4;
+        height: 45px;
+        border-radius: 4px;
+        padding: 0px 12px !important;
+        margin: 11px 0px;
+      }
+      ion-input, ion-textarea {
+        border: 1px solid #C4C4C4;
+        height: 45px;
+        border-radius: 4px;
+        padding: 0px 12px !important;
+       margin: 11px 0px;
+      }
+      ion-button {
+        --background: #122F44;
+        height: 42px;
+        border-radius: 6px;
+      }      
+  }
+}
+.text-center {
+    text-align: center;
+}
+.custom-button {
+    padding: 3px 10px;
+    border-radius: 8px;
+    height: 42px;
+    --box-shadow: none;
+    --background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+}
+.primary-btn {
+    --color: #fff;
+    --background: #2986CE;
+    background: #2986CE;
+    @extend .custom-button ;
+}
+.primary-outline-btn {
+    --background: #fff;
+    --color: #2986CE;
+    --border: 1.5px solid #2986CE;
+    @extend .custom-button ;
+}
+.danger-outline-btn {
+    border: 1.5px solid #E45353;
+    color: #E45353;
+    @extend .custom-button ;
+}
+.danger-btn {
+    --color: #fff;
+    --background: #E45353;
+    @extend .custom-button ;
+}

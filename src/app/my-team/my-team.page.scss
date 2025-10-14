@@ -1,0 +1,66 @@
+.keka-navbar {
+  height: 56px;
+
+  .navbar-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 16px;
+  --background: #bb4b72;
+  display: grid;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      height: 30px;
+      margin-right: 8px;
+    }
+
+    .company-name {
+      font-size: 14px;
+      color: white;
+      font-weight: 500;
+    }
+  }
+
+  .navbar-center {
+    // flex: 1;
+    // display: flex;
+    // justify-content: center;
+
+    .search-box {
+      --border-radius: 9999px;
+      --background: white;
+      --color: #444;
+      --icon-color: #666;
+      max-width: 480px;
+      width: 100%;
+      padding: 0 10px;
+    }
+  }
+
+  .navbar-right {
+    display: flex;
+    align-items: center;
+
+    .nav-icon {
+      font-size: 24px;
+      color: white;
+      margin-right: 16px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+  }
+}
+.sc-ion-searchbar-md{
+  padding-inline-start: 2.375rem;
+}
+

@@ -1,0 +1,61 @@
+// .profile-header {
+//   text-align: center;
+//   margin-bottom: 20px;
+
+//   .profile-avatar {
+//     width: 120px;
+//     height: 120px;
+//     margin: 0 auto 10px auto;
+//   }
+
+//   h2 {
+//     font-size: 20px;
+//     margin: 5px 0;
+//   }
+
+//   p {
+//     font-size: 16px;
+//     color: gray;
+//   }
+// }
+
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.profile-avatar {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.status-dot {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.available {
+  background-color: #4caf50; // green
+}
+
+.unavailable {
+  background-color: #f44336; // red
+}
+
+.profile-info {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.job-title {
+  color: #666;
+  font-size: 14px;
+}

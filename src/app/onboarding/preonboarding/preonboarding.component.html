@@ -1,0 +1,202 @@
+<ion-header>
+  <!-- <app-header></app-header> -->
+  <app-onboarding-mainheader></app-onboarding-mainheader>
+</ion-header>
+<ion-toolbar>
+  <ion-title>Preboarding</ion-title>
+
+  <ion-buttons slot="end" class="header-actions">
+    <ion-button fill="clear" class="muted-link">
+      <ion-icon name="eye-outline" slot="start"></ion-icon>
+      All candidates
+    </ion-button>
+
+    <ion-button fill="clear" class="icon-btn">
+      <ion-icon name="funnel-outline"></ion-icon>
+    </ion-button>
+
+    <ion-button id="add-candidate-trigger" color="primary" class="add-btn">
+      <ion-icon name="add-outline" slot="start"></ion-icon>
+      Add a candidate
+      <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
+    </ion-button>
+    <ion-popover class="addCandiate" trigger="add-candidate-trigger" triggerAction="click">
+      <ng-template>
+        <ion-content class="ion-padding">
+          <ion-list lines="none">
+            <ion-item button (click)="openCandidateForm()">
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              <ion-label>Add candidate</ion-label>
+            </ion-item>
+            <ion-item button>
+              <ion-icon name="people-outline" slot="start"></ion-icon>
+              <ion-label>Bulk add candidates</ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-toolbar class="subheader" style="margin-left: 20px;">
+  <ion-text color="medium" class="subtitle">
+    List of all candidates who are selected to join the organization.
+  </ion-text>
+</ion-toolbar>
+
+<ion-content fullscreen>
+  <!-- Filters -->
+  <div class="filters">
+    <ion-grid class="filters-grid">
+      <ion-row class="ion-align-items-center">
+        <ion-col size="12" size-lg="2.2" size-md="4">
+          <ion-item class="filter-chip" lines="none">
+            <ion-label>Business Unit</ion-label>
+            <ion-select interface="popover">
+              <ion-select-option>Finance</ion-select-option>
+              <ion-select-option>Human Resources</ion-select-option>
+              <ion-select-option>IT</ion-select-option>
+              <ion-select-option>Marketing</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col size="12" size-lg="2.2" size-md="4">
+          <div class="filter-chip">
+            <span>Job Title</span>
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+        </ion-col>
+        <ion-col size="12" size-lg="2.2" size-md="4">
+          <div class="filter-chip">
+            <span>Department</span>
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+        </ion-col>
+        <ion-col size="12" size-lg="2.2" size-md="4">
+          <div class="filter-chip">
+            <span>Location</span>
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+        </ion-col>
+        <ion-col size="12" size-lg="1.6" size-md="4">
+          <div class="filter-chip">
+            <span>Stage</span>
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+        </ion-col>
+        <ion-col size="12" size-lg="2" size-md="6" class="offer-type-cell">
+          <div class="filter-chip">
+            <ion-icon name="funnel-outline"></ion-icon>
+            <span>Offer Type</span>
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+        </ion-col>
+        <ion-col size="12" size-lg="5" size-md="6">
+          <div class="search-wrap">
+            <ion-icon name="search-outline"></ion-icon>
+            <input placeholder="Search" />
+          </div>
+        </ion-col>
+        <ion-col size="12" class="bulk-hint">
+          <ion-icon name="checkbox-outline"></ion-icon>
+          <span>Select candidates to enable bulk actions</span>
+          <ion-icon name="ellipsis-vertical" class="right-dots"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Table Header -->
+  <div class="table">
+    <div class="table-row table-head">
+      <div class="cell cell-check">
+        <ion-checkbox aria-label="Select all"></ion-checkbox>
+      </div>
+      <div class="cell cell-name">NAME OF THE CANDIDATE</div>
+      <div class="cell cell-offer">OFFER STAGE</div>
+      <div class="cell cell-dept">DEPT. &amp; LOCATION</div>
+      <div class="cell cell-date">JOINING DATE</div>
+      <div class="cell cell-actions">ACTIONS</div>
+    </div>
+
+    <!-- Row 1 -->
+    <ng-container class="table-row" *ngFor="let candidate of candidates"
+      [class.hidden]="hiddenCandidates.includes(candidate.id)">
+      <ng-container *ngIf="candidate.status === 'accepted' || candidate.status === 'pending'">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <div class="cell cell-check">
+                <ion-checkbox aria-label="Select row"></ion-checkbox>
+              </div>
+            </ion-col>
+            <ion-col>
+              <div class="cell cell-name">
+                <div class="avatar">{{candidate.personalDetails.initials}}</div>
+                <div class="name-stack">
+                  <a class="name-link">{{candidate.personalDetails.FirstName}}</a>
+                  <div class="sub">{{candidate.jobDetailsForm.JobTitle}}</div>
+                </div>
+              </div>
+            </ion-col>
+            <ion-col>
+              <div class="cell cell-offer">
+                <div class="stage-bars">
+                  <span class="bar done" [class.done]="currentStage >= 1"></span>
+                  <span class="bar done" *ngIf="currentStage >= 2" class="bar" [class.done]="currentStage >= 2"></span>
+                  <span class="bar done" *ngIf="currentStage >= 3" class="bar" [class.done]="currentStage >= 3"></span>
+                </div>
+                <div class="status">
+                  <h5 class="status-title">Offer {{candidate.status}}</h5>
+                  <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div>
+                </div>
+              </div>
+            </ion-col>
+            <ion-col>
+              <div class="cell cell-dept">
+                <div class="dept-title">{{candidate.jobDetailsForm.Department}}</div>
+                <div class="dept-sub">{{candidate.jobDetailsForm.JobLocation}}</div>
+              </div>
+            </ion-col>
+            <ion-col>
+              <div class="cell cell-actions">
+                <ion-button size="small" fill="outline" color="primary">Revise</ion-button>
+                <ion-button size="small" fill="outline" color="primary" (click)="startpreonboarding(candidate)">Start
+                  Pre-Onboarding</ion-button>
+                  <ion-button fill="clear" [attr.id]="'accept-button' + candidate.id"
+                  class="dot-button">
+                    <ion-icon name="ellipsis-vertical-circle-outline"></ion-icon></ion-button>
+                    <ion-popover [attr.trigger]="'accept-button' + candidate.id" [dismissOnSelect]="true">
+                      <ng-template>
+                        <ion-content>
+                          <ion-list>
+                            <ion-item [button]="true" [detail]="false" (click)="employeehire(candidate)" *ngIf="candidate.status === 'accepted'"> Hire as employee</ion-item>
+                            <ion-item [button]="true" [detail]="false">Pending</ion-item>
+                            <ion-item [button]="true" [detail]="false">Reject</ion-item>
+                          </ion-list>
+                        </ion-content>
+                      </ng-template>
+                    </ion-popover>                
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+
+
+
+
+
+
+
+
+
+
+      </ng-container>
+    </ng-container>
+
+    <!-- Row 2 -->
+
+  </div>
+</ion-content>

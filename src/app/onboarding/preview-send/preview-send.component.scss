@@ -1,0 +1,104 @@
+.offer-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  height: 100%;
+  padding: 10px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.template-preview {
+  flex: 2;
+  overflow-y: auto;
+
+  .company-logo {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .template-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #444;
+    white-space: pre-wrap;
+  }
+}
+
+.controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  ion-list {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 5px 0;
+  }
+
+  ion-item {
+    --padding-start: 10px;
+    --inner-padding-end: 10px;
+  }
+
+  .dropdown-section,
+  .upload-section,
+  .workflow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    ion-label {
+      font-weight: 600;
+      color: #444;
+      font-size: 14px;
+    }
+
+    ion-select,
+    input[type="file"] {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #555;
+      margin: 0;
+    }
+  }
+
+  .workflow {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px dashed #ccc;
+
+    p {
+      font-style: italic;
+      color: #666;
+    }
+  }
+}
+
+/* Responsive layout */
+@media (max-width: 992px) {
+  .offer-container {
+    flex-direction: column;
+  }
+
+  .template-preview,
+  .controls {
+    flex: unset;
+    width: 100%;
+  }
+}

@@ -1,0 +1,77 @@
+@import '../../../global.scss';
+.upload-container {
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+.admin-dashboard {
+    --background: #E6F1FF;
+    padding: 20px;
+    title {
+        display: block;
+        @include normal-text();
+    }
+    ion-label {
+        @include normal-text-unbold();
+    }
+    ion-button {
+        text-transform: capitalize;
+    }
+}
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    .tooltip-text {
+        visibility: hidden;
+        background-color: #122E44;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        top: 25px;
+        right: 0px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        width: 150px;
+      }
+      
+      &:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
+
+  }
+  ion-card {
+      ion-icon {
+        width: 24px;
+        margin-right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+  }
+  .upload-file {
+    input[type=file] {
+      margin: 16px;
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+  
