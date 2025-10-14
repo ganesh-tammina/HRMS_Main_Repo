@@ -38,6 +38,10 @@
 
             </ion-card-header>
             <ion-card-content>
+              <div *ngIf="isLoading" class="loader-overlay">
+                <ion-spinner name="crescent"></ion-spinner>
+                <p>Loading, please wait...</p>
+              </div>
               <ion-list *ngFor="let employees of Employeelist">
                 <ion-item>
                   <ion-thumbnail slot="start">
@@ -107,6 +111,10 @@
               </ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
+              <div *ngIf="isLoading" class="loader-overlay">
+                <ion-spinner name="crescent"></ion-spinner>
+                <p>Loading, please wait...</p>
+              </div>
               <ion-list *ngFor="let holiday of holidays">
                 <ion-item>
                   <ion-thumbnail slot="start">

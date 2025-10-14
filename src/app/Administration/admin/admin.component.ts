@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { LeaveModalComponent } from './leave-modal/leave-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { IndexeddbEmployeesService } from 'src/app/services/indexeddb-employees.service';
 
 @Component({
   selector: 'app-admin',
@@ -27,12 +28,21 @@ export class AdminComponent implements OnInit {
   public pageSize: number = 10;
   public currentPage: number = 1;
   public totalPages: number = 1;
-  constructor(private http: HttpClient, private candidateService: CandidateService) { }
+  isLoading: boolean = true;
+  constructor(private http: HttpClient,
+    private indexeddbService: IndexeddbEmployeesService,
+    private candidateService: CandidateService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.isLoading = true;
     const savedData = localStorage.getItem('leaveData');
     if (savedData) {
       this.leaveData = JSON.parse(savedData);
+    }
+    const storedEmployees = await this.indexeddbService.getEmployees();
+    if (storedEmployees) {
+      this.Employeelist = storedEmployees;
+      console.log('Loaded employees from IndexedDB:', storedEmployees);
     }
     this.candidateService.getHolidaysList('id').subscribe((res: any) => {
       this.holidays = res.data;
@@ -88,8 +98,12 @@ export class AdminComponent implements OnInit {
     const formData = new FormData();
     formData.append("file", this.EmployeeselectedFile);
     this.candidateService.postcurrentEmployees(formData).subscribe({
-      next: (res) => {
+      next: async (res) => {
         this.Employeelist = res.data;
+        console.log(this.Employeelist);
+        await this.indexeddbService.saveEmployees(this.Employeelist);
+        console.log('Employees saved to IndexedDB ✅');
+        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
@@ -135,5 +149,10 @@ export class AdminComponent implements OnInit {
   deleteLeaves() {
     this.leaveData = null;
     localStorage.removeItem('leaveData');
+  }
+  async deleteEmployees() {
+    await this.indexeddbService.clearEmployees();
+    this.Employeelist = [];
+    alert('Employees cleared!');
   }
 }
