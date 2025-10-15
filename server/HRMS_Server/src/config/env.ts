@@ -14,12 +14,14 @@ interface Config {
 }
 
 export const config: Config = {
-  PORT: Number(process.env.PORT),  // ✅ Safe fallback
+  PORT: Number(process.env.PORT),
   DB_NAME: process.env.DB_NAME || "",
   DB_USER: process.env.DB_USER || "",
   DB_PASSWORD: process.env.DB_PASSWORD || "",
   DB_HOST: process.env.DB_HOST || "",
   EMAIL_USER: process.env.EMAIL_USER || "",
   EMAIL_PASS: process.env.EMAIL_PASS || "",
-  DB_PORT: Number(process.env.DB_PORT),  // ✅ Correct DB port fallback
+  DB_PORT: Number(process.env.DB_PORT) || 3306,
 };
+
+
