@@ -5,87 +5,89 @@
 
   <div class="right">
     <div class="form-block">
-        <div class="logo">
-            <img src="../../assets/techtammina.webp" alt="Logo">
-          </div>
-          <div class="existing-form" *ngIf="!showForgotModal">
-              <h3>Log into your account</h3>
-      
-              <!-- LOGIN FORM -->
-              <form *ngIf="showLoginForm" [formGroup]="loginForm" (ngSubmit)="onLogin()">
-                <div class="input-group">
-                  <ion-input label="Email" type="email" label-placement="floating" 
-                  fill="outline"  formControlName="email" placeholder="Email address"></ion-input>
-                </div>
-          
-                <div class="input-group">
-                    <ion-input label="Password" type="password" label-placement="floating" 
-                  fill="outline"  formControlName="password" placeholder="Enter Password"></ion-input>
-                </div>
-          
-                  <p class="forgot-link"><a (click)="openForgotModal()">Forgot Password?</a></p>
-                
-          
-                <div *ngIf="loginError" class="error">{{ loginError }}</div>
-                <ion-button class="primary-btn" type="submit" [disabled]="loginForm.invalid">Sign in</ion-button>
-              </form>
-          </div>
-         
-
-
-      
-          <!-- PASSWORD UPDATE FORM -->
-          <form *ngIf="showPasswordUpdateForm" [formGroup]="passwordUpdateForm" (ngSubmit)="onPasswordUpdate()">
-            <div class="input-group">
-              <ion-input label="Email" type="email" label-placement="floating" 
-              fill="outline"  formControlName="email" placeholder="Email address"></ion-input>
-            </div>
-            <div class="input-group">
-                            <ion-input label="OTP" type="text" label-placement="floating" 
-                  fill="outline"  formControlName="otp" placeholder="Enter valid OTP"></ion-input>
-              <!-- <input type="text" formControlName="otp" placeholder="OTP"> -->
-            </div>
-            <div class="input-group">
-                <ion-input label="Password" type="password" label-placement="floating" 
-                fill="outline"  formControlName="password" placeholder="Enter Password"></ion-input>
-            </div>
-            <ion-button class="primary-btn" type="submit" [disabled]="passwordUpdateForm.invalid">Update Password</ion-button>
-          </form>
- <!-- FORGOT PASSWORD MODAL -->
-          <div *ngIf="showForgotModal" (click)="closeForgotModal()">
-              <div (click)="$event.stopPropagation()">                  
-                  
-                <form [formGroup]="forgotForm" (ngSubmit)="submitForgot()">
-                    <h3>Forgot Password</h3>
-                  <div class="modal-body">
-                    <p>Enter the email associated with your account and we will email you a verification code to your account</p>
-            
-                    <div class="input-group mt-8">
-                        <ion-input label="Email" type="email" label-placement="floating" 
-                        fill="outline"  formControlName="forgotEmail" placeholder="Email address"></ion-input>
-                      <!-- <input type="email" formControlName="forgotEmail" placeholder="Email address"> -->
-                      <div class="field-error"
-                        *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid">
-                        <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['required']">Email is required.</small>
-                        <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['email']">Please enter a valid email.</small>
-                      </div>
-                    </div>
-            
-                    <div *ngIf="forgotSuccess" class="success">{{ forgotSuccess }}</div>
-                    <div *ngIf="forgotError" class="error">{{ forgotError }}</div>
-                  </div>
-            
-                  <div class="row-center">
-                    <ion-button type="button" class="danger-btn" (click)="closeForgotModal()">Cancel</ion-button>
-                    <ion-button type="submit" class="primary-btn" [disabled]="forgotForm.invalid || sending">
-                      {{ sending ? 'Sending...' : 'Send OTP' }}
-                    </ion-button>
-                  </div>
-                </form>
-          </div>
-         
-        </div>
-        </div>
+      <div class="logo">
+        <img src="../../assets/techtammina.webp" alt="Logo">
       </div>
-      
+      <div class="existing-form" *ngIf="!showForgotModal">
+        <h3>Log into your account</h3>
+
+        <!-- LOGIN FORM -->
+        <form *ngIf="showLoginForm" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <div class="input-group">
+            <ion-input label="Email" type="email" label-placement="floating" fill="outline" formControlName="email"
+              placeholder="Email address"></ion-input>
+          </div>
+
+          <div class="input-group">
+            <ion-input label="Password" type="password" label-placement="floating" fill="outline"
+              formControlName="password" placeholder="Enter Password"></ion-input>
+          </div>
+
+          <p class="forgot-link"><a (click)="openForgotModal()">Forgot Password?</a></p>
+
+
+          <div *ngIf="loginError" class="error">{{ loginError }}</div>
+          <ion-button class="primary-btn" type="submit">Sign in</ion-button>
+        </form>
+      </div>
+
+
+
+
+      <!-- PASSWORD UPDATE FORM -->
+      <form *ngIf="showPasswordUpdateForm" [formGroup]="passwordUpdateForm" (ngSubmit)="onPasswordUpdate()">
+        <div class="input-group">
+          <ion-input label="Email" type="email" label-placement="floating" fill="outline" formControlName="email"
+            placeholder="Email address"></ion-input>
+        </div>
+        <div class="input-group">
+          <ion-input label="OTP" type="text" label-placement="floating" fill="outline" formControlName="otp"
+            placeholder="Enter valid OTP"></ion-input>
+          <!-- <input type="text" formControlName="otp" placeholder="OTP"> -->
+        </div>
+        <div class="input-group">
+          <ion-input label="newPassword" type="password" label-placement="floating" fill="outline"
+            formControlName="newPassword" placeholder="Enter Password"></ion-input>
+        </div>
+        <ion-button class="primary-btn" type="submit">Update Password</ion-button>
+      </form>
+      <!-- FORGOT PASSWORD MODAL -->
+      <div *ngIf="showForgotModal" (click)="closeForgotModal()">
+        <div (click)="$event.stopPropagation()">
+
+          <form [formGroup]="forgotForm" (ngSubmit)="submitForgot()">
+            <h3>Forgot Password</h3>
+            <div class="modal-body">
+              <p>Enter the email associated with your account and we will email you a verification code to your account
+              </p>
+
+              <div class="input-group mt-8">
+                <ion-input label="Email" type="email" label-placement="floating" fill="outline"
+                  formControlName="forgotEmail" placeholder="Email address"></ion-input>
+                <!-- <input type="email" formControlName="forgotEmail" placeholder="Email address"> -->
+                <div class="field-error"
+                  *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid">
+                  <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['required']">Email is required.</small>
+                  <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['email']">Please enter a valid
+                    email.</small>
+                </div>
+              </div>
+
+              <div *ngIf="forgotSuccess" class="success">{{ forgotSuccess }}</div>
+              <div *ngIf="forgotError" class="error">{{ forgotError }}</div>
+            </div>
+
+            <div class="row-center">
+              <ion-button type="button" class="danger-btn" (click)="closeForgotModal()">Cancel</ion-button>
+              <ion-button type="submit" class="primary-btn" [disabled]="forgotForm.invalid || sending">
+                {{ sending ? 'Sending...' : 'Send OTP' }}
+              </ion-button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>

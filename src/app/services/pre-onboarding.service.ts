@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { tap, map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
+import { tap, map, switchMap, concatMap, toArray } from 'rxjs/operators';
 import { AttendanceService } from './attendance.service';
 
 export interface Candidate {
@@ -65,6 +65,7 @@ export class CandidateService {
   private offerStatusapi = "http://30.0.0.78:3562/offerstatus/status";
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private excelallemployees = "http://localhost:3562/api/v1/parse-excel"
+  private bulkEmployees = "http://localhost:3562/api/v1/bulk-data-entry";
 
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
@@ -118,6 +119,27 @@ export class CandidateService {
     console.log(currentEmployees);
     return this.http.post<any>(this.excelallemployees, currentEmployees);
   }
+
+  postEmployeesInBatches(allEmployees: any[]): Observable<any[]> {
+    const batchSize = 20; // smaller batch to avoid payload issues
+    const batches = [];
+
+    for (let i = 0; i < allEmployees.length; i += batchSize) {
+      batches.push(allEmployees.slice(i, i + batchSize));
+    }
+
+    console.log(`Uploading ${batches.length} batches of ${batchSize} employees each...`);
+
+    return from(batches).pipe(
+      concatMap((batch, index) => {
+        console.log(batch)
+        console.log(`🚀 Sending batch ${index + 1}/${batches.length}`);
+        return this.http.post<any>(this.bulkEmployees, batch);
+      }),
+      toArray() // collect all responses when done
+    );
+  }
+
 
   private normalizeCandidates(data: any): Candidate[] {
     if (Array.isArray(data)) return data;

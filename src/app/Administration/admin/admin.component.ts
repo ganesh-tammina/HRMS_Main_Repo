@@ -134,18 +134,31 @@ export class AdminComponent implements OnInit {
     this.EmployeeselectedFile = event.target.files[0];
     console.log(this.EmployeeselectedFile);
   }
-  EmployeesUpload() {
+  async EmployeesUpload() {
     if (!this.EmployeeselectedFile) return;
+
     const formData = new FormData();
     formData.append("file", this.EmployeeselectedFile);
+
+    // Upload the file first to parse Excel
     this.candidateService.postcurrentEmployees(formData).subscribe({
-      next: async (res) => {
+      next: async (res: any) => {
         this.Employeelist = res.data;
-        console.log(this.Employeelist);
+        console.log('Parsed employees:', this.Employeelist);
+
+        // Save to IndexedDB
         await this.indexeddbService.saveEmployees(this.Employeelist);
-        this.isLoading = false;
-        this.updatePagination();
         console.log('Employees saved to IndexedDB ✅');
+
+        // Upload in smaller batches
+        this.candidateService.postEmployeesInBatches(this.Employeelist)
+          .subscribe({
+            next: (res) => console.log('✅ All batches uploaded successfully', res),
+            error: (err) => console.error('❌ Batch upload failed', err)
+          });
+
+        this.updatePagination();
+        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
@@ -196,5 +209,8 @@ export class AdminComponent implements OnInit {
     await this.indexeddbService.clearEmployees();
     this.Employeelist = [];
     alert('Employees cleared!');
+  }
+  sendDataDB() {
+    this.candidateService.postEmployeesInBatches(this.Employeelist).subscribe((res) => console.log(res));
   }
 }
