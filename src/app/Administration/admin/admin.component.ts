@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, IonModal  } from '@ionic/angular';
 import { LeaveModalComponent } from './leave-modal/leave-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
@@ -12,7 +12,7 @@ import { IndexeddbEmployeesService } from 'src/app/services/indexeddb-employees.
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent]
+  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent ]
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
@@ -33,7 +33,9 @@ export class AdminComponent implements OnInit {
   totalPages: number = 1;
   pagedEmployees: any[] = [];
 
-
+  @ViewChild(IonModal) modal!: IonModal;
+  selectedFiles: FileList | null = null;
+  
   isLoading: boolean = true;
   constructor(private http: HttpClient,
     private indexeddbService: IndexeddbEmployeesService,
@@ -134,18 +136,31 @@ export class AdminComponent implements OnInit {
     this.EmployeeselectedFile = event.target.files[0];
     console.log(this.EmployeeselectedFile);
   }
-  EmployeesUpload() {
+  async EmployeesUpload() {
     if (!this.EmployeeselectedFile) return;
+
     const formData = new FormData();
     formData.append("file", this.EmployeeselectedFile);
+
+    // Upload the file first to parse Excel
     this.candidateService.postcurrentEmployees(formData).subscribe({
-      next: async (res) => {
+      next: async (res: any) => {
         this.Employeelist = res.data;
-        console.log(this.Employeelist);
+        console.log('Parsed employees:', this.Employeelist);
+
+        // Save to IndexedDB
         await this.indexeddbService.saveEmployees(this.Employeelist);
-        this.isLoading = false;
-        this.updatePagination();
         console.log('Employees saved to IndexedDB ✅');
+
+        // Upload in smaller batches
+        this.candidateService.postEmployeesInBatches(this.Employeelist)
+          .subscribe({
+            next: (res) => console.log('✅ All batches uploaded successfully', res),
+            error: (err) => console.error('❌ Batch upload failed', err)
+          });
+
+        this.updatePagination();
+        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
@@ -197,4 +212,8 @@ export class AdminComponent implements OnInit {
     this.Employeelist = [];
     alert('Employees cleared!');
   }
+  sendDataDB() {
+    this.candidateService.postEmployeesInBatches(this.Employeelist).subscribe((res) => console.log(res));
+  }
+
 }

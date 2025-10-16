@@ -17,8 +17,7 @@ class Server {
   constructor() {
     this.app = express();
     var corsOptions = {
-      origin: "*",
-      // origin: ["http://127.0.0.1:5500"],
+      origin: ["http://127.0.0.1:5500"],
       optionsSuccessStatus: 200,
     };
     this.app.use(cors(corsOptions));
