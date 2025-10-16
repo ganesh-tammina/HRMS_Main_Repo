@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, IonModal  } from '@ionic/angular';
 import { LeaveModalComponent } from './leave-modal/leave-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
@@ -12,7 +12,7 @@ import { IndexeddbEmployeesService } from 'src/app/services/indexeddb-employees.
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent]
+  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent ]
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
@@ -33,7 +33,9 @@ export class AdminComponent implements OnInit {
   totalPages: number = 1;
   pagedEmployees: any[] = [];
 
-
+  @ViewChild(IonModal) modal!: IonModal;
+  selectedFiles: FileList | null = null;
+  
   isLoading: boolean = true;
   constructor(private http: HttpClient,
     private indexeddbService: IndexeddbEmployeesService,
@@ -213,4 +215,5 @@ export class AdminComponent implements OnInit {
   sendDataDB() {
     this.candidateService.postEmployeesInBatches(this.Employeelist).subscribe((res) => console.log(res));
   }
+
 }

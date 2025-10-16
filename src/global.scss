@@ -37,6 +37,16 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 // @import '@ionic/angular/css/palettes/dark.system.css';
 @import 'theme/variables.scss';
+html.md {
+--ion-default-font: 'Open Sans';
+}
+
+html, body {
+     font-family: 'Open Sans';
+}
+:host {
+    font-family: 'Open Sans';
+}
 
 ion-split-pane{
     --side-min-width: 70px !important;
@@ -139,6 +149,9 @@ ion-list-header, ion-item{
 }
 .mb-30 {
     margin-bottom: 30px !important;
+}
+.mb-15 {
+    margin-bottom: 15px !important;
 }
 .p-8 {
     padding: 8px;

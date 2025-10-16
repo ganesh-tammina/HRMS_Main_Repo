@@ -5,21 +5,21 @@
 
   <div class="right">
     <div class="form-block">
-      <div class="logo">
+      <div class="logo animated-box">
         <img src="../../assets/techtammina.webp" alt="Logo">
       </div>
       <div class="existing-form" *ngIf="!showForgotModal">
-        <h3>Log into your account</h3>
+        <h3 class="animated-box">Log into your account</h3>
 
         <!-- LOGIN FORM -->
-        <form *ngIf="showLoginForm" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <form class="animated-box" *ngIf="showLoginForm" [formGroup]="loginForm" (ngSubmit)="onLogin()">
           <div class="input-group">
-            <ion-input label="Email" type="email" label-placement="floating" fill="outline" formControlName="email"
+            <ion-input label="Email" type="email" label-placement="floating" formControlName="email"
               placeholder="Email address"></ion-input>
           </div>
 
           <div class="input-group">
-            <ion-input label="Password" type="password" label-placement="floating" fill="outline"
+            <ion-input label="Password" type="password" label-placement="floating" 
               formControlName="password" placeholder="Enter Password"></ion-input>
           </div>
 
@@ -35,35 +35,34 @@
 
 
       <!-- PASSWORD UPDATE FORM -->
-      <form *ngIf="showPasswordUpdateForm" [formGroup]="passwordUpdateForm" (ngSubmit)="onPasswordUpdate()">
+      <form class="animated-box" *ngIf="showPasswordUpdateForm" [formGroup]="passwordUpdateForm" (ngSubmit)="onPasswordUpdate()">
         <div class="input-group">
-          <ion-input label="Email" type="email" label-placement="floating" fill="outline" formControlName="email"
+          <ion-input label="Email" type="email" label-placement="floating" formControlName="email"
             placeholder="Email address"></ion-input>
         </div>
         <div class="input-group">
-          <ion-input label="OTP" type="text" label-placement="floating" fill="outline" formControlName="otp"
+          <ion-input label="OTP" type="text" label-placement="floating" formControlName="otp"
             placeholder="Enter valid OTP"></ion-input>
           <!-- <input type="text" formControlName="otp" placeholder="OTP"> -->
         </div>
         <div class="input-group">
-          <ion-input label="newPassword" type="password" label-placement="floating" fill="outline"
+          <ion-input label="newPassword" type="password" label-placement="floating"
             formControlName="newPassword" placeholder="Enter Password"></ion-input>
         </div>
         <ion-button class="primary-btn" type="submit">Update Password</ion-button>
       </form>
       <!-- FORGOT PASSWORD MODAL -->
-      <div *ngIf="showForgotModal" (click)="closeForgotModal()">
+      <div class="animated-box" *ngIf="showForgotModal" (click)="closeForgotModal()">
         <div (click)="$event.stopPropagation()">
 
           <form [formGroup]="forgotForm" (ngSubmit)="submitForgot()">
             <h3>Forgot Password</h3>
             <div class="modal-body">
-              <p>Enter the email associated with your account and we will email you a verification code to your account
+              <p class="mb-8">Enter the email associated with your account and we will email you a verification code to your account
               </p>
 
               <div class="input-group mt-8">
-                <ion-input label="Email" type="email" label-placement="floating" fill="outline"
-                  formControlName="forgotEmail" placeholder="Email address"></ion-input>
+                <ion-input label="Email" type="email" label-placement="floating" formControlName="forgotEmail" placeholder="Email address"></ion-input>
                 <!-- <input type="email" formControlName="forgotEmail" placeholder="Email address"> -->
                 <div class="field-error"
                   *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid">
