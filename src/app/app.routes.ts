@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { HomePage } from './home/home.page';
 import { MePage } from '../app/Attendance/me/me.page';
@@ -36,9 +37,11 @@ export const routes: Routes = [
   { path: 'Startonboardingitem', component: StartOnboardingComponent },
   { path: 'CreateOffer/:id/:FirstName', component: CreateOfferComponent },
   { path: 'leaves', component: LeavesComponent },
-
-
-
+ 
+  {
+    path: 'pre-onboarding-cards',
+    loadComponent: () => import('./onboarding/pre-onboarding-cards/pre-onboarding-cards.component').then(m => m.PreOnboardingCardsComponent),
+  },
   {
     path: 'pre_onboarding',
     loadComponent: () => import('./onboarding/pre.page').then(m => m.PostPage),

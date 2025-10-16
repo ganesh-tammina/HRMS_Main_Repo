@@ -230,3 +230,6 @@ ion-list-header, ion-item{
     --background: #E45353;
     @extend .custom-button ;
 }
+#main-content {
+    --background: var(--ion-bg-color); 
+}
