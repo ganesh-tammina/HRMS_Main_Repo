@@ -934,7 +934,6 @@ export default class Employeeservices implements EmployeesInterface {
     req: Request,
     res: Response
   ): Promise<promised> {
-    const { id } = req.body;
     const getAllQUery: string = `SELECT 
     e.employee_id,
     e.employee_number,
@@ -1125,7 +1124,9 @@ LEFT JOIN addresses pa
        ON e.employee_id = pa.employee_id 
       AND pa.address_type = 'Permanent' where e.employee_id = ?;
 `;
-    const [result]: any = await pool.query(getAllUsingID, id);
+    const [result]: any = req?.body?.id
+      ? await pool.query(getAllUsingID, [req.body.id])
+      : await pool.query(getAllQUery);
     return {
       success: true,
       statusCode: 200,

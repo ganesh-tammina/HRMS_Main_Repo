@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { LoginInterface } from "../interface/employee-interface";
-import { pool } from "../config/database";
-import Joi from "joi";
-import { sendMail } from "./mail-sender-service/mailer-service";
-import { PasswordUtil } from "../utils/Password-Encryption-Decryption";
+import { Request, Response } from 'express';
+import { LoginInterface } from '../interface/employee-interface';
+import { pool } from '../config/database';
+import Joi from 'joi';
+import { sendMail } from './mail-sender-service/mailer-service';
+import { PasswordUtil } from '../utils/Password-Encryption-Decryption';
 
 export default class LoginService {
   private static emailSchema = Joi.object({
@@ -17,10 +17,10 @@ export default class LoginService {
     newPassword: Joi.string()
       .min(8)
       .max(64)
-      .pattern(/[A-Z]/, "uppercase letter")
-      .pattern(/[a-z]/, "lowercase letter")
-      .pattern(/[0-9]/, "number")
-      .pattern(/[@$!%*?&#]/, "special character")
+      .pattern(/[A-Z]/, 'uppercase letter')
+      .pattern(/[a-z]/, 'lowercase letter')
+      .pattern(/[0-9]/, 'number')
+      .pattern(/[@$!%*?&#]/, 'special character')
       .required(),
   });
   static async emailCheck(req: Request, res: Response): Promise<any> {
@@ -43,11 +43,11 @@ export default class LoginService {
 
       // Case 1: Existing user (already has credentials)
       if (credentialRows.length > 0) {
-        res.cookie("employee_email", email, { httpOnly: true });
+        res.cookie('employee_email', email, { httpOnly: true });
         return res.status(200).json({
           success: true,
-          type: "existing_employee",
-          message: "Existing employee found.",
+          type: 'existing_employee',
+          message: 'Existing employee found.',
         });
       }
 
@@ -60,7 +60,7 @@ export default class LoginService {
       if (employeeRows.length === 0) {
         return res.status(400).json({
           success: false,
-          message: "Email not found.",
+          message: 'Email not found.',
         });
       }
 
@@ -76,23 +76,23 @@ export default class LoginService {
       const sendingOtp = await LoginService.otpUtil(email);
 
       if (sendingOtp.status === 200) {
-        res.cookie("employee_email", email, { httpOnly: true });
-        res.cookie("employee_id", employee_id, { httpOnly: true });
+        res.cookie('employee_email', email, { httpOnly: true });
+        res.cookie('employee_id', employee_id, { httpOnly: true });
         return res.status(200).json({
           success: true,
-          type: "new_employee",
+          type: 'new_employee',
           message:
-            "Password is not generated, please enter OTP and generate password",
+            'Password is not generated, please enter OTP and generate password',
           employee_id,
         });
       }
 
       return res.status(sendingOtp.status).json(sendingOtp);
     } catch (error) {
-      console.error("Email check error:", error);
+      console.error('Email check error:', error);
       return res.status(500).json({
         success: false,
-        message: "Internal server error.",
+        message: 'Internal server error.',
       });
     }
   }
@@ -128,7 +128,7 @@ export default class LoginService {
         conn.release();
         return res
           .status(400)
-          .json({ success: false, message: "Invalid or already used OTP" });
+          .json({ success: false, message: 'Invalid or already used OTP' });
       }
 
       const otpRecord = rows[0];
@@ -145,7 +145,7 @@ export default class LoginService {
         conn.release();
         return res.status(410).json({
           success: false,
-          message: "OTP expired. Please request a new one.",
+          message: 'OTP expired. Please request a new one.',
         });
       }
 
@@ -159,7 +159,7 @@ export default class LoginService {
         conn.release();
         return res.status(400).json({
           success: false,
-          message: "Employee not found.",
+          message: 'Employee not found.',
         });
       }
 
@@ -176,7 +176,7 @@ export default class LoginService {
         conn.release();
         return res.status(409).json({
           success: false,
-          message: "Password already set. Please login instead.",
+          message: 'Password already set. Please login instead.',
         });
       }
 
@@ -197,15 +197,15 @@ export default class LoginService {
 
       return res.json({
         success: true,
-        message: "Password updated successfully",
+        message: 'Password updated successfully',
       });
     } catch (err) {
-      console.error("Error in passwordGen:", err);
+      console.error('Error in passwordGen:', err);
       await conn.rollback();
       conn.release();
       return res
         .status(500)
-        .json({ success: false, message: "Internal server error" });
+        .json({ success: false, message: 'Internal server error' });
     }
   }
   static async login(req: Request, res: Response): Promise<any> {
@@ -215,7 +215,7 @@ export default class LoginService {
       if (!email || !password) {
         return res.status(400).json({
           success: false,
-          message: "Email and password are required",
+          message: 'Email and password are required',
         });
       }
 
@@ -227,7 +227,7 @@ export default class LoginService {
       if (rows.length === 0) {
         return res.status(404).json({
           success: false,
-          message: "User not found",
+          message: 'User not found',
         });
       }
 
@@ -240,20 +240,20 @@ export default class LoginService {
       if (!isMatch) {
         return res.status(401).json({
           success: false,
-          message: "Invalid password",
+          message: 'Invalid password',
         });
       }
-
+      res.cookie('employee_email', email, { httpOnly: true });
       return res.status(200).json({
         success: true,
-        message: "Login successful",
+        message: 'Login successful',
         employee_id: user.employee_id,
       });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
       return res.status(500).json({
         success: false,
-        message: "Internal server error",
+        message: 'Internal server error',
       });
     }
   }
@@ -274,17 +274,17 @@ export default class LoginService {
       );
       await sendMail(
         email,
-        "Password Reset OTP",
+        'Password Reset OTP',
         `Your OTP is ${otp}`,
         `<p>Your OTP for password reset is <b>${otp}</b>. It will expire in 5 minutes.</p>
          <a href="http://30.0.0.78:4200/login">Click here to reset your password</a>
         `
       );
 
-      return { status: 200, success: true, message: "OTP sent successfully" };
+      return { status: 200, success: true, message: 'OTP sent successfully' };
     } catch (err) {
-      console.error("Error in emailValidation:", err);
-      return { status: 500, success: false, message: "Internal server error" };
+      console.error('Error in emailValidation:', err);
+      return { status: 500, success: false, message: 'Internal server error' };
     }
   }
 }
