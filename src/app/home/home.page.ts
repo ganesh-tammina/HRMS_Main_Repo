@@ -32,6 +32,12 @@ export class HomePage implements OnInit {
     this.candidateService.currentCandidate$.subscribe(user => {
       this.currentCandidate = user;
       console.log('Current Candidate:', this.currentCandidate);
+
+      this.candidateService.getAllEmployees().subscribe((candidates: any) => {
+        console.log('All Candidates:', candidates.data);
+      });
+
+
     });
     const today = moment();
     for (let i = 0; i < 7; i++) {

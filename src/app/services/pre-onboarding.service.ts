@@ -46,6 +46,91 @@ export interface Candidate {
   isAvailable?: boolean;
 }
 
+
+export interface Employee {
+  employee_id: number;
+  employee_number: string;
+  first_name: string;
+  middle_name: string | null;
+  last_name: string;
+  full_name: string;
+  work_email: string;
+  gender: string;
+  marital_status: string | null;
+  blood_group: string | null;
+  physically_handicapped: string | null;
+  nationality: string | null;
+  created_at: string;
+  updated_at: string;
+  attendance_number: string | null;
+  location: string | null;
+  location_country: string | null;
+  legal_entity: string | null;
+  business_unit: string | null;
+  department: string | null;
+  sub_department: string | null;
+  job_title: string | null;
+  secondary_job_title: string | null;
+  reporting_to: string | null;
+  reporting_manager_employee_number: string | null;
+  dotted_line_manager: string | null;
+  date_joined: string | null;
+  leave_plan: string | null;
+  band: string | null;
+  pay_grade: string | null;
+  time_type: string | null;
+  worker_type: string | null;
+  shift_policy_name: string | null;
+  weekly_off_policy_name: string | null;
+  attendance_time_tracking_policy: string | null;
+  attendance_capture_scheme: string | null;
+  holiday_list_name: string | null;
+  expense_policy_name: string | null;
+  notice_period: string | null;
+  cost_center: string | null;
+
+  // Address fields
+  current_address_line1: string | null;
+  current_address_line2: string | null;
+  current_city: string | null;
+  current_state: string | null;
+  current_zip: string | null;
+  current_country: string | null;
+  permanent_address_line1: string | null;
+  permanent_address_line2: string | null;
+  permanent_city: string | null;
+  permanent_state: string | null;
+  permanent_zip: string | null;
+  permanent_country: string | null;
+
+  // Family details
+  father_name: string | null;
+  mother_name: string | null;
+  spouse_name: string | null;
+  children_names: string | null;
+
+  // IDs and employment info
+  pan_number: string | null;
+  aadhaar_number: string | null;
+  pf_number: string | null;
+  uan_number: string | null;
+  employment_status: string | null;
+  exit_date: string | null;
+  comments: string | null;
+  exit_status: string | null;
+  termination_type: string | null;
+  termination_reason: string | null;
+  resignation_note: string | null;
+}
+
+// Response structure
+export interface EmployeeResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: Employee[][];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -65,6 +150,7 @@ export class CandidateService {
   private offerStatusapi = "http://30.0.0.78:3562/offerstatus/status";
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
+  private empUrl = "http://localhost:3562/api/v1/employee";
 
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
@@ -73,10 +159,23 @@ export class CandidateService {
   private currentCandidateSubject = new BehaviorSubject<Candidate | null>(this.getStoredCandidate());
   currentCandidate$ = this.currentCandidateSubject.asObservable();
 
+
+  private EmployeeSubject = new BehaviorSubject<Employee[]>([]);
+  Employee$ = this.EmployeeSubject.asObservable();
+
+  private currentEmployeeSubject = new BehaviorSubject<Employee | null>(this.getStoredEmployee());
+  currentEmployee$ = this.currentEmployeeSubject.asObservable();
+
   constructor(private http: HttpClient, private attendanceService: AttendanceService) {
     this.loadCandidates();
   }
+  private getStoredEmployee(): Employee | null {
+    const activeId = localStorage.getItem('activeEmployeeId');
+    if (!activeId) return null;
 
+    const stored = localStorage.getItem(`loggedInEmployee_${activeId}`);
+    return stored ? JSON.parse(stored) : null;
+  }
   private getStoredCandidate(): Candidate | null {
     const activeId = localStorage.getItem('activeUserId');
     if (!activeId) return null;
@@ -121,6 +220,10 @@ export class CandidateService {
   }
   getImages(): Observable<any> {
     return this.http.get<any>(this.imagesUrl);
+  }
+  getAllEmployees(): Observable<EmployeeResponse> {
+    return this.http.get<EmployeeResponse>(this.empUrl).pipe(
+    );
   }
 
   private normalizeCandidates(data: any): Candidate[] {
@@ -284,6 +387,8 @@ export class CandidateService {
       })
     );
   }
+
+
 
   verifyAndResetPassword(email: string, otp: string, newPassword: string): Observable<any> {
     const body = { email, otp, newPassword };
