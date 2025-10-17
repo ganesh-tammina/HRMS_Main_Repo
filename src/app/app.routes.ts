@@ -26,7 +26,8 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full'
   },
-  { path: 'Home', component: HomePage, canActivate: [AuthGuard], data: { role: 'employee' } },
+  // canActivate: [AuthGuard], data: { role: 'employee' } 
+  { path: 'Home', component: HomePage, },
   // { path: 'Me', component: MePage },
   { path: 'MyTeam', component: MyTeamPage },
   { path: 'login', component: LoginPage },
