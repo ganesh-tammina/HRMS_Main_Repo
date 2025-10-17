@@ -7,8 +7,8 @@
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
             <ion-menu-toggle auto-hide="false">
-              <ion-item *ngIf="userType !== 'admin'" routerDirection="root" [routerLink]="['/Home']" lines="none"
-                detail="false" routerLinkActive="selected">
+              <ion-item routerDirection="root" [routerLink]="['/Home']" lines="none" detail="false"
+                routerLinkActive="selected">
                 <div class="text-center">
                   <img src="assets/Icons/home-05.svg" width="24" height="24">
                   <ion-label>Home</ion-label>
@@ -17,8 +17,8 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item *ngIf="userType !== 'admin'" routerDirection="root" [routerLink]="['/Me']" lines="none"
-                detail="false" routerLinkActive="selected">
+              <ion-item routerDirection="root" [routerLink]="['/Me']" lines="none" detail="false"
+                routerLinkActive="selected">
                 <div class="text-center">
                   <img src="assets/Icons/user-01.svg" width="24" height="24">
                   <ion-label>Me</ion-label>
@@ -29,7 +29,7 @@
             <!-- <div class="dropdown-wrapper"> -->
             <!-- Org Parent Item -->
             <ion-menu-toggle auto-hide="false" id="menu-button">
-              <ion-item *ngIf="userType !== 'admin'" lines="none" detail="false">
+              <ion-item lines="none" detail="false">
                 <div class="text-center">
                   <img src="assets/Icons/building-07.svg" width="24" height="24">
                   <ion-label>Org</ion-label>
@@ -78,8 +78,8 @@
 
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item *ngIf="userType !== 'admin'" routerDirection="root" [routerLink]="['/MyTeam']" lines="none"
-                detail="false" routerLinkActive="selected">
+              <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
+                routerLinkActive="selected">
                 <div class="text-center">
                   <img src="assets/Icons/Group 104.svg" width="24" height="24">
                   <ion-label>My Team</ion-label>
@@ -87,8 +87,8 @@
               </ion-item>
             </ion-menu-toggle>
             <ion-menu-toggle auto-hide="false">
-              <ion-item *ngIf="userType == 'admin'" routerDirection="root" [routerLink]="['/organisation_info']"
-                lines="none" detail="false" routerLinkActive="selected">
+              <ion-item routerDirection="root" [routerLink]="['/organisation_info']" lines="none" detail="false"
+                routerLinkActive="selected">
                 <div class="text-center">
                   <img src="assets/Icons/Group 104.svg" width="24" height="24">
                   <ion-label>Org Info</ion-label>

@@ -8,8 +8,8 @@ export const adminRoutes: Routes = [
             import('./admin/admin.component').then(
                 m => m.AdminComponent
             ),
-        canActivate: [AuthGuard],  // <-- corrected
-        data: { role: 'admin' }
+        // canActivate: [AuthGuard],  // <-- corrected
+        // data: { role: 'admin' }
     },
     {
         path: 'organisation_info',
