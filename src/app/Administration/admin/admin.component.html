@@ -9,10 +9,7 @@
 
           <ion-card>
             <ion-card-header class="row-space-between">
-              <ion-card-title>Total Employee</ion-card-title>
-              <div>
-                <button (click)="sendDataDB()">Send Data DB</button>
-              </div>
+              <ion-card-title>Total Employees</ion-card-title>
               <ion-card-subtitle>
                 <div class="tooltip-container">
                   <ion-button id='popover-editform' fill="clear"><ion-icon
@@ -22,11 +19,9 @@
                 <ion-popover trigger="popover-editform" class="upload-file" [dismissOnSelect]="false">
                   <ng-template>
                     <ion-content class="ion-padding">
-                      <div>
-                        <p (click)="EmployeeInput.click()">upload candidate file</p>
-                        <input type="file" #EmployeeInput (change)="EmployeeSelected($event)" accept=".xlsx,.xls"
-                          hidden />
-                      </div>
+
+                      <input type="file" #EmployeeInput (click)="EmployeeInput.click()"
+                        (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />
 
                       <div class="row-center">
                         <button (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">Upload</button>
@@ -41,34 +36,18 @@
 
             </ion-card-header>
             <ion-card-content>
-              <div *ngIf="isLoading" class="loader-overlay">
-                <ion-spinner name="crescent"></ion-spinner>
-                <p>Loading, please wait...</p>
-              </div>
-              <div *ngIf="pagedEmployees && pagedEmployees.length > 0; else noData">
-                <ion-list *ngFor="let employees of pagedEmployees; let i = index">
-                  <ion-item>
-                    <ion-thumbnail slot="start">
-                      <img alt="Silhouette of mountains"
-                        src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-                    </ion-thumbnail>
-                    {{employees.length}}
-                    <ion-label>{{employees.FirstName}}</ion-label>
-                    <!-- <ion-label>{{candidate.personalDetails.FirstName}}</ion-label> -->
-                    <ion-button fill="clear"><ion-icon name="create-outline"></ion-icon></ion-button>
-                  </ion-item>
-                </ion-list>
-              </div>
+              <ion-list *ngFor="let candidate of pagedCandidates">
+                <ion-item>
+                  <ion-thumbnail slot="start">
+                    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                  </ion-thumbnail>
+                  <ion-label>{{candidate.id}}</ion-label>
+                  <ion-label>{{candidate.personalDetails.FirstName}}</ion-label>
+                  <ion-button fill="clear"><ion-icon name="create-outline"></ion-icon></ion-button>
+                </ion-item>
+              </ion-list>
 
-              <div class=" row-center pagination-controls">
-                <ion-button (click)="prevPage()" [disabled]="currentPage === 1">Previous</ion-button>
-                <span>Page {{ currentPage }} of {{ totalPages }}</span>
-                <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</ion-button>
-              </div>
-              <ng-template #noData>
-                <p>No employees found.</p>
-              </ng-template>
-              <!-- <div class="row-center ion-padding">
+              <div class="row-center ion-padding">
                 <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
                   <ion-icon name="chevron-back-outline"></ion-icon>
                 </ion-button>
@@ -90,7 +69,7 @@
                     <ion-select-option [value]="20">20</ion-select-option>
                   </ion-select>
                 </ion-item>
-              </div> -->
+              </div>
 
             </ion-card-content>
           </ion-card>
@@ -111,10 +90,8 @@
                 <ion-popover trigger="holiday-popup" class="upload-file" [dismissOnSelect]="false">
                   <ng-template>
                     <ion-content class="ion-padding">
-                      <div>
-                        <p (click)="fileInput.click()">upload holidays file</p>
-                        <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx,.xls" hidden />
-                      </div>
+                      <input type="file" #fileInput (click)="fileInput.click()" (change)="onFileSelected($event)"
+                        accept=".xlsx,.xls" />
                       <div class="row-center">
                         <button (click)="Upload()" [disabled]="!selectedFile">Upload</button>
                       </div>
@@ -125,10 +102,6 @@
               </ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
-              <div *ngIf="isLoading" class="loader-overlay">
-                <ion-spinner name="crescent"></ion-spinner>
-                <p>Loading, please wait...</p>
-              </div>
               <ion-list *ngFor="let holiday of holidays">
                 <ion-item>
                   <ion-thumbnail slot="start">

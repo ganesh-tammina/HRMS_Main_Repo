@@ -1,17 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AlertController } from '@ionic/angular';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
-import { AuthService, LoggedUser } from '../Administration/services/auth-service.service';
+import {
+  AuthService,
+  LoggedUser,
+} from '../Administration/services/auth-service.service';
+import { _LoginService } from '../services/login-services.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
@@ -28,19 +38,62 @@ export class LoginPage implements OnInit {
   sending = false;
   adminData: any | null = null;
 
+  // changes done by bipul
+  empType: string = '';
+  new: boolean = false;
+  old: boolean = false;
+  er!: string;
+  newEmployees!: FormGroup;
+  existingEmpl!: FormGroup;
+  // changes done by bipul
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private candidateService: CandidateService,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+    private alertController: AlertController,
+    private _loginSer: _LoginService
+  ) {}
 
   ngOnInit() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
     });
+    this.newEmployees = this.fb.group(
+      {
+        otp: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
+        newPass: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(/^[A-Za-z0-9!@#$%^&*()_+]+$/),
+          ],
+        ],
+        confirmPass: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(/^[A-Za-z0-9!@#$%^&*()_+]+$/),
+          ],
+        ],
+      },
+      {
+        validators: this.passwordMatchValidator,
+      }
+    );
 
+    this.existingEmpl = this.fb.group({
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(/^[A-Za-z0-9!@#$%^&*()_+]+$/),
+        ],
+      ],
+    });
     this.passwordUpdateForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       otp: ['', [Validators.required, Validators.minLength(4)]],
@@ -51,43 +104,88 @@ export class LoginPage implements OnInit {
       forgotEmail: ['', [Validators.required, Validators.email]],
     });
 
-    this.candidateService.getAdminById('1').subscribe(data => {
+    this.candidateService.getAdminById('1').subscribe((data) => {
       this.adminData = data;
     });
   }
 
+  passwordMatchValidator(formGroup: FormGroup) {
+    const pass = formGroup.get('newPass')?.value;
+    const confirm = formGroup.get('confirmPass')?.value;
+    return pass === confirm ? null : { passwordMismatch: true };
+  }
   onLogin() {
-    const { email, password } = this.loginForm.value;
-
-    if (email === this.adminData?.username && password === this.adminData?.password) {
-      const user: LoggedUser = { type: 'admin', data: { UserName: 'admin' } };
-      this.authService.setUser(user);
-      this.router.navigate(['/admin']);
-      return;
-    }
-
-    this.candidateService.findEmployee(email, password).subscribe(
-      found => {
-        if (found) {
-          const user: LoggedUser = { type: 'employee', data: found };
-          this.authService.setUser(user);
-          this.router.navigate(['/Home']);
+    const body = {
+      password: this.existingEmpl.controls['password'].value,
+    };
+    this._loginSer.loginForAll(body).subscribe({
+      next: (val) => {
+        this.alertViewer('Information', val.message, 'OK');
+        this.router.navigate(['/Home']);
+      },
+      error: (err) => {
+        if (err.error.message) {
+          this.alertViewer('Error', err.error.message, 'Try Again');
         } else {
-          this.loginError = 'Invalid email or password';
+          console.log(err)
+          this.alertViewer('Error', err.error, 'Cancel');
         }
       },
-      err => {
-        console.error(err);
-        this.loginError = 'Login failed. Please try again later.';
-      }
-    );
+      complete: () => {
+        this.newEmployees.reset();
+      },
+    });
   }
-
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Open the forgot password modal and reset the form fields and error messages.
-   */
-  /*******  b8cacb47-3b03-4280-91f6-2088464364fc  *******/
+  async checkEmail() {
+    if (this.loginForm.valid) {
+      this._loginSer
+        .checkEmail({
+          email: this.loginForm.controls['email'].value,
+        })
+        .subscribe({
+          next: (val) => {
+            this.empType = val.type;
+            if (val.type === 'new_employee') {
+              this.new = true;
+              this.showLoginForm = false;
+              this.alertViewer('Information', val.message, 'OK');
+            } else {
+              this.old = true;
+              this.showLoginForm = false;
+            }
+          },
+          error: (err) => {
+            this.er = err.error.message;
+          },
+          complete: () => {
+            this.loginForm.reset();
+            console.log(this.empType);
+          },
+        });
+    } else {
+      this.er = 'Invalid Email';
+    }
+  }
+  async passwordGen() {
+    if (this.newEmployees.valid) {
+      const body = {
+        otp: this.newEmployees.controls['otp'].value,
+        newPassword: this.newEmployees.controls['confirmPass'].value,
+      };
+      this._loginSer.employeePasswordGeneration(body).subscribe({
+        next: (val) => {
+          this.alertViewer('Information', val.message, 'OK');
+          this.router.navigate(['/Home']);
+        },
+        error: (err) => {
+          this.alertViewer('Error', err.error.message, 'Try Again');
+        },
+        complete: () => {
+          this.newEmployees.reset();
+        },
+      });
+    }
+  }
   openForgotModal() {
     this.showForgotModal = true;
     this.forgotForm.reset();
@@ -131,9 +229,9 @@ export class LoginPage implements OnInit {
             console.error('❌ Both OTP methods failed:', err2);
             this.sending = false;
             this.forgotError = 'Failed to send OTP. Try again later.';
-          }
+          },
         });
-      }
+      },
     });
   }
 
@@ -148,8 +246,6 @@ export class LoginPage implements OnInit {
     }, 2000);
   }
 
-
-
   onPasswordUpdate() {
     if (this.passwordUpdateForm.invalid) {
       this.passwordUpdateForm.markAllAsTouched();
@@ -159,35 +255,47 @@ export class LoginPage implements OnInit {
     const { email, otp, newPassword } = this.passwordUpdateForm.value;
 
     // ✅ First try new-user flow
-    this.candidateService.verifyAndResetPassword(email, otp, newPassword).subscribe({
-      next: () => {
-        this.handlePasswordSuccess();
-      },
-      error: (err) => {
-        console.warn("⚠️ verifyAndResetPassword failed, trying changeoldEmpPassword...", err);
+    this.candidateService
+      .verifyAndResetPassword(email, otp, newPassword)
+      .subscribe({
+        next: () => {
+          this.handlePasswordSuccess();
+        },
+        error: (err) => {
+          console.warn(
+            '⚠️ verifyAndResetPassword failed, trying changeoldEmpPassword...',
+            err
+          );
 
-        // 🔄 fallback → old user flow
-        this.candidateService.changeoldEmpPassword(email, otp, newPassword).subscribe({
-          next: () => {
-            this.handlePasswordSuccess();
-          },
-          error: (err2) => {
-            console.error("❌ Both password update methods failed:", err2);
-            alert("Failed to update password. Check OTP and try again.");
-          }
-        });
-      }
-    });
+          // 🔄 fallback → old user flow
+          this.candidateService
+            .changeoldEmpPassword(email, otp, newPassword)
+            .subscribe({
+              next: () => {
+                this.handlePasswordSuccess();
+              },
+              error: (err2) => {
+                console.error('❌ Both password update methods failed:', err2);
+                alert('Failed to update password. Check OTP and try again.');
+              },
+            });
+        },
+      });
   }
 
   private handlePasswordSuccess() {
-    alert("Password updated successfully!");
+    alert('Password updated successfully!');
     this.showPasswordUpdateForm = false;
     this.showLoginForm = true;
     this.passwordUpdateForm.reset();
   }
 
-
-
-
+  async alertViewer(header: string, message: string, buttons: string) {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: [buttons],
+    });
+    alert.present();
+  }
 }

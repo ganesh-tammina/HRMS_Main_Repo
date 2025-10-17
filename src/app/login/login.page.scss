@@ -98,30 +98,30 @@ body {
 
 /* forgot link */
 // .forgot-link { cursor: pointer; color: #0077d6; text-decoration: underline; }
-// [autocomplete="one-time-code"] {
-//   --magic-number: 100px;
+[autocomplete="one-time-code"] {
+  --magic-number: 100px;
 
-//   background-image: linear-gradient(#fff, #fff),
-//     url("https://assets.codepen.io/3/rounded-rectangle.svg");
-//   background-size: var(--magic-number);
-//   background-position-x: right, left;
-//   background-repeat: no-repeat, repeat-x;
-//   border: 0;
-//   height: var(--magic-number);
-//   width: calc(5 * var(--magic-number));
-//   font-size: calc(0.6 * var(--magic-number));
-//   font-family: monospace;
-//   letter-spacing: calc(0.64 * var(--magic-number));
-//   padding-inline-start: calc(0.3 * var(--magic-number));
-//   box-sizing: border-box;
-//   overflow: hidden;
-//   transform: translatex(calc(0.5 * var(--magic-number)));
-// }
-// [autocomplete="one-time-code"]:focus {
-//   outline: none;
-//   background-image: linear-gradient(#fff, #fff),
-//     url("https://assets.codepen.io/729148/blue-rounded-rectangle.svg");
-//   background-size: var(--magic-number);
-//   background-position-x: right, left;
-//   background-repeat: no-repeat, repeat-x;
-// }
+  background-image: linear-gradient(#fff, #fff),
+    url("https://assets.codepen.io/3/rounded-rectangle.svg");
+  background-size: var(--magic-number);
+  background-position-x: right, left;
+  background-repeat: no-repeat, repeat-x;
+  border: 0;
+  height: var(--magic-number);
+  width: calc(5 * var(--magic-number));
+  font-size: calc(0.6 * var(--magic-number));
+  font-family: monospace;
+  letter-spacing: calc(0.64 * var(--magic-number));
+  padding-inline-start: calc(0.3 * var(--magic-number));
+  box-sizing: border-box;
+  overflow: hidden;
+  transform: translatex(calc(0.5 * var(--magic-number)));
+}
+[autocomplete="one-time-code"]:focus {
+  outline: none;
+  background-image: linear-gradient(#fff, #fff),
+    url("https://assets.codepen.io/729148/blue-rounded-rectangle.svg");
+  background-size: var(--magic-number);
+  background-position-x: right, left;
+  background-repeat: no-repeat, repeat-x;
+}

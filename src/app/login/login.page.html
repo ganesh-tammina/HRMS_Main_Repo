@@ -1,93 +1,240 @@
 <div class="login-page">
   <div class="left">
-    <img src="../../assets/login-image-background.svg" alt="HRMS Illustration">
+    <img
+      src="../../assets/login-image-background.svg"
+      alt="HRMS Illustration"
+    />
   </div>
 
   <div class="right">
     <div class="form-block">
       <div class="logo">
-        <img src="../../assets/techtammina.webp" alt="Logo">
+        <img src="../../assets/techtammina.webp" alt="Logo" />
       </div>
       <div class="existing-form" *ngIf="!showForgotModal">
         <h3>Log into your account</h3>
 
         <!-- LOGIN FORM -->
-        <form *ngIf="showLoginForm" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        @if(er){
+        <div class="error">{{ er }}</div>
+        } @if(showLoginForm){
+        <form [formGroup]="loginForm" (ngSubmit)="checkEmail()">
           <div class="input-group">
-            <ion-input label="Email" type="email" label-placement="floating" fill="outline" formControlName="email"
-              placeholder="Email address"></ion-input>
+            <label>Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="Email address"
+            />
           </div>
-
-          <div class="input-group">
-            <ion-input label="Password" type="password" label-placement="floating" fill="outline"
-              formControlName="password" placeholder="Enter Password"></ion-input>
-          </div>
-
-          <p class="forgot-link"><a (click)="openForgotModal()">Forgot Password?</a></p>
-
-
-          <div *ngIf="loginError" class="error">{{ loginError }}</div>
-          <ion-button class="primary-btn" type="submit">Sign in</ion-button>
+          <button
+            class="primary-btn"
+            type="submit"
+            [disabled]="loginForm.invalid"
+          >
+            Next
+          </button>
         </form>
+        }
+        <!-- new emp -->
+        @if (new) {
+        <form [formGroup]="newEmployees" (ngSubmit)="passwordGen()">
+          <!-- OTP -->
+          <div class="input-group">
+            <label>OTP</label>
+            <input type="text" formControlName="otp" placeholder="Enter OTP" />
+
+            @if (newEmployees.get('otp')?.touched &&
+            newEmployees.get('otp')?.invalid) { @if
+            (newEmployees.get('otp')?.hasError('required')) {
+            <div class="error">OTP is required.</div>
+            } @if (newEmployees.get('otp')?.hasError('pattern')) {
+            <div class="error">OTP must be a 6-digit number.</div>
+            } }
+          </div>
+
+          <!-- New Password -->
+          <div class="input-group">
+            <label>New Password</label>
+            <input
+              type="password"
+              formControlName="newPass"
+              placeholder="New Password"
+            />
+
+            @if (newEmployees.get('newPass')?.touched &&
+            newEmployees.get('newPass')?.invalid) { @if
+            (newEmployees.get('newPass')?.hasError('required')) {
+            <div class="error">Password is required.</div>
+            } @if (newEmployees.get('newPass')?.hasError('minlength')) {
+            <div class="error">Password must be at least 8 characters.</div>
+            } @if (newEmployees.get('newPass')?.hasError('pattern')) {
+            <div class="error">
+              Only letters, numbers, and !@#$%^&*()_+ are allowed.
+            </div>
+            } }
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="input-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              formControlName="confirmPass"
+              placeholder="Confirm Password"
+            />
+
+            @if (newEmployees.get('confirmPass')?.touched &&
+            newEmployees.get('confirmPass')?.invalid) { @if
+            (newEmployees.get('confirmPass')?.hasError('required')) {
+            <div class="error">Confirm Password is required.</div>
+            } @if (newEmployees.get('confirmPass')?.hasError('minlength')) {
+            <div class="error">Must be at least 8 characters.</div>
+            } @if (newEmployees.get('confirmPass')?.hasError('pattern')) {
+            <div class="error">
+              Only letters, numbers, and !@#$%^&*()_+ are allowed.
+            </div>
+            } } @if (newEmployees.errors?.['passwordMismatch'] &&
+            newEmployees.get('confirmPass')?.touched) {
+            <div class="error">Passwords do not match.</div>
+            }
+          </div>
+
+          <button
+            class="primary-btn"
+            type="submit"
+            [disabled]="newEmployees.invalid"
+          >
+            Submit
+          </button>
+        </form>
+        }
+
+        <!-- new emplu -->
+        <!--  -->
+        <!--  -->
+        <!--  -->
+        <!-- Exising EMp -->
+        @if(old){
+        <form [formGroup]="existingEmpl" (ngSubmit)="onLogin()">
+          <div class="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="Password"
+            />
+          </div>
+
+          <button
+            class="primary-btn"
+            type="submit"
+          >
+            Sign in
+          </button>
+        </form>
+        }
+        <!-- existing emp -->
+        <p class="forgot-link">
+          <a (click)="openForgotModal()">Forgot Password?</a>
+        </p>
       </div>
 
-
-
-
       <!-- PASSWORD UPDATE FORM -->
-      <form *ngIf="showPasswordUpdateForm" [formGroup]="passwordUpdateForm" (ngSubmit)="onPasswordUpdate()">
+      <form
+        *ngIf="showPasswordUpdateForm"
+        [formGroup]="passwordUpdateForm"
+        (ngSubmit)="onPasswordUpdate()"
+      >
         <div class="input-group">
-          <ion-input label="Email" type="email" label-placement="floating" fill="outline" formControlName="email"
-            placeholder="Email address"></ion-input>
+          <label>Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Email address"
+          />
         </div>
         <div class="input-group">
-          <ion-input label="OTP" type="text" label-placement="floating" fill="outline" formControlName="otp"
-            placeholder="Enter valid OTP"></ion-input>
-          <!-- <input type="text" formControlName="otp" placeholder="OTP"> -->
+          <label>Enter valid OTP</label>
+          <!-- <ion-input-otp formControlName="otp"></ion-input-otp> -->
+          <input type="text" formControlName="otp" placeholder="OTP" />
         </div>
         <div class="input-group">
-          <ion-input label="newPassword" type="password" label-placement="floating" fill="outline"
-            formControlName="newPassword" placeholder="Enter Password"></ion-input>
+          <label>New Password</label>
+          <input
+            type="password"
+            formControlName="newPassword"
+            placeholder="New Password"
+          />
         </div>
-        <ion-button class="primary-btn" type="submit">Update Password</ion-button>
+        <button
+          class="primary-btn"
+          type="submit"
+          [disabled]="passwordUpdateForm.invalid"
+        >
+          Update Password
+        </button>
       </form>
       <!-- FORGOT PASSWORD MODAL -->
       <div *ngIf="showForgotModal" (click)="closeForgotModal()">
         <div (click)="$event.stopPropagation()">
+          <!-- <div class="modal-header"> -->
+          <h3>Forgot Password</h3>
+
+          <!-- </div> -->
 
           <form [formGroup]="forgotForm" (ngSubmit)="submitForgot()">
-            <h3>Forgot Password</h3>
             <div class="modal-body">
-              <p>Enter the email associated with your account and we will email you a verification code to your account
+              <p>
+                Enter the email associated with your account and we will email
+                you a verification code to your account
               </p>
 
-              <div class="input-group mt-8">
-                <ion-input label="Email" type="email" label-placement="floating" fill="outline"
-                  formControlName="forgotEmail" placeholder="Email address"></ion-input>
-                <!-- <input type="email" formControlName="forgotEmail" placeholder="Email address"> -->
-                <div class="field-error"
-                  *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid">
-                  <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['required']">Email is required.</small>
-                  <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['email']">Please enter a valid
-                    email.</small>
+              <div class="input-group">
+                <input
+                  type="email"
+                  formControlName="forgotEmail"
+                  placeholder="Email address"
+                />
+                <div
+                  class="field-error"
+                  *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid"
+                >
+                  <small
+                    *ngIf="forgotForm.controls['forgotEmail'].errors?.['required']"
+                    >Email is required.</small
+                  >
+                  <small
+                    *ngIf="forgotForm.controls['forgotEmail'].errors?.['email']"
+                    >Please enter a valid email.</small
+                  >
                 </div>
               </div>
 
-              <div *ngIf="forgotSuccess" class="success">{{ forgotSuccess }}</div>
+              <div *ngIf="forgotSuccess" class="success">
+                {{ forgotSuccess }}
+              </div>
               <div *ngIf="forgotError" class="error">{{ forgotError }}</div>
             </div>
 
             <div class="row-center">
-              <ion-button type="button" class="danger-btn" (click)="closeForgotModal()">Cancel</ion-button>
-              <ion-button type="submit" class="primary-btn" [disabled]="forgotForm.invalid || sending">
+              <ion-button
+                type="button"
+                class="danger-btn"
+                (click)="closeForgotModal()"
+                >Cancel</ion-button
+              >
+              <ion-button
+                type="submit"
+                class="primary-btn"
+                [disabled]="forgotForm.invalid || sending"
+              >
                 {{ sending ? 'Sending...' : 'Send OTP' }}
               </ion-button>
             </div>
           </form>
         </div>
-
       </div>
     </div>
   </div>
-
 </div>

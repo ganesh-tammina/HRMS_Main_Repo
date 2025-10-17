@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
-import { tap, map, switchMap, concatMap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { tap, map, switchMap } from 'rxjs/operators';
 import { AttendanceService } from './attendance.service';
 
 export interface Candidate {
@@ -64,8 +64,7 @@ export class CandidateService {
   private changeoldEmpwd = `${this.api}change-pwd`;
   private offerStatusapi = "http://30.0.0.78:3562/offerstatus/status";
   private holidaysUrl = `${this.api}holidays/public_holidays`;
-  private excelallemployees = "http://localhost:3562/api/v1/parse-excel"
-  private bulkEmployees = "http://localhost:3562/api/v1/bulk-data-entry";
+  private imagesUrl = `${this.api}uploads`;
 
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
@@ -95,7 +94,13 @@ export class CandidateService {
       error: (err: any) => console.error('Error loading candidates:', err)
     });
   }
+  uploadImage(file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
 
+    // POST to /upload route
+    return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, formData);
+  }
   getCandidateById(id: string): Observable<any> {
     return this.http.get<any>(`${this.getapiUrl}/${id}`);
   }
@@ -114,32 +119,9 @@ export class CandidateService {
   getofferStatus(): Observable<any> {
     return this.http.get<any>(this.offerStatusapi);
   }
-
-  postcurrentEmployees(currentEmployees: any): Observable<any> {
-    console.log(currentEmployees);
-    return this.http.post<any>(this.excelallemployees, currentEmployees);
+  getImages(): Observable<any> {
+    return this.http.get<any>(this.imagesUrl);
   }
-
-  postEmployeesInBatches(allEmployees: any[]): Observable<any[]> {
-    const batchSize = 20; // smaller batch to avoid payload issues
-    const batches = [];
-
-    for (let i = 0; i < allEmployees.length; i += batchSize) {
-      batches.push(allEmployees.slice(i, i + batchSize));
-    }
-
-    console.log(`Uploading ${batches.length} batches of ${batchSize} employees each...`);
-
-    return from(batches).pipe(
-      concatMap((batch, index) => {
-        console.log(batch)
-        console.log(`🚀 Sending batch ${index + 1}/${batches.length}`);
-        return this.http.post<any>(this.bulkEmployees, batch);
-      }),
-      toArray() // collect all responses when done
-    );
-  }
-
 
   private normalizeCandidates(data: any): Candidate[] {
     if (Array.isArray(data)) return data;

@@ -1,400 +1,401 @@
- {
-  "employees": [
-    {
-      "attribute": "employee_id",
-      "type": "INT",
-      "constraints": "AUTO_INCREMENT PRIMARY KEY"
-    },
-    {
-      "attribute": "employee_number",
-      "type": "VARCHAR(50)",
-      "constraints": "UNIQUE NOT NULL"
-    },
-    {
-      "attribute": "first_name",
-      "type": "VARCHAR(100)",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "middle_name",
-      "type": "VARCHAR(100)",
-      "constraints": ""
-    },
-    {
-      "attribute": "last_name",
-      "type": "VARCHAR(100)",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "full_name",
-      "type": "VARCHAR(200)",
-      "constraints": "GENERATED ALWAYS AS (CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name)) STORED"
-    },
-    {
-      "attribute": "work_email",
-      "type": "VARCHAR(150)",
-      "constraints": "UNIQUE NOT NULL"
-    },
-    {
-      "attribute": "gender",
-      "type": "ENUM('Male', 'Female', 'Other')",
-      "constraints": "DEFAULT 'Other'"
-    },
-    {
-      "attribute": "marital_status",
-      "type": "ENUM('Single', 'Married', 'Divorced', 'Widowed', 'Other')",
-      "constraints": "DEFAULT 'Single'"
-    },
-    {
-      "attribute": "blood_group",
-      "type": "VARCHAR(10)",
-      "constraints": ""
-    },
-    {
-      "attribute": "physically_handicapped",
-      "type": "BOOLEAN",
-      "constraints": "DEFAULT FALSE"
-    },
-    {
-      "attribute": "nationality",
-      "type": "VARCHAR(100)",
-      "constraints": ""
-    },
-    {
-      "attribute": "created_at",
-      "type": "TIMESTAMP",
-      "constraints": "DEFAULT CURRENT_TIMESTAMP"
-    },
-    {
-      "attribute": "updated_at",
-      "type": "TIMESTAMP",
-      "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-    }
-  ],
-  "addresses": [
-    {
-      "attribute": "address_id",
-      "type": "INT",
-      "constraints": "AUTO_INCREMENT PRIMARY KEY"
-    },
-    {
-      "attribute": "employee_id",
-      "type": "INT",
-      "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
-    },
-    {
-      "attribute": "address_type",
-      "type": "ENUM('Current', 'Permanent')",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "address_line1",
-      "type": "VARCHAR(255)",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "address_line2",
-      "type": "VARCHAR(255)",
-      "constraints": ""
-    },
-    {
-      "attribute": "city",
-      "type": "VARCHAR(100)",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "state",
-      "type": "VARCHAR(100)",
-      "constraints": ""
-    },
-    {
-      "attribute": "zip",
-      "type": "VARCHAR(20)",
-      "constraints": ""
-    },
-    {
-      "attribute": "country",
-      "type": "VARCHAR(100)",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "INDEX idx_employee_address",
-      "type": "",
-      "constraints": "(employee_id, address_type)"
-    }
-  ],
-  "family_info": [
-    {
-      "attribute": "family_info_id",
-      "type": "INT",
-      "constraints": "AUTO_INCREMENT PRIMARY KEY"
-    },
-    {
-      "attribute": "employee_id",
-      "type": "INT",
-      "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
-    },
-    {
-      "attribute": "father_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "mother_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "spouse_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "children_names",
-      "type": "TEXT",
-      "constraints": ""
-    },
-    {
-      "attribute": "INDEX idx_employee_family",
-      "type": "",
-      "constraints": "(employee_id)"
-    }
-  ],
-  "employment_details": [
-    {
-      "attribute": "employment_id",
-      "type": "INT",
-      "constraints": "AUTO_INCREMENT PRIMARY KEY"
-    },
-    {
-      "attribute": "employee_id",
-      "type": "INT",
-      "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
-    },
-    {
-      "attribute": "attendance_number",
-      "type": "VARCHAR(50)",
-      "constraints": ""
-    },
-    {
-      "attribute": "location",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "location_country",
-      "type": "VARCHAR(100)",
-      "constraints": ""
-    },
-    {
-      "attribute": "legal_entity",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "business_unit",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "department",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "sub_department",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "job_title",
-      "type": "VARCHAR(150)",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "secondary_job_title",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "reporting_to",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "reporting_manager_employee_number",
-      "type": "VARCHAR(50)",
-      "constraints": "FOREIGN KEY REFERENCES employees(employee_number) ON DELETE SET NULL"
-    },
-    {
-      "attribute": "dotted_line_manager",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "date_joined",
-      "type": "DATE",
-      "constraints": "NOT NULL"
-    },
-    {
-      "attribute": "leave_plan",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "band",
-      "type": "VARCHAR(50)",
-      "constraints": ""
-    },
-    {
-      "attribute": "pay_grade",
-      "type": "VARCHAR(50)",
-      "constraints": ""
-    },
-    {
-      "attribute": "time_type",
-      "type": "ENUM('Full-Time', 'Part-Time', 'Contract', 'Intern', 'Other')",
-      "constraints": "DEFAULT 'Full-Time'"
-    },
-    {
-      "attribute": "worker_type",
-      "type": "ENUM('Employee', 'Contractor', 'Intern', 'Consultant', 'Other')",
-      "constraints": "DEFAULT 'Employee'"
-    },
-    {
-      "attribute": "shift_policy_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "weekly_off_policy_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "attendance_time_tracking_policy",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "attendance_capture_scheme",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "holiday_list_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "expense_policy_name",
-      "type": "VARCHAR(150)",
-      "constraints": ""
-    },
-    {
-      "attribute": "notice_period",
-      "type": "INT",
-      "constraints": "DEFAULT 30"
-    },
-    {
-      "attribute": "cost_center",
-      "type": "VARCHAR(100)",
-      "constraints": ""
-    },
-    {
-      "attribute": "INDEX idx_employee_employment",
-      "type": "",
-      "constraints": "(employee_id)"
-    }
-  ],
-  "statutory_info": [
-    {
-      "attribute": "statutory_info_id",
-      "type": "INT",
-      "constraints": "AUTO_INCREMENT PRIMARY KEY"
-    },
-    {
-      "attribute": "employee_id",
-      "type": "INT",
-      "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
-    },
-    {
-      "attribute": "pan_number",
-      "type": "VARCHAR(20)",
-      "constraints": ""
-    },
-    {
-      "attribute": "aadhaar_number",
-      "type": "VARCHAR(20)",
-      "constraints": ""
-    },
-    {
-      "attribute": "pf_number",
-      "type": "VARCHAR(30)",
-      "constraints": ""
-    },
-    {
-      "attribute": "uan_number",
-      "type": "VARCHAR(30)",
-      "constraints": ""
-    },
-    {
-      "attribute": "INDEX idx_employee_statutory",
-      "type": "",
-      "constraints": "(employee_id)"
-    }
-  ],
-  "exit_details": [
-    {
-      "attribute": "exit_id",
-      "type": "INT",
-      "constraints": "AUTO_INCREMENT PRIMARY KEY"
-    },
-    {
-      "attribute": "employee_id",
-      "type": "INT",
-      "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
-    },
-    {
-      "attribute": "employment_status",
-      "type": "ENUM('Active', 'Inactive', 'Resigned', 'Terminated', 'On Leave')",
-      "constraints": "DEFAULT 'Active'"
-    },
-    {
-      "attribute": "exit_date",
-      "type": "DATE",
-      "constraints": ""
-    },
-    {
-      "attribute": "comments",
-      "type": "TEXT",
-      "constraints": ""
-    },
-    {
-      "attribute": "exit_status",
-      "type": "ENUM('Completed', 'Pending', 'In Progress', 'N/A')",
-      "constraints": "DEFAULT 'N/A'"
-    },
-    {
-      "attribute": "termination_type",
-      "type": "VARCHAR(100)",
-      "constraints": ""
-    },
-    {
-      "attribute": "termination_reason",
-      "type": "TEXT",
-      "constraints": ""
-    },
-    {
-      "attribute": "resignation_note",
-      "type": "TEXT",
-      "constraints": ""
-    },
-    {
-      "attribute": "INDEX idx_employee_exit",
-      "type": "",
-      "constraints": "(employee_id)"
-    }
-  ]
-}
+// {
+//   "employees": [
+//     {
+//       "attribute": "employee_id",
+//       "type": "INT",
+//       "constraints": "AUTO_INCREMENT PRIMARY KEY"
+//     },
+//     {
+//       "attribute": "employee_number",
+//       "type": "VARCHAR(50)",
+//       "constraints": "UNIQUE NOT NULL"
+//     },
+//     {
+//       "attribute": "first_name",
+//       "type": "VARCHAR(100)",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "middle_name",
+//       "type": "VARCHAR(100)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "last_name",
+//       "type": "VARCHAR(100)",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "full_name",
+//       "type": "VARCHAR(200)",
+//       "constraints": "GENERATED ALWAYS AS (CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name)) STORED"
+//     },
+//     {
+//       "attribute": "work_email",
+//       "type": "VARCHAR(150)",
+//       "constraints": "UNIQUE NOT NULL"
+//     },
+//     {
+//       "attribute": "gender",
+//       "type": "ENUM('Male', 'Female', 'Other')",
+//       "constraints": "DEFAULT 'Other'"
+//     },
+//     {
+//       "attribute": "marital_status",
+//       "type": "ENUM('Single', 'Married', 'Divorced', 'Widowed', 'Other')",
+//       "constraints": "DEFAULT 'Single'"
+//     },
+//     {
+//       "attribute": "blood_group",
+//       "type": "VARCHAR(10)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "physically_handicapped",
+//       "type": "BOOLEAN",
+//       "constraints": "DEFAULT FALSE"
+//     },
+//     {
+//       "attribute": "nationality",
+//       "type": "VARCHAR(100)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "created_at",
+//       "type": "TIMESTAMP",
+//       "constraints": "DEFAULT CURRENT_TIMESTAMP"
+//     },
+//     {
+//       "attribute": "updated_at",
+//       "type": "TIMESTAMP",
+//       "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+//     }
+//   ],
+//   "addresses": [
+//     {
+//       "attribute": "address_id",
+//       "type": "INT",
+//       "constraints": "AUTO_INCREMENT PRIMARY KEY"
+//     },
+//     {
+//       "attribute": "employee_id",
+//       "type": "INT",
+//       "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
+//     },
+//     {
+//       "attribute": "address_type",
+//       "type": "ENUM('Current', 'Permanent')",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "address_line1",
+//       "type": "VARCHAR(255)",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "address_line2",
+//       "type": "VARCHAR(255)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "city",
+//       "type": "VARCHAR(100)",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "state",
+//       "type": "VARCHAR(100)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "zip",
+//       "type": "VARCHAR(20)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "country",
+//       "type": "VARCHAR(100)",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "INDEX idx_employee_address",
+//       "type": "",
+//       "constraints": "(employee_id, address_type)"
+//     }
+//   ],
+//   "family_info": [
+//     {
+//       "attribute": "family_info_id",
+//       "type": "INT",
+//       "constraints": "AUTO_INCREMENT PRIMARY KEY"
+//     },
+//     {
+//       "attribute": "employee_id",
+//       "type": "INT",
+//       "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
+//     },
+//     {
+//       "attribute": "father_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "mother_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "spouse_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "children_names",
+//       "type": "TEXT",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "INDEX idx_employee_family",
+//       "type": "",
+//       "constraints": "(employee_id)"
+//     }
+//   ],
+//   "employment_details": [
+//     {
+//       "attribute": "employment_id",
+//       "type": "INT",
+//       "constraints": "AUTO_INCREMENT PRIMARY KEY"
+//     },
+//     {
+//       "attribute": "employee_id",
+//       "type": "INT",
+//       "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
+//     },
+//     {
+//       "attribute": "attendance_number",
+//       "type": "VARCHAR(50)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "location",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "location_country",
+//       "type": "VARCHAR(100)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "legal_entity",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "business_unit",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "department",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "sub_department",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "job_title",
+//       "type": "VARCHAR(150)",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "secondary_job_title",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "reporting_to",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "reporting_manager_employee_number",
+//       "type": "VARCHAR(50)",
+//       "constraints": "FOREIGN KEY REFERENCES employees(employee_number) ON DELETE SET NULL"
+//     },
+//     {
+//       "attribute": "dotted_line_manager",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "date_joined",
+//       "type": "DATE",
+//       "constraints": "NOT NULL"
+//     },
+//     {
+//       "attribute": "leave_plan",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "band",
+//       "type": "VARCHAR(50)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "pay_grade",
+//       "type": "VARCHAR(50)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "time_type",
+//       "type": "ENUM('Full-Time', 'Part-Time', 'Contract', 'Intern', 'Other')",
+//       "constraints": "DEFAULT 'Full-Time'"
+//     },
+//     {
+//       "attribute": "worker_type",
+//       "type": "ENUM('Employee', 'Contractor', 'Intern', 'Consultant', 'Other')",
+//       "constraints": "DEFAULT 'Employee'"
+//     },
+//     {
+//       "attribute": "shift_policy_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "weekly_off_policy_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "attendance_time_tracking_policy",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "attendance_capture_scheme",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "holiday_list_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "expense_policy_name",
+//       "type": "VARCHAR(150)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "notice_period",
+//       "type": "INT",
+//       "constraints": "DEFAULT 30"
+//     },
+//     {
+//       "attribute": "cost_center",
+//       "type": "VARCHAR(100)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "INDEX idx_employee_employment",
+//       "type": "",
+//       "constraints": "(employee_id)"
+//     }
+//   ],
+//   "statutory_info": [
+//     {
+//       "attribute": "statutory_info_id",
+//       "type": "INT",
+//       "constraints": "AUTO_INCREMENT PRIMARY KEY"
+//     },
+//     {
+//       "attribute": "employee_id",
+//       "type": "INT",
+//       "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
+//     },
+//     {
+//       "attribute": "pan_number",
+//       "type": "VARCHAR(20)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "aadhaar_number",
+//       "type": "VARCHAR(20)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "pf_number",
+//       "type": "VARCHAR(30)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "uan_number",
+//       "type": "VARCHAR(30)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "INDEX idx_employee_statutory",
+//       "type": "",
+//       "constraints": "(employee_id)"
+//     }
+//   ],
+//   "exit_details": [
+//     {
+//       "attribute": "exit_id",
+//       "type": "INT",
+//       "constraints": "AUTO_INCREMENT PRIMARY KEY"
+//     },
+//     {
+//       "attribute": "employee_id",
+//       "type": "INT",
+//       "constraints": "NOT NULL, FOREIGN KEY REFERENCES employees(employee_id) ON DELETE CASCADE"
+//     },
+//     {
+//       "attribute": "employment_status",
+//       "type": "ENUM('Active', 'Inactive', 'Resigned', 'Terminated', 'On Leave')",
+//       "constraints": "DEFAULT 'Active'"
+//     },
+//     {
+//       "attribute": "exit_date",
+//       "type": "DATE",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "comments",
+//       "type": "TEXT",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "exit_status",
+//       "type": "ENUM('Completed', 'Pending', 'In Progress', 'N/A')",
+//       "constraints": "DEFAULT 'N/A'"
+//     },
+//     {
+//       "attribute": "termination_type",
+//       "type": "VARCHAR(100)",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "termination_reason",
+//       "type": "TEXT",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "resignation_note",
+//       "type": "TEXT",
+//       "constraints": ""
+//     },
+//     {
+//       "attribute": "INDEX idx_employee_exit",
+//       "type": "",
+//       "constraints": "(employee_id)"
+//     }
+//   ]
+// }
+
 
