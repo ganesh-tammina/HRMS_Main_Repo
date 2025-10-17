@@ -1,9 +1,6 @@
 <div class="login-page">
   <div class="left">
-    <img
-      src="../../assets/login-image-background.svg"
-      alt="HRMS Illustration"
-    />
+    <img src="../../assets/login-image-background.svg" alt="HRMS Illustration" />
   </div>
 
   <div class="right">
@@ -21,17 +18,9 @@
         <form [formGroup]="loginForm" (ngSubmit)="checkEmail()">
           <div class="input-group">
             <label>Email</label>
-            <input
-              type="email"
-              formControlName="email"
-              placeholder="Email address"
-            />
+            <input type="email" formControlName="email" placeholder="Email address" />
           </div>
-          <button
-            class="primary-btn"
-            type="submit"
-            [disabled]="loginForm.invalid"
-          >
+          <button class="primary-btn" type="submit" [disabled]="loginForm.invalid">
             Next
           </button>
         </form>
@@ -56,11 +45,7 @@
           <!-- New Password -->
           <div class="input-group">
             <label>New Password</label>
-            <input
-              type="password"
-              formControlName="newPass"
-              placeholder="New Password"
-            />
+            <input type="password" formControlName="newPass" placeholder="New Password" />
 
             @if (newEmployees.get('newPass')?.touched &&
             newEmployees.get('newPass')?.invalid) { @if
@@ -78,11 +63,7 @@
           <!-- Confirm Password -->
           <div class="input-group">
             <label>Confirm Password</label>
-            <input
-              type="password"
-              formControlName="confirmPass"
-              placeholder="Confirm Password"
-            />
+            <input type="password" formControlName="confirmPass" placeholder="Confirm Password" />
 
             @if (newEmployees.get('confirmPass')?.touched &&
             newEmployees.get('confirmPass')?.invalid) { @if
@@ -100,11 +81,7 @@
             }
           </div>
 
-          <button
-            class="primary-btn"
-            type="submit"
-            [disabled]="newEmployees.invalid"
-          >
+          <button class="primary-btn" type="submit" [disabled]="newEmployees.invalid">
             Submit
           </button>
         </form>
@@ -119,17 +96,10 @@
         <form [formGroup]="existingEmpl" (ngSubmit)="onLogin()">
           <div class="input-group">
             <label>Password</label>
-            <input
-              type="password"
-              formControlName="password"
-              placeholder="Password"
-            />
+            <input type="password" formControlName="password" placeholder="Password" />
           </div>
 
-          <button
-            class="primary-btn"
-            type="submit"
-          >
+          <button class="primary-btn" type="submit">
             Sign in
           </button>
         </form>
@@ -141,18 +111,10 @@
       </div>
 
       <!-- PASSWORD UPDATE FORM -->
-      <form
-        *ngIf="showPasswordUpdateForm"
-        [formGroup]="passwordUpdateForm"
-        (ngSubmit)="onPasswordUpdate()"
-      >
+      <form *ngIf="showPasswordUpdateForm" [formGroup]="passwordUpdateForm" (ngSubmit)="onPasswordUpdate()">
         <div class="input-group">
           <label>Email</label>
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="Email address"
-          />
+          <input type="email" formControlName="email" placeholder="Email address" />
         </div>
         <div class="input-group">
           <label>Enter valid OTP</label>
@@ -161,17 +123,9 @@
         </div>
         <div class="input-group">
           <label>New Password</label>
-          <input
-            type="password"
-            formControlName="newPassword"
-            placeholder="New Password"
-          />
+          <input type="password" formControlName="newPassword" placeholder="New Password" />
         </div>
-        <button
-          class="primary-btn"
-          type="submit"
-          [disabled]="passwordUpdateForm.invalid"
-        >
+        <button class="primary-btn" type="submit" [disabled]="passwordUpdateForm.invalid">
           Update Password
         </button>
       </form>
@@ -191,23 +145,12 @@
               </p>
 
               <div class="input-group">
-                <input
-                  type="email"
-                  formControlName="forgotEmail"
-                  placeholder="Email address"
-                />
-                <div
-                  class="field-error"
-                  *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid"
-                >
-                  <small
-                    *ngIf="forgotForm.controls['forgotEmail'].errors?.['required']"
-                    >Email is required.</small
-                  >
-                  <small
-                    *ngIf="forgotForm.controls['forgotEmail'].errors?.['email']"
-                    >Please enter a valid email.</small
-                  >
+                <input type="email" formControlName="forgotEmail" placeholder="Email address" />
+                <div class="field-error"
+                  *ngIf="forgotForm.controls['forgotEmail'].touched && forgotForm.controls['forgotEmail'].invalid">
+                  <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['required']">Email is required.</small>
+                  <small *ngIf="forgotForm.controls['forgotEmail'].errors?.['email']">Please enter a valid
+                    email.</small>
                 </div>
               </div>
 
@@ -218,23 +161,19 @@
             </div>
 
             <div class="row-center">
-              <ion-button
-                type="button"
-                class="danger-btn"
-                (click)="closeForgotModal()"
-                >Cancel</ion-button
-              >
-              <ion-button
-                type="submit"
-                class="primary-btn"
-                [disabled]="forgotForm.invalid || sending"
-              >
+              <ion-button type="button" class="danger-btn" (click)="closeForgotModal()">Cancel</ion-button>
+              <ion-button type="submit" class="primary-btn" [disabled]="forgotForm.invalid || sending">
                 {{ sending ? 'Sending...' : 'Send OTP' }}
               </ion-button>
             </div>
           </form>
         </div>
       </div>
+      @if(loader){
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      }
     </div>
   </div>
 </div>

@@ -43,6 +43,7 @@ export class LoginPage implements OnInit {
   new: boolean = false;
   old: boolean = false;
   er!: string;
+  loader: boolean = false;
   newEmployees!: FormGroup;
   existingEmpl!: FormGroup;
   // changes done by bipul
@@ -53,7 +54,7 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private alertController: AlertController,
     private _loginSer: _LoginService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -138,6 +139,7 @@ export class LoginPage implements OnInit {
   }
   async checkEmail() {
     if (this.loginForm.valid) {
+      this.loader = true;
       this._loginSer
         .checkEmail({
           email: this.loginForm.controls['email'].value,
@@ -145,6 +147,7 @@ export class LoginPage implements OnInit {
         .subscribe({
           next: (val) => {
             this.empType = val.type;
+            this.loader = false;
             if (val.type === 'new_employee') {
               this.new = true;
               this.showLoginForm = false;
