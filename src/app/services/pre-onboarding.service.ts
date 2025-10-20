@@ -368,26 +368,19 @@ export class CandidateService {
       })
     );
   }
-  findEmployee(email: string, password: string): Observable<Candidate | undefined> {
-    return this.http.get<any>(this.getEmployees).pipe(
-      map(data => {
-        const candidates = this.normalizeCandidates(data);
-        return candidates.find(c =>
-          c.employeeCredentials?.companyEmail === email &&
-          c.employeeCredentials?.password === password
-        );
-      }),
+  findEmployee(email: string): Observable<Employee | undefined> {
+    return this.http.get<Employee[]>(this.empUrl).pipe(
+      map(employees => employees.find(emp => emp.work_email === email)),
       tap(found => {
         if (found) {
-          this.currentCandidateSubject.next(found);
-          localStorage.setItem(`loggedInCandidate_${found.id}`, JSON.stringify(found));
-          localStorage.setItem('activeUserId', found.id.toString());
-          this.attendanceService.getRecord(found.id);
+          this.currentEmployeeSubject.next(found);
+          localStorage.setItem(`loggedInEmployee_${found.employee_id}`, JSON.stringify(found));
+          localStorage.setItem('activeEmployeeId', found.employee_id.toString());
+          this.attendanceService.getRecord(found.employee_id);
         }
       })
     );
   }
-
 
 
   verifyAndResetPassword(email: string, otp: string, newPassword: string): Observable<any> {
@@ -401,9 +394,9 @@ export class CandidateService {
 
 
   logout() {
-    const activeId = localStorage.getItem('activeUserId');
+    const activeId = localStorage.getItem('loggedInUser');
     if (activeId) {
-      localStorage.removeItem(`loggedInCandidate_${activeId}`);
+      localStorage.removeItem(`loggedInUser_${activeId}`);
       localStorage.removeItem('activeUserId');
     }
     this.currentCandidateSubject.next(null);

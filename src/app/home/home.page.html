@@ -5,9 +5,9 @@
 
   <ion-grid class="ion-margin ion-margin-horizontal">
     <ion-row>
-      <ion-col size="6" class="welcome-block ion-no-padding row-space-between">
+      <ion-col *ngIf="one" size="6" class="welcome-block ion-no-padding row-space-between">
         <div class="row-left">
-          <!-- <p>Welcome {{currentCandidate.personalDetails.FirstName}}</p> -->
+          <p>Welcome {{one.full_name}}</p>
         </div>
         <img class="bg2" src="../../assets/bg-welcome1.svg" />
       </ion-col>
