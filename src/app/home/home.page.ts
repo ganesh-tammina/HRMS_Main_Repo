@@ -18,6 +18,7 @@ export class HomePage implements OnInit {
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
   currentEmployee: any;
   one: any;
+  full_name: string = ""
   currentTime: string = '';
   allEmployees: any[] = [];
 
@@ -46,8 +47,8 @@ export class HomePage implements OnInit {
     this.candidateService.getEmpDet().subscribe({
       next: (response: any) => {
         this.allEmployees = response.data || [];
-        this.one = this.allEmployees;
-        console.log(response);
+        this.one = response.data[0];
+        console.log(this.one);
       },
       error: (err) => {
         console.error('Error fetching all employees:', err);
