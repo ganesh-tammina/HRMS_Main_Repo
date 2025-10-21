@@ -62,11 +62,17 @@ export class AppComponent implements OnInit {
       console.log('User type:', this.userType);
     }
   }
+  // preonboard() {
+  //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  //     this.router.navigate(['/pre_onboarding']);
+  //   });
+  //   window.location.href = '/pre_onboarding';
+  // }
   preonboard() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/pre_onboarding']);
+      this.router.navigate(['/pre-onboarding-cards']);
     });
-    window.location.href = '/pre_onboarding';
+    window.location.href = '/pre-onboarding-cards';
   }
 
   logout() {

@@ -1,6 +1,7 @@
 @import '../../../global.scss';
 :host {
-  --bg: #f7f8fb;
+  // --bg: #f7f8fb;
+  --bg: var(--ion-bg-color);
   --card: #ffffff;
   --muted: #6b7280;
   --line: #e5e7eb;
@@ -40,28 +41,28 @@
 }
 
 /* Filter bar */
-.filters {
-  background: var(--card);
-  border-bottom: 1px solid var(--line);
-}
-.filters-grid {
-  padding: 10px 12px;
-}
-.filter-chip {
-  height: 40px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  display: flex; align-items: center; gap: 8px;
-  background: #fff;
-  font-weight: 600; font-size: 14px;
-  color: #111827;
-  justify-content: space-between;
-}
-.offer-type-cell .filter-chip {
-  justify-content: flex-start; gap: 10px;
-  span { font-weight: 600; }
-}
+// .filters {
+//   background: var(--card);
+//   border-bottom: 1px solid var(--line);
+// }
+// .filters-grid {
+//   padding: 10px 12px;
+// }
+// .filter-chip {
+//   height: 40px;
+//   padding: 0 12px;
+//   border: 1px solid var(--line);
+//   border-radius: 10px;
+//   display: flex; align-items: center; gap: 8px;
+//   background: #fff;
+//   font-weight: 600; font-size: 14px;
+//   color: #111827;
+//   justify-content: space-between;
+// }
+// .offer-type-cell .filter-chip {
+//   justify-content: flex-start; gap: 10px;
+//   span { font-weight: 600; }
+// }
 .search-wrap {
   height: 40px;
   border: 1px solid var(--line);
@@ -192,9 +193,9 @@ ion-content {
 }
 }
   
-.filter-chip{
-    color: #000;
-}
+// .filter-chip{
+//     color: #000;
+// }
 
   ion-item {
         color: #000 !important;
@@ -205,4 +206,26 @@ ion-content {
 }
 ion-item.ion-no-border {
   --border-color: transparent;
+}
+
+.pre-on-boarding-block {
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  .filter {
+    .filter-chip {
+      display: block;     
+    }  
+  } 
+  .custom-dropdown {
+    width: 180px;
+    background: var(--ion-white-color);
+    padding: 10px 12px;
+    border: 1px solid #ABABAB;
+    --highlight-height: 0;
+    border-radius: 6px;
+    min-height: auto;
+    margin-top: 8px;
+  }
 }

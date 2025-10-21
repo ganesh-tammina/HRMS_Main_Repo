@@ -40,13 +40,18 @@
             <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown">
               <ng-template>
                 <ion-content>
-
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item routerLink="/pre_onboarding" (click)="preonboard()"
+                    <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()"
                       *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" lines="none" detail="false">
                       <ion-label>Pre Onboarding</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
+                  <!-- <ion-menu-toggle auto-hide="false">
+                    <ion-item routerLink="/pre_onboarding" (click)="preonboard()"
+                      *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" lines="none" detail="false">
+                      <ion-label>Pre Onboarding</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle> -->
                   <ion-menu-toggle auto-hide="false">
                     <ion-item routerLink="/post-onboarding" lines="none" detail="false">
                       <ion-label>Post Onboarding</ion-label>

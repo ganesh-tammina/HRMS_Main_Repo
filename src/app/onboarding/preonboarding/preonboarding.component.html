@@ -1,10 +1,27 @@
+
 <ion-header>
+    
   <!-- <app-header></app-header> -->
   <app-onboarding-mainheader></app-onboarding-mainheader>
 </ion-header>
-<ion-toolbar>
-  <ion-title>Preboarding</ion-title>
+<ion-content class="pre-on-boarding-block" fullscreen>
+    <h2 class="page-header"> Onboarding > Preboarding </h2>
+    <ion-row>
+      <ion-col>
+       <p>Preboarding</p>
+       <p>List of all candidates who are selected to join the organization.</p>
+      </ion-col>
+      <ion-col class="row-right">
+          <ion-button (click)="openCandidateForm()"><ion-icon name="add-outline"></ion-icon> Add Candidate</ion-button>
+          <ion-button><ion-img src="../../../assets/icons/MdOutlineChecklist.svg"></ion-img>Import Candidates</ion-button>
+      </ion-col>
+    </ion-row>
+    
 
+
+
+<!-- <ion-toolbar>
+    <ion-title>Onboarding > Preboarding</ion-title>
   <ion-buttons slot="end" class="header-actions">
     <ion-button fill="clear" class="muted-link">
       <ion-icon name="eye-outline" slot="start"></ion-icon>
@@ -37,29 +54,29 @@
       </ng-template>
     </ion-popover>
   </ion-buttons>
-</ion-toolbar>
+</ion-toolbar> -->
 
-<ion-toolbar class="subheader" style="margin-left: 20px;">
+<!-- <ion-toolbar class="subheader" style="margin-left: 20px;">
   <ion-text color="medium" class="subtitle">
     List of all candidates who are selected to join the organization.
   </ion-text>
 </ion-toolbar>
 
-<ion-content fullscreen>
+<ion-content fullscreen> -->
   <!-- Filters -->
   <div class="filters">
     <ion-grid class="filters-grid">
       <ion-row class="ion-align-items-center">
-        <ion-col size="12" size-lg="2.2" size-md="4">
-          <ion-item class="filter-chip" lines="none">
+        <ion-col>
+          <div class="filter-chip" lines="none">
             <ion-label>Business Unit</ion-label>
-            <ion-select interface="popover">
+            <ion-select class="custom-dropdown" placeholder="ALL" interface="popover">
               <ion-select-option>Finance</ion-select-option>
               <ion-select-option>Human Resources</ion-select-option>
               <ion-select-option>IT</ion-select-option>
               <ion-select-option>Marketing</ion-select-option>
             </ion-select>
-          </ion-item>
+          </div>
         </ion-col>
         <ion-col size="12" size-lg="2.2" size-md="4">
           <div class="filter-chip">
