@@ -68,3 +68,5 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+server/HRMS_Server/.env
+/server/HRMS_Server/node_modules

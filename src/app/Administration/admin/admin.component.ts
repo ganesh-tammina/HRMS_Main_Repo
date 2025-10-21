@@ -1,18 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { IonicModule, IonModal  } from '@ionic/angular';
+import { IonicModule, IonModal } from '@ionic/angular';
 import { LeaveModalComponent } from './leave-modal/leave-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
-import { IndexeddbEmployeesService } from 'src/app/services/indexeddb-employees.service';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent ]
+  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent]
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
@@ -21,24 +20,18 @@ export class AdminComponent implements OnInit {
   EmployeeselectedFile: File | null = null;
   holidays: any;
   candidatelist: any;
-  Employeelist: any;
   candidates: any;
-  // public allCandidates: any[] = [];
-  // public pagedEmployees: any[] = [];
-  // public pageSize: number = 10;
-  // public currentPage: number = 1;
-  // public totalPages: number = 1;
-  pageSize: number = 5;   // show 10 employees per page
-  currentPage: number = 1;
-  totalPages: number = 1;
-  pagedEmployees: any[] = [];
+  public allCandidates: any[] = [];
+  public pagedCandidates: any[] = [];
+  public pageSize: number = 10;
+  public currentPage: number = 1;
+  public totalPages: number = 1;
 
   @ViewChild(IonModal) modal!: IonModal;
   selectedFiles: FileList | null = null;
-  
+
   isLoading: boolean = true;
   constructor(private http: HttpClient,
-    private indexeddbService: IndexeddbEmployeesService,
     private candidateService: CandidateService) { }
 
   async ngOnInit() {
@@ -47,84 +40,53 @@ export class AdminComponent implements OnInit {
     if (savedData) {
       this.leaveData = JSON.parse(savedData);
     }
-    const storedEmployees = await this.indexeddbService.getEmployees();
-    this.updatePagination();
-    if (storedEmployees) {
-      this.Employeelist = storedEmployees;
-      this.updatePagination();
-      this.isLoading = false;
-      console.log('Loaded employees from IndexedDB:', storedEmployees);
-    }
     this.candidateService.getHolidaysList('id').subscribe((res: any) => {
       this.holidays = res.data;
       console.log(res);
+    });
+
+
+    this.candidateService.getEmployeeById('').subscribe((data: any) => {
+      // Assuming data.candidates is the full array of candidates
+      this.allCandidates = data.candidates || [];
+      this.calculatePagination();
+      this.updatePagedCandidates();
+      console.log('Candidates:', this.allCandidates);
     });
   }
 
   //pagination for employees list
   calculatePagination() {
-    if (!this.Employeelist) return;
-    this.totalPages = Math.ceil(this.Employeelist.length / this.pageSize);
+    this.totalPages = Math.ceil(this.allCandidates.length / this.pageSize);
     // Ensure currentPage doesn't exceed totalPages after data is loaded
-
-    if (this.currentPage > this.totalPages) {
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
       this.currentPage = this.totalPages;
-    }
-    if (this.currentPage < 1) {
+    } else if (this.totalPages === 0) {
       this.currentPage = 1;
     }
-
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.pagedEmployees = this.Employeelist.slice(startIndex, endIndex);
-
-
   }
 
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePagination();
+  updatePagedCandidates() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    // Slice the full array to get only the items for the current page
+    this.pagedCandidates = this.allCandidates.slice(startIndex, endIndex);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagedCandidates();
     }
+  }
+  // Helper methods for easy navigation
+  nextPage() {
+    this.changePage(this.currentPage + 1);
   }
 
   prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePagination();
-    }
+    this.changePage(this.currentPage - 1);
   }
-
-  updatePagination() {
-    // const startIndex = (this.currentPage - 1) * this.pageSize;
-    // const endIndex = startIndex + this.pageSize;
-    // Slice the full array to get only the items for the current page
-    // this.pagedCandidates = this.allCandidates.slice(startIndex, endIndex);
-    if (!this.Employeelist) return;
-
-    this.totalPages = Math.ceil(this.Employeelist.length / this.pageSize);
-
-    // Adjust currentPage if out of range
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-    if (this.currentPage < 1) {
-      this.currentPage = 1;
-    }
-
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.pagedEmployees = this.Employeelist.slice(startIndex, endIndex);
-  }
-
-  // changePage(page: number) {
-  //   if (page >= 1 && page <= this.totalPages) {
-  //     this.currentPage = page;
-  //     this.updatePagination();
-  //   }
-  // }
-  // Helper methods for easy navigation
-
 
 
 
@@ -136,37 +98,23 @@ export class AdminComponent implements OnInit {
     this.EmployeeselectedFile = event.target.files[0];
     console.log(this.EmployeeselectedFile);
   }
-  async EmployeesUpload() {
+  EmployeesUpload() {
     if (!this.EmployeeselectedFile) return;
-
     const formData = new FormData();
     formData.append("file", this.EmployeeselectedFile);
+    this.http.post("http://30.0.0.78:3562/existingemployees", formData).subscribe({
+      next: (res) => {
+        console.log(res);
+        alert("Upload successful!");
 
-    // Upload the file first to parse Excel
-    this.candidateService.postcurrentEmployees(formData).subscribe({
-      next: async (res: any) => {
-        this.Employeelist = res.data;
-        console.log('Parsed employees:', this.Employeelist);
-
-        // Save to IndexedDB
-        await this.indexeddbService.saveEmployees(this.Employeelist);
-        console.log('Employees saved to IndexedDB ✅');
-
-        // Upload in smaller batches
-        this.candidateService.postEmployeesInBatches(this.Employeelist)
-          .subscribe({
-            next: (res) => console.log('✅ All batches uploaded successfully', res),
-            error: (err) => console.error('❌ Batch upload failed', err)
-          });
-
-        this.updatePagination();
-        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
         alert("Upload failed!");
       }
     });
+    this.http.post("http://30.0.0.78:3562/existingemployees", formData)
+      .subscribe((res: any) => console.log(res), (err: any) => console.error(err));
   }
 
   Upload() {
@@ -207,13 +155,6 @@ export class AdminComponent implements OnInit {
     this.leaveData = null;
     localStorage.removeItem('leaveData');
   }
-  async deleteEmployees() {
-    await this.indexeddbService.clearEmployees();
-    this.Employeelist = [];
-    alert('Employees cleared!');
-  }
-  sendDataDB() {
-    this.candidateService.postEmployeesInBatches(this.Employeelist).subscribe((res) => console.log(res));
-  }
+
 
 }

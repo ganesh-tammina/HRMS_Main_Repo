@@ -5,7 +5,7 @@
 
         <!-- Left: Company Name -->
         <ion-col size="10" class="row-left">
-            <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo" height="56"/>
+            <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo"/>
             <ion-searchbar placeholder="Search employee by name" [(ngModel)]="searchQuery" (ionInput)="onSearch()"
               showCancelButton="never">
             </ion-searchbar>
@@ -36,21 +36,6 @@
           <div class="row-right" *ngIf="currentCandidate">
 
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
-            <ion-button id="popover-dropdown" fill="clear"> <img class="pl-5" [attr.alt]="currentCandidate.personalDetails.FirstName" src="../../assets/user.svg" width="46" />
-             </ion-button>
-          <ion-popover  class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
-            <ng-template>
-              <ion-content >
-                <ion-list>
-                  <ion-item  (click)="viewProfile()" lines="none" detail="false"><ion-icon name="person-outline"></ion-icon> View Profile</ion-item>
-                  <ion-item><ion-icon name="key-outline"></ion-icon> Change Password</ion-item>
-                  <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
-                  routerLinkActive="selected"><ion-icon name="log-out-outline"></ion-icon> Logout</ion-item>
-                </ion-list>
-              </ion-content>
-            </ng-template>
-          </ion-popover>
-          
             <ion-buttons slot="start">
               <ion-menu-button></ion-menu-button>
             </ion-buttons>

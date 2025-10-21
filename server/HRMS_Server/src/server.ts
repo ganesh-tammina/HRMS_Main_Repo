@@ -1,12 +1,13 @@
-import express, { Application } from "express";
-import { Request, Response } from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import { pool } from "./config/database";
-import { config } from "./config/env";
-import index from "./routes/index";
-import { notFound } from "./middlewares/notFound.middleware";
-import cookieParser from "cookie-parser";
+import express, { Application } from 'express';
+import { Request, Response } from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import { pool } from './config/database';
+import { config } from './config/env';
+import index from './routes/index';
+import { notFound } from './middlewares/notFound.middleware';
+import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -17,8 +18,9 @@ class Server {
   constructor() {
     this.app = express();
     var corsOptions = {
-      origin: ["http://127.0.0.1:5500"],
+      origin: /[^.*:4200$]/,
       optionsSuccessStatus: 200,
+      credentials: true,
     };
     this.app.use(cors(corsOptions));
     this.port = config.PORT;
@@ -27,14 +29,22 @@ class Server {
   }
 
   private middlewares(): void {
-    this.app.use(express.json());
+    this.app.use(express.json({ limit: '10mb' }));
+    this.app.use(cookieParser());
+    this.app.use(
+      '/api/v1/login',
+      rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 5,
+        message: 'Too many sign-in attempts, please try again later',
+      })
+    );
   }
 
   private routes(): void {
-    this.app.use(cookieParser());
-    this.app.use("/api", index);
-    this.app.get("/api", async (req, res) => {
-      res.json("Server is running");
+    this.app.use('/api', index);
+    this.app.get('/api', async (req, res) => {
+      res.json('Server is running');
     });
     this.app.use(notFound);
   }
@@ -44,7 +54,7 @@ class Server {
       await pool.getConnection().then((res) => {
         if (res) {
           console.log(
-            "Connected to database on https://" + res.connection.config.host
+            'Connected to database on https://' + res.connection.config.host
           );
         }
       });
