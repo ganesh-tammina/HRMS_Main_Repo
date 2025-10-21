@@ -105,8 +105,13 @@ export const routes: Routes = [
         m => m.CandidateOfferLetterComponent
       ),
   },
-
-
+  {
+    path: 'profile-page',
+    loadComponent: () =>
+      import('./profile-page/profile-page.component').then(
+        m => m.ProfilePageComponent
+      ),
+  }
 
 
 ];

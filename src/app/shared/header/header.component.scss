@@ -49,14 +49,10 @@
     img.logo {
       width: 120px;
     }
+
   }
 
-  ion-button {
-    width: 250px;
-    --background: #fff;
-    margin-left: 99px;
-    --color: #2d2d2d;
-  }
+  
     .search-box {
       --border-radius: 9999px;
       --background: white;
@@ -66,6 +62,7 @@
       width: 100%;
       padding: 0 10px;
       border-radius: 24px;
+     
     }
  
     .nav-icon {
@@ -87,4 +84,21 @@
 .candidate-name{
   color: #fff;
   font-weight: 500;
+}
+
+.profile-dropdown {
+  --width: 210px;
+  ion-list {
+    ion-item {
+      @include normal-text-unbold();
+      ion-icon {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+p.name-style {
+@include normal-text();
+color: $white-color;
+font-weight: 500;
 }
