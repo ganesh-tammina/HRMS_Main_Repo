@@ -50,10 +50,6 @@ export class HeaderComponent implements OnInit {
     window.location.href = '/login';
   }
 
-  viewProfile() {
-    window.location.href = '../../profile-page';
-  }
-
   // Search employees by name
   onSearch() {
      if (!this.searchQuery || this.searchQuery.trim().length < 3) {
