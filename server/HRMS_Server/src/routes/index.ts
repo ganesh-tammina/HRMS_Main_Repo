@@ -6,7 +6,7 @@ import multer from "multer";
 import { ExcelProcessorService } from "../services/excel-processer-service";
 import EmployeeLoginController from "../controller/employee-login-controller";
 import AdminController from "../controller/admin-controller";
-import { checkIfIamEmployeeAtAll, checkIfIamValidEmployee, checkWhoAmI } from "../middlewares/cookie-parser-middleware";
+import { checkIfIamEmployeeAtAll, checkIfIamValidEmployee, checkMyRole, checkWhoAmI, verifyAccessToken } from "../middlewares/cookie-parser-middleware";
 import EmployeeController from "../controller/employee-controller";
 import LoginService from "../services/employee-login-service";
 
@@ -26,20 +26,10 @@ router.post("/v1/addExitDetails", EmployeeController.insertExitDetails);
 router.post("/v1/current-address", EmployeeController.insertEmployeeCurrentAddress);
 router.post("/v1/permanent-address", EmployeeController.insertEmployeePermanentAddress);
 router.post("/v1/bulk-data-entry", EmployeeController.insertBulkEmployees);
-router.get("/v1/employee", EmployeeController.viewAllEmployeesEverything)
+router.post("/v1/employee",verifyAccessToken, checkMyRole, EmployeeController.viewAllEmployeesEverything);
+router.get("/v1/log-out", EmployeeLoginController.LogOut)
 
 // test apis here 🤡
-router.get("/test", async (req, res) => {
-  const file = await readFile("./src/db.json", "utf8");
-  const json = JSON.parse(file);
-  res.json({
-    employees: json.employees.length,
-    addresses: json.addresses.length,
-    family_info: json.family_info.length,
-    employment_details: json.employment_details.length,
-    statutory_info: json.statutory_info.length,
-    exit_details: json.exit_details.length,
-  });
-});
+router.get
 
 export default router;

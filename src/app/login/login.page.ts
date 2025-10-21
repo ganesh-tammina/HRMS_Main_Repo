@@ -122,7 +122,6 @@ export class LoginPage implements OnInit {
     this._loginSer.loginForAll(body).subscribe({
       next: (val) => {
         console.log(val);
-        localStorage.setItem('loggedInUser', JSON.stringify(val));
         this.alertViewer('Information', val.message, 'OK');
         this.router.navigate(['/Home']);
       },
