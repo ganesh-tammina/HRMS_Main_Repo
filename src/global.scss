@@ -89,8 +89,7 @@ ion-list-header, ion-item{
 
 
 :host(.menu-pane-visible.split-pane-side.menu-enabled) {
-    display: flex
-;
+    display: flex;
     flex-shrink: 0;
     min-width: 150px;
 }
