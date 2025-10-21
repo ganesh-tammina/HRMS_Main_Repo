@@ -5,7 +5,7 @@ import { CandidateService, Candidate } from '../pre-onboarding.service';
 import { AttendanceService, AttendanceRecord, AttendanceEvent } from '../attendance.service';
 
 @Component({
-  selector: 'app-clock-button',  
+  selector: 'app-clock-button',
   styleUrls: ['clock-button.component.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule],
