@@ -44,16 +44,7 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    this.candidateService.getEmpDet().subscribe({
-      next: (response: any) => {
-        this.allEmployees = response.data || [];
-        this.one = response.data[0];
-        console.log(this.one);
-      },
-      error: (err) => {
-        console.error('Error fetching all employees:', err);
-      },
-    });
+
 
     const today = moment();
     this.days = Array.from({ length: 7 }, (_, i) => {
