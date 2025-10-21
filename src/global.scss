@@ -89,8 +89,7 @@ ion-list-header, ion-item{
 
 
 :host(.menu-pane-visible.split-pane-side.menu-enabled) {
-    display: flex
-;
+    display: flex;
     flex-shrink: 0;
     min-width: 150px;
 }
@@ -149,6 +148,9 @@ ion-list-header, ion-item{
 }
 .mb-30 {
     margin-bottom: 30px !important;
+}
+.mt-30 {
+    margin-top: 30px !important;
 }
 .mb-15 {
     margin-bottom: 15px !important;
@@ -215,9 +217,9 @@ ion-list-header, ion-item{
     @extend .custom-button ;
 }
 .primary-outline-btn {
-    --background: #fff;
+    background: #fff;
     --color: #2986CE;
-    --border: 1.5px solid #2986CE;
+    border: 1.5px solid #2986CE;
     @extend .custom-button ;
 }
 .danger-outline-btn {
