@@ -46,7 +46,6 @@ export interface Candidate {
   isAvailable?: boolean;
 }
 
-
 export interface Employee {
   employee_id: number;
   employee_number: string;
@@ -132,41 +131,45 @@ export interface EmployeeResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CandidateService {
-
-  private api = "http://30.0.0.78:3562/";
+  private api = 'http://localhost:3562/';
   private apiUrl = `${this.api}candidates/jd`;
-  private adminUrl = "http://30.0.0.78:3562/1/admin";
+  private adminUrl = 'http://30.0.0.78:3562/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
-  private packageUrl = `${this.api}candidates/package-details`;   // ✅ for package details
+  private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
   private getEmployees = `${this.api}employees`;
   private forgotpwd = `${this.api}forgot-pwd`;
   private newpassword = `${this.api}add-pwd`;
   private updatepassword = `${this.api}change-new-pwd`;
   private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = "http://30.0.0.78:3562/offerstatus/status";
+  private offerStatusapi = 'http://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = "http://localhost:3562/api/v1/employee";
-
+  private empUrl = 'http://localhost:3562/api/v1/employee';
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
 
-  private currentCandidateSubject = new BehaviorSubject<Candidate | null>(this.getStoredCandidate());
+  private currentCandidateSubject = new BehaviorSubject<Candidate | null>(
+    this.getStoredCandidate()
+  );
   currentCandidate$ = this.currentCandidateSubject.asObservable();
-
 
   private EmployeeSubject = new BehaviorSubject<Employee[]>([]);
   Employee$ = this.EmployeeSubject.asObservable();
 
-  private currentEmployeeSubject = new BehaviorSubject<Employee | null>(this.getStoredEmployee());
+  private currentEmployeeSubject = new BehaviorSubject<Employee | null>(
+    this.getStoredEmployee()
+  );
   currentEmployee$ = this.currentEmployeeSubject.asObservable();
 
-  constructor(private http: HttpClient, private attendanceService: AttendanceService) {
+  constructor(
+    private http: HttpClient,
+    private attendanceService: AttendanceService
+  ) {
     this.loadCandidates();
   }
   private getStoredEmployee(): Employee | null {
@@ -190,7 +193,7 @@ export class CandidateService {
         const candidates = this.normalizeCandidates(data);
         this.candidatesSubject.next(candidates);
       },
-      error: (err: any) => console.error('Error loading candidates:', err)
+      error: (err: any) => console.error('Error loading candidates:', err),
     });
   }
   uploadImage(file: File): Observable<{ imageUrl: string }> {
@@ -221,14 +224,17 @@ export class CandidateService {
   getImages(): Observable<any> {
     return this.http.get<any>(this.imagesUrl);
   }
+  getEmpDet(): Observable<EmployeeResponse> {
+    return this.http.post<any>(this.empUrl, {}, { withCredentials: true });
+  }
   getAllEmployees(): Observable<EmployeeResponse> {
-    return this.http.get<EmployeeResponse>(this.empUrl).pipe(
-    );
+    return this.http.get<EmployeeResponse>(this.empUrl).pipe();
   }
 
   private normalizeCandidates(data: any): Candidate[] {
     if (Array.isArray(data)) return data;
-    if (data && data.candidates && Array.isArray(data.candidates)) return data.candidates;
+    if (data && data.candidates && Array.isArray(data.candidates))
+      return data.candidates;
     if (data) return [data];
     return [];
   }
@@ -250,21 +256,25 @@ export class CandidateService {
     return this.http.post(this.newpassword, { email });
   }
 
-
-  changeoldEmpPassword(email: string, otp: string, newPassword: string): Observable<any> {
+  changeoldEmpPassword(
+    email: string,
+    otp: string,
+    newPassword: string
+  ): Observable<any> {
     const body = {
       email: email,
       otp: otp,
-      newPassword: newPassword
+      newPassword: newPassword,
     };
     console.log(body);
     return this.http.post(this.changeoldEmpwd, body);
   }
 
-
   updateCandidate(candidate: Candidate): Observable<Candidate> {
     if (!candidate.offerDetails) {
-      return throwError(() => new Error('offerDetails is missing in candidate'));
+      return throwError(
+        () => new Error('offerDetails is missing in candidate')
+      );
     }
     if (!candidate.offerDetails.DOJ) {
       return throwError(() => new Error('DOJ is missing in offerDetails'));
@@ -291,14 +301,14 @@ export class CandidateService {
     const offerPayload = {
       DOJ: formattedDOJ,
       offerValidity: candidate.offerDetails.offerValidity,
-      JoiningDate: formattedJoiningDate
+      JoiningDate: formattedJoiningDate,
     };
 
     // 🔹 FIRST TIME (no offerDetails.id) → POST
     if (!candidate.offerDetails.id) {
       const postBody = {
         candidateId: candidate.id,
-        offerDetails: offerPayload
+        offerDetails: offerPayload,
       };
 
       return this.http.post<Candidate>(this.offerUrl, postBody).pipe(
@@ -306,7 +316,8 @@ export class CandidateService {
           // Ensure offerDetails exists
           if (!candidate.offerDetails) candidate.offerDetails = {};
           // Store backend id for future PUT
-          if (created.offerDetails?.id) candidate.offerDetails.id = created.offerDetails.id;
+          if (created.offerDetails?.id)
+            candidate.offerDetails.id = created.offerDetails.id;
 
           this.updateLocalCache(created);
         })
@@ -316,21 +327,26 @@ export class CandidateService {
     // 🔹 NEXT TIME (already has id) → PUT
     const putBody = {
       id: candidate.id,
-      ...offerPayload
+      ...offerPayload,
     };
 
-    return this.http.put<Candidate>(`${this.offerUrl}/${candidate.id}`, putBody).pipe(
-      tap((updated) => this.updateLocalCache(updated))
-    );
+    return this.http
+      .put<Candidate>(`${this.offerUrl}/${candidate.id}`, putBody)
+      .pipe(tap((updated) => this.updateLocalCache(updated)));
   }
 
   private updateLocalCache(candidate: Candidate) {
-    const updatedList = this.candidatesSubject.value.map(c => c.id === candidate.id ? candidate : c);
+    const updatedList = this.candidatesSubject.value.map((c) =>
+      c.id === candidate.id ? candidate : c
+    );
     this.candidatesSubject.next(updatedList);
 
     if (this.currentCandidateSubject.value?.id === candidate.id) {
       this.currentCandidateSubject.next(candidate);
-      localStorage.setItem(`loggedInCandidate_${candidate.id}`, JSON.stringify(candidate));
+      localStorage.setItem(
+        `loggedInCandidate_${candidate.id}`,
+        JSON.stringify(candidate)
+      );
     }
   }
 
@@ -340,12 +356,14 @@ export class CandidateService {
       return throwError(() => new Error('Candidate ID is required'));
     }
     if (!candidate.packageDetails || !candidate.packageDetails.annualSalary) {
-      return throwError(() => new Error('packageDetails with annualSalary is required'));
+      return throwError(
+        () => new Error('packageDetails with annualSalary is required')
+      );
     }
 
     const postBody = {
       candidateId: candidate.id,
-      packageDetails: { ...candidate.packageDetails }
+      packageDetails: { ...candidate.packageDetails },
     };
 
     return this.http.post<any>(this.packageUrl, postBody).pipe(
@@ -355,35 +373,46 @@ export class CandidateService {
     );
   }
   createEmployee(Emp: any): Observable<any> {
-    return this.http.post<any>(this.api + "employees", Emp).pipe(
+    return this.http.post<any>(this.api + 'employees', Emp).pipe(
       tap((newCandidate) => {
-        console.log(newCandidate)
+        console.log(newCandidate);
       })
     );
   }
   createRejectedEmployee(Emp: any): Observable<any> {
-    return this.http.post<any>("http://localhost:3562/employees/rejectedemployees", Emp).pipe(
-      tap((newCandidate) => {
-        console.log(newCandidate)
-      })
-    );
+    return this.http
+      .post<any>('http://localhost:3562/employees/rejectedemployees', Emp)
+      .pipe(
+        tap((newCandidate) => {
+          console.log(newCandidate);
+        })
+      );
   }
   findEmployee(email: string): Observable<Employee | undefined> {
     return this.http.get<Employee[]>(this.empUrl).pipe(
-      map(employees => employees.find(emp => emp.work_email === email)),
-      tap(found => {
+      map((employees) => employees.find((emp) => emp.work_email === email)),
+      tap((found) => {
         if (found) {
           this.currentEmployeeSubject.next(found);
-          localStorage.setItem(`loggedInEmployee_${found.employee_id}`, JSON.stringify(found));
-          localStorage.setItem('activeEmployeeId', found.employee_id.toString());
+          localStorage.setItem(
+            `loggedInEmployee_${found.employee_id}`,
+            JSON.stringify(found)
+          );
+          localStorage.setItem(
+            'activeEmployeeId',
+            found.employee_id.toString()
+          );
           this.attendanceService.getRecord(found.employee_id);
         }
       })
     );
   }
 
-
-  verifyAndResetPassword(email: string, otp: string, newPassword: string): Observable<any> {
+  verifyAndResetPassword(
+    email: string,
+    otp: string,
+    newPassword: string
+  ): Observable<any> {
     const body = { email, otp, newPassword };
     return this.http.post(this.updatepassword, body);
   }
@@ -392,25 +421,22 @@ export class CandidateService {
     return this.currentCandidateSubject.value;
   }
 
-
   logout() {
     const activeId = localStorage.getItem('loggedInUser');
     if (activeId) {
       localStorage.removeItem(`loggedInUser_${activeId}`);
       localStorage.removeItem('activeUserId');
     }
+    this.http.post<any>(this.api + 'api/v1/log-out', {}, { withCredentials: true }).subscribe();
     this.currentCandidateSubject.next(null);
   }
 
   searchCandidates(query: string): Candidate[] {
     const lowerQuery = query.toLowerCase().trim();
-    return this.candidatesSubject.value.filter(c =>
-      c.personalDetails.FirstName.toLowerCase().includes(lowerQuery) ||
-      c.personalDetails.LastName.toLowerCase().includes(lowerQuery)
+    return this.candidatesSubject.value.filter(
+      (c) =>
+        c.personalDetails.FirstName.toLowerCase().includes(lowerQuery) ||
+        c.personalDetails.LastName.toLowerCase().includes(lowerQuery)
     );
   }
-
-
-
 }
-
