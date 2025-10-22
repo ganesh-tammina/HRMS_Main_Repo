@@ -167,13 +167,36 @@ ion-list-header, ion-item{
 .mt-8 {
   margin-top: 8px !important;
 }
+.my-15 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 // Modal popup
+ion-modal {
+    --width: 800px;
+    --height: calc(100vh - 60px);
+    --max-height: calc(100vh - 60px);
+    --border-radius: 18px;
+   
+    ion-content::part(scroll) {
+        @include scroll-style();
+    }
+    &.start-preboarding-modal {
+        --height: calc(100vh - 235px);
+    }
+}
 .custom-popup {
     ion-header {
         box-shadow: none;
         ion-title {
             @include card-header();
         }
+    }
+    .modal-header {
+        h1{
+            @include card-header();
+        }
+        margin-bottom: 15px;
     }
   .form-block {
       padding: 0px 24px;
@@ -197,6 +220,10 @@ ion-list-header, ion-item{
         border-radius: 6px;
       }      
   }
+}
+ion-popover.select-popover {
+    margin-left: 66px;
+    margin-top: 12px;
 }
 .text-center {
     text-align: center;
