@@ -41,8 +41,7 @@
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()"
-                      *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" lines="none" detail="false">
+                    <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false">
                       <ion-label>Pre Onboarding</ion-label>
                     </ion-item>
                   </ion-menu-toggle>

@@ -1,57 +1,79 @@
-.stepper-container {
-  display: flex;
-  justify-content: center;
-}
 
-.stepper {
-  display: flex;
-  gap: 24px;
-  align-items: center;
-}
-
-.step {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #7a7a7a;
-
+// new code
+.create-offer-header {
+  ion-row {
+    ion-col {
+      max-width: fit-content;
+    }
+    .wizard-container {
+      padding: 20px;
+      .primary-btn {
+        white-space: nowrap;
+        }
+        .stepper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          .step {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            text-align: center;
+            min-width: 60px; // Ensure space for the label
+            
+            // Base style for inactive steps
+            &.inactive {
+              color: #ABB7C2; // Light gray text
+              
+              .circle {
+                border: 1px solid #ABB7C2;
+                color: #ABB7C2;
+                background: transparent;
+              }
+              ion-button {
+                --color: #ABB7C2;
+              }
+            }
+          
+            // Style for the currently active step
+            &.active {
+              color: var(--ion-color-primary); // Blue text for active step
+              font-weight: bold;
+          
+              .circle {
+                border: 1px solid var(--ion-color-primary);
+                color: var(--ion-color-primary);
+                background: transparent;
+              }
+            }
+          }
+           
   .circle {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid #c5c5c5;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    font-weight: 600;
-    background: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 12px;
+    margin-bottom: 5px;
   }
-
-  &.active {
-    color: #2d2de8; // blue highlight
-    font-weight: 600;
-
-    .circle {
-      background: #2d2de8;
-      color: #fff;
-      border-color: #2d2de8;
+  
+  .line {
+    flex-grow: 1; // Makes the line take up available space
+    height: 1px;
+    background-color: var(--ion-color-medium-tint, #d3d3d3); // Light gray line
+    margin: 0 5px;
+    width: 90px;
+  }
+        }
+        
     }
+    
   }
-}
-
-.button-container {
-  display: flex;
-  justify-content: flex-end;
-}
-
-ion-button {
-  --border-radius: 6px;
-  font-weight: 600;
-}
-
-.create-offer-header{
-    width: 100%;
-    align-items: center;
+ 
+ 
+ 
+ 
 }

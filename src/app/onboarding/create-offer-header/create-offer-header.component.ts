@@ -21,8 +21,7 @@ export class CreateOfferHeaderComponent implements OnInit {
   activeTab = '';
   isPreviewSend = false;
   candidateId: string | null = null;
-  firstName: string | null = null;
-
+  firstName: string | null = null; 
 
   // preview_send = false
   currentRoute: string = '';
@@ -34,7 +33,8 @@ export class CreateOfferHeaderComponent implements OnInit {
       .subscribe((event: any) => {
         const segments = event.urlAfterRedirects.split('/');
         this.activeTab = segments[segments.length - 1];
-        this.isPreviewSend = this.activeTab === 'preview_send'
+        this.isPreviewSend = this.activeTab === 'preview_send';
+        // console.log("active:", this.activeTab);
         //        if (event instanceof NavigationEnd) {
         //   this.currentRoute = event.url;
         // }
@@ -68,6 +68,7 @@ export class CreateOfferHeaderComponent implements OnInit {
   navigate(tab: string) {
     if (this.candidateId && this.firstName) {
       this.router.navigate(['/', tab, this.candidateId, this.firstName]);
+      this.activeTab= tab;
     } else {
       console.error('Missing route params: id or firstName');
     }
@@ -86,4 +87,5 @@ export class CreateOfferHeaderComponent implements OnInit {
     });
 
   }
+
 }
