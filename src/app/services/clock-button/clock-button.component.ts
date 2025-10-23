@@ -28,7 +28,7 @@ import { Subscription, interval } from 'rxjs';
   `,
 })
 export class ClockButtonComponent implements OnInit, OnDestroy {
-  currentCandidate?: Candidate;
+  currentCandidate?: any;
   @Input() record?: AttendanceRecord;
   @Output() statusChanged = new EventEmitter<AttendanceRecord>();
 
@@ -66,14 +66,14 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
   clockIn() {
     if (!this.currentCandidate) return;
-    const record = this.attendanceService.clockIn(this.currentCandidate.id);
+    const record = this.attendanceService.clockIn(this.currentCandidate);
     this.record = record;
     this.statusChanged.emit(record);
   }
 
   clockOut() {
     if (!this.currentCandidate) return;
-    const record = this.attendanceService.clockOut(this.currentCandidate.id);
+    const record = this.attendanceService.clockOut(this.currentCandidate);
     this.record = record;
     this.statusChanged.emit(record);
   }

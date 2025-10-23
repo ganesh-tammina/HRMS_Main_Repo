@@ -1,5 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface AttendanceEvent {
   type: 'CLOCK_IN' | 'CLOCK_OUT';
@@ -21,10 +22,10 @@ export interface AttendanceRecord {
 })
 export class AttendanceService {
   private prefix = 'attendance_';
-
+  private baseURL = 'http://localhost:3562/api/v1/';
   private recordSubject = new BehaviorSubject<AttendanceRecord | null>(null);
   record$ = this.recordSubject.asObservable();
-
+  constructor(private http: HttpClient) { }
   private getKey(employeeId: number): string {
     return `${this.prefix}${employeeId}`;
   }
@@ -59,10 +60,18 @@ export class AttendanceService {
     this.recordSubject.next(record);
   }
 
-  clockIn(employeeId: number): AttendanceRecord {
-    let record = this.getRecord(employeeId);
+
+  employeeClockIN_Out(kjhk: any, ouyiuy: string): Observable<any> {
+    return this.http.post(this.baseURL + ouyiuy, kjhk, { withCredentials: true });
+  }
+  clockIn(employeeId: any): AttendanceRecord {
+    console.log(employeeId, "JDKJHDF")
+    let record = this.getRecord(employeeId.data[0][0].employee_id);
     if (!record.isClockedIn) {
       const now = new Date().toISOString();
+      this.employeeClockIN_Out({ employee_id: employeeId.data[0][0].employee_id, check_in: new Date().toTimeString().split(' ')[0] }, "clockin").subscribe(res => {
+        alert(JSON.stringify(res));
+      });
       record.clockInTime = now;
       record.isClockedIn = true;
       record.history.push({ type: 'CLOCK_IN', time: now });
@@ -76,12 +85,15 @@ export class AttendanceService {
     return record;
   }
 
-  clockOut(employeeId: number): AttendanceRecord {
-    let record = this.getRecord(employeeId);
+  clockOut(employeeId: any): AttendanceRecord {
+    let record = this.getRecord(employeeId.data[0][0].employee_id);
+    console.log(record, "RECORD")
     if (record.isClockedIn && record.clockInTime) {
       const now = new Date();
       const duration = now.getTime() - new Date(record.clockInTime).getTime();
-
+      this.employeeClockIN_Out({ employee_id: employeeId.data[0][0].employee_id, check_out: new Date().toTimeString().split(' ')[0] }, "clockout").subscribe(res => {
+        alert(JSON.stringify(res));
+      });
       record.accumulatedMs += duration;
 
       const today = now.toDateString();
