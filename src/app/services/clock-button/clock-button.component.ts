@@ -62,8 +62,9 @@ export class ClockButtonComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.candidateService.currentCandidate$.subscribe((user: any) => {
+    this.candidateService.getEmpDet().subscribe((user: any) => {
       this.currentCandidate = user || undefined;
+      console.log('Current Candidate in ClockButtonComponent:', this.currentCandidate);
       if (this.currentCandidate) {
         this.record = this.attendanceService.getRecord(this.currentCandidate.id);
 
