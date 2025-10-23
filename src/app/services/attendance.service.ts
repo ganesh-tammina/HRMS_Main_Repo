@@ -22,7 +22,6 @@ export interface AttendanceRecord {
 export class AttendanceService {
   private prefix = 'attendance_';
 
-  // 🔑 make it reactive
   private recordSubject = new BehaviorSubject<AttendanceRecord | null>(null);
   record$ = this.recordSubject.asObservable();
 
@@ -51,14 +50,13 @@ export class AttendanceService {
       this.saveRecord(record);
     }
 
-    // ✅ emit current state
     this.recordSubject.next(record);
     return record;
   }
 
   saveRecord(record: AttendanceRecord) {
     localStorage.setItem(this.getKey(record.employeeId), JSON.stringify(record));
-    this.recordSubject.next(record); // ✅ notify subscribers
+    this.recordSubject.next(record);
   }
 
   clockIn(employeeId: number): AttendanceRecord {

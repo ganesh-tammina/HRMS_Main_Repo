@@ -14,6 +14,7 @@ export async function checkMyRole(
   next: NextFunction
 ) {
   // const employee_ID = await CheckerCrocodile.RoleChecker(req, res);
+  // not implemented yet, still work need to be done.
   console.log('check role');
   const id = parseInt(req.cookies?.id);
 
@@ -30,7 +31,6 @@ export function checkIfIamValidEmployee(
   if (!req.cookies?.employee_email || !req.cookies?.employee_id) {
     res.json('Nope, invalid request.').status(500);
   } else {
-    console.log('tested and found mail');
     req.body.email = req.cookies?.employee_email;
     next();
   }
@@ -44,7 +44,6 @@ export function checkIfIamEmployeeAtAll(
   if (!req.cookies?.employee_email) {
     res.json('Nope, invalid request.').status(500);
   } else {
-    console.log('tested +ve for employee');
     if (req.cookies?.employee_email === config.ADMIN_ID) {
       return IAM_GROOT(req, res, 'NOTLOGIN');
     }
@@ -67,8 +66,6 @@ async function IAM_GROOT(
     });
   } else if (type === 'NOTLOGIN') {
     if (req.body.password === config.ADMIN_PASSWORD) {
-      console.log('coming');
-
       req.body.email = req.cookies?.employee_email;
       const t = await LoginService.login(req, res, true);
     }
@@ -88,7 +85,7 @@ export const verifyAccessToken = (
     }
     const decoded = jwt.verify(token, config.JWT_TOKEN);
     (req as any).employee = decoded;
-    checkMyRole(req, res, next);
+    next();
   } catch (error) {
     return res
       .status(401)
