@@ -8,23 +8,92 @@
     ion-grid {
       ion-row {
         ion-col {
-          ion-item {
-            --background: transparent;
-            --inner-border-width: 0;
-              ion-input, ion-select {
-                height: 44px;
-                background: #ffffff;
-                --background: #ffffff;
-                margin-top: 12px;
-                border: 1px solid #ABABAB;
-                border-radius: 8px;
-                padding: 0 15px;              
-              
-          }
+          padding-right: 24px;
+  // Styling for Input Fields (to match the flat, full-width look)
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --border-color: transparent !important; // Remove default Ionic border line
+    margin-bottom: 16px;
+    ion-label {
+      @include normal-text-unbold();
+      margin-bottom: 14px;
+      transform: translateY(50%) scale(1);
+    }
+  }
+  
+  ion-input, ion-select {
+    background: #EFEFEF;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    padding: 8px 12px !important;
+    min-height: 42px;
+    max-height: 44px;
+    display: flex;
+    align-items: center;
+    @include normal-text-unbold();
+    // Override Ionic's default visual to look more like the image
+    &.item-native {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+  ion-input.input-disabled {
+    opacity: 1;
+  }
+  
+  // Fix padding for the actual input area within ion-item
+  ion-item:has(ion-input), ion-item:has(ion-select) {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --background: transparent;
+      --background-activated: transparent;
+      --background-focused: transparent;
+      --background-hover: transparent;
+      // This allows the full-width input to sit right up to the grid column edge
+      .item-inner {
+          padding-inline-end: 0 !important;
+      }
+  }
+  
+  ion-select {
+      display: flex; // To ensure it takes full space
+      flex: auto;
+      }
+    }
+  }
+}
+.employee-card {
+  ion-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 16px 8px;
+    h6 {
+      background: #E6F1FF;
+      padding: 16px 8px;
+      @include card-header-title();
+      font-weight: 700;
+      margin-bottom: 0;
+      border-radius: 11px;
+      margin-top: 0;
+    }
+    ion-img {
+      width: 120px;
+      margin: auto;
+    }
+    .candidate-header {
+      div {
+        h6{
+          background: transparent;
+          margin: 0;
+        }
+        p {
+        @include text-style-normal();
         }
       }
     }
   }
+}
 }
 ion-header {
  box-shadow: none;

@@ -61,7 +61,7 @@
            
           
                   <!-- OFFER DETAILS -->
-                  <h6>Offer Details</h6>
+                  <h1>Offer Details</h1>
                   <form [formGroup]="offerForm">
                     <ion-row>
                       <ion-col size="6">
@@ -81,13 +81,12 @@
           
                       <ion-col size="6">
                         <ion-item>
-                          <ion-label>Offer Validity (days)</ion-label>
-                          <ion-select formControlName="offerValidity" placeholder="Select Validity">
+                          <ion-label position="stacked">Offer Validity (days)</ion-label>
+                          <ion-select formControlName="offerValidity" placeholder="Select Validity" interface="popover">
                             <ion-select-option value="2">2 Days</ion-select-option>
                             <ion-select-option value="7">7 Days</ion-select-option>
                           </ion-select>
-                        </ion-item>
-          
+                        </ion-item>          
                       </ion-col>
                     </ion-row>
           
@@ -99,14 +98,16 @@
                   </form>
       </ion-col>
       
-      <ion-col size="4">
-          <ion-card>
-              <h6>Candidate Details</h6>
+      <ion-col size="4" class="employee-card">
+          <ion-card >
+              <h6>Employee Details</h6>
             <ion-card-content>
+             
               <div class="candidate-header">
-                <div class="avatar">{{candidate?.personalDetails?.initials}}</div>
-                <div>
-                  <h2>{{candidate?.personalDetails?.FirstName}}</h2>
+                <!-- <div class="avatar">{{candidate?.personalDetails?.initials}}</div> -->
+                <ion-img src="../../assets/icon/user-pic.svg" width="120"></ion-img>
+                <div class="text-center">
+                  <h6>{{candidate?.personalDetails?.FirstName}}</h6>
                   <p>Applied for {{candidate?.jobDetailsForm?.JobTitle}}</p>
                 </div>
               </div>
