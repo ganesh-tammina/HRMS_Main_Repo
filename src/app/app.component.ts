@@ -23,7 +23,10 @@ export class AppComponent implements OnInit {
   iscandiateofferPage = false
   CurrentuserType: string = ''
   userType: string | null = null;
-
+  one: any;
+  full_name: string = ""
+  currentTime: string = '';
+  allEmployees: any[] = [];
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(private router: Router, private candidateService: CandidateService) {
@@ -55,6 +58,16 @@ export class AppComponent implements OnInit {
     this.showCategories = !this.showCategories;
   }
   ngOnInit(): void {
+    this.candidateService.getEmpDet().subscribe({
+      next: (response: any) => {
+        this.allEmployees = response.data || [];
+        this.one = response.data[0];
+        console.log(this.one);
+      },
+      error: (err) => {
+        console.error('Error fetching all employees:', err);
+      },
+    });
     const userData = localStorage.getItem('loggedInUser');
     if (userData) {
       const parsedData = JSON.parse(userData);
@@ -62,11 +75,17 @@ export class AppComponent implements OnInit {
       console.log('User type:', this.userType);
     }
   }
+  // preonboard() {
+  //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  //     this.router.navigate(['/pre_onboarding']);
+  //   });
+  //   window.location.href = '/pre_onboarding';
+  // }
   preonboard() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/pre_onboarding']);
+      this.router.navigate(['/pre-onboarding-cards']);
     });
-    window.location.href = '/pre_onboarding';
+    window.location.href = '/pre-onboarding-cards';
   }
 
   logout() {
