@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
-import { AttendanceService, AttendanceRecord, AttendanceEvent  } from 'src/app/services/attendance.service';
+import { AttendanceService, AttendanceRecord, AttendanceEvent } from 'src/app/services/attendance.service';
 interface AttendanceRequest {
   type: string;
   dateRange: string;
@@ -44,10 +44,10 @@ interface CalendarDay {
   selector: 'app-attendance-log',
   templateUrl: './attendance-log.component.html',
   styleUrls: ['./attendance-log.component.scss'],
-  standalone:true,
+  standalone: true,
   imports: [IonicModule, CommonModule]
 })
-export class AttendanceLogComponent  implements OnInit {
+export class AttendanceLogComponent implements OnInit {
   employee?: Candidate;
   record?: AttendanceRecord;
 
@@ -82,7 +82,69 @@ export class AttendanceLogComponent  implements OnInit {
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
-  ) { this.generateCalendar(this.currentMonth); }
+  ) {
+    const storedData = localStorage.getItem("attendanceRecord");
+    if (storedData) {
+      const allAttendance = JSON.parse(storedData);
+      const constAttendance = {
+        ...allAttendance,
+        clockInTime: allAttendance.clockInTime ? new Date(allAttendance.clockInTime) : null
+      }
+      console.log(constAttendance, "ALL sATTENDANCE");
+    } else {
+      console.warn("No attendance record found in localStorage");
+    }
+
+
+
+    this.attendanceLogs = [
+      {
+        date: 'Mon, 01 Sept',
+        progress: 0.7,
+        effective: '6h 44m',
+        gross: '8h 42m',
+        arrival: 'On Time',
+        details: {
+          shift: 'Day shift 1 (01 Sept)',
+          shiftTime: '9:30 - 18:30',
+          location: '4th Floor SVS Towers',
+          logs: [
+            { in: '09:16:48', out: '12:01:14' },
+            { in: '12:13:29', out: '13:25:47' },
+          ],
+          webClockIn: { in: '09:19:14', out: 'MISSING' },
+        },
+      },
+      {
+        date: 'Tue, 02 Sept',
+        progress: 0.5,
+        effective: '3h 56m',
+        gross: '4h 9m',
+        arrival: 'On Time',
+        details: {
+          shift: 'Day shift 1 (02 Sept)',
+          shiftTime: '9:30 - 18:30',
+          location: '4th Floor SVS Towers',
+          logs: [{ in: '09:10:00', out: '14:30:00' }],
+        },
+      },
+      {
+        date: 'Wed, 03 Sept',
+        progress: 0.75,
+        effective: '6h 38m',
+        gross: '8h 46m',
+        arrival: 'On Time',
+        details: {
+          shift: 'Day shift 1 (03 Sept)',
+          shiftTime: '9:30 - 18:30',
+          location: 'HQ',
+          logs: [{ in: '09:20:00', out: '18:15:00' }],
+        },
+      },
+    ];
+
+    this.generateCalendar(this.currentMonth);
+  }
 
   setTab(tab: string) {
     this.activeTab = tab;
@@ -123,6 +185,15 @@ export class AttendanceLogComponent  implements OnInit {
       });
     }
   }
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Initialize attendance log component
+   * Get current employee and set up attendance record subscription
+   * Get current employee's attendance record
+   * Set up attendance requests history
+   * Generate days for calendar
+   */
+  /*******  bf79ddf5-f32a-460a-b35a-d7bbc24975f6  *******/
   ngOnInit() {
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
@@ -139,7 +210,7 @@ export class AttendanceLogComponent  implements OnInit {
       this.updateTimes();
       this.loadHistory();
     }, 1000);
- this.attendanceRequestsHistory = [
+    this.attendanceRequestsHistory = [
       {
         type: 'Work From Home / On Duty Requests',
         dateRange: '19 Aug 2025 - 02 Oct 2025',
@@ -213,53 +284,10 @@ export class AttendanceLogComponent  implements OnInit {
     ];
 
     // Logs Data (with details included)
-    this.attendanceLogs = [
-      {
-        date: 'Mon, 01 Sept',
-        progress: 0.7,
-        effective: '6h 44m',
-        gross: '8h 42m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (01 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-          logs: [
-            { in: '09:16:48', out: '12:01:14' },
-            { in: '12:13:29', out: '13:25:47' },
-          ],
-          webClockIn: { in: '09:19:14', out: 'MISSING' },
-        },
-      },
-      {
-        date: 'Tue, 02 Sept',
-        progress: 0.5,
-        effective: '3h 56m',
-        gross: '4h 9m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (02 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-          logs: [{ in: '09:10:00', out: '14:30:00' }],
-        },
-      },
-      {
-        date: 'Wed, 03 Sept',
-        progress: 0.75,
-        effective: '6h 38m',
-        gross: '8h 46m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (03 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: 'HQ',
-          logs: [{ in: '09:20:00', out: '18:15:00' }],
-        },
-      },
-    ];
+
 
     this.generateDays();
+
   }
 
   generateDays() {

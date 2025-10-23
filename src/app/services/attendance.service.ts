@@ -64,17 +64,29 @@ export class AttendanceService {
   employeeClockIN_Out(kjhk: any, ouyiuy: string): Observable<any> {
     return this.http.post(this.baseURL + ouyiuy, kjhk, { withCredentials: true });
   }
+  getAttendance() {
+    this.http.get(this.baseURL + 'getAttendance', { withCredentials: true }).subscribe((res) => {
+      console.log(res)
+    });
+  }
   clockIn(employeeId: any): AttendanceRecord {
+    let allAttendance = new Date().toTimeString().split(' ')[0]
     console.log(employeeId, "JDKJHDF")
     let record = this.getRecord(employeeId.data[0][0].employee_id);
+    if (record) {
+      localStorage.setItem("attendanceRecord", JSON.stringify(record));
+    } else {
+      console.warn("No record found to store in localStorage");
+    }
     if (!record.isClockedIn) {
       const now = new Date().toISOString();
       this.employeeClockIN_Out({ employee_id: employeeId.data[0][0].employee_id, check_in: new Date().toTimeString().split(' ')[0] }, "clockin").subscribe(res => {
+        console.log(res)
         alert(JSON.stringify(res));
       });
       record.clockInTime = now;
       record.isClockedIn = true;
-      record.history.push({ type: 'CLOCK_IN', time: now });
+      record.history.push({ type: 'CLOCK_IN', time: allAttendance });
 
       const today = new Date().toDateString();
       record.dailyAccumulatedMs ||= {};
@@ -87,7 +99,8 @@ export class AttendanceService {
 
   clockOut(employeeId: any): AttendanceRecord {
     let record = this.getRecord(employeeId.data[0][0].employee_id);
-    console.log(record, "RECORD")
+    let allAttendance = new Date().toTimeString().split(' ')[0]
+
     if (record.isClockedIn && record.clockInTime) {
       const now = new Date();
       const duration = now.getTime() - new Date(record.clockInTime).getTime();
@@ -104,7 +117,7 @@ export class AttendanceService {
       record.isClockedIn = false;
       record.clockInTime = undefined;
 
-      record.history.push({ type: 'CLOCK_OUT', time: now.toISOString() });
+      record.history.push({ type: 'CLOCK_OUT', time: allAttendance });
 
       this.saveRecord(record);
     }

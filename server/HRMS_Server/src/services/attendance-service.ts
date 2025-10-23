@@ -55,7 +55,7 @@ export default class AttendanceService {
           data.check_out,
           data.employee_id,
         ]);
-        return result;
+        return { check_out: data.check_out, date: new Date(), result };
       } catch (err) {
         throw err;
       }

@@ -1,5 +1,5 @@
- <!-- Filters -->
- <div class="row-space-between">
+<!-- Filters -->
+<div class="row-space-between">
   <div>
     <p>Last 30 Days</p>
   </div>
@@ -29,13 +29,13 @@
   </ion-row>
 
   <ion-row *ngFor="let log of attendanceLogs" class="table-row">
-    <ion-col size="2">{{ currentDate }}</ion-col>
+    <ion-col size="2">{{log.date}}</ion-col>
     <ion-col size="3">
       <ion-progress-bar [value]="log.progress"></ion-progress-bar>
     </ion-col>
-    <ion-col size="2">{{ effectiveHours }}</ion-col>
+    <ion-col size="2">{{ log.effective }}</ion-col>
     <ion-col size="2">
-      {{ grossHours }}
+      {{ log.gross }}
     </ion-col>
     <ion-col size="2">
       <ion-icon name="checkmark-outline" color="success"></ion-icon>
