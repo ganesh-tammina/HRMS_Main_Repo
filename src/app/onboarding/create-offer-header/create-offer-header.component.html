@@ -1,7 +1,7 @@
 <ion-grid class="create-offer-header">
     <ion-row style="align-items: center;">
       <!-- Title -->
-      <ion-col>
+      <ion-col class="pr-15">
         <ion-toolbar>
           <ion-title>Create Offer</ion-title>
         </ion-toolbar>
@@ -12,36 +12,28 @@
       <div class="stepper">
         <div [ngClass]="activeTab === 'CreateOffer' ? 'step active' : 'step inactive'"  (click)="navigate('CreateOffer')">
           <div class="circle">1</div>
-          <ion-button fill="clear">
-              JOB DETAILS
-            </ion-button>
+          <p>JOB DETAILS</p>
         </div>
         
         <div class="line"></div>
   
         <div [ngClass]="activeTab === 'salaryStaructure' ? 'step active' : 'step inactive'"  (click)="navigate('salaryStaructure')">
           <div class="circle">2</div>
-          <ion-button fill="clear">
-        COMPENSATION
-      </ion-button>
+          <p> COMPENSATION</p>
         </div>
   
         <div class="line"></div>
         
-        <div  [ngClass]="activeTab === 'OfferDetailsComponent' ? 'step active' : 'step inactive'">
+        <div  [ngClass]="activeTab === 'OfferDetailsComponent' ? 'step active' : 'step inactive'"  (click)="navigate('OfferDetailsComponent')">
           <div class="circle">3</div>
-          <ion-button fill="clear" (click)="navigate('OfferDetailsComponent')">
-          OFFER DETAILS
-        </ion-button>
+          <p> OFFER DETAILS </p>
         </div>
         
         <div class="line"></div>
         
-        <div [ngClass]="activeTab === 'preview_send' ? 'step active' : 'step inactive'">
+        <div [ngClass]="activeTab === 'preview_send' ? 'step active' : 'step inactive'" (click)="navigate('preview_send')">
           <div class="circle">4</div>
-          <ion-button fill="clear" (click)="navigate('preview_send')">
-              PREVIEW & SEND
-            </ion-button>
+          <p>PREVIEW & SEND</p>
         </div>
       </div>
   
