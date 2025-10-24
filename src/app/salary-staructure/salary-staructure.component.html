@@ -19,12 +19,14 @@
             
             <ion-item>
               <ion-label position="stacked">Pay Group</ion-label>
-              <ion-select placeholder="Default pay group" interface="popover"></ion-select>
+              <ion-select  class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+               placeholder="Default pay group" interface="popover"></ion-select>
             </ion-item>
 
             <ion-item>
               <ion-label position="stacked">Incurredation Type</ion-label>
-              <ion-select placeholder="Annual" interface="popover"></ion-select>
+              <ion-select  class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+               placeholder="Annual" interface="popover"></ion-select>
             </ion-item>
 
             <form [formGroup]="salaryForm">
@@ -47,7 +49,8 @@
 
             <ion-item>
               <ion-label position="stacked">Range</ion-label>
-              <ion-select placeholder="Range: Band1" interface="popover"></ion-select>
+              <ion-select  class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+               placeholder="Range: Band1" interface="popover"></ion-select>
             </ion-item>
 
             <div class="view-structure">

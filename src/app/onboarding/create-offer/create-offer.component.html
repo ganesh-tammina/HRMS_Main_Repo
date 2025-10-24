@@ -17,7 +17,8 @@
                     </ion-item>     
                     <ion-item>
                         <ion-label position="stacked">Job Title</ion-label>
-                        <ion-select [value]="candidate?.jobDetailsForm?.JobTitle" interface="popover">
+                        <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+                         [value]="candidate?.jobDetailsForm?.JobTitle" interface="popover">
                             <ion-select-option value="UI/UX Designer">UI/UX Designer</ion-select-option>
                             <ion-select-option value="UI Developer">UI Developer</ion-select-option>
                             <ion-select-option value="Software Engineer">Software Engineer</ion-select-option>
@@ -25,7 +26,8 @@
                       </ion-item>
                       <ion-item>
                           <ion-label position="stacked">Department</ion-label>
-                          <ion-select [value]="candidate?.jobDetailsForm?.Department"  interface="popover">
+                          <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+                           [value]="candidate?.jobDetailsForm?.Department"  interface="popover">
                             <ion-select-option value="Finance">Finance</ion-select-option>
                             <ion-select-option value="Human Resources">Human Resources</ion-select-option>
                             <ion-select-option value="IT Development">IT Development</ion-select-option>
@@ -40,14 +42,16 @@
                     </ion-item>
                     <ion-item>
                         <ion-label position="stacked">Worker Type</ion-label>
-                        <ion-select [value]="candidate?.jobDetailsForm?.WorkType" interface="popover">
+                        <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+                         [value]="candidate?.jobDetailsForm?.WorkType" interface="popover">
                           <ion-select-option value="Perminent">Permanent</ion-select-option>
                           <ion-select-option value="Contract">Contract</ion-select-option>
                         </ion-select>
                       </ion-item>
                       <ion-item>
                           <ion-label position="stacked">Location</ion-label>
-                          <ion-select [value]="candidate?.jobDetailsForm?.JobLocation" interface="popover">
+                          <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+                           [value]="candidate?.jobDetailsForm?.JobLocation" interface="popover">
                             <ion-select-option value="Site 2 - Visakhapatnam - Day Shift">Site 2 - Visakhapatnam - Day
                               Shift</ion-select-option>
                             <ion-select-option value="Site 1 - Hyderabad - Night Shift">Site 1 - Hyderabad - Night
@@ -82,7 +86,8 @@
                       <ion-col size="6">
                         <ion-item>
                           <ion-label position="stacked">Offer Validity (days)</ion-label>
-                          <ion-select formControlName="offerValidity" placeholder="Select Validity" interface="popover">
+                          <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+                           formControlName="offerValidity" placeholder="Select Validity" interface="popover">
                             <ion-select-option value="2">2 Days</ion-select-option>
                             <ion-select-option value="7">7 Days</ion-select-option>
                           </ion-select>

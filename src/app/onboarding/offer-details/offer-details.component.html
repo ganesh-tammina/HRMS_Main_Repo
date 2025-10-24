@@ -14,7 +14,8 @@
                   <!-- Dropdown shown only if template option selected -->
                   <div *ngIf="selectedOption === 'template'" class="dropdown-section">
                       <ion-label>Select offer letter template</ion-label>
-                      <ion-select [value]="selectedTemplate" (ionChange)="onTemplateChange($event)" interface="popover">
+                      <ion-select  class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+                       [value]="selectedTemplate" (ionChange)="onTemplateChange($event)" interface="popover">
                         <ion-select-option value="SVS">SVS Towers</ion-select-option>
                         <ion-select-option value="TechTammina">Tech Tammina</ion-select-option>
                       </ion-select>
@@ -24,6 +25,7 @@
                 <!-- Radio options -->
                 <ion-card>
                     <ion-list>
+                        <h3>Template Options</h3> 
                         <ion-radio-group [value]="selectedOption" (ionChange)="onOptionChange($event)">
                           <ion-item>
                             <ion-label>Offer letter template</ion-label>
