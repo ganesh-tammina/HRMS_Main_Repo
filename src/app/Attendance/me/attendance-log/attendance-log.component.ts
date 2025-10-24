@@ -72,6 +72,8 @@ export class AttendanceLogComponent implements OnInit {
   selectedLog: AttendanceLog | null = null;
   showPopover = false;
   attendanceLogs: AttendanceLog[] = [];
+  attendanceHistory: any = [];
+
   days: Date[] = [];
   today: Date = new Date();
   attendanceRequestsHistory: {
@@ -86,11 +88,11 @@ export class AttendanceLogComponent implements OnInit {
     const storedData = localStorage.getItem("attendanceRecord");
     if (storedData) {
       const allAttendance = JSON.parse(storedData);
-      const constAttendance = {
-        ...allAttendance,
-        clockInTime: allAttendance.clockInTime ? new Date(allAttendance.clockInTime) : null
-      }
-      console.log(constAttendance, "ALL sATTENDANCE");
+      const constAttendance = allAttendance;
+      this.attendanceHistory = constAttendance.history;
+      console.log(this.attendanceHistory, "ALL sATTENDANCE");
+      console.log(constAttendance.dailyAccumulatedMs, "ALL sATTENDANCE");
+
     } else {
       console.warn("No attendance record found in localStorage");
     }
