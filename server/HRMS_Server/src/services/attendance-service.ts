@@ -1,5 +1,11 @@
 import { pool } from '../config/database';
-import { TO, TT } from '../interface/attendance-interface';
+import {
+  AttendanceEventInput,
+  AttendanceRecordInput,
+  DailyAccumulationInput,
+  TO,
+  TT,
+} from '../interface/attendance-interface';
 
 export default class AttendanceService {
   public static async countLogin(data: TT) {
@@ -96,5 +102,86 @@ export default class AttendanceService {
       (candidate: any) => !inCandidateIds.has(candidate.id)
     );
     return notCheckedIn;
+  }
+  public static async upsertAttendanceRecord(data: AttendanceRecordInput) {
+    const { employeeId, clockInTime, accumulatedMs, isClockedIn } = data;
+
+    const [existing] = await pool.query(
+      `SELECT record_id FROM attendance_records WHERE employee_id = ?`,
+      [employeeId]
+    );
+
+    if ((existing as any[]).length > 0) {
+      const recordId = (existing as any[])[0].record_id;
+      await pool.query(
+        `UPDATE attendance_records 
+         SET clock_in_time = ?, accumulated_ms = ?, is_clocked_in = ?, updated_at = NOW()
+         WHERE record_id = ?`,
+        [clockInTime, accumulatedMs, isClockedIn, recordId]
+      );
+      return { message: 'Attendance record updated', recordId };
+    } else {
+      const [result] = await pool.query(
+        `INSERT INTO attendance_records (employee_id, clock_in_time, accumulated_ms, is_clocked_in)
+         VALUES (?, ?, ?, ?)`,
+        [employeeId, clockInTime, accumulatedMs, isClockedIn]
+      );
+      return {
+        message: 'Attendance record created',
+        recordId: (result as any).insertId,
+      };
+    }
+  }
+
+  public static async addAttendanceEvent(data: AttendanceEventInput) {
+    const { recordId, eventType, eventTime, displayTime } = data;
+
+    const [result] = await pool.query(
+      `INSERT INTO attendance_events (record_id, event_type, event_time, display_time)
+       VALUES (?, ?, ?, ?)`,
+      [recordId, eventType, eventTime, displayTime]
+    );
+
+    return { message: 'Event added', eventId: (result as any).insertId };
+  }
+
+  public static async upsertDailyAccumulation(data: DailyAccumulationInput) {
+    const { recordId, workDate, accumulatedMs } = data;
+
+    await pool.query(
+      `INSERT INTO attendance_daily_accumulation (record_id, work_date, accumulated_ms)
+       VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE accumulated_ms = VALUES(accumulated_ms), updated_at = NOW()`,
+      [recordId, workDate, accumulatedMs]
+    );
+
+    return { message: 'Daily accumulation updated' };
+  }
+
+  public static async getEmployeeAttendance(employeeId: number) {
+    const [records] = await pool.query(
+      `SELECT * FROM attendance_records WHERE employee_id = ?`,
+      [employeeId]
+    );
+
+    if ((records as any[]).length === 0) return null;
+
+    const record = (records as any[])[0];
+
+    const [events] = await pool.query(
+      `SELECT * FROM attendance_events WHERE record_id = ? ORDER BY event_time ASC`,
+      [record.record_id]
+    );
+
+    const [daily] = await pool.query(
+      `SELECT * FROM attendance_daily_accumulation WHERE record_id = ? ORDER BY work_date ASC`,
+      [record.record_id]
+    );
+
+    return {
+      ...record,
+      history: events,
+      dailyAccumulated: daily,
+    };
   }
 }
