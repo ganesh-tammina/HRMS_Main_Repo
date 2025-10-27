@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { CandidateService, Candidate } from '../pre-onboarding.service';
+import { CandidateService } from '../pre-onboarding.service';
 import { AttendanceService, AttendanceRecord } from '../attendance.service';
 import { Subscription, interval } from 'rxjs';
 
@@ -11,15 +11,15 @@ import { Subscription, interval } from 'rxjs';
   standalone: true,
   imports: [CommonModule, IonicModule],
   template: `
-    <div *ngIf="currentCandidate" class="">
+    <div *ngIf="currentCandidate">
       <ion-button class="btn-clockin" (click)="clockIn()" *ngIf="!isClockedIn">
         Web Clock-In
       </ion-button>
       <ion-button class="btn-clockout" (click)="clockOut()" *ngIf="isClockedIn">
         Clock-Out
-      </ion-button>      
+      </ion-button>
       <div *ngIf="isClockedIn" class="ms-2">
-       Since Last Login : {{ timeSinceLastLogin }}
+        Since Last Login : {{ timeSinceLastLogin }}
       </div>
     </div>
     <div *ngIf="!currentCandidate">
@@ -28,7 +28,7 @@ import { Subscription, interval } from 'rxjs';
   `,
 })
 export class ClockButtonComponent implements OnInit, OnDestroy {
-  currentCandidate?: Candidate;
+  currentCandidate?: any;
   @Input() record?: AttendanceRecord;
   @Output() statusChanged = new EventEmitter<AttendanceRecord>();
 
@@ -44,18 +44,26 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     this.candidateService.getEmpDet().subscribe((user: any) => {
       this.currentCandidate = user || undefined;
 
+      // Restore record from localStorage if available
+      const storedRecord = localStorage.getItem('attendanceRecord');
+      if (storedRecord) {
+        this.record = JSON.parse(storedRecord);
+      }
+
+      // Subscribe to service record updates
       if (this.currentCandidate && !this.record) {
-        this.attendanceService.record$.subscribe(record => {
+        this.attendanceService.record$.subscribe((record) => {
           if (record && record.employeeId === this.currentCandidate?.id) {
             this.record = record;
             this.statusChanged.emit(record);
+            localStorage.setItem('attendanceRecord', JSON.stringify(record));
           }
         });
 
         this.attendanceService.getRecord(this.currentCandidate.id);
       }
 
-      // Start interval to update timer every second
+      // Timer updates
       this.intervalSub = interval(1000).subscribe(() => this.updateTimeSinceLogin());
     });
   }
@@ -66,16 +74,18 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
   clockIn() {
     if (!this.currentCandidate) return;
-    const record = this.attendanceService.clockIn(this.currentCandidate.id);
+    const record = this.attendanceService.clockIn(this.currentCandidate);
     this.record = record;
     this.statusChanged.emit(record);
+    localStorage.setItem('attendanceRecord', JSON.stringify(record));
   }
 
   clockOut() {
     if (!this.currentCandidate) return;
-    const record = this.attendanceService.clockOut(this.currentCandidate.id);
+    const record = this.attendanceService.clockOut(this.currentCandidate);
     this.record = record;
     this.statusChanged.emit(record);
+    localStorage.setItem('attendanceRecord', JSON.stringify(record));
   }
 
   get isClockedIn(): boolean {

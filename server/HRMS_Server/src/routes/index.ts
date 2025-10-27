@@ -36,12 +36,18 @@ router.post("/v1/log-out",verifyAccessToken, EmployeeLoginController.LogOut)
 router.post('/v1/clockin',verifyAccessToken, AttendanceController.handleClockIn);
 router.post('/v1/clockout',verifyAccessToken, AttendanceController.handleClockOut);
 router.post('/v1/get-attendance',verifyAccessToken, AttendanceController.getAttendance);
+router.post( '/v1/upsert-record', verifyAccessToken, AttendanceController.upsertAttendanceRecord);
+router.post( '/v1/add-event', verifyAccessToken, AttendanceController.addAttendanceEvent);
+router.post( '/v1/upsert-daily', verifyAccessToken, AttendanceController.upsertDailyAccumulation);
+router.get( '/v1/get-attendance/:employeeId', verifyAccessToken,  AttendanceController.getEmployeeAttendance);
 router.get('/v1/notinyet',verifyAccessToken, AttendanceController.notinyet);
 
 router.post('/v1/leave-balance',verifyAccessToken, LeaveController.createLeaveBalance);
 router.get('/v1/leave-balance',verifyAccessToken, LeaveController.getLeaveBalances);
 router.post('/v1/leave-request',verifyAccessToken, LeaveController.createLeaveRequest);
 router.get('/v1/leave-request',verifyAccessToken, LeaveController.getLeaveRequests);
+
+
 
 
 // test apis here 🤡
