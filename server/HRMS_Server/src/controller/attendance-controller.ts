@@ -203,15 +203,12 @@ export default class AttendanceController {
       const currentTime = String(new Date().toTimeString().split(' ')[0]);
       const currentDate = String(new Date().toISOString().split('T')[0]);
 
-      // Fetch today's attendance record(s)
       const todayRecords: any = await AttendanceService.getAttendance({
         employee_id: EmpID,
         date: currentDate,
       });
 
-      // ---- CLOCK IN ----
       if (LogType === 'IN') {
-        // Check if user has any open (not clocked-out) attendance
         const hasOpenSession = todayRecords.some(
           (rec: any) => rec.check_in && !rec.check_out
         );
@@ -223,11 +220,9 @@ export default class AttendanceController {
           });
         }
 
-        // Get shift info
         const { shift_policy_name } = await AttendanceService.qeiwoi(EmpID);
         const shiftPolicy = await AttendanceService.qeiwoasi(shift_policy_name);
 
-        // Clock in
         const clockInResult = await AttendanceService.clockIn({
           employee_id: EmpID,
           check_in: currentTime,
@@ -241,6 +236,7 @@ export default class AttendanceController {
         return res.status(200).json({
           status: true,
           message: 'Clocked In Successfully',
+          currentDate: currentDate,
           late: {
             shift_check_in: shiftPolicy.check_in,
             actual_check_in: currentTime,
@@ -251,9 +247,7 @@ export default class AttendanceController {
         });
       }
 
-      // ---- CLOCK OUT ----
       if (LogType === 'OUT') {
-        // Fetch today's attendance
         const todayRecords: any = await AttendanceService.getAttendance({
           employee_id: EmpID,
           date: currentDate,
@@ -266,7 +260,6 @@ export default class AttendanceController {
           });
         }
 
-        // Find the latest open session (check_in exists but check_out is null)
         const openSession = todayRecords.find(
           (rec: any) => rec.check_in && !rec.check_out
         );
@@ -278,7 +271,6 @@ export default class AttendanceController {
           });
         }
 
-        // Proceed to clock out
         const clockOutResult = await AttendanceService.clockOut({
           employee_id: EmpID,
           check_out: currentTime,
@@ -291,11 +283,11 @@ export default class AttendanceController {
         return res.status(200).json({
           status: true,
           message: 'Clocked Out Successfully',
+          currentDate: currentDate,
           data: clockOutResult,
         });
       }
 
-      // Invalid log type
       return res
         .status(400)
         .json({ status: false, message: 'Invalid LogType' });
