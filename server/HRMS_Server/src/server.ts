@@ -8,6 +8,8 @@ import index from './routes/index';
 import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import candidateRoutes from './services/candidate-service'; // path to your route file
+
 
 dotenv.config();
 
@@ -22,8 +24,10 @@ class Server {
       optionsSuccessStatus: 200,
       credentials: true,
     };
+    this.app.use(express.json({}));
     this.app.use(cors(corsOptions));
     this.port = config.PORT;
+    this.app.use('/', candidateRoutes); // mount route
     this.middlewares();
     this.routes();
   }
