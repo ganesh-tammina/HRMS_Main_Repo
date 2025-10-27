@@ -1,47 +1,4 @@
 
-/* Tabs */
-.tabs {
-  display: flex;
-  border: 1px solid var(--ion-white-color);
-  background: var(--ion-white-color);
-  margin-bottom: 12px;
-  width: fit-content;
-  border-radius: 8px;
-}
-.tab {
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ion-text-color);
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
- 
-}
-.tab.active {  
-  color: var(--ion-white-color);
-  border-bottom: 2px solid #2563eb;
-  font-weight: 600;
-  background: var(--ion-color-secondary);
-  .count {
-    font-weight: 600;
-    color: var(--ion-white-color);
-  }
-  &:first-child {
-    border-bottom-left-radius: 8px;
-    border-top-left-radius: 8px;
-  }
-  &:last-child {
-    border-bottom-right-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-}
-.count {
-  font-size: 13px;
-  color: var(--ion-text-color);
-}
-
-
 @import '../preonboarding/preonboarding.component.scss';
 .search-wrap {
   width: 320px;

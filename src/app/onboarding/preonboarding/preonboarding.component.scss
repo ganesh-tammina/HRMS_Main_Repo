@@ -19,13 +19,17 @@
 ion-item.ion-no-border {
   --border-color: transparent;
 }
-
+.inner-scroll:part[scroll]{
+  @include scroll-style();
+}
 .pre-on-boarding-block {
+  --offset-top: 0px !important;
   --padding-top: 16px;
   --padding-bottom: 16px;
   --padding-start: 16px;
   --padding-end: 16px;
   --background: var(--ion-bg-color);
+  
 .page-header {
   @include text-style-normal();
   margin-top: 15px; 
@@ -36,7 +40,7 @@ ion-item.ion-no-border {
 }
   .filter-chip {
     display: block;
-      margin-right: 24px;
+    margin-right: 24px;
   } 
   .custom-dropdown {
     width: 180px;
@@ -63,8 +67,7 @@ ion-item.ion-no-border {
     font-size: 14px; background: transparent;
   }
 }
-   .table {
-    
+   .table {    
      .table-header {
       background: var(--ion-white-color);
       border: 1px solid #ABABAB;
@@ -72,6 +75,8 @@ ion-item.ion-no-border {
       border-radius: 6px;
       padding: 0px 16px;
       height: 60px;
+      @include normal-text-unbold();
+      font-weight: 500;
      }
      .table-list {
       background: var(--ion-white-color);
@@ -82,8 +87,19 @@ ion-item.ion-no-border {
         padding: 0;
       }
        .table-list-row {
+        height: 66px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1019607843);
+        display: flex;
+        align-content: center;    
+        ion-col {
+          @include normal-text-unbold();
+          align-content: center;
+        }
          .cell {
            display: flex;
+           .name-stack {
+             margin-left: 8px;
+           }
            .name-link {
             @include normal-text();
             margin: 0;
@@ -127,3 +143,45 @@ ion-item.ion-no-border {
   --color: #2986CE;
   border: 1.5px solid #2986CE;
  }
+
+ /* Tabs */
+.tabs {
+  display: flex;
+  border: 1px solid var(--ion-white-color);
+  background: var(--ion-white-color);
+  margin-bottom: 12px;
+  width: fit-content;
+  border-radius: 8px;
+}
+.tab {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ion-text-color);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+ 
+}
+.tab.active {  
+  color: var(--ion-white-color);
+  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+  background: var(--ion-color-secondary);
+  .count {
+    font-weight: 600;
+    color: var(--ion-white-color);
+  }
+  &:first-child {
+    border-bottom-left-radius: 8px;
+    border-top-left-radius: 8px;
+  }
+  &:last-child {
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+.count {
+  font-size: 13px;
+  color: var(--ion-text-color);
+}
