@@ -2,7 +2,7 @@
 /* Tabs */
 .tabs {
   display: flex;
-  border: 1px solid var(--ion-border-color);
+  border: 1px solid var(--ion-white-color);
   background: var(--ion-white-color);
   margin-bottom: 12px;
   width: fit-content;
@@ -43,3 +43,7 @@
 
 
 @import '../preonboarding/preonboarding.component.scss';
+.search-wrap {
+  width: 320px;
+  height: 44px !important;
+}
