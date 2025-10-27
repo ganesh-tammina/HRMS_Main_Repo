@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import candidateRoutes from './services/candidate-service'; // path to your route file
 
+import AttendanceRouter from './routes/attendance-route';
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ class Server {
 
   private routes(): void {
     this.app.use('/api', index);
+    this.app.use('/api', AttendanceRouter);
     this.app.get('/api', async (req, res) => {
       res.json('Server is running');
     });
