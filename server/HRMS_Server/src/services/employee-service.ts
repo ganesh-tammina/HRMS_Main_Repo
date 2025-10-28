@@ -2,8 +2,218 @@ import { pool } from '../config/database';
 import { Request, Response } from 'express';
 import { EmployeesInterface, promised } from '../interface/employee-interface';
 import { PoolConnection, ResultSetHeader } from 'mysql2/promise';
-
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+  statusCode: number;
+}
 export default class Employeeservices implements EmployeesInterface {
+  public async viewEmployement_details(
+    req: Request,
+    res: Response
+  ): Promise<promised> {
+    const getAllQUery: string = `SELECT 
+    e.employee_id,
+    e.employee_number,
+    e.first_name,
+    e.middle_name,
+    e.last_name,
+    e.full_name,
+    e.work_email,
+    e.gender,
+    e.marital_status,
+    e.blood_group,
+    e.physically_handicapped,
+    e.nationality,
+    e.created_at,
+    e.updated_at,
+
+    -- Employment Details
+    ed.attendance_number,
+    ed.location,
+    ed.location_country,
+    ed.legal_entity,
+    ed.business_unit,
+    ed.department,
+    ed.sub_department,
+    ed.job_title,
+    ed.secondary_job_title,
+    ed.reporting_to,
+    ed.reporting_manager_employee_number,
+    ed.dotted_line_manager,
+    ed.date_joined,
+    ed.leave_plan,
+    ed.band,
+    ed.pay_grade,
+    ed.time_type,
+    ed.worker_type,
+    ed.shift_policy_name,
+    ed.weekly_off_policy_name,
+    ed.attendance_time_tracking_policy,
+    ed.attendance_capture_scheme,
+    ed.holiday_list_name,
+    ed.expense_policy_name,
+    ed.notice_period,
+    ed.cost_center,
+
+    -- Current Address
+    ca.address_line1 AS current_address_line1,
+    ca.address_line2 AS current_address_line2,
+    ca.city AS current_city,
+    ca.state AS current_state,
+    ca.zip AS current_zip,
+    ca.country AS current_country,
+
+    -- Permanent Address
+    pa.address_line1 AS permanent_address_line1,
+    pa.address_line2 AS permanent_address_line2,
+    pa.city AS permanent_city,
+    pa.state AS permanent_state,
+    pa.zip AS permanent_zip,
+    pa.country AS permanent_country,
+
+    -- Family Info
+    f.father_name,
+    f.mother_name,
+    f.spouse_name,
+    f.children_names,
+
+    -- Statutory Info
+    s.pan_number,
+    s.aadhaar_number,
+    s.pf_number,
+    s.uan_number,
+
+    -- Exit Details
+    ex.employment_status,
+    ex.exit_date,
+    ex.comments,
+    ex.exit_status,
+    ex.termination_type,
+    ex.termination_reason,
+    ex.resignation_note
+
+FROM employees e
+LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
+LEFT JOIN family_info f ON e.employee_id = f.employee_id
+LEFT JOIN statutory_info s ON e.employee_id = s.employee_id
+LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
+
+-- Pivot addresses
+LEFT JOIN addresses ca 
+       ON e.employee_id = ca.employee_id 
+      AND ca.address_type = 'Current'
+LEFT JOIN addresses pa 
+       ON e.employee_id = pa.employee_id 
+      AND pa.address_type = 'Permanent';
+`;
+    const getAllUsingID: string = `SELECT 
+    e.employee_id,
+    e.employee_number,
+    e.first_name,
+    e.middle_name,
+    e.last_name,
+    e.full_name,
+    e.work_email,
+    e.gender,
+    e.marital_status,
+    e.blood_group,
+    e.physically_handicapped,
+    e.nationality,
+    e.created_at,
+    e.updated_at,
+
+    -- Employment Details
+    ed.attendance_number,
+    ed.location,
+    ed.location_country,
+    ed.legal_entity,
+    ed.business_unit,
+    ed.department,
+    ed.sub_department,
+    ed.job_title,
+    ed.secondary_job_title,
+    ed.reporting_to,
+    ed.reporting_manager_employee_number,
+    ed.dotted_line_manager,
+    ed.date_joined,
+    ed.leave_plan,
+    ed.band,
+    ed.pay_grade,
+    ed.time_type,
+    ed.worker_type,
+    ed.shift_policy_name,
+    ed.weekly_off_policy_name,
+    ed.attendance_time_tracking_policy,
+    ed.attendance_capture_scheme,
+    ed.holiday_list_name,
+    ed.expense_policy_name,
+    ed.notice_period,
+    ed.cost_center,
+
+    -- Current Address
+    ca.address_line1 AS current_address_line1,
+    ca.address_line2 AS current_address_line2,
+    ca.city AS current_city,
+    ca.state AS current_state,
+    ca.zip AS current_zip,
+    ca.country AS current_country,
+
+    -- Permanent Address
+    pa.address_line1 AS permanent_address_line1,
+    pa.address_line2 AS permanent_address_line2,
+    pa.city AS permanent_city,
+    pa.state AS permanent_state,
+    pa.zip AS permanent_zip,
+    pa.country AS permanent_country,
+
+    -- Family Info
+    f.father_name,
+    f.mother_name,
+    f.spouse_name,
+    f.children_names,
+
+    -- Statutory Info
+    s.pan_number,
+    s.aadhaar_number,
+    s.pf_number,
+    s.uan_number,
+
+    -- Exit Details
+    ex.employment_status,
+    ex.exit_date,
+    ex.comments,
+    ex.exit_status,
+    ex.termination_type,
+    ex.termination_reason,
+    ex.resignation_note
+
+FROM employees e
+LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
+LEFT JOIN family_info f ON e.employee_id = f.employee_id
+LEFT JOIN statutory_info s ON e.employee_id = s.employee_id
+LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
+
+-- Pivot addresses
+LEFT JOIN addresses ca 
+       ON e.employee_id = ca.employee_id 
+      AND ca.address_type = 'Current'
+LEFT JOIN addresses pa 
+       ON e.employee_id = pa.employee_id 
+      AND pa.address_type = 'Permanent' where e.employee_id = ?;
+`;
+    const [result]: any = req?.body?.id
+      ? await pool.query(getAllUsingID, [req.body.id])
+      : await pool.query(getAllQUery);
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'Yep',
+      data: [result],
+    };
+  }
+
   async addEmployees(
     req: Request,
     res: Response,
@@ -565,609 +775,795 @@ export default class Employeeservices implements EmployeesInterface {
     }
   }
 
-  private hasAddressData(
-    data: any,
-    addressType: 'Current' | 'Permanent'
-  ): boolean {
-    const prefix = addressType === 'Current' ? 'Current' : 'Permanent';
-    return !!(
-      data[`${prefix}AddressLine1`] ||
-      data[`${prefix}AddressLine2`] ||
-      data[`${prefix}AddressCity`] ||
-      data[`${prefix}AddressState`] ||
-      data[`${prefix}AddressZip`] ||
-      data[`${prefix}AddressCountry`]
-    );
-  }
+  async viewEmployees(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      conn = await pool.getConnection();
+      const employee_id = req.body.employee_id || req.query.employee_id;
 
-  private hasEmploymentData(data: any): boolean {
-    return !!(
-      data.AttendanceNumber ||
-      data.Location ||
-      data.Department ||
-      data.JobTitle ||
-      data.DateJoined
-    );
-  }
+      const baseQuery = `
+        SELECT 
+          e.*,
+          ca.address_line1 AS current_line1, ca.address_line2 AS current_line2, ca.city AS current_city,
+          ca.state AS current_state, ca.zip AS current_zip, ca.country AS current_country,
+          pa.address_line1 AS permanent_line1, pa.address_line2 AS permanent_line2, pa.city AS permanent_city,
+          pa.state AS permanent_state, pa.zip AS permanent_zip, pa.country AS permanent_country,
+          ed.*,
+          fi.father_name, fi.mother_name, fi.spouse_name, fi.children_names,
+          si.pan_number, si.aadhaar_number, si.pf_number, si.uan_number,
+          ex.employment_status, ex.exit_date, ex.comments, ex.exit_status,
+          ex.termination_type, ex.termination_reason, ex.resignation_note
+        FROM employees e
+        LEFT JOIN addresses ca ON e.employee_id = ca.employee_id AND ca.address_type = 'Current'
+        LEFT JOIN addresses pa ON e.employee_id = pa.employee_id AND pa.address_type = 'Permanent'
+        LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
+        LEFT JOIN family_info fi ON e.employee_id = fi.employee_id
+        LEFT JOIN statutory_info si ON e.employee_id = si.employee_id
+        LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
+        ${employee_id ? 'WHERE e.employee_id = ?' : ''}
+      `;
 
-  private hasFamilyData(data: any): boolean {
-    return !!(
-      data.FatherName ||
-      data.MotherName ||
-      data.SpouseName ||
-      data.ChildrenNames
-    );
-  }
+      const [rows]: any = employee_id
+        ? await conn.query(baseQuery, [employee_id])
+        : await conn.query(baseQuery);
 
-  private hasStatutoryData(data: any): boolean {
-    return !!(
-      data.PANNumber ||
-      data.AadhaarNumber ||
-      data.PFNumber ||
-      data.UANNumber
-    );
-  }
-
-  private hasExitData(data: any): boolean {
-    return !!(
-      data.ExitDate ||
-      data.ExitStatus ||
-      data.TerminationType ||
-      data.TerminationReason ||
-      data.ResignationNote ||
-      (data.EmploymentStatus &&
-        data.EmploymentStatus.toLowerCase() !== 'working' &&
-        data.EmploymentStatus.toLowerCase() !== 'active')
-    );
-  }
-
-  public static async bulkInsertEmployees(
-    req: Request,
-    res: Response
-  ): Promise<any> {
-    const employees = req.body;
-    const employeeservice = new Employeeservices();
-
-    if (!Array.isArray(employees) || employees.length === 0) {
+      return {
+        success: true,
+        message: rows.length > 0 ? 'Employee(s) found' : 'No employees found',
+        data: rows,
+        statusCode: 200,
+      };
+    } catch (error: any) {
       return {
         success: false,
-        message: 'Request body must be a non-empty array.',
-        statusCode: 400,
+        message: 'Failed to fetch employees',
+        data: { error: error.message },
+        statusCode: 500,
       };
+    } finally {
+      if (conn) conn.release();
     }
+  }
 
-    const successfulInserts: any[] = [];
-    const failedInserts: any[] = [];
-
-    for (let i = 0; i < employees.length; i++) {
-      console.log('bulk-', i);
-      const emp = employees[i];
-      const employeeReport: any = {
-        index: i,
-        employeeNumber: emp.EmployeeNumber || 'N/A',
-        workEmail: emp.WorkEmail || 'N/A',
-        status: 'processing',
-        inserted: {},
-        skipped: {},
-        errors: [],
-      };
-
-      let connection: PoolConnection | null = null;
-
-      try {
-        connection = await pool.getConnection();
-        await connection.beginTransaction();
-
-        if (!emp.EmployeeNumber || !emp.WorkEmail) {
-          throw new Error(
-            'Missing required fields: EmployeeNumber and WorkEmail'
-          );
-        }
-
-        const [empResult]: [ResultSetHeader, any] = await connection.query(
-          `INSERT INTO employees 
-          (employee_number, first_name, middle_name, last_name, full_name, work_email, gender, marital_status, blood_group, physically_handicapped, nationality, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            emp.EmployeeNumber,
-            emp.FirstName || null,
-            emp.MiddleName || null,
-            emp.LastName || null,
-            emp.FullName || null,
-            emp.WorkEmail,
-            emp.Gender || null,
-            emp.MaritalStatus || null,
-            emp.BloodGroup || null,
-            emp.PhysicallyHandicapped || null,
-            emp.Nationality || null,
-            new Date(),
-            new Date(),
-          ]
-        );
-
-        const employee_id = empResult.insertId;
-        employeeReport.employee_id = employee_id;
-        employeeReport.inserted.employee = true;
-
-        if (employeeservice.hasAddressData(emp, 'Current')) {
-          try {
-            await connection.query(
-              `INSERT INTO addresses 
-              (employee_id, address_type, address_line1, address_line2, city, state, zip, country)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                employee_id,
-                'Current',
-                emp.CurrentAddressLine1 || null,
-                emp.CurrentAddressLine2 || null,
-                emp.CurrentAddressCity || null,
-                emp.CurrentAddressState || null,
-                emp.CurrentAddressZip || null,
-                emp.CurrentAddressCountry || null,
-              ]
-            );
-            employeeReport.inserted.currentAddress = true;
-          } catch (addrError: any) {
-            employeeReport.errors.push(`Current address: ${addrError.message}`);
-          }
-        } else {
-          employeeReport.skipped.currentAddress = 'No data provided';
-        }
-
-        if (employeeservice.hasAddressData(emp, 'Permanent')) {
-          try {
-            await connection.query(
-              `INSERT INTO addresses 
-              (employee_id, address_type, address_line1, address_line2, city, state, zip, country)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                employee_id,
-                'Permanent',
-                emp.PermanentAddressLine1 || null,
-                emp.PermanentAddressLine2 || null,
-                emp.PermanentAddressCity || null,
-                emp.PermanentAddressState || null,
-                emp.PermanentAddressZip || null,
-                emp.PermanentAddressCountry || null,
-              ]
-            );
-            employeeReport.inserted.permanentAddress = true;
-          } catch (addrError: any) {
-            employeeReport.errors.push(
-              `Permanent address: ${addrError.message}`
-            );
-          }
-        } else {
-          employeeReport.skipped.permanentAddress = 'No data provided';
-        }
-
-        if (employeeservice.hasEmploymentData(emp)) {
-          try {
-            await connection.query(
-              `INSERT INTO employment_details 
-              (employee_id, attendance_number, location, location_country, legal_entity, business_unit, department, sub_department, job_title, secondary_job_title, reporting_to, reporting_manager_employee_number, dotted_line_manager, date_joined, leave_plan, band, pay_grade, time_type, worker_type, shift_policy_name, weekly_off_policy_name, attendance_time_tracking_policy, attendance_capture_scheme, holiday_list_name, expense_policy_name, notice_period, cost_center)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                employee_id,
-                emp.AttendanceNumber || null,
-                emp.Location || null,
-                emp.LocationCountry || null,
-                emp.LegalEntity || null,
-                emp.BusinessUnit || null,
-                emp.Department || null,
-                emp.SubDepartment || null,
-                emp.JobTitle || null,
-                emp.SecondaryJobTitle || null,
-                emp.ReportingTo || null,
-                emp.ReportingManagerEmployeeNumber || null,
-                emp.DottedLineManager || null,
-                emp.DateJoined || null,
-                emp.LeavePlan || null,
-                emp.Band || null,
-                emp.PayGrade || null,
-                emp.TimeType || null,
-                emp.WorkerType || null,
-                emp.ShiftPolicyName || null,
-                emp.WeeklyOffPolicyName || null,
-                emp.AttendanceTimeTrackingPolicy || null,
-                emp.AttendanceCaptureScheme || null,
-                emp.HolidayListName || null,
-                emp.ExpensePolicyName || null,
-                emp.NoticePeriod || null,
-                emp.CostCenter || null,
-              ]
-            );
-            employeeReport.inserted.employmentDetails = true;
-          } catch (empError: any) {
-            employeeReport.errors.push(
-              `Employment details: ${empError.message}`
-            );
-          }
-        } else {
-          employeeReport.skipped.employmentDetails = 'No data provided';
-        }
-
-        if (employeeservice.hasFamilyData(emp)) {
-          try {
-            await connection.query(
-              `INSERT INTO family_info 
-              (employee_id, father_name, mother_name, spouse_name, children_names)
-              VALUES (?, ?, ?, ?, ?)`,
-              [
-                employee_id,
-                emp.FatherName || null,
-                emp.MotherName || null,
-                emp.SpouseName || null,
-                emp.ChildrenNames || null,
-              ]
-            );
-            employeeReport.inserted.familyInfo = true;
-          } catch (famError: any) {
-            employeeReport.errors.push(`Family info: ${famError.message}`);
-          }
-        } else {
-          employeeReport.skipped.familyInfo = 'No data provided';
-        }
-
-        if (employeeservice.hasStatutoryData(emp)) {
-          try {
-            await connection.query(
-              `INSERT INTO statutory_info 
-              (employee_id, pan_number, aadhaar_number, pf_number, uan_number)
-              VALUES (?, ?, ?, ?, ?)`,
-              [
-                employee_id,
-                emp.PANNumber || null,
-                emp.AadhaarNumber || null,
-                emp.PFNumber || null,
-                emp.UANNumber || null,
-              ]
-            );
-            employeeReport.inserted.statutoryInfo = true;
-          } catch (statError: any) {
-            employeeReport.errors.push(`Statutory info: ${statError.message}`);
-          }
-        } else {
-          employeeReport.skipped.statutoryInfo = 'No data provided';
-        }
-
-        if (employeeservice.hasExitData(emp)) {
-          try {
-            await connection.query(
-              `INSERT INTO exit_details 
-              (employee_id, employment_status, exit_date, comments, exit_status, termination_type, termination_reason, resignation_note) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                employee_id,
-                emp.EmploymentStatus || null,
-                emp.ExitDate || null,
-                emp.Comments || null,
-                emp.ExitStatus || null,
-                emp.TerminationType || null,
-                emp.TerminationReason || null,
-                emp.ResignationNote || null,
-              ]
-            );
-            employeeReport.inserted.exitDetails = true;
-          } catch (exitError: any) {
-            employeeReport.errors.push(`Exit details: ${exitError.message}`);
-          }
-        } else {
-          employeeReport.skipped.exitDetails = 'No exit data';
-        }
-
-        await connection.commit();
-        employeeReport.status = 'success';
-        successfulInserts.push(employeeReport);
-      } catch (error: any) {
-        if (connection) {
-          await connection.rollback();
-        }
-
-        employeeReport.status = 'failed';
-        employeeReport.errors.push(`Employee: ${error.message}`);
-        failedInserts.push(employeeReport);
-      } finally {
-        if (connection) {
-          connection.release();
-        }
+  async editEmployees(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, ...updates } = req.body;
+      if (!employee_id) {
+        return {
+          success: false,
+          message: 'employee_id is required',
+          statusCode: 400,
+        };
       }
+
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
+
+      const allowed = [
+        'first_name',
+        'middle_name',
+        'last_name',
+        'full_name',
+        'work_email',
+        'gender',
+        'marital_status',
+        'blood_group',
+        'physically_handicapped',
+        'nationality',
+      ];
+      const fields = Object.keys(updates).filter((k) => allowed.includes(k));
+      if (fields.length === 0) {
+        return {
+          success: false,
+          message: 'No valid fields to update',
+          statusCode: 400,
+        };
+      }
+
+      const setClause = fields.map((f) => `${f} = ?`).join(', ');
+      const values = fields.map((f) => updates[f] ?? null);
+      values.push(employee_id);
+
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        `UPDATE employees SET ${setClause} WHERE employee_id = ?`,
+        values
+      );
+
+      if (result.affectedRows === 0) {
+        throw new Error('Employee not found');
+      }
+
+      await conn.commit();
+      return { success: true, message: 'Employee updated', statusCode: 200 };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
     }
-
-    const totalProcessed = employees.length;
-    const totalSuccess = successfulInserts.length;
-    const totalFailed = failedInserts.length;
-
-    return {
-      success: totalFailed === 0,
-      message:
-        totalFailed === 0
-          ? `All ${totalSuccess} employee(s) inserted successfully. No discrepancies found.`
-          : `Processed ${totalProcessed} employee(s): ${totalSuccess} succeeded, ${totalFailed} failed.`,
-      data: {
-        summary: {
-          totalProcessed,
-          totalSuccess,
-          totalFailed,
-          timestamp: new Date().toISOString(),
-        },
-        successfulInserts,
-        ...(totalFailed > 0 && { failedInserts }),
-      },
-      statusCode: totalFailed === 0 ? 200 : 207,
-    };
   }
 
-  editEmployees(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async deleteEmployees(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.body;
+      if (!employee_id) {
+        return {
+          success: false,
+          message: 'employee_id is required',
+          statusCode: 400,
+        };
+      }
+
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
+
+      await conn.query('DELETE FROM addresses WHERE employee_id = ?', [
+        employee_id,
+      ]);
+      await conn.query('DELETE FROM employment_details WHERE employee_id = ?', [
+        employee_id,
+      ]);
+      await conn.query('DELETE FROM family_info WHERE employee_id = ?', [
+        employee_id,
+      ]);
+      await conn.query('DELETE FROM statutory_info WHERE employee_id = ?', [
+        employee_id,
+      ]);
+      await conn.query('DELETE FROM exit_details WHERE employee_id = ?', [
+        employee_id,
+      ]);
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        'DELETE FROM employees WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      if (result.affectedRows === 0) {
+        throw new Error('Employee not found');
+      }
+
+      await conn.commit();
+      return {
+        success: true,
+        message: 'Employee and all data deleted',
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  deleteEmployees(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async viewAddress(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, address_type } = req.query;
+      if (!employee_id) {
+        return {
+          success: false,
+          message: 'employee_id is required',
+          statusCode: 400,
+        };
+      }
+
+      conn = await pool.getConnection();
+      let query = 'SELECT * FROM addresses WHERE employee_id = ?';
+      const params: any[] = [employee_id];
+
+      if (address_type) {
+        query += ' AND address_type = ?';
+        params.push(address_type);
+      }
+
+      const [rows]: any = await conn.query(query, params);
+      return {
+        success: true,
+        message: rows.length > 0 ? 'Address found' : 'No address found',
+        data: rows,
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  viewEmployees(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async editAddress(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, address_type, ...updates } = req.body;
+      if (!employee_id || !address_type) {
+        return {
+          success: false,
+          message: 'employee_id and address_type required',
+          statusCode: 400,
+        };
+      }
+
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
+
+      const fields = [
+        'address_line1',
+        'address_line2',
+        'city',
+        'state',
+        'zip',
+        'country',
+      ];
+      const setClause = fields.map((f) => `${f} = ?`).join(', ');
+      const values = fields.map((f) =>
+        updates[f] != null ? this.truncateZip(updates[f]) : null
+      );
+      values.push(employee_id, address_type);
+
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        `UPDATE addresses SET ${setClause} WHERE employee_id = ? AND address_type = ?`,
+        values
+      );
+
+      if (result.affectedRows === 0) {
+        await conn.query(
+          `INSERT INTO addresses (employee_id, address_type, address_line1, address_line2, city, state, zip, country)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [employee_id, address_type, ...values.slice(0, 6)]
+        );
+      }
+
+      await conn.commit();
+      return { success: true, message: 'Address updated', statusCode: 200 };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  editAddress(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async deleteAddress(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, address_type } = req.body;
+      if (!employee_id || !address_type) {
+        return {
+          success: false,
+          message: 'employee_id and address_type required',
+          statusCode: 400,
+        };
+      }
+
+      conn = await pool.getConnection();
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        'DELETE FROM addresses WHERE employee_id = ? AND address_type = ?',
+        [employee_id, address_type]
+      );
+
+      return {
+        success: true,
+        message:
+          result.affectedRows > 0 ? 'Address deleted' : 'Address not found',
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  deleteAddress(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
-
-  viewAddress(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
-
-  editEmployement_details(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
-
-  deleteEmployement_details(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async viewEmployement_details(
+  async editEmployement_details(
     req: Request,
     res: Response
-  ): Promise<promised> {
-    const getAllQUery: string = `SELECT 
-    e.employee_id,
-    e.employee_number,
-    e.first_name,
-    e.middle_name,
-    e.last_name,
-    e.full_name,
-    e.work_email,
-    e.gender,
-    e.marital_status,
-    e.blood_group,
-    e.physically_handicapped,
-    e.nationality,
-    e.created_at,
-    e.updated_at,
+  ): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, ...updates } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
 
-    -- Employment Details
-    ed.attendance_number,
-    ed.location,
-    ed.location_country,
-    ed.legal_entity,
-    ed.business_unit,
-    ed.department,
-    ed.sub_department,
-    ed.job_title,
-    ed.secondary_job_title,
-    ed.reporting_to,
-    ed.reporting_manager_employee_number,
-    ed.dotted_line_manager,
-    ed.date_joined,
-    ed.leave_plan,
-    ed.band,
-    ed.pay_grade,
-    ed.time_type,
-    ed.worker_type,
-    ed.shift_policy_name,
-    ed.weekly_off_policy_name,
-    ed.attendance_time_tracking_policy,
-    ed.attendance_capture_scheme,
-    ed.holiday_list_name,
-    ed.expense_policy_name,
-    ed.notice_period,
-    ed.cost_center,
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
 
-    -- Current Address
-    ca.address_line1 AS current_address_line1,
-    ca.address_line2 AS current_address_line2,
-    ca.city AS current_city,
-    ca.state AS current_state,
-    ca.zip AS current_zip,
-    ca.country AS current_country,
+      const allowed = Object.keys(updates).filter((k) =>
+        [
+          'attendance_number',
+          'location',
+          'location_country',
+          'legal_entity',
+          'business_unit',
+          'department',
+          'sub_department',
+          'job_title',
+          'secondary_job_title',
+          'reporting_to',
+          'reporting_manager_employee_number',
+          'dotted_line_manager',
+          'date_joined',
+          'leave_plan',
+          'band',
+          'pay_grade',
+          'time_type',
+          'worker_type',
+          'shift_policy_name',
+          'weekly_off_policy_name',
+          'attendance_time_tracking_policy',
+          'attendance_capture_scheme',
+          'holiday_list_name',
+          'expense_policy_name',
+          'notice_period',
+          'cost_center',
+        ].includes(k)
+      );
 
-    -- Permanent Address
-    pa.address_line1 AS permanent_address_line1,
-    pa.address_line2 AS permanent_address_line2,
-    pa.city AS permanent_city,
-    pa.state AS permanent_state,
-    pa.zip AS permanent_zip,
-    pa.country AS permanent_country,
+      if (allowed.length === 0) {
+        return { success: false, message: 'No valid fields', statusCode: 400 };
+      }
 
-    -- Family Info
-    f.father_name,
-    f.mother_name,
-    f.spouse_name,
-    f.children_names,
+      const reportingMgrNum = updates.reporting_manager_employee_number
+        ? await this.getEmployeeIdByNumber(
+            conn,
+            this.resolveReportingManager(
+              updates.reporting_manager_employee_number
+            )!
+          )
+        : null;
 
-    -- Statutory Info
-    s.pan_number,
-    s.aadhaar_number,
-    s.pf_number,
-    s.uan_number,
+      const setClause = allowed.map((f) => `${f} = ?`).join(', ');
+      const values = allowed.map((f) => {
+        if (f === 'date_joined') return this.formatDate(updates[f]);
+        if (f === 'notice_period') return this.parseNoticePeriod(updates[f]);
+        if (f === 'reporting_manager_employee_number')
+          return reportingMgrNum ? updates[f] : null;
+        return updates[f] ?? null;
+      });
+      values.push(employee_id);
 
-    -- Exit Details
-    ex.employment_status,
-    ex.exit_date,
-    ex.comments,
-    ex.exit_status,
-    ex.termination_type,
-    ex.termination_reason,
-    ex.resignation_note
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        `UPDATE employment_details SET ${setClause} WHERE employee_id = ?`,
+        values
+      );
 
-FROM employees e
-LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
-LEFT JOIN family_info f ON e.employee_id = f.employee_id
-LEFT JOIN statutory_info s ON e.employee_id = s.employee_id
-LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
+      if (result.affectedRows === 0) {
+        throw new Error('Employment details not found');
+      }
 
--- Pivot addresses
-LEFT JOIN addresses ca 
-       ON e.employee_id = ca.employee_id 
-      AND ca.address_type = 'Current'
-LEFT JOIN addresses pa 
-       ON e.employee_id = pa.employee_id 
-      AND pa.address_type = 'Permanent';
-`;
-    const getAllUsingID: string = `SELECT 
-    e.employee_id,
-    e.employee_number,
-    e.first_name,
-    e.middle_name,
-    e.last_name,
-    e.full_name,
-    e.work_email,
-    e.gender,
-    e.marital_status,
-    e.blood_group,
-    e.physically_handicapped,
-    e.nationality,
-    e.created_at,
-    e.updated_at,
-
-    -- Employment Details
-    ed.attendance_number,
-    ed.location,
-    ed.location_country,
-    ed.legal_entity,
-    ed.business_unit,
-    ed.department,
-    ed.sub_department,
-    ed.job_title,
-    ed.secondary_job_title,
-    ed.reporting_to,
-    ed.reporting_manager_employee_number,
-    ed.dotted_line_manager,
-    ed.date_joined,
-    ed.leave_plan,
-    ed.band,
-    ed.pay_grade,
-    ed.time_type,
-    ed.worker_type,
-    ed.shift_policy_name,
-    ed.weekly_off_policy_name,
-    ed.attendance_time_tracking_policy,
-    ed.attendance_capture_scheme,
-    ed.holiday_list_name,
-    ed.expense_policy_name,
-    ed.notice_period,
-    ed.cost_center,
-
-    -- Current Address
-    ca.address_line1 AS current_address_line1,
-    ca.address_line2 AS current_address_line2,
-    ca.city AS current_city,
-    ca.state AS current_state,
-    ca.zip AS current_zip,
-    ca.country AS current_country,
-
-    -- Permanent Address
-    pa.address_line1 AS permanent_address_line1,
-    pa.address_line2 AS permanent_address_line2,
-    pa.city AS permanent_city,
-    pa.state AS permanent_state,
-    pa.zip AS permanent_zip,
-    pa.country AS permanent_country,
-
-    -- Family Info
-    f.father_name,
-    f.mother_name,
-    f.spouse_name,
-    f.children_names,
-
-    -- Statutory Info
-    s.pan_number,
-    s.aadhaar_number,
-    s.pf_number,
-    s.uan_number,
-
-    -- Exit Details
-    ex.employment_status,
-    ex.exit_date,
-    ex.comments,
-    ex.exit_status,
-    ex.termination_type,
-    ex.termination_reason,
-    ex.resignation_note
-
-FROM employees e
-LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
-LEFT JOIN family_info f ON e.employee_id = f.employee_id
-LEFT JOIN statutory_info s ON e.employee_id = s.employee_id
-LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
-
--- Pivot addresses
-LEFT JOIN addresses ca 
-       ON e.employee_id = ca.employee_id 
-      AND ca.address_type = 'Current'
-LEFT JOIN addresses pa 
-       ON e.employee_id = pa.employee_id 
-      AND pa.address_type = 'Permanent' where e.employee_id = ?;
-`;
-    const [result]: any = req?.body?.id
-      ? await pool.query(getAllUsingID, [req.body.id])
-      : await pool.query(getAllQUery);
-    return {
-      success: true,
-      statusCode: 200,
-      message: 'Yep',
-      data: [result],
-    };
+      await conn.commit();
+      return { success: true, message: 'Updated', statusCode: 200 };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  viewExitdetails(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async deleteEmployement_details(
+    req: Request,
+    res: Response
+  ): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        'DELETE FROM employment_details WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: result.affectedRows > 0 ? 'Deleted' : 'Not found',
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  deleteExitdetails(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async viewExitdetails(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.query;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [rows]: any = await conn.query(
+        'SELECT * FROM exit_details WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: rows.length > 0 ? 'Found' : 'Not found',
+        data: rows[0] || null,
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  editExitdetails(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async editExitdetails(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, ...updates } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
+
+      const fields = [
+        'employment_status',
+        'exit_date',
+        'comments',
+        'exit_status',
+        'termination_type',
+        'termination_reason',
+        'resignation_note',
+      ];
+      const setClause = fields.map((f) => `${f} = ?`).join(', ');
+      const values = fields.map((f) =>
+        f === 'exit_date' ? this.formatDate(updates[f]) : updates[f] ?? null
+      );
+      values.push(employee_id);
+
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        `UPDATE exit_details SET ${setClause} WHERE employee_id = ?`,
+        values
+      );
+
+      if (result.affectedRows === 0) {
+        await conn.query(
+          `INSERT INTO exit_details (employee_id, ${fields.join(', ')})
+           VALUES (?, ${fields.map(() => '?').join(', ')})`,
+          [employee_id, ...values.slice(0, -1)]
+        );
+      }
+
+      await conn.commit();
+      return { success: true, message: 'Updated', statusCode: 200 };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
+  }
+  async deleteExitdetails(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        'DELETE FROM exit_details WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: result.affectedRows > 0 ? 'Deleted' : 'Not found',
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  viewFamilyInfo(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async viewFamilyInfo(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.query;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [rows]: any = await conn.query(
+        'SELECT * FROM family_info WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: rows.length > 0 ? 'Found' : 'Not found',
+        data: rows[0] || null,
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
+  }
+  async editFamilyInfo(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const {
+        employee_id,
+        father_name,
+        mother_name,
+        spouse_name,
+        children_names,
+      } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
+
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        `UPDATE family_info SET father_name = ?, mother_name = ?, spouse_name = ?, children_names = ?
+         WHERE employee_id = ?`,
+        [
+          father_name ?? null,
+          mother_name ?? null,
+          spouse_name ?? null,
+          children_names ?? null,
+          employee_id,
+        ]
+      );
+
+      if (result.affectedRows === 0) {
+        await conn.query(
+          `INSERT INTO family_info (employee_id, father_name, mother_name, spouse_name, children_names)
+           VALUES (?, ?, ?, ?, ?)`,
+          [
+            employee_id,
+            father_name ?? null,
+            mother_name ?? null,
+            spouse_name ?? null,
+            children_names ?? null,
+          ]
+        );
+      }
+
+      await conn.commit();
+      return { success: true, message: 'Updated', statusCode: 200 };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  deleteFamilyInfo(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async deleteFamilyInfo(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        'DELETE FROM family_info WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: result.affectedRows > 0 ? 'Deleted' : 'Not found',
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
   }
 
-  editFamilyInfo(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  async viewStatutoryInfo(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.query;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [rows]: any = await conn.query(
+        'SELECT * FROM statutory_info WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: rows.length > 0 ? 'Found' : 'Not found',
+        data: rows[0] || null,
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
+  }
+  async editStatutoryInfo(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id, pan_number, aadhaar_number, pf_number, uan_number } =
+        req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      await conn.beginTransaction();
+
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        `UPDATE statutory_info SET pan_number = ?, aadhaar_number = ?, pf_number = ?, uan_number = ?
+         WHERE employee_id = ?`,
+        [
+          pan_number ?? null,
+          aadhaar_number ?? null,
+          pf_number ?? null,
+          uan_number ?? null,
+          employee_id,
+        ]
+      );
+
+      if (result.affectedRows === 0) {
+        await conn.query(
+          `INSERT INTO statutory_info (employee_id, pan_number, aadhaar_number, pf_number, uan_number)
+           VALUES (?, ?, ?, ?, ?)`,
+          [
+            employee_id,
+            pan_number ?? null,
+            aadhaar_number ?? null,
+            pf_number ?? null,
+            uan_number ?? null,
+          ]
+        );
+      }
+
+      await conn.commit();
+      return { success: true, message: 'Updated', statusCode: 200 };
+    } catch (error: any) {
+      if (conn) await conn.rollback();
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
+  }
+  async deleteStatutoryInfo(req: Request, res: Response): Promise<ApiResponse> {
+    let conn: PoolConnection | null = null;
+    try {
+      const { employee_id } = req.body;
+      if (!employee_id)
+        return {
+          success: false,
+          message: 'employee_id required',
+          statusCode: 400,
+        };
+
+      conn = await pool.getConnection();
+      const [result]: [ResultSetHeader, any] = await conn.query(
+        'DELETE FROM statutory_info WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      return {
+        success: true,
+        message: result.affectedRows > 0 ? 'Deleted' : 'Not found',
+        statusCode: 200,
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message, statusCode: 500 };
+    } finally {
+      if (conn) conn.release();
+    }
+  }
+  formatDate(dateInput: any): string | null {
+    if (!dateInput || dateInput === 'null' || dateInput === '') return null;
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return null;
+    return String(date.toISOString().split('T')[0]);
   }
 
-  viewStatutoryInfo(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  parseIntSafe(value: any): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const num = parseInt(String(value), 10);
+    return isNaN(num) ? null : num;
   }
 
-  deleteStatutoryInfo(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  parseNoticePeriod(text: any): number | null {
+    if (!text) return null;
+    const match: any = String(text).match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
   }
 
-  editStatutoryInfo(req: Request, res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
+  resolveReportingManager(value: any): string | null {
+    if (!value || value === '' || value === null || value === undefined)
+      return null;
+    const str = String(value).trim().toLowerCase();
+    const invalid = [
+      'not available',
+      'n/a',
+      'na',
+      'none',
+      'not applicable',
+      '-',
+      'null',
+      'unknown',
+      'no manager',
+      'self',
+      'ceo',
+    ];
+    return invalid.includes(str) ? null : String(value).trim();
+  }
+
+  truncateZip(zip: any): string | null {
+    if (!zip) return null;
+    return String(zip).substring(0, 20);
+  }
+
+  hasData(obj: any, keys: string[]): boolean {
+    return keys.some((key) => obj[key] != null && obj[key] !== '');
+  }
+
+  async getEmployeeIdByNumber(
+    conn: PoolConnection,
+    employeeNumber: string
+  ): Promise<number | null> {
+    const [rows]: any = await conn.query(
+      'SELECT employee_id FROM employees WHERE employee_number = ? LIMIT 1',
+      [employeeNumber]
+    );
+    return rows.length > 0 ? rows[0].employee_id : null;
   }
 }

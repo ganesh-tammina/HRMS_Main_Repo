@@ -17,6 +17,7 @@ const upload = multer({ dest: 'uploads/' });
 
 const router = Router();
 
+
 router.post('/v1/send-email', MailController.mailsender);
 
 router.post('/v1/check-email', checkWhoAmI, EmployeeLoginController.EmailCheck);
@@ -61,8 +62,7 @@ router.post(
 );
 router.post(
   '/v1/bulk-data-entry',
-  verifyAccessToken,
-  checkMyRole,
+
   EmployeeController.insertBulkEmployees
 );
 router.post(
@@ -73,11 +73,26 @@ router.post(
 );
 router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);
 
-router.post('/v1/leave-balance', verifyAccessToken, LeaveController.createLeaveBalance);
-router.get('/v1/leave-balance', verifyAccessToken, LeaveController.getLeaveBalances);
-router.post('/v1/leave-request', verifyAccessToken, LeaveController.createLeaveRequest);
-router.get('/v1/leave-request', verifyAccessToken, LeaveController.getLeaveRequests);
-
+router.post(
+  '/v1/leave-balance',
+  verifyAccessToken,
+  LeaveController.createLeaveBalance
+);
+router.get(
+  '/v1/leave-balance',
+  verifyAccessToken,
+  LeaveController.getLeaveBalances
+);
+router.post(
+  '/v1/leave-request',
+  verifyAccessToken,
+  LeaveController.createLeaveRequest
+);
+router.get(
+  '/v1/leave-request',
+  verifyAccessToken,
+  LeaveController.getLeaveRequests
+);
 
 router.post(
   '/v1/leave-balance',
@@ -102,5 +117,5 @@ router.get(
 
 // test apis here 🤡
 
-// add test apis here only 
+// add test apis here only
 export default router;
