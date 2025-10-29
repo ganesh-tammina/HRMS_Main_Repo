@@ -9,7 +9,7 @@ import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import candidateRoutes from './services/candidate-service'; // path to your route file
-
+import offerDetails from './services/offerDetails';
 import AttendanceRouter from './routes/attendance-route';
 import rolecrud from './routes/role-crud-routes';
 
@@ -30,6 +30,7 @@ class Server {
     this.app.use(cors(corsOptions));
     this.port = config.PORT;
     this.app.use('/', candidateRoutes); // mount route
+    this.app.use('/', offerDetails);
     this.middlewares();
     this.routes();
   }

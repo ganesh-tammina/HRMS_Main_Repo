@@ -18,7 +18,7 @@ export class EmailService {
 
 		const data = {
 			// change this mail as it is hard coded. ⬇️
-			to: candidate.personalDetails.email,
+			to: candidate.Email,
 			// this mail ⬆️
 			subject: 'Welcome to our Tech Tammina!',
 			text: `
@@ -160,7 +160,7 @@ export class EmailService {
 														<tr>
 															<td class="pad">
 																<div style="color:#101112;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:14px;font-weight:400;letter-spacing:0.2px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
-																	<p style="margin: 0;">Hello ${candidate.personalDetails.FirstName},</p>
+																	<p style="margin: 0;">Hello ${candidate.FirstName},</p>
 																</div>
 															</td>
 														</tr>
@@ -169,7 +169,7 @@ export class EmailService {
 														<tr>
 															<td class="pad">
 																<div style="color:#222222;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:14px;font-weight:400;letter-spacing:0.2px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
-																	<p style="margin: 0;">It was great interacting with you as part of our hiring process and we are excited to bring you onboard as&nbsp;${candidate.jobDetailsForm.JobTitle}.</p>
+																	<p style="margin: 0;">It was great interacting with you as part of our hiring process and we are excited to bring you onboard as&nbsp;${candidate.JobTitle}.</p>
 																</div>
 															</td>
 														</tr>
