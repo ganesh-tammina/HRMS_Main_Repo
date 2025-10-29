@@ -16,34 +16,9 @@
   </div>
 </div>
 
-<div *ngIf="attendanceHistory.length > 0; else noLogs">
-  <table>
-    <thead>
-      <tr>
-        <th>Action</th>
-        <th>Message</th>
-        <th>Actual Check-In</th>
-        <th>Shift Check-In</th>
-        <th>Late?</th>
-        <th>Difference</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let log of attendanceHistory">
-        <td>{{ log.attendance_date }}</td>
-        <td>{{ log.check_in }}</td>
-        <td>{{ log.check_out }}</td>
-
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<ng-template #noLogs>
-  <p>No attendance records yet.</p>
-</ng-template>
-
+<!-- Attendance Grid -->
 <ion-grid class="attendance-table">
+  <!-- Header -->
   <ion-row class="table-header">
     <ion-col size="2">Date</ion-col>
     <ion-col size="3">Attendance Visual</ion-col>
@@ -53,55 +28,75 @@
     <ion-col size="1">Log</ion-col>
   </ion-row>
 
-  <ion-row *ngFor="let log of attendanceHistory" class="table-row">
-    <ion-col size="2">{{log.attendance_date}}</ion-col>
+  <!-- Rows -->
+  <ion-row *ngFor="let log of attendanceLogss" class="table-row">
+    <ion-col size="2">{{ log.attendance_date }}</ion-col>
     <ion-col size="3">
-      <ion-progress-bar [value]="log.progress"></ion-progress-bar>
+      <ion-progress-bar [value]="log.progress || 0"></ion-progress-bar>
     </ion-col>
-    <ion-col size="2">{{ log.effective }}</ion-col>
-    <ion-col size="2">
-      {{ log.gross }}
-    </ion-col>
+    <ion-col size="2">{{ log.effective || '-' }}</ion-col>
+    <ion-col size="2">{{ log.gross || '-' }}</ion-col>
     <ion-col size="2">
       <ion-icon name="checkmark-outline" color="success"></ion-icon>
-      {{ log.arrival }}
+      {{ log.arrival || '-' }}
     </ion-col>
     <ion-col size="1">
-      <ion-icon id="popover-button" name="alert-circle-outline" color="warning" (click)="openLogDetails(log)">
-      </ion-icon>
+      <ion-icon name="alert-circle-outline" color="warning" (click)="openLogDetails(log)"></ion-icon>
     </ion-col>
   </ion-row>
-  <ion-popover *ngIf="showPopover" [isOpen]="showPopover" trigger="popover-button" [dismissOnSelect]="false">
+
+  <!-- Popover showing all check-ins/check-outs -->
+  <ion-popover *ngIf="showPopover" [isOpen]="showPopover" [dismissOnSelect]="false">
     <ng-template>
       <ion-content class="popover-content ion-padding">
-        <p class="card-title">Day Shift 1( {{ currentDate }})</p>
-        <p class="card-title">{{ selectedLog?.details?.shiftTime }}</p>
+        <p class="card-title">
+          Attendance Log — {{ selectedLog?.attendance_date }}
+        </p>
         <p class="divider"></p>
-        <p><strong>Location:</strong></p>
-        <p class="card-title">{{ selectedLog?.details?.location }}</p>
-        <ion-row class="ion-no-padding">
-          <ion-col class="clock-logs" size="6">
-            <div class="" *ngFor="let log of attendanceHistory">
-              <p>{{log.check_in}}<img src="../../assets/Icons/clock-in.svg" width="12"></p>
-              <p>{{log.check_out}}<img src="../../assets/Icons/clock-out.svg" width="12">
-              </p>
-            </div>
-          </ion-col>
-        </ion-row>
+
+        <div *ngIf="selectedLog?.records?.length > 0; else noRecords">
+          <ion-row class="ion-no-padding" *ngFor="let rec of selectedLog.records; let i = index">
+            <ion-col class="clock-logs" size="6">
+              <div>
+                <p>
+                  <strong>Check-In {{ i + 1 }}:</strong>
+                  {{ rec.check_in }}
+                  <img src="../../assets/Icons/clock-in.svg" width="12" style="margin-left: 5px;" />
+                </p>
+              </div>
+            </ion-col>
+
+            <ion-col class="clock-logs" size="6">
+              <div>
+                <p>
+                  <strong>Check-Out {{ i + 1 }}:</strong>
+                  {{ rec.check_out }}
+                  <img src="../../assets/Icons/clock-out.svg" width="12" style="margin-left: 5px;" />
+                </p>
+              </div>
+            </ion-col>
+          </ion-row>
+        </div>
+
+        <ng-template #noRecords>
+          <p>No check-in/check-out records found.</p>
+        </ng-template>
+
+        <ion-button expand="block" color="medium" (click)="showPopover = false" style="margin-top: 10px;">
+          Close
+        </ion-button>
       </ion-content>
     </ng-template>
   </ion-popover>
 
-
+  <!-- Example Week-Off Rows -->
   <ion-row class="table-row weekoff-row">
     <ion-col size="2">Sun, 31 Aug<label>W-OFF</label></ion-col>
     <ion-col size="10" class="text-center">Full day Weekly-off</ion-col>
-
   </ion-row>
+
   <ion-row class="table-row weekoff-row">
-    <ion-col size="2">Sun, 31 Aug<label>W-OFF</label></ion-col>
+    <ion-col size="2">Sun, 24 Aug<label>W-OFF</label></ion-col>
     <ion-col size="10" class="text-center">Full day Weekly-off</ion-col>
-
   </ion-row>
-
 </ion-grid>

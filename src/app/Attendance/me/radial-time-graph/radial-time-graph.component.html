@@ -1,0 +1,31 @@
+<div class="gauge" [style.width.px]="size" [style.height.px]="size">
+  <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="'0 0 ' + size + ' ' + size">
+    <!-- center coords -->
+    <g [attr.transform]="'translate(' + (size/2) + ',' + (size/2) + ')'">
+      <!-- background circle (track) -->
+      <circle
+        class="gauge-track"
+        [attr.r]="radius"
+        [attr.stroke-width]="thickness"
+        cx="0"
+        cy="0"
+        fill="none"></circle>
+
+      <!-- filled arc (same circle, using stroke-dasharray) -->
+      <circle
+        class="gauge-fill"
+        [attr.r]="radius"
+        [attr.stroke-width]="thickness"
+        cx="0"
+        cy="0"
+        fill="none"
+        [attr.stroke]="color"
+        [attr.stroke-dasharray]="circumference"
+        [attr.stroke-dashoffset]="dashOffset"
+        style="transition: stroke-dashoffset 0.25s linear;"></circle>
+
+      <!-- optional center text -->
+      <text x="0" y="6" class="gauge-label" text-anchor="middle">{{ displayLabel }}</text>
+    </g>
+  </svg>
+</div>
