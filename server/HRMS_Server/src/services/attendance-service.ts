@@ -207,6 +207,13 @@ export default class AttendanceService {
     );
     return adfasd;
   }
+  public static async getTodayAttendanceExtra(emp_id: string, asdfads: string) {
+    const [adfasd]: any = await pool.query(
+      `SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = ?`,
+      [emp_id, asdfads]
+    );
+    return adfasd;
+  }
   public static async qeiwoi(
     asdads: number
   ): Promise<{ shift_policy_name: string }> {

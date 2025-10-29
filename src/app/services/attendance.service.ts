@@ -32,6 +32,11 @@ export class AttendanceService {
     return `${this.prefix}${employeeId}`;
   }
 
+
+  getallattendace(body: any): Observable<any> {
+    return this.http.post(this.baseURL + '/get-attendance', body, { withCredentials: true });
+  }
+
   getRecord(employeeId: number): AttendanceRecord {
     const stored = localStorage.getItem(this.getKey(employeeId));
     let record: AttendanceRecord;

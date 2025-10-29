@@ -62,6 +62,7 @@ export class AppComponent implements OnInit {
       next: (response: any) => {
         this.allEmployees = response.data || [];
         this.one = response.data[0];
+        localStorage.setItem('employee_details', JSON.stringify(this.allEmployees));
         console.log(this.one);
       },
       error: (err) => {

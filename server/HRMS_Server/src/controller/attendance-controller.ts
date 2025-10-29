@@ -55,19 +55,24 @@ export default class AttendanceController {
     if (!req.body.employee_id) {
       return res.status(400).json({ message: 'employee_id is required' });
     } else {
+      let result;
       if (req.body.startDate && req.body.endDate) {
-        const result = await AttendanceService.getAttendance({
+        result = await AttendanceService.getAttendance({
           employee_id: req.body.employee_id,
           startDate: req.body.startDate,
           endDate: req.body.endDate,
         });
-        res.status(200).json({ attendance: result });
+      }
+      else if (req.body.date) {
+        result = await AttendanceService.getTodayAttendanceExtra(req.body.employee_id, req.body.date);
       } else {
-        const result = await AttendanceService.getAttendance({
+        result = await AttendanceService.getAttendance({
           employee_id: req.body.employee_id,
         });
-        res.status(200).json({ attendance: result });
       }
+      
+      res.status(200).json({ attendance: result });
+
     }
   }
   public static async notinyet(req: Request, res: Response) {

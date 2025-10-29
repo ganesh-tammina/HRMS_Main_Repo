@@ -71,9 +71,9 @@ export class AttendanceLogComponent implements OnInit {
   attendanceRequests: AttendanceRequest[] = [];
   selectedLog: AttendanceLog | null = null;
   showPopover = false;
-  attendanceLogs: AttendanceLog[] = [];
+  attendanceLogs: any[] = [];
   attendanceHistory: any = [];
-
+  private employee_det: any
   days: Date[] = [];
   today: Date = new Date();
   attendanceRequestsHistory: {
@@ -85,23 +85,105 @@ export class AttendanceLogComponent implements OnInit {
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
   ) {
+    // this.attendanceService.response$.subscribe(res => {
+    //   if (res) {
+    //     console.log('📩 Received response in AttendanceLogComponent:', res);
 
-    this.attendanceService.response$.subscribe(res => {
-      if (res) {
-        console.log('📩 Received response in AttendanceLogComponent:', res);
+    //     if (res.action === 'in') {
+    //       console.log(res);
+    //       this.attendanceLogs.push({
+    //         action: res.action,
+    //         message: res.data?.message || res.data?.data?.message,
+    //         actual_check_in: res.data?.late?.actual_check_in || res.data?.data?.late?.actual_check_in,
+    //         shift_check_in: res.data?.late?.shift_check_in || res.data?.data?.late?.shift_check_in,
+    //         is_late: res.data?.late?.is_late || res.data?.data?.late?.is_late,
+    //         diff: res.data?.late?.diff || res.data?.data?.late?.diff
+    //       });
+    //       // const checkOutTime = res.data?.late?.actual_check_in;
+    //       // console.log('✅ Check-in time:', checkOutTime);
+    //       // handle clock-in result
+    //     } else if (res.action === 'out') {
+    //       console.log(res);
+    //       this.attendanceLogs.push({
+    //         action: res.action,
+    //         message: res.data?.message || res.data?.data?.message,
+    //         actual_check_in: res.data?.data?.check_out,
+    //         shift_check_in: res.data?.late?.shift_check_in || res.data?.data?.late?.shift_check_in,
+    //         is_late: res.data?.late?.is_late || res.data?.data?.late?.is_late,
+    //         diff: res.data?.late?.diff || res.data?.data?.late?.diff
+    //       })
+    //       // const checkOutTime = res.data?.data?.check_out;
+    //       // console.log('✅ Check-out time:', checkOutTime);
+    //       // handle clock-out result
+    //     }
+    //   }
+    // });
+    // this.attendanceLogs = [
+    //   {
+    //     date: 'Mon, 01 Sept',
+    //     progress: 0.7,
+    //     effective: '6h 44m',
+    //     gross: '8h 42m',
+    //     arrival: 'On Time',
+    //     details: {
+    //       shift: 'Day shift 1 (01 Sept)',
+    //       shiftTime: '9:30 - 18:30',
+    //       location: '4th Floor SVS Towers',
+    //       logs: [
+    //         { in: '09:16:48', out: '12:01:14' },
+    //         { in: '12:13:29', out: '13:25:47' },
+    //       ],
+    //       webClockIn: { in: '09:19:14', out: 'MISSING' },
+    //     },
+    //   },
+    //   {
+    //     date: 'Tue, 02 Sept',
+    //     progress: 0.5,
+    //     effective: '3h 56m',
+    //     gross: '4h 9m',
+    //     arrival: 'On Time',
+    //     details: {
+    //       shift: 'Day shift 1 (02 Sept)',
+    //       shiftTime: '9:30 - 18:30',
+    //       location: '4th Floor SVS Towers',
+    //       logs: [{ in: '09:10:00', out: '14:30:00' }],
+    //     },
+    //   },
+    //   {
+    //     date: 'Wed, 03 Sept',
+    //     progress: 0.75,
+    //     effective: '6h 38m',
+    //     gross: '8h 46m',
+    //     arrival: 'On Time',
+    //     details: {
+    //       shift: 'Day shift 1 (03 Sept)',
+    //       shiftTime: '9:30 - 18:30',
+    //       location: 'HQ',
+    //       logs: [{ in: '09:20:00', out: '18:15:00' }],
+    //     },
+    //   },
+    // ];
+    const t = localStorage.getItem('employee_details');
+    if (t) {
+      this.employee_det = JSON.parse(t);
+      console.log(this.employee_det, "asdasdads");
+    }
 
-        if (res.action === 'in') {
-          console.log(res);
-          const checkOutTime = res.data?.late?.actual_check_in;
-          console.log('✅ Check-in time:', checkOutTime);
-          // handle clock-in result
-        } else if (res.action === 'out') {
-          console.log(res);
-          const checkOutTime = res.data?.data?.check_out;
-          console.log('✅ Check-out time:', checkOutTime);
-          // handle clock-out result
-        }
-      }
+    const currentDate = new Date().toISOString().split('T')[0];
+    console.log(new Date(), " not formatted")
+    console.log(new Date("2025-10-29T18:30:00.000Z").toISOString().split('T')[0], "formatted date");
+    this.attendanceService.getallattendace({ employee_id: this.employee_det[0][0].employee_id, date: currentDate }).subscribe((data) => {
+      console.log('All Attendance Records:', data);
+      const chnageDate = data.attendance
+        .map((item: any) => {
+          return {
+            ...item,
+            attendance_date: new Date(item.attendance_date).toDateString()
+          };
+        });
+      this.attendanceHistory = chnageDate;
+      console.log(chnageDate, "changed date");
+
     });
     this.attendanceLogs = [
       {
@@ -114,10 +196,7 @@ export class AttendanceLogComponent implements OnInit {
           shift: 'Day shift 1 (01 Sept)',
           shiftTime: '9:30 - 18:30',
           location: '4th Floor SVS Towers',
-          logs: [
-            { in: '09:16:48', out: '12:01:14' },
-            { in: '12:13:29', out: '13:25:47' },
-          ],
+
           webClockIn: { in: '09:19:14', out: 'MISSING' },
         },
       },
@@ -131,7 +210,6 @@ export class AttendanceLogComponent implements OnInit {
           shift: 'Day shift 1 (02 Sept)',
           shiftTime: '9:30 - 18:30',
           location: '4th Floor SVS Towers',
-          logs: [{ in: '09:10:00', out: '14:30:00' }],
         },
       },
       {
@@ -144,11 +222,9 @@ export class AttendanceLogComponent implements OnInit {
           shift: 'Day shift 1 (03 Sept)',
           shiftTime: '9:30 - 18:30',
           location: 'HQ',
-          logs: [{ in: '09:20:00', out: '18:15:00' }],
         },
       },
     ];
-
     this.generateCalendar(this.currentMonth);
   }
 
@@ -201,10 +277,14 @@ export class AttendanceLogComponent implements OnInit {
    */
   /*******  bf79ddf5-f32a-460a-b35a-d7bbc24975f6  *******/
   ngOnInit() {
-    this.employee = this.candidateService.getCurrentCandidate() || undefined;
-    if (!this.employee) return;
 
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
+    if (!this.employee) return;
+    console.log('Current Employee in AttendanceLogComponent:', this.employee);
+
+    this.employee = this.candidateService.getCurrentCandidate() || undefined;
+    console.log('Current Employee in AttendanceLogComponent:', this.employee);
+
     if (!this.employee) return;
 
     this.attendanceService.record$.subscribe(record => {
