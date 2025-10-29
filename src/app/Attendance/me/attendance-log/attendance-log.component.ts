@@ -72,6 +72,8 @@ export class AttendanceLogComponent implements OnInit {
   selectedLog: AttendanceLog | null = null;
   showPopover = false;
   attendanceLogs: any[] = [];
+  attendanceLogss: any[] = [];
+
   attendanceHistory: any = [];
   private employee_det: any
   days: Date[] = [];
@@ -172,7 +174,7 @@ export class AttendanceLogComponent implements OnInit {
     const currentDate = new Date().toISOString().split('T')[0];
     console.log(new Date(), " not formatted")
     console.log(new Date("2025-10-29T18:30:00.000Z").toISOString().split('T')[0], "formatted date");
-    this.attendanceService.getallattendace({ employee_id: this.employee_det[0][0].employee_id, date: currentDate }).subscribe((data) => {
+    this.attendanceService.getallattendace({ employee_id: this.employee_det[0][0].employee_id }).subscribe((data) => {
       console.log('All Attendance Records:', data);
       const chnageDate = data.attendance
         .map((item: any) => {
@@ -181,10 +183,19 @@ export class AttendanceLogComponent implements OnInit {
             attendance_date: new Date(item.attendance_date).toDateString()
           };
         });
-      this.attendanceHistory = chnageDate;
+
+      const uniqueByDate = chnageDate.reduce((acc: any[], current: any) => {
+        const exists = acc.find(item => item.attendance_date === current.attendance_date);
+        if (!exists) acc.push(current);
+        return acc;
+      }, []);
+      this.attendanceLogss = chnageDate;
+      this.attendanceHistory = uniqueByDate;
       console.log(chnageDate, "changed date");
 
+
     });
+
     this.attendanceLogs = [
       {
         date: 'Mon, 01 Sept',
