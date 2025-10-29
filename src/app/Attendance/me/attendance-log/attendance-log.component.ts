@@ -85,20 +85,24 @@ export class AttendanceLogComponent implements OnInit {
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
   ) {
-    const storedData = localStorage.getItem("attendanceRecord");
-    if (storedData) {
-      const allAttendance = JSON.parse(storedData);
-      const constAttendance = allAttendance;
-      this.attendanceHistory = constAttendance.history;
-      console.log(this.attendanceHistory, "ALL sATTENDANCE");
-      console.log(constAttendance.dailyAccumulatedMs, "ALL sATTENDANCE");
 
-    } else {
-      console.warn("No attendance record found in localStorage");
-    }
+    this.attendanceService.response$.subscribe(res => {
+      if (res) {
+        console.log('📩 Received response in AttendanceLogComponent:', res);
 
-
-
+        if (res.action === 'in') {
+          console.log(res);
+          const checkOutTime = res.data?.late?.actual_check_in;
+          console.log('✅ Check-in time:', checkOutTime);
+          // handle clock-in result
+        } else if (res.action === 'out') {
+          console.log(res);
+          const checkOutTime = res.data?.data?.check_out;
+          console.log('✅ Check-out time:', checkOutTime);
+          // handle clock-out result
+        }
+      }
+    });
     this.attendanceLogs = [
       {
         date: 'Mon, 01 Sept',
@@ -199,6 +203,10 @@ export class AttendanceLogComponent implements OnInit {
   ngOnInit() {
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
+
+    this.employee = this.candidateService.getCurrentCandidate() || undefined;
+    if (!this.employee) return;
+
     this.attendanceService.record$.subscribe(record => {
       if (record && record.employeeId === this.employee?.id) {
         this.record = record;
@@ -206,92 +214,20 @@ export class AttendanceLogComponent implements OnInit {
         this.loadHistory();
       }
     });
+
     this.attendanceService.getRecord(this.employee.id);
 
-    setInterval(() => {
-      this.updateTimes();
-      this.loadHistory();
-    }, 1000);
-    this.attendanceRequestsHistory = [
-      {
-        type: 'Work From Home / On Duty Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '26 Aug 2025',
-            request: 'Work From Home - 1 Day',
-            requestedOn: '26 Aug 2025 12:30 PM by XYZ',
-            note: 'working from home on this day.',
-            reason: 'Personal',
-            status: 'Approved',
-            lastAction: 'ABC on 26 Aug',
-          }
-        ]
-      },
-      {
-        type: 'Regularization Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [] // none
-      },
-      {
-        type: 'Remote Clock In Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '19 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '19 Aug 2025 by Employee',
-            note: 'I am working on some high-priority tasks.',
-            status: 'Approved',
-            lastAction: 'ABC on 19 Aug',
-          },
-          {
-            date: '22 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '22 Aug 2025 by Employee',
-            note: 'Working on some issues.',
-            status: 'Approved',
-            lastAction: 'ABC on 22 Aug',
-          }
-        ]
-      },
-      {
-        type: 'Partial Day Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: []
-      }
-    ];
-    // Requests Data
-    this.attendanceRequests = [
-      {
-        type: 'Work From Home / On Duty Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: []
-      },
-      {
-        type: 'Regularization Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: ['Request #101 | Pending Approval']
-      },
-      {
-        type: 'Remote Clock In Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: []
-      },
-      {
-        type: 'Partial Day Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: []
-      }
-    ];
-
-    // Logs Data (with details included)
 
 
     this.generateDays();
+    this.attendanceRecord();
+
 
   }
-
+  attendanceRecord() {
+    if (!this.employee) return;
+    this.attendanceService.clockAction(this.employee, 'in');
+  }
   generateDays() {
     const today = new Date();
     const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
