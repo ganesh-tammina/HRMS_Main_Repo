@@ -19,7 +19,7 @@ export interface Candidate {
     Department: string;
     JobLocation: string;
     WorkType: string;
-    BussinessUnit: string;
+    BusinessUnit: string;
   };
   employeeCredentials?: {
     companyEmail: string;
