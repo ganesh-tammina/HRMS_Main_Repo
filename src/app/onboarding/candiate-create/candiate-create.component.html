@@ -52,14 +52,19 @@
     </ion-item>
 
     <ion-item>
-      <ion-label>Gendessr</ion-label>
-      <ion-select formControlName="Gender">
-        <ion-select-option value="Male">Male</ion-select-option>
-        <ion-select-option value="Female">Female</ion-select-option>
-        <ion-select-option value="Other">Other</ion-select-option>
-      </ion-select>
+      <ion-label>Gender</ion-label>
+      <div>
+        <ion-select formControlName="Gender">
+          <ion-select-option value="Male">Male</ion-select-option>
+          <ion-select-option value="Female">Female</ion-select-option>
+          <ion-select-option value="Other">Other</ion-select-option>
+        </ion-select>
+      </div>
     </ion-item>
-
+    <div class="section-header ion-padding-start ion-padding-vertical">
+      <ion-icon name="person"></ion-icon>
+      Personal Information
+    </div>
     <ion-item>
       <ion-label position="floating">Job Title</ion-label>
       <ion-select formControlName="JobTitle">
