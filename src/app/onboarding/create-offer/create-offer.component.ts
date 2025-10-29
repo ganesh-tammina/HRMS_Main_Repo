@@ -79,7 +79,7 @@ export class CreateOfferComponent implements OnInit {
       const formattedJoiningDate = this.formatDate(this.offerForm.value.DOJ) || '';
 
       const offerPayload = {
-        Email: this.candidate?.personalDetails?.Email || this.candidate?.Email, // fallback
+        Email: this.candidate?.personalDetails?.Email || this.candidate?.Email,
         JoiningDate: formattedJoiningDate,
         OfferValidity: this.offerForm.value.offerValidity
       };
@@ -95,8 +95,14 @@ export class CreateOfferComponent implements OnInit {
         next: (res: any) => {
           console.log('✅ Offer details saved successfully:', res);
           alert('Offer details saved successfully!');
+
+          // ✅ Navigate using ID and Name (handles different property locations)
           this.router.navigate(
-            ['/salaryStaructure', this.candidate.id, encodeURIComponent(this.candidate.FirstName || 'User')],
+            [
+              '/salaryStaructure',
+              this.candidate?.candidate_id || this.candidate?.id || res?.data?.candidate_id,
+              encodeURIComponent(this.candidate?.personalDetails?.FirstName || this.candidate?.FirstName || 'User')
+            ],
             { state: { candidate: this.candidate } }
           );
         },
@@ -109,4 +115,5 @@ export class CreateOfferComponent implements OnInit {
       alert('Please fill all required fields!');
     }
   }
+
 }

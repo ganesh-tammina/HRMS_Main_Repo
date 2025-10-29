@@ -11,6 +11,7 @@ import rateLimit from 'express-rate-limit';
 import candidateRoutes from './services/candidate-service'; // path to your route file
 import offerDetails from './services/offerDetails';
 import AttendanceRouter from './routes/attendance-route';
+import mailRoutes from './routes/mail-route';
 import rolecrud from './routes/role-crud-routes';
 
 dotenv.config();
@@ -31,6 +32,7 @@ class Server {
     this.port = config.PORT;
     this.app.use('/', candidateRoutes); // mount route
     this.app.use('/', offerDetails);
+    this.app.use('/', mailRoutes);
     this.middlewares();
     this.routes();
   }

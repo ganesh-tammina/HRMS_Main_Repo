@@ -73,17 +73,19 @@ export class CreateOfferHeaderComponent implements OnInit {
     }
   }
   onCreateOfferemail() {
-    // Update candidate object
-
-    // Call service to update candidate
     this.email.sendEmail(this.candidate).subscribe({
-      next: (res : any) => {
+      next: (res: any) => {
+        console.log(res, 'Email sent response');
         if (res.success) {
-          alert('Email sent successfully!');
-            } else {
+          alert('✅ Email sent successfully!');
+        } else {
+          alert('❌ Email failed to send.');
         }
+      },
+      error: (err) => {
+        console.error(err);
+        alert('❌ Something went wrong while sending email.');
       }
     });
-
   }
 }
