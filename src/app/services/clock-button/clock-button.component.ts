@@ -12,10 +12,10 @@ import { Subscription, interval } from 'rxjs';
   imports: [CommonModule, IonicModule],
   template: `
     <div *ngIf="currentCandidate">
-      <ion-button class="btn-clockin" (click)="clockIn()" *ngIf="!isClockedIn">
+      <ion-button class="btn-clockin" (click)="clockIn()">
         Web Clock-In
       </ion-button>
-      <ion-button class="btn-clockout" (click)="clockOut()" *ngIf="isClockedIn">
+      <ion-button class="btn-clockout" (click)="clockOut()">
         Clock-Out
       </ion-button>
       <div *ngIf="isClockedIn" class="ms-2">
@@ -41,8 +41,10 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+
     this.candidateService.getEmpDet().subscribe((user: any) => {
       this.currentCandidate = user || undefined;
+      console.log('Current Candidate in ClockButton:', this.currentCandidate);
 
       // Restore record from localStorage if available
       const storedRecord = localStorage.getItem('attendanceRecord');
@@ -74,18 +76,15 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
   clockIn() {
     if (!this.currentCandidate) return;
-    const record = this.attendanceService.clockIn(this.currentCandidate);
-    this.record = record;
-    this.statusChanged.emit(record);
-    localStorage.setItem('attendanceRecord', JSON.stringify(record));
+
+    const record = this.attendanceService.clockIn({ EmpID: this.currentCandidate.data[0][0].employee_id, LogType: 'IN' });
+
   }
 
   clockOut() {
     if (!this.currentCandidate) return;
-    const record = this.attendanceService.clockOut(this.currentCandidate);
-    this.record = record;
-    this.statusChanged.emit(record);
-    localStorage.setItem('attendanceRecord', JSON.stringify(record));
+    const record = this.attendanceService.clockOut({ EmpID: this.currentCandidate.data[0][0].employee_id, LogType: 'OUT' });
+
   }
 
   get isClockedIn(): boolean {

@@ -119,6 +119,7 @@ export class LoginPage implements OnInit {
     const body = {
       password: this.existingEmpl.controls['password'].value,
     };
+
     this._loginSer.loginForAll(body).subscribe({
       next: (val) => {
         console.log(val);

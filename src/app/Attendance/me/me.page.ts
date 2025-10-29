@@ -91,6 +91,8 @@ export class MePage implements OnInit {
     this.generateDays();
   }
 
+
+
   // New method: triggered from ClockButtonComponent
   onClockStatusChanged(record: AttendanceRecord) {
     this.record = record;

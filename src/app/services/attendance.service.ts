@@ -22,12 +22,19 @@ export interface AttendanceRecord {
 })
 export class AttendanceService {
   private prefix = 'attendance_';
-  private baseURL = 'http://localhost:3562/api/v1/';
+  private baseURL = 'http://localhost:3562/api/v1';
   private recordSubject = new BehaviorSubject<AttendanceRecord | null>(null);
   record$ = this.recordSubject.asObservable();
+  private responseSubject = new BehaviorSubject<any>(null);
+  response$ = this.responseSubject.asObservable();
   constructor(private http: HttpClient) { }
   private getKey(employeeId: number): string {
     return `${this.prefix}${employeeId}`;
+  }
+
+
+  getallattendace(body: any): Observable<any> {
+    return this.http.post(this.baseURL + '/get-attendance', body, { withCredentials: true });
   }
 
   getRecord(employeeId: number): AttendanceRecord {
@@ -61,68 +68,37 @@ export class AttendanceService {
   }
 
 
-  employeeClockIN_Out(kjhk: any, ouyiuy: string): Observable<any> {
-    return this.http.post(this.baseURL + ouyiuy, kjhk, { withCredentials: true });
+  employeeClockIN_Out(kjhk: any): Observable<any> {
+    return this.http.post(this.baseURL + "/attendance", kjhk, { withCredentials: true });
   }
   getAttendance() {
     this.http.get(this.baseURL + 'getAttendance', { withCredentials: true }).subscribe((res) => {
       console.log(res)
     });
   }
-  clockIn(employeeId: any): AttendanceRecord {
-    let allAttendance = new Date().toTimeString().split(' ')[0]
-    console.log(employeeId, "JDKJHDF")
-    let record = this.getRecord(employeeId.data[0][0].employee_id);
-    if (record) {
-      localStorage.setItem("attendanceRecord", JSON.stringify(record));
-    } else {
-      console.warn("No record found to store in localStorage");
-    }
-    if (!record.isClockedIn) {
-      const now = new Date().toISOString();
-      this.employeeClockIN_Out({ employee_id: employeeId.data[0][0].employee_id, check_in: new Date().toTimeString().split(' ')[0] }, "clockin").subscribe(res => {
-        console.log(res)
-        alert(JSON.stringify(res));
-      });
-      record.clockInTime = now;
-      record.isClockedIn = true;
-      record.history.push({ type: 'CLOCK_IN', time: allAttendance });
-
-      const today = new Date().toDateString();
-      record.dailyAccumulatedMs ||= {};
-      record.dailyAccumulatedMs[today] ||= 0;
-
-      this.saveRecord(record);
-    }
-    return record;
+  clockIn(employeeId: any): void {
+    this.clockAction(employeeId, 'in');
   }
 
-  clockOut(employeeId: any): AttendanceRecord {
-    let record = this.getRecord(employeeId.data[0][0].employee_id);
-    let allAttendance = new Date().toTimeString().split(' ')[0]
-
-    if (record.isClockedIn && record.clockInTime) {
-      const now = new Date();
-      const duration = now.getTime() - new Date(record.clockInTime).getTime();
-      this.employeeClockIN_Out({ employee_id: employeeId.data[0][0].employee_id, check_out: new Date().toTimeString().split(' ')[0] }, "clockout").subscribe(res => {
-        alert(JSON.stringify(res));
-      });
-      record.accumulatedMs += duration;
-
-      const today = now.toDateString();
-      record.dailyAccumulatedMs ||= {};
-      record.dailyAccumulatedMs[today] ||= 0;
-      record.dailyAccumulatedMs[today] += duration;
-
-      record.isClockedIn = false;
-      record.clockInTime = undefined;
-
-      record.history.push({ type: 'CLOCK_OUT', time: allAttendance });
-
-      this.saveRecord(record);
-    }
-    return record;
+  clockOut(employeeId: any): void {
+    this.clockAction(employeeId, 'out');
   }
+  clockAction(employeeId: any, action: 'in' | 'out'): void {
+    this.employeeClockIN_Out(employeeId).subscribe({
+      next: (res) => {
+        console.log(`${action.toUpperCase()} response`, res);
+        // Emit response so other components can listen
+        this.responseSubject.next({ action, data: res });
+      },
+      error: (err) => {
+        console.error(`Error during clock ${action}:`, err);
+        this.responseSubject.next({ action, error: err });
+      }
+    });
+  }
+
+
+
 
   getHistoryByRange(
     record: AttendanceRecord,

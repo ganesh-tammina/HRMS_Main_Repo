@@ -47,28 +47,47 @@ export default class AttendanceService {
     }
   }
   public static async clockOut(data: TO) {
-    const [ifIn]: any = await pool.query(
-      `select count(*) as count from attendance where attendance_date = curdate() and employee_id = ?`,
-      [data.employee_id]
-    );
-    if (ifIn[0].count === 1) {
-      try {
-        const query = `
-        Update attendance set check_out = ?
-       where employee_id = ?
-      `;
-        const [result] = await pool.query(query, [
-          data.check_out,
-          data.employee_id,
-        ]);
-        return { check_out: data.check_out, date: new Date(), result };
-      } catch (err) {
-        throw err;
+    try {
+      const [openRecords]: any = await pool.query(
+        `SELECT attendance_id as id FROM attendance 
+       WHERE attendance_date = CURDATE()
+         AND employee_id = ?
+         AND check_out IS NULL
+       ORDER BY check_in DESC
+       LIMIT 1`,
+        [data.employee_id]
+      );
+
+      if (openRecords.length === 0) {
+        return { status: false, message: 'You are not clocked in today' };
       }
-    } else {
-      return 'Not Allowed, contact system Admin.';
+
+      const attendanceId = openRecords[0].id;
+
+      const [result]: any = await pool.query(
+        `UPDATE attendance 
+       SET check_out = ? 
+       WHERE attendance_id = ?`,
+        [data.check_out, attendanceId]
+      );
+
+      if (result.affectedRows === 0) {
+        return { status: false, message: 'Failed to update check-out time' };
+      }
+
+      return {
+        status: true,
+        message: 'Clocked out successfully',
+        check_out: data.check_out,
+        attendance_id: attendanceId,
+        date: new Date(),
+      };
+    } catch (err) {
+      console.error('Error in clockOut:', err);
+      throw err;
     }
   }
+
   public static async getAttendance(data: any) {
     try {
       let query = `select * from attendance where employee_id = ?`;
@@ -132,7 +151,6 @@ export default class AttendanceService {
       };
     }
   }
-
   public static async addAttendanceEvent(data: AttendanceEventInput) {
     const { recordId, eventType, eventTime, displayTime } = data;
 
@@ -144,7 +162,6 @@ export default class AttendanceService {
 
     return { message: 'Event added', eventId: (result as any).insertId };
   }
-
   public static async upsertDailyAccumulation(data: DailyAccumulationInput) {
     const { recordId, workDate, accumulatedMs } = data;
 
@@ -157,7 +174,6 @@ export default class AttendanceService {
 
     return { message: 'Daily accumulation updated' };
   }
-
   public static async getEmployeeAttendance(employeeId: number) {
     const [records] = await pool.query(
       `SELECT * FROM attendance_records WHERE employee_id = ?`,
@@ -183,5 +199,40 @@ export default class AttendanceService {
       history: events,
       dailyAccumulated: daily,
     };
+  }
+  public static async getTodayAttendance(asdfads: number) {
+    const [adfasd]: any = await pool.query(
+      `SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = CURDATE()`,
+      [asdfads]
+    );
+    return adfasd;
+  }
+  public static async getTodayAttendanceExtra(emp_id: string, asdfads: string) {
+    const [adfasd]: any = await pool.query(
+      `SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = ?`,
+      [emp_id, asdfads]
+    );
+    return adfasd;
+  }
+  public static async qeiwoi(
+    asdads: number
+  ): Promise<{ shift_policy_name: string }> {
+    const [adfasd]: any = await pool.query(
+      `SELECT shift_policy_name FROM employment_details WHERE employee_id = ?`,
+      [asdads]
+    );
+    if (adfasd.length === 0) {
+      return { shift_policy_name: 'Default' };
+    }
+    return adfasd[0];
+  }
+  public static async qeiwoasi(
+    asdads: string
+  ): Promise<{ check_in: string; check_out: string }> {
+    const [adfasd]: any = await pool.query(
+      `SELECT check_in, check_out FROM shift_policy WHERE shift_name = ?`,
+      [asdads.trim()]
+    );
+    return { check_in: adfasd[0].check_in, check_out: adfasd[0].check_out };
   }
 }

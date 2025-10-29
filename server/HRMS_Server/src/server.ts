@@ -8,6 +8,10 @@ import index from './routes/index';
 import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import candidateRoutes from './services/candidate-service'; // path to your route file
+
+import AttendanceRouter from './routes/attendance-route';
+import rolecrud from './routes/role-crud-routes';
 
 dotenv.config();
 
@@ -22,14 +26,15 @@ class Server {
       optionsSuccessStatus: 200,
       credentials: true,
     };
+    this.app.use(express.json({ limit: '100mb' }));
     this.app.use(cors(corsOptions));
     this.port = config.PORT;
+    this.app.use('/', candidateRoutes); // mount route
     this.middlewares();
     this.routes();
   }
 
   private middlewares(): void {
-    this.app.use(express.json({ limit: '10mb' }));
     this.app.use(cookieParser());
     this.app.use(
       '/api/v1/login',
@@ -43,6 +48,8 @@ class Server {
 
   private routes(): void {
     this.app.use('/api', index);
+    this.app.use('/api', AttendanceRouter);
+    this.app.use('/api', rolecrud);
     this.app.get('/api', async (req, res) => {
       res.json('Server is running');
     });
