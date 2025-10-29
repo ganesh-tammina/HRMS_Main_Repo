@@ -65,6 +65,12 @@ export class MePage implements OnInit {
   }
 
   ngOnInit() {
+    setInterval(() => {
+      this.currentTime = new Date().toLocaleTimeString('en-US', {
+        hour12: true,
+      });
+    }, 500);
+
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
 

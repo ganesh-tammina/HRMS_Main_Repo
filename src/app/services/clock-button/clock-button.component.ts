@@ -11,8 +11,9 @@ import { Subscription, interval } from 'rxjs';
   standalone: true,
   imports: [CommonModule, IonicModule],
   template: `
-    <div *ngIf="currentCandidate">
-      <ion-button
+    <div *ngIf="currentCandidate" class="ion-text-left">
+    
+      <ion-button 
         class="btn-clockin"
         *ngIf="!isClockedIn"
         (click)="clockIn()"
@@ -25,10 +26,10 @@ import { Subscription, interval } from 'rxjs';
         *ngIf="isClockedIn"
         (click)="clockOut()"
       >
-        Clock-Out
+      Web Clock-Out
       </ion-button>
 
-      <div class="ms-2">
+      <div class="ms-2" *ngIf="isClockedIn">
         Since Last Login :
         <strong>{{ timeSinceLastLogin }}</strong>
       </div>

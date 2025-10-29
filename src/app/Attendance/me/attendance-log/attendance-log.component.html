@@ -58,7 +58,7 @@
           <ion-row class="ion-no-padding" *ngFor="let rec of selectedLog.records; let i = index">
             <ion-col class="clock-logs" size="6">
               <div>
-                <p>
+                <p *ngIf="rec.check_in">
                   <strong>Check-In {{ i + 1 }}:</strong>
                   {{ rec.check_in }}
                   <img src="../../assets/Icons/clock-in.svg" width="12" style="margin-left: 5px;" />
@@ -68,7 +68,7 @@
 
             <ion-col class="clock-logs" size="6">
               <div>
-                <p>
+                <p *ngIf="rec.check_out">
                   <strong>Check-Out {{ i + 1 }}:</strong>
                   {{ rec.check_out }}
                   <img src="../../assets/Icons/clock-out.svg" width="12" style="margin-left: 5px;" />
