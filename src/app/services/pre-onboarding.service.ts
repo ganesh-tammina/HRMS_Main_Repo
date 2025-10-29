@@ -148,7 +148,7 @@ export class CandidateService {
   private offerStatusapi = 'http://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = 'http://localhost:3562/api/v1/employee';
+  private empUrl = 'http://30.0.0.78:3562/api/v1/employee';
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
