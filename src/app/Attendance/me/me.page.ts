@@ -9,11 +9,13 @@ import { ClockButtonComponent } from '../../services/clock-button/clock-button.c
 import { AttendanceLogComponent } from './attendance-log/attendance-log.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
+import { RadialTimeGraphComponent } from './radial-time-graph/radial-time-graph.component';
 
 interface AttendanceRequest { type: string; dateRange: string; items: string[] }
 interface AttendanceRequestHistory { date: string; request: string; requestedOn: string; note: string; reason?: string; status: string; lastAction: string; nextApprover?: string }
 interface AttendanceLog { date: string; progress: number; effective: string; gross: string; arrival: string; details: { shift: string; shiftTime: string; location: string; logs: { in: string; out: string }[]; webClockIn?: { in: string; out: string } } }
 interface CalendarDay { day: number | ''; timing: string; isOff: boolean; date?: Date }
+
 
 @Component({
   selector: 'app-me',
@@ -22,7 +24,8 @@ interface CalendarDay { day: number | ''; timing: string; isOff: boolean; date?:
   standalone: true,
   imports: [
     IonicModule, ClockButtonComponent, HeaderComponent, EmployeeHeaderComponent,
-    CommonModule, AttendanceLogComponent, CalendarComponent, AttendanceRequestComponent
+    CommonModule, AttendanceLogComponent, CalendarComponent, AttendanceRequestComponent,
+    RadialTimeGraphComponent
   ]
 })
 export class MePage implements OnInit {
@@ -56,7 +59,7 @@ export class MePage implements OnInit {
     dateRange: string;
     records: AttendanceRequestHistory[];
   }[] = [];
-
+  
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
@@ -70,6 +73,7 @@ export class MePage implements OnInit {
         hour12: true,
       });
     }, 500);
+
 
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
