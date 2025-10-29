@@ -1,0 +1,29 @@
+:host {
+    display: block;
+  }
+  
+  .gauge {
+    display: inline-block;
+    position: relative;
+  }
+  
+  .gauge-track {
+    stroke: rgba(0,0,0,0.08);
+    /* make the gauge start at top (12 o'clock): rotate -90deg */
+    transform-origin: center center;
+    transform: rotate(-90deg);
+  }
+  
+  .gauge-fill {
+    transform-origin: center center;
+    transform: rotate(-90deg);
+    stroke-linecap: round;
+  }
+  
+  .gauge-label {
+    font-size: 14px;
+    font-weight: 600;
+    fill: #222;
+    dominant-baseline: middle;
+  }
+  
