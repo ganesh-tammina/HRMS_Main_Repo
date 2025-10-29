@@ -136,7 +136,7 @@ export interface EmployeeResponse {
 export class CandidateService {
   private api = 'http://localhost:3562/';
   private apiUrl = `${this.api}candidates/jd`;
-  private adminUrl = 'http://30.0.0.78:3562/1/admin';
+  private adminUrl = 'http://localhost:3562/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
@@ -145,10 +145,10 @@ export class CandidateService {
   private newpassword = `${this.api}add-pwd`;
   private updatepassword = `${this.api}change-new-pwd`;
   private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = 'http://30.0.0.78:3562/offerstatus/status';
+  private offerStatusapi = 'http://localhost:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = 'http://30.0.0.78:3562/api/v1/employee';
+  private empUrl = 'http://localhost:3562/api/v1/employee';
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
