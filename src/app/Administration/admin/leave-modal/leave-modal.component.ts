@@ -39,9 +39,6 @@ export class LeaveModalComponent implements OnInit {
 
   }
 
-  /**
-   * 🧾 Validate and emit leave structure data to AdminComponent
-   */
   onSave() {
     if (!this.leave_year_start || !this.leave_year_end) {
       this.showAlert('Missing Fields', 'Please select both Start Year and End Year.');

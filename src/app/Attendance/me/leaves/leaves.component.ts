@@ -15,8 +15,8 @@ import { CommonModule } from '@angular/common';
 })
 export class LeavesComponent implements OnInit {
   currentCandidate: any;
-  leaves: any[] = [];
   IsOpenleavePopup = false;
+  leaveData: any = null;
 
   constructor(
     private candidateService: CandidateService,
@@ -24,63 +24,42 @@ export class LeavesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Subscribe to current candidate
-    this.candidateService.currentCandidate$.subscribe(user => {
-      this.currentCandidate = user;
-      if (this.currentCandidate) {
-        this.loadLeaves(this.currentCandidate.employee_id);
+    // Subscribe to current employee stream
+    this.candidateService.currentEmployee$.subscribe(emp => {
+      if (emp) {
+        this.currentCandidate = emp;
+        this.loadLeaves();
+      } else {
+        // Fallback: check localStorage
+        const stored = localStorage.getItem('employee_details');
+        if (stored) {
+          let parsed = JSON.parse(stored);
+          while (Array.isArray(parsed)) {
+            parsed = parsed[0];
+          }
+          this.currentCandidate = parsed;
+          this.loadLeaves();
+        }
       }
-    });
 
-    // Fallback for page refresh
-    if (!this.currentCandidate) {
-      const stored = localStorage.getItem('loggedInCandidate');
-      console.log('Retrieved from localStorage:', stored);
-      if (stored) {
-        this.currentCandidate = JSON.parse(stored);
-        this.loadLeaves(this.currentCandidate.employee_id);
-      }
-    }
+      console.log('Current Employee:', this.currentCandidate);
+    });
   }
 
-  leavesSummary: any = null;
-
-  loadLeaves(employeeId: number) {
-    this.leaveService.getLeaves(employeeId).subscribe(
-      (response) => {
-        console.log('Leaves fetched successfully:', response);
-        if (response && response.length > 0) {
-          const leave = response[0];
-          this.leavesSummary = {
-          casual: {
-            used: leave.casual_leave_used || 0,
-            total: leave.casual_leave_allocated || 0
-          },
-          marriage: {
-            used: leave.marriage_leave_used || 0,
-            total: leave.marriage_leave_allocated || 0
-          },
-          sick: {
-            used: leave.sick_leave_used || 0,
-            total: leave.sick_leave_allocated || 0
-          },
-          compOffs: {
-            used: leave.comp_offs_used || 0,
-            total: leave.comp_offs_allocated || 0
-          },
-          unpaid: {
-            used: leave.paid_leave_used || 0,
-            total: leave.paid_leave_allocated || 0
-          }
-        };
-      }
-    },
-    (error) => {
-      console.error('Error fetching leaves:', error);
+  loadLeaves() {
+    if (this.currentCandidate && this.currentCandidate.employee_id) {
+      this.leaveService.getLeaves(this.currentCandidate.employee_id).subscribe({
+        next: (data) => {
+          // If backend returns an array, take the first object
+          this.leaveData = Array.isArray(data) ? data[0] : data;
+          console.log('Leave Data:', this.leaveData);
+        },
+        error: (err) => {
+          console.error('Error fetching leave data:', err);
+        }
+      });
     }
-  );
-  } 
-
+  }
 
   openLeaveModal() {
     this.IsOpenleavePopup = true;

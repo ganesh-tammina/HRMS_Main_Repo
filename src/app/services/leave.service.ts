@@ -12,6 +12,6 @@ export class LeaveService {
     constructor(private http: HttpClient) {}
 
     getLeaves(employeeId: number): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/v1/get-leaves`, { employee_id: employeeId });
+        return this.http.post<any>(`${this.apiUrl}/v1/get-leaves`, { employeeId } , { withCredentials: true });
     }
 }

@@ -72,41 +72,45 @@
     </ng-template>
   </ion-modal>
 
-  <ion-grid class="card-tabs-block">
-    <p class="card-header">Leave Balances</p>
-    <ion-row>
-      <ion-col size="2" class="card-block">
-          <p class="card-header">Casual Leaves</p>
-          <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
-          <p class="number">9/12</p>
-          <p class="label">days available</p>
-      </ion-col>
-      <ion-col size="2" class="card-block">
-          <p class="card-header">Marriage Leaves</p>
-          <ion-img src="../../../assets/leave-icons/ML.svg"></ion-img>
-          <p class="number">2/2</p>
-          <p class="label">days available</p>
-      </ion-col>
-      <ion-col size="2" class="card-block">
-          <p class="card-header">Sick Leaves</p>
-          <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
-          <p class="number">1/6</p>
-          <p class="label">days available</p>
-      </ion-col>
-      <ion-col size="2" class="card-block">
-          <p class="card-header">Comp Offs</p>
-          <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
-          <p class="number">1/3</p>
-          <p class="label">days available</p>
-      </ion-col>
-      <ion-col size="2" class="card-block">
-          <p class="card-header">Unpaid Leaves</p>
-          <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
-          <p class="number">1/12</p>
-          <p class="label">days available</p>
-      </ion-col>
-    </ion-row>    
-  </ion-grid>
+  <ion-grid class="card-tabs-block" *ngIf="leaveData != null ">
+  <p class="card-header">Leave Balances</p>
+  <ion-row>
+    <ion-col size="2" class="card-block">
+      <p class="card-header">Casual Leaves</p>
+      <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
+      <p class="number">{{ leaveData.casual_leave_taken || 0 }}/{{ leaveData.casual_leave_allocated }}</p>
+      <p class="label">days available</p>
+    </ion-col>
+
+    <ion-col size="2" class="card-block">
+      <p class="card-header">Marriage Leaves</p>
+      <ion-img src="../../../assets/leave-icons/ML.svg"></ion-img>
+      <p class="number">{{ leaveData.marriage_leave_taken || 0 }}/{{ leaveData.marriage_leave_allocated }}</p>
+      <p class="label">days available</p>
+    </ion-col>
+
+    <ion-col size="2" class="card-block">
+      <p class="card-header">Sick Leaves</p>
+      <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
+      <p class="number">{{ leaveData.sick_leave_taken || 0 }}/{{ leaveData.sick_leave_allocated }}</p>
+      <p class="label">days available</p>
+    </ion-col>
+
+    <ion-col size="2" class="card-block">
+      <p class="card-header">Comp Offs</p>
+      <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
+      <p class="number">{{ leaveData.comp_offs_taken || 0 }}/{{ leaveData.comp_offs_allocated }}</p>
+      <p class="label">days available</p>
+    </ion-col>
+
+    <ion-col size="2" class="card-block">
+      <p class="card-header">Paid Leaves</p>
+      <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
+      <p class="number">{{ leaveData.paid_leave_taken || 0 }}/{{ leaveData.paid_leave_allocated }}</p>
+      <p class="label">days available</p>
+    </ion-col>
+  </ion-row>    
+</ion-grid>
 
    <ion-grid class="card-tabs-block table-block">
      <div class="row-space-between">
