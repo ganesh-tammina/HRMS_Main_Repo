@@ -14,4 +14,9 @@ export class LeaveService {
     getLeaves(employeeId: number): Observable<any> {
         return this.http.post<any>(`${this.apiUrl}/v1/get-leaves`, { employeeId } , { withCredentials: true });
     }
+
+    requestLeave(leaveRequest: any): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/v1/leave-request`, leaveRequest , { withCredentials: true });
+    }
+    
 }

@@ -67,12 +67,42 @@ export default class LeaveService {
   return rows;
 }
 
-  public static async getLeavesByEmployeeId(employeeId: number) {
-    const [rows] = await pool.query(
-      'SELECT * FROM leaves WHERE employee_id = ?',
-      [employeeId]
-    );
-    return rows;
-  }
+public static async getLeavesByEmployeeId(employeeId: number) {
+  const [rows] = await pool.query(
+    `
+    SELECT 
+      lr.employee_id,
+      lr.leave_type,
+      DATE_FORMAT(lr.start_date, '%Y-%m-%d') AS start_date,
+      DATE_FORMAT(lr.end_date, '%Y-%m-%d') AS end_date,
+      DATEDIFF(lr.end_date, lr.start_date) + 1 AS total_days,
+      lr.remarks,
+      lr.status,
+      DATE_FORMAT(lr.created_at, '%Y-%m-%d') AS submitted_on,
+
+      -- Include balance info from leaves table
+      l.casual_leave_allocated,
+      l.casual_leave_taken,
+      l.sick_leave_allocated,
+      l.sick_leave_taken,
+      l.paid_leave_allocated,
+      l.paid_leave_taken,
+      l.marriage_leave_allocated,
+      l.marriage_leave_taken,
+      l.comp_offs_allocated,
+      l.comp_offs_taken
+
+    FROM leave_requests lr
+    LEFT JOIN leaves l 
+      ON lr.employee_id = l.employee_id
+    WHERE lr.employee_id = ?
+    ORDER BY lr.created_at DESC
+    `,
+    [employeeId]
+  );
+
+  return rows;
+}
+
 
 }
