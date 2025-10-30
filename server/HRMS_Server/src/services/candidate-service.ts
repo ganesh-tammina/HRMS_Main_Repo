@@ -9,8 +9,9 @@ router.post('/', async (req: Request, res: Response) => {
     await connection.beginTransaction();
 
     try {
+        // 👇 Insert new candidate with default status 'pending'
         const [result]: any = await pool.query(
-            "INSERT INTO hrms_master_data.candidates (dateCreated) VALUES (CURDATE())"
+            "INSERT INTO hrms_master_data.candidates (dateCreated, status) VALUES (CURDATE(), 'pending')"
         );
 
         const candidateId = result.insertId;
@@ -84,6 +85,7 @@ router.post('/', async (req: Request, res: Response) => {
                 JobLocation,
                 WorkType,
                 BusinessUnit,
+                status: 'pending',
             },
         });
     } catch (error: any) {
@@ -116,7 +118,8 @@ router.get('/', async (_req: Request, res: Response) => {
           p.JobLocation,
           p.WorkType,
           p.BusinessUnit,
-          c.dateCreated
+          c.dateCreated,
+          c.status
       FROM hrms_master_data.personal_details p
       JOIN hrms_master_data.candidates c ON p.candidate_id = c.id
       ORDER BY c.dateCreated DESC
@@ -145,7 +148,8 @@ router.get('/:id', async (req: Request, res: Response) => {
         const [rows]: any = await pool.query(`
       SELECT 
           p.*,
-          c.dateCreated
+          c.dateCreated,
+          c.status
       FROM hrms_master_data.personal_details p
       JOIN hrms_master_data.candidates c ON p.candidate_id = c.id
       WHERE c.id = ?
@@ -167,6 +171,39 @@ router.get('/:id', async (req: Request, res: Response) => {
         res.status(500).json({
             success: false,
             message: 'Server error while fetching candidate.',
+            error: error.sqlMessage || error.message,
+        });
+    }
+});
+
+// ✅ PUT: Update candidate status (accepted / rejected)
+router.put('/status/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['pending', 'accepted', 'rejected'].includes(status)) {
+        return res.status(400).json({ success: false, message: 'Invalid status value.' });
+    }
+
+    try {
+        const [result]: any = await pool.query(
+            `UPDATE hrms_master_data.candidates SET status = ? WHERE id = ?`,
+            [status, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Candidate not found.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Candidate status updated to ${status}`,
+        });
+    } catch (error: any) {
+        console.error('❌ Error updating candidate status:', error.sqlMessage || error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while updating candidate status.',
             error: error.sqlMessage || error.message,
         });
     }
