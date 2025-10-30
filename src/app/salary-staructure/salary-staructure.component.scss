@@ -1,55 +1,50 @@
-ion-card {
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+@import '../onboarding//create-offer-header/create-offer-header.component.scss';
 
-.salary-table {
-  font-size: 14px;
-
-  .table-header {
-    font-weight: 600;
-    background: #f4f4f4;
-    border-bottom: 1px solid #ccc;
+.checkbox-item {
+  --background: transparent;
+  margin-bottom: 0;
+  ion-checkbox {
+    --size: 24px;
+    --checkbox-background-checked: #6815ec;
+    flex-direction: row-reverse;
   }
-
+  
+  ion-checkbox::part(container) {
+    border-radius: 6px;
+    border: 1.3px solid #6C6C6C
+  }
+}
+.salary-table {
+  .table-header {
+    border-bottom: 1px solid #000000;
+    ion-col {
+     @include text-style-bold();
+     height: 40px;
+     color: $text-color;
+    }
+  }
   ion-row {
-    border-bottom: 1px solid #eee;
-    padding: 6px 0;
-
+    border-bottom: 1px solid #0000001A;
+    height: 40px;
+    color: $text-color;
     ion-col {
       display: flex;
       align-items: center;
     }
-  }
-
-  .subtotal {
-    font-weight: 600;
-    background: #fafafa;
-  }
-
-  .total {
-    font-weight: bold;
-    background: #e9f9e9;
-    color: #0a7d0a;
-  }
+    &.subtotal {
+      @include text-style-bold();
+    }
+    
+    }  
 }
-
 .deductions {
-  margin-top: 20px;
-
   h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: #444;
-  }
-
-  ion-row {
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    padding: 6px 0;
+    @include text-style-normal();
+    color: $black-color;
   }
 }
-
-.view-structure {
-  margin-top: 16px;
+.back-btn::part(native) {
+  padding-inline-end: 0;
+  padding-inline-start: 0;
+  color: $text-color;
 }

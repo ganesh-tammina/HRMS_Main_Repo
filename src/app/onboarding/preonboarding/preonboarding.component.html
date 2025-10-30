@@ -149,9 +149,9 @@
               <ion-button class="primary-outline-btn ion-display-none">Revise</ion-button>
               <ion-button class="primary-outline-btn" (click)="startpreonboarding(candidate)">Start
                 Pre-Onboarding</ion-button>
-              <ion-button fill="clear" [attr.id]="'accept-button' + candidate.id" class="dot-button">
+              <ion-button fill="clear" [attr.id]="'accept-button' + candidate.PersonalDetailsID" class="dot-button">
                 <ion-icon name="ellipsis-vertical-circle-outline"></ion-icon></ion-button>
-              <ion-popover [attr.trigger]="'accept-button' + candidate.id" [dismissOnSelect]="true">
+              <ion-popover [attr.trigger]="'accept-button' + candidate.PersonalDetailsID" [dismissOnSelect]="true">
                 <ng-template>
                   <ion-content>
                     <ion-list>

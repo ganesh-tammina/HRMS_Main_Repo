@@ -66,34 +66,45 @@
       Personal Information
     </div>
     <ion-item>
-      <ion-label position="floating">Job Title</ion-label>
-      <ion-select formControlName="JobTitle">
-        <ion-select-option value="Software Engineer">Software Engineer</ion-select-option>
-        <ion-select-option value="Accounts">Accounts</ion-select-option>
-      </ion-select>
+      <ion-label position="stacked">Job Title</ion-label>
+      <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+      formControlName="JobTitle" interface="popover">
+         <ion-select-option value="UI/UX Designer">UI/UX Designer</ion-select-option>
+         <ion-select-option value="UI Developer">UI Developer</ion-select-option>
+         <ion-select-option value="Software Engineer">Software Engineer</ion-select-option>
+     </ion-select> 
     </ion-item>
 
     <ion-item>
-      <ion-label position="floating">Department</ion-label>
-      <ion-select formControlName="Department">
-        <ion-select-option value="Sales">Sales</ion-select-option>
-        <ion-select-option value="HR">HR</ion-select-option>
-      </ion-select>
+      <ion-label position="stacked">Department</ion-label>
+        <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+        formControlName="Department"  interface="popover">
+          <ion-select-option value="Finance">Finance</ion-select-option>
+          <ion-select-option value="Human Resources">Human Resources</ion-select-option>
+          <ion-select-option value="IT Development">IT Development</ion-select-option>
+          <ion-select-option value="Marketing">Marketing</ion-select-option>
+        </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-label position="floating">Job Location</ion-label>
-      <ion-select formControlName="JobLocation">
-        <ion-select-option value="Sales">Vizag</ion-select-option>
-        <ion-select-option value="HR">Hyderabad</ion-select-option>
-      </ion-select>
+      <ion-label position="stacked">Job Location</ion-label>
+          <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+          formControlName="JobLocation" interface="popover">
+            <ion-select-option value="Site 2 - Visakhapatnam - Day Shift">Site 2 - Visakhapatnam - Day
+              Shift</ion-select-option>
+            <ion-select-option value="Site 1 - Hyderabad - Night Shift">Site 1 - Hyderabad - Night
+              Shift</ion-select-option>
+            <ion-select-option value="Site 3 - Visakhapatnam - Day Shift">Site 3 - Visakhapatnam - Day
+              Shift</ion-select-option>
+          </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-label position="floating">Work Type</ion-label>
-      <ion-select formControlName="WorkType">
-        <ion-select-option value="Perminent">Perminent</ion-select-option>
-        <ion-select-option value="Part Time">Part Time</ion-select-option>
+      <ion-label position="stacked">Worker Type</ion-label>
+      <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+      formControlName="WorkType" interface="popover">
+        <ion-select-option value="Perminent">Permanent</ion-select-option>
+        <ion-select-option value="Contract">Contract</ion-select-option>
       </ion-select>
     </ion-item>
 
