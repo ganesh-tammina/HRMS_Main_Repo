@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [HeaderComponent, CommonModule, IonicModule, ReactiveFormsModule]
 })
-export class CandidateOfferLetterComponent  implements OnInit {
+export class CandidateOfferLetterComponent implements OnInit {
   currentCandidate: any
   activePage: string = 'openPage';
   candidate: any;
@@ -69,7 +69,7 @@ export class CandidateOfferLetterComponent  implements OnInit {
     });
 
     try {
-      const url = `http://30.0.0.78:3562/offerstatus/accept`;
+      const url = `http://localhost:3562/offerstatus/accept`;
       const response = await this.http.put(url, { id: candidateId }).toPromise();
       console.log('Accept response:', response);
     } catch (error) {
@@ -88,7 +88,7 @@ export class CandidateOfferLetterComponent  implements OnInit {
     });
 
     try {
-      const url = `http://30.0.0.78:3562/offerstatus/reject`;
+      const url = `http://localhost:3562/offerstatus/reject`;
       const response = await this.http.put(url, { id: candidateId }).toPromise();
       console.log('Reject response:', response);
     } catch (error) {

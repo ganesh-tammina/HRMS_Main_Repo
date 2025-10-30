@@ -1,5 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface AttendanceEvent {
   type: 'CLOCK_IN' | 'CLOCK_OUT';
@@ -21,13 +22,19 @@ export interface AttendanceRecord {
 })
 export class AttendanceService {
   private prefix = 'attendance_';
-
-  // 🔑 make it reactive
+  private baseURL = 'http://localhost:3562/api/v1';
   private recordSubject = new BehaviorSubject<AttendanceRecord | null>(null);
   record$ = this.recordSubject.asObservable();
-
+  private responseSubject = new BehaviorSubject<any>(null);
+  response$ = this.responseSubject.asObservable();
+  constructor(private http: HttpClient) { }
   private getKey(employeeId: number): string {
     return `${this.prefix}${employeeId}`;
+  }
+
+
+  getallattendace(body: any): Observable<any> {
+    return this.http.post(this.baseURL + '/get-attendance', body, { withCredentials: true });
   }
 
   getRecord(employeeId: number): AttendanceRecord {
@@ -51,55 +58,47 @@ export class AttendanceService {
       this.saveRecord(record);
     }
 
-    // ✅ emit current state
     this.recordSubject.next(record);
     return record;
   }
 
   saveRecord(record: AttendanceRecord) {
     localStorage.setItem(this.getKey(record.employeeId), JSON.stringify(record));
-    this.recordSubject.next(record); // ✅ notify subscribers
+    this.recordSubject.next(record);
   }
 
-  clockIn(employeeId: number): AttendanceRecord {
-    let record = this.getRecord(employeeId);
-    if (!record.isClockedIn) {
-      const now = new Date().toISOString();
-      record.clockInTime = now;
-      record.isClockedIn = true;
-      record.history.push({ type: 'CLOCK_IN', time: now });
 
-      const today = new Date().toDateString();
-      record.dailyAccumulatedMs ||= {};
-      record.dailyAccumulatedMs[today] ||= 0;
-
-      this.saveRecord(record);
-    }
-    return record;
+  employeeClockIN_Out(kjhk: any): Observable<any> {
+    return this.http.post(this.baseURL + "/attendance", kjhk, { withCredentials: true });
+  }
+  getAttendance() {
+    this.http.get(this.baseURL + 'getAttendance', { withCredentials: true }).subscribe((res) => {
+      console.log(res)
+    });
+  }
+  clockIn(employeeId: any): void {
+    this.clockAction(employeeId, 'in');
   }
 
-  clockOut(employeeId: number): AttendanceRecord {
-    let record = this.getRecord(employeeId);
-    if (record.isClockedIn && record.clockInTime) {
-      const now = new Date();
-      const duration = now.getTime() - new Date(record.clockInTime).getTime();
-
-      record.accumulatedMs += duration;
-
-      const today = now.toDateString();
-      record.dailyAccumulatedMs ||= {};
-      record.dailyAccumulatedMs[today] ||= 0;
-      record.dailyAccumulatedMs[today] += duration;
-
-      record.isClockedIn = false;
-      record.clockInTime = undefined;
-
-      record.history.push({ type: 'CLOCK_OUT', time: now.toISOString() });
-
-      this.saveRecord(record);
-    }
-    return record;
+  clockOut(employeeId: any): void {
+    this.clockAction(employeeId, 'out');
   }
+  clockAction(employeeId: any, action: 'in' | 'out'): void {
+    this.employeeClockIN_Out(employeeId).subscribe({
+      next: (res) => {
+        console.log(`${action.toUpperCase()} response`, res);
+        // Emit response so other components can listen
+        this.responseSubject.next({ action, data: res });
+      },
+      error: (err) => {
+        console.error(`Error during clock ${action}:`, err);
+        this.responseSubject.next({ action, error: err });
+      }
+    });
+  }
+
+
+
 
   getHistoryByRange(
     record: AttendanceRecord,

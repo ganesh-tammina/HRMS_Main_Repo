@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { addIcons } from 'ionicons';
-import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
+// import { addIcons } from 'ionicons';
+// import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Candidate, CandidateService } from './services/pre-onboarding.service';
@@ -23,12 +23,15 @@ export class AppComponent implements OnInit {
   iscandiateofferPage = false
   CurrentuserType: string = ''
   userType: string | null = null;
-
+  one: any;
+  full_name: string = ""
+  currentTime: string = '';
+  allEmployees: any[] = [];
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(private router: Router, private candidateService: CandidateService) {
     this.currentUser = this.candidateService.currentCandidate$;
-    addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
+    // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -55,6 +58,17 @@ export class AppComponent implements OnInit {
     this.showCategories = !this.showCategories;
   }
   ngOnInit(): void {
+    this.candidateService.getEmpDet().subscribe({
+      next: (response: any) => {
+        this.allEmployees = response.data || [];
+        this.one = response.data[0];
+        localStorage.setItem('employee_details', JSON.stringify(this.allEmployees));
+        console.log(this.one);
+      },
+      error: (err) => {
+        console.error('Error fetching all employees:', err);
+      },
+    });
     const userData = localStorage.getItem('loggedInUser');
     if (userData) {
       const parsedData = JSON.parse(userData);
@@ -77,7 +91,7 @@ export class AppComponent implements OnInit {
 
   logout() {
     // this.candidateService.logout();
-    localStorage.removeItem('loggedInUser');
+    this.candidateService.logout()
     this.router.navigate(['/login']);
 
   }

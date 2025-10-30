@@ -2,25 +2,35 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
-
-
 @Injectable({
 	providedIn: 'root'
 })
-
 export class EmailService {
-	private beURL = 'http://30.0.0.78:3562/send-email'
+	private beURL = 'http://localhost:3562/send-email';
 
 	constructor(private http: HttpClient) { }
 
 	sendEmail(candidate: any): Observable<any> {
-		console.log(candidate)
+		console.log('Preparing to send email to candidate:', candidate);
+		const htmlTemplate = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <p>Hello ${candidate.FirstName},</p>
+        <p>We’re thrilled to welcome you as <b>${candidate.JobTitle}</b> at Tech Tammina!</p>
+        <p>Please review your offer letter and confirm by <b>${candidate.JoiningDate}</b>.</p>
+        <a href="http://localhost:4200/candidate_status/${candidate.id}" 
+           style="background-color:#3498db;color:white;padding:10px 16px;text-decoration:none;border-radius:5px">
+           View Offer
+        </a>
+        <p>Best Regards,<br/>Tech Tammina Hiring Team</p>
+      </body>
+      </html>
+    `;
 
 		const data = {
-			// change this mail as it is hard coded. ⬇️
-			to: candidate.personalDetails.email,
-			// this mail ⬆️
-			subject: 'Welcome to our Tech Tammina!',
+			to: candidate.Email,
+			subject: `Welcome to Tech Tammina, ${candidate.FirstName}!`,
 			text: `
       
 <!DOCTYPE html>
@@ -160,7 +170,7 @@ export class EmailService {
 														<tr>
 															<td class="pad">
 																<div style="color:#101112;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:14px;font-weight:400;letter-spacing:0.2px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
-																	<p style="margin: 0;">Hello ${candidate.personalDetails.FirstName},</p>
+																	<p style="margin: 0;">Hello ${candidate.FirstName},</p>
 																</div>
 															</td>
 														</tr>
@@ -169,7 +179,7 @@ export class EmailService {
 														<tr>
 															<td class="pad">
 																<div style="color:#222222;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:14px;font-weight:400;letter-spacing:0.2px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
-																	<p style="margin: 0;">It was great interacting with you as part of our hiring process and we are excited to bring you onboard as&nbsp;${candidate.jobDetailsForm.JobTitle}.</p>
+																	<p style="margin: 0;">It was great interacting with you as part of our hiring process and we are excited to bring you onboard as&nbsp;${candidate.JobTitle}.</p>
 																</div>
 															</td>
 														</tr>
@@ -186,8 +196,8 @@ export class EmailService {
 													<table class="button_block block-4" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad">
-															<div class="alignment" align="center"><a href="http://30.0.0.78:4200/candidate_status/${candidate.id}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
-															<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href=""http://30.0.0.78:4200/candidate_status/${candidate.id}""  style="height:48px;width:142px;v-text-anchor:middle;" arcsize="17%" fillcolor="#3498db">
+															<div class="alignment" align="center"><a href="http://localhost:4200/candidate_status/${candidate.id}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
+															<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href=""http://localhost:4200/candidate_status/${candidate.id}""  style="height:48px;width:142px;v-text-anchor:middle;" arcsize="17%" fillcolor="#3498db">
 															<v:stroke dashstyle="Solid" weight="0px" color="#3498db"/>
 															<w:anchorlock/>
 															<v:textbox inset="0px,0px,0px,0px">
@@ -235,15 +245,16 @@ export class EmailService {
 
 </html>
       
-      `
-		}
-		return this.http.post<any>(`${this.beURL}`, data).pipe(
-			tap((updated) => {
-				if (!updated.success) {
-					alert("Failed to send email. Please try again.");
+      `,
+			html: htmlTemplate
+		};
+
+		return this.http.post<any>(this.beURL, data).pipe(
+			tap((response) => {
+				if (!response.success) {
+					alert('❌ Failed to send email. Please try again.');
 				}
 			})
 		);
 	}
-
 }

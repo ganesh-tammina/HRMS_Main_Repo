@@ -39,9 +39,9 @@ export const routes: Routes = [
   { path: 'onboarding_Tasks', component: OnboardingTasksComponent },
   { path: 'CandiateCreate', component: CandiateCreateComponent },
   { path: 'Startonboardingitem', component: StartOnboardingComponent },
-  { path: 'CreateOffer/:id/:FirstName', component: CreateOfferComponent },
+  { path: 'CreateOffer/:id', component: CreateOfferComponent },
   { path: 'leaves', component: LeavesComponent },
- 
+
   {
     path: 'pre-onboarding-cards',
     loadComponent: () => import('./onboarding/pre-onboarding-cards/pre-onboarding-cards.component').then(m => m.PreOnboardingCardsComponent),
@@ -105,8 +105,13 @@ export const routes: Routes = [
         m => m.CandidateOfferLetterComponent
       ),
   },
-
-
+  {
+    path: 'profile-page',
+    loadComponent: () =>
+      import('./profile-page/profile-page.component').then(
+        m => m.ProfilePageComponent
+      ),
+  }
 
 
 ];

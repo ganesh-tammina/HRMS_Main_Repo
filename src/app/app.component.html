@@ -41,6 +41,7 @@
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
+                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
                     <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false">
                       <ion-label>Pre Onboarding</ion-label>
                     </ion-item>
@@ -90,7 +91,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-menu-toggle auto-hide="false">
+            <!-- <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/organisation_info']" lines="none" detail="false"
                 routerLinkActive="selected">
                 <div class="text-center">
@@ -98,7 +99,25 @@
                   <ion-label>Org Info</ion-label>
                 </div>
               </ion-item>
+            </ion-menu-toggle> -->
+            <ion-menu-toggle auto-hide="false">
+              <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" detail="false"
+                routerLinkActive="selected">
+                <div class="text-center">
+                  <img src="assets/Icons/Group 104.svg" width="24" height="24">
+                  <ion-label>Admin</ion-label>
+                </div>
+              </ion-item>
             </ion-menu-toggle>
+            <ion-menu-toggle auto-hide="false">
+                <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" detail="false"
+                  routerLinkActive="selected">
+                  <div class="text-center">
+                    <img src="assets/Icons/Group 104.svg" width="24" height="24">
+                    <ion-label>Admin</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
             <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
                 routerLinkActive="selected">

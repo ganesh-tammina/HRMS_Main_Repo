@@ -1,0 +1,50 @@
+@import '../../global.scss';
+.profile-block {
+  .welcome-block {
+    background: #00568F;  
+    border-radius: 8px;
+    p.name{
+      color: #DADEE4;
+      @include card-header();
+      font-weight: 700; 
+      padding-left: 8px;
+      margin-bottom: 0;
+      span {
+        @include text-bold();
+        background: #6e9bfa;
+        padding: 5px 10px;
+        border-radius: 20px;
+      }
+    }
+    p.des {
+      color: #DADEE4;
+      @include body-text();
+      padding-left: 8px;
+    }
+    img {
+      height: 72px;
+      padding-top: 5px;
+      padding-right: 15px;
+      @media screen and (max-width: 767px) {
+         display: none;
+      }
+    }
+  }
+  .report-block {
+    width: 60%;
+    padding-left: 24px;
+    margin: 0;
+    ion-col {
+      @include normal-text-unbold();
+      color: #848F9F;
+    }
+  }
+
+.custom-underline-tabs {
+  margin-top: 30px;
+  position: relative;
+  ion-tab-bar {
+    justify-content: flex-start;
+  }
+}
+}

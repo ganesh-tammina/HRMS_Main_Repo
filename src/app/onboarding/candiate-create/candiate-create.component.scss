@@ -1,0 +1,96 @@
+@import '../../../global.scss';
+ion-content {
+    --background: #f7f9fc; // Light background
+  }
+.custom-popup {
+   // General Form Structure  
+ 
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  .required {
+    color: var(--ion-color-danger, #eb445a); // Ionic default danger color for asterisk
+  }
+  
+  // Custom Section Header Style (e.g., Personal Information)
+  .section-header {
+    display: flex;
+    align-items: center;
+    background-color: #E6F1FF; // Light blue background
+    color: #000; // Dark text
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius:8px;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  
+    ion-icon {
+      font-size: 1.4rem;
+      margin-right: 0.5rem;
+      color: var(--ion-color-primary, #3880ff); // Primary color icon
+    }
+  }
+  
+  // Styling for Input Fields (to match the flat, full-width look)
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --border-color: transparent !important; // Remove default Ionic border line
+  
+    ion-label {
+      @include normal-text-unbold();
+      margin-bottom: 14px;
+      transform: translateY(50%) scale(1);
+    }
+  }
+  
+  ion-input, ion-select {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px !important;
+    min-height: 42px;
+    max-height: 44px;
+    display: flex;
+    align-items: center;
+    @include normal-text-unbold();
+    // Override Ionic's default visual to look more like the image
+    &.item-native {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+  
+  // Fix padding for the actual input area within ion-item
+  ion-item:has(ion-input), ion-item:has(ion-select) {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --background: transparent;
+      --background-activated: transparent;
+      --background-focused: transparent;
+      --background-hover: transparent;
+      // This allows the full-width input to sit right up to the grid column edge
+      .item-inner {
+          padding-inline-end: 0 !important;
+      }
+  }
+  
+  ion-select {
+      display: flex; // To ensure it takes full space
+      flex: auto;
+  }
+  
+  // Styling the Submit button
+  ion-button {
+    --border-radius: 4px;
+    font-weight: 600;
+  }
+}
