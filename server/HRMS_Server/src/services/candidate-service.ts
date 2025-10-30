@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { pool } from '../config/database';
+import { ResultSetHeader } from 'mysql2/promise';
 
 const router = express.Router();
 
@@ -7,76 +8,11 @@ const router = express.Router();
 router.post('/candidates', async (req: Request, res: Response) => {
     const connection = await pool.getConnection(); // get connection for transaction
     await connection.beginTransaction();
-    try {
-        const {
-            FirstName,
-            LastName,
-            PhoneNumber,
-            Email,
-            Gender,
-            JobTitle,
-            Department,
-            JobLocation,
-            WorkType,
-            BusinessUnit
-        } = req.body;
-
-        // ✅ 1. Validate required fields
-        if (!FirstName || !PhoneNumber || !Email || !Gender) {
-            return res.status(400).json({
-                success: false,
-                message: 'FirstName, PhoneNumber, Email, and Gender are required.',
-            });
-        }
-
-        // ✅ 2. Validate gender
-        const validGenders = ['Male', 'Female', 'Other'];
-        if (!validGenders.includes(Gender)) {
-            return res.status(400).json({
-                success: false,
-                message: "Gender must be 'Male', 'Female', or 'Other'.",
-            });
-        }
-
-        // ✅ 3. Check for duplicate email
-        const [existing]: any = await pool.query(
-            'SELECT * FROM hrms_master_data.personal_details WHERE Email = ?',
-            [Email]
-        );
-
-        if (existing.length > 0) {
-            return res.status(409).json({
-                success: false,
-                message: 'A candidate with this email already exists.',
-            });
-        }
-
-        // ✅ 4. Insert new candidate
-        const insertQuery = `
-      INSERT INTO hrms_master_data.personal_details
-      (FirstName, LastName, PhoneNumber, Email, Gender, JobTitle, Department, JobLocation, WorkType, BusinessUnit)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-        const [result]: any = await pool.query(insertQuery, [
-            FirstName,
-            LastName || '',
-            PhoneNumber,
-            Email,
-            Gender,
-            JobTitle || '',
-            Department || '',
-            JobLocation || '',
-            WorkType || '',
-            BusinessUnit || '',
-        ]);
-
-        // ✅ 5. Respond with success
-        res.status(201).json({
-            success: true,
-            message: 'Candidate added successfully.',
-            candidate: {
-                ID: result.insertId,
+    const [result]: any = await pool.query("insert into hrms_master_data.candidates (dateCreated) value (curdate())")
+    const candidateId = result.insertId;
+    if (candidateId) {
+        try {
+            const {
                 FirstName,
                 LastName,
                 PhoneNumber,
@@ -87,13 +23,122 @@ router.post('/candidates', async (req: Request, res: Response) => {
                 JobLocation,
                 WorkType,
                 BusinessUnit
-            },
+            } = req.body;
+
+            // ✅ 1. Validate required fields
+            if (!FirstName || !PhoneNumber || !Email || !Gender) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'FirstName, PhoneNumber, Email, and Gender are required.',
+                });
+            }
+
+            // ✅ 2. Validate gender
+            const validGenders = ['Male', 'Female', 'Other'];
+            if (!validGenders.includes(Gender)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Gender must be 'Male', 'Female', or 'Other'.",
+                });
+            }
+
+            // ✅ 3. Check for duplicate email
+            const [existing]: any = await pool.query(
+                'SELECT * FROM hrms_master_data.personal_details WHERE Email = ?',
+                [Email]
+            );
+
+            if (existing.length > 0) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'A candidate with this email already exists.',
+                });
+            }
+
+            // ✅ 4. Insert new candidate
+            const insertQuery = `
+          INSERT INTO hrms_master_data.personal_details
+          (candidate_id, FirstName, LastName, PhoneNumber, Email, Gender, JobTitle, Department, JobLocation, WorkType, BusinessUnit)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+            const [result]: any = await pool.query(insertQuery, [
+                candidateId,
+                FirstName,
+                LastName || '',
+                PhoneNumber,
+                Email,
+                Gender,
+                JobTitle || '',
+                Department || '',
+                JobLocation || '',
+                WorkType || '',
+                BusinessUnit || '',
+            ]);
+            await connection.commit();
+            // ✅ 5. Respond with success
+            res.status(201).json({
+                success: true,
+                message: 'Candidate added successfully.',
+                candidate: {
+                    ID: result.insertId,
+                    FirstName,
+                    LastName,
+                    PhoneNumber,
+                    Email,
+                    Gender,
+                    JobTitle,
+                    Department,
+                    JobLocation,
+                    WorkType,
+                    BusinessUnit
+                },
+            });
+        } catch (error: any) {
+            await connection.rollback();
+            console.error('❌ Error adding candidate:', error.sqlMessage || error.message);
+            res.status(500).json({
+                success: false,
+                message: 'Server error while adding candidate.',
+                error: error.sqlMessage || error.message,
+            });
+        }
+    }
+
+});
+router.get('/candidates', async (req: Request, res: Response) => {
+    try {
+        const [rows]: any = await pool.query(`
+            SELECT 
+                p.id AS PersonalDetailsID,
+                p.candidate_id,
+                p.FirstName,
+                p.LastName,
+                p.PhoneNumber,
+                p.Email,
+                p.Gender,
+                p.JobTitle,
+                p.Department,
+                p.JobLocation,
+                p.WorkType,
+                p.BusinessUnit,
+                c.dateCreated
+            FROM hrms_master_data.personal_details p
+            JOIN hrms_master_data.candidates c ON p.candidate_id = c.id
+            ORDER BY c.dateCreated DESC
+        `);
+
+        res.status(200).json({
+            success: true,
+            message: 'Candidate list fetched successfully.',
+            total: rows.length,
+            candidates: rows,
         });
     } catch (error: any) {
-        console.error('❌ Error adding candidate:', error.sqlMessage || error.message);
+        console.error('❌ Error fetching candidates:', error.sqlMessage || error.message);
         res.status(500).json({
             success: false,
-            message: 'Server error while adding candidate.',
+            message: 'Server error while fetching candidates.',
             error: error.sqlMessage || error.message,
         });
     }

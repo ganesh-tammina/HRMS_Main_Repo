@@ -8,7 +8,7 @@ import { tap, map, switchMap } from 'rxjs/operators';
 })
 export class _LoginService {
   private api: string = 'http://localhost:3562/api';
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   public checkEmail(body: any) {
     return this.http.post<any>(`${this.api}/v1/check-email`, body, {
@@ -20,7 +20,7 @@ export class _LoginService {
       withCredentials: true,
     });
   }
-   public loginForAll(body: any) {
+  public loginForAll(body: any) {
     return this.http.post<any>(`${this.api}/v1/login`, body, {
       withCredentials: true,
     });
