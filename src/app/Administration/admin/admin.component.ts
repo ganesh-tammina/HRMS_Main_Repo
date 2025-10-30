@@ -102,7 +102,7 @@ export class AdminComponent implements OnInit {
     if (!this.EmployeeselectedFile) return;
     const formData = new FormData();
     formData.append("file", this.EmployeeselectedFile);
-    this.http.post("http://30.0.0.78:3562/existingemployees", formData).subscribe({
+    this.http.post("http://localhost:3562/existingemployees", formData).subscribe({
       next: (res) => {
         console.log(res);
         alert("Upload successful!");
@@ -113,7 +113,7 @@ export class AdminComponent implements OnInit {
         alert("Upload failed!");
       }
     });
-    this.http.post("http://30.0.0.78:3562/existingemployees", formData)
+    this.http.post("http://localhost:3562/existingemployees", formData)
       .subscribe((res: any) => console.log(res), (err: any) => console.error(err));
   }
 
@@ -123,7 +123,7 @@ export class AdminComponent implements OnInit {
     const formData = new FormData();
     formData.append("file", this.selectedFile);
 
-    this.http.post("http://30.0.0.78:3562/holidays/public_holidays", formData).subscribe({
+    this.http.post("http://localhost:3562/holidays/public_holidays", formData).subscribe({
       next: (res) => {
         console.log(res);
         alert("Upload successful!");
@@ -134,7 +134,7 @@ export class AdminComponent implements OnInit {
         alert("Upload failed!");
       }
     });
-    this.http.post("http://30.0.0.78:3562/upload-holidays", formData)
+    this.http.post("http://localhost:3562/upload-holidays", formData)
       .subscribe((res: any) => console.log(res), (err: any) => console.error(err));
   }
   openModal() {

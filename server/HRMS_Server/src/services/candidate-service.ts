@@ -4,10 +4,18 @@ import { pool } from '../config/database';
 const router = express.Router();
 
 // ✅ POST: Add a new candidate
-router.post('/candidates', async (req: Request, res: Response) => {
-    const connection = await pool.getConnection(); // get connection for transaction
+router.post('/', async (req: Request, res: Response) => {
+    const connection = await pool.getConnection();
     await connection.beginTransaction();
+
     try {
+        // 👇 Insert new candidate with default status 'pending'
+        const [result]: any = await pool.query(
+            "INSERT INTO hrms_master_data.candidates (dateCreated, status) VALUES (CURDATE(), 'pending')"
+        );
+
+        const candidateId = result.insertId;
+
         const {
             FirstName,
             LastName,
@@ -18,10 +26,9 @@ router.post('/candidates', async (req: Request, res: Response) => {
             Department,
             JobLocation,
             WorkType,
-            BusinessUnit
+            BusinessUnit,
         } = req.body;
 
-        // ✅ 1. Validate required fields
         if (!FirstName || !PhoneNumber || !Email || !Gender) {
             return res.status(400).json({
                 success: false,
@@ -29,16 +36,6 @@ router.post('/candidates', async (req: Request, res: Response) => {
             });
         }
 
-        // ✅ 2. Validate gender
-        const validGenders = ['Male', 'Female', 'Other'];
-        if (!validGenders.includes(Gender)) {
-            return res.status(400).json({
-                success: false,
-                message: "Gender must be 'Male', 'Female', or 'Other'.",
-            });
-        }
-
-        // ✅ 3. Check for duplicate email
         const [existing]: any = await pool.query(
             'SELECT * FROM hrms_master_data.personal_details WHERE Email = ?',
             [Email]
@@ -51,14 +48,14 @@ router.post('/candidates', async (req: Request, res: Response) => {
             });
         }
 
-        // ✅ 4. Insert new candidate
         const insertQuery = `
       INSERT INTO hrms_master_data.personal_details
-      (FirstName, LastName, PhoneNumber, Email, Gender, JobTitle, Department, JobLocation, WorkType, BusinessUnit)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (candidate_id, FirstName, LastName, PhoneNumber, Email, Gender, JobTitle, Department, JobLocation, WorkType, BusinessUnit)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-        const [result]: any = await pool.query(insertQuery, [
+        await pool.query(insertQuery, [
+            candidateId,
             FirstName,
             LastName || '',
             PhoneNumber,
@@ -71,12 +68,13 @@ router.post('/candidates', async (req: Request, res: Response) => {
             BusinessUnit || '',
         ]);
 
-        // ✅ 5. Respond with success
+        await connection.commit();
+
         res.status(201).json({
             success: true,
             message: 'Candidate added successfully.',
             candidate: {
-                ID: result.insertId,
+                ID: candidateId,
                 FirstName,
                 LastName,
                 PhoneNumber,
@@ -86,14 +84,126 @@ router.post('/candidates', async (req: Request, res: Response) => {
                 Department,
                 JobLocation,
                 WorkType,
-                BusinessUnit
+                BusinessUnit,
+                status: 'pending',
             },
         });
     } catch (error: any) {
+        await connection.rollback();
         console.error('❌ Error adding candidate:', error.sqlMessage || error.message);
         res.status(500).json({
             success: false,
             message: 'Server error while adding candidate.',
+            error: error.sqlMessage || error.message,
+        });
+    } finally {
+        connection.release();
+    }
+});
+
+// ✅ GET: All candidates
+router.get('/', async (_req: Request, res: Response) => {
+    try {
+        const [rows]: any = await pool.query(`
+      SELECT 
+          p.id AS PersonalDetailsID,
+          p.candidate_id,
+          p.FirstName,
+          p.LastName,
+          p.PhoneNumber,
+          p.Email,
+          p.Gender,
+          p.JobTitle,
+          p.Department,
+          p.JobLocation,
+          p.WorkType,
+          p.BusinessUnit,
+          c.dateCreated,
+          c.status
+      FROM hrms_master_data.personal_details p
+      JOIN hrms_master_data.candidates c ON p.candidate_id = c.id
+      ORDER BY c.dateCreated DESC
+    `);
+
+        res.status(200).json({
+            success: true,
+            message: 'Candidate list fetched successfully.',
+            total: rows.length,
+            candidates: rows,
+        });
+    } catch (error: any) {
+        console.error('❌ Error fetching candidates:', error.sqlMessage || error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching candidates.',
+            error: error.sqlMessage || error.message,
+        });
+    }
+});
+
+// ✅ GET: Candidate by ID
+router.get('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const [rows]: any = await pool.query(`
+      SELECT 
+          p.*,
+          c.dateCreated,
+          c.status
+      FROM hrms_master_data.personal_details p
+      JOIN hrms_master_data.candidates c ON p.candidate_id = c.id
+      WHERE c.id = ?
+    `, [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `Candidate not found for ID: ${id}`,
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            candidate: rows[0],
+        });
+    } catch (error: any) {
+        console.error('❌ Error fetching candidate:', error.sqlMessage || error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching candidate.',
+            error: error.sqlMessage || error.message,
+        });
+    }
+});
+
+// ✅ PUT: Update candidate status (accepted / rejected / pending)
+router.put('/:id/status', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['pending', 'accepted', 'rejected'].includes(status)) {
+        return res.status(400).json({ success: false, message: 'Invalid status value.' });
+    }
+
+    try {
+        const [result]: any = await pool.query(
+            `UPDATE hrms_master_data.candidates SET status = ? WHERE id = ?`,
+            [status, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Candidate not found.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Candidate status updated to ${status}`,
+        });
+    } catch (error: any) {
+        console.error('❌ Error updating candidate status:', error.sqlMessage || error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while updating candidate status.',
             error: error.sqlMessage || error.message,
         });
     }

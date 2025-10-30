@@ -1,22 +1,23 @@
-
 <ion-header>
-    
+
   <!-- <app-header></app-header> -->
   <app-onboarding-mainheader></app-onboarding-mainheader>
 </ion-header>
 <ion-content class="pre-on-boarding-block" fullscreen>
-    <p class="page-header mb-8"> Onboarding > Preboarding </p>
-    <ion-row class="mt-30 mb-15">
-      <ion-col>
-       <p class="page-sub-header">Preboarding</p>
-       <p class="page-header">List of all candidates who are selected to join the organization.</p>
-      </ion-col>
-      <ion-col class="row-right">
-          <ion-button class="primary-btn" (click)="openCandidateForm()"><ion-icon class="pr-5" name="add-outline"></ion-icon> Add Candidate</ion-button>
-          <ion-button class="primary-outline-btn"><ion-img class="pr-5" src="../../../assets/Icons/MdOutlineChecklist.svg"></ion-img>Import Candidates</ion-button>
-      </ion-col>
-    </ion-row>
-    
+  <p class="page-header mb-8"> Onboarding > Preboarding </p>
+  <ion-row class="mt-30 mb-15">
+    <ion-col>
+      <p class="page-sub-header">Preboarding</p>
+      <p class="page-header">List of all candidates who are selected to join the organization.</p>
+    </ion-col>
+    <ion-col class="row-right">
+      <ion-button class="primary-btn" (click)="openCandidateForm()"><ion-icon class="pr-5"
+          name="add-outline"></ion-icon> Add Candidate</ion-button>
+      <ion-button class="primary-outline-btn"><ion-img class="pr-5"
+          src="../../../assets/Icons/MdOutlineChecklist.svg"></ion-img>Import Candidates</ion-button>
+    </ion-col>
+  </ion-row>
+
 
   <!-- Filters -->
   <div class="filters">
@@ -25,16 +26,16 @@
         <ion-col class="row-left">
           <div class="filter-chip" lines="none">
             <ion-label>Business Unit</ion-label>
-            <ion-select class="custom-dropdown" formcontrol="Business Unit" 
-            toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL" interface="popover">
+            <ion-select class="custom-dropdown" formcontrol="Business Unit" toggleIcon="chevron-down"
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
               <ion-select-option>Techtammina Visakhapatnam</ion-select-option>
               <ion-select-option>Sri Tech Tammina Visakhapatnam</ion-select-option>
             </ion-select>
           </div>
           <div class="filter-chip">
             <ion-label>Job Title</ion-label>
-            <ion-select class="custom-dropdown" formcontrol="Job Title"
-            toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL" interface="popover">
+            <ion-select class="custom-dropdown" formcontrol="Job Title" toggleIcon="chevron-down"
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
               <ion-select-option>Perminent</ion-select-option>
               <ion-select-option>Part Time</ion-select-option>
               <ion-select-option>Contarct</ion-select-option>
@@ -43,8 +44,8 @@
           </div>
           <div class="filter-chip">
             <span>Department</span>
-            <ion-select class="custom-dropdown" formcontrol="department" 
-            toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL" interface="popover">
+            <ion-select class="custom-dropdown" formcontrol="department" toggleIcon="chevron-down"
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
               <ion-select-option>HR</ion-select-option>
               <ion-select-option>Finance</ion-select-option>
               <ion-select-option>IT Development</ion-select-option>
@@ -52,8 +53,8 @@
           </div>
           <div class="filter-chip">
             <span>Location</span>
-            <ion-select class="custom-dropdown" formcontrol="Location" 
-            toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL" interface="popover">
+            <ion-select class="custom-dropdown" formcontrol="Location" toggleIcon="chevron-down"
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
               <ion-select-option>Visakhapatnam</ion-select-option>
               <ion-select-option>Hyderabad</ion-select-option>
               <ion-select-option>Night shift Visakhapatnam</ion-select-option>
@@ -61,8 +62,8 @@
           </div>
           <div class="filter-chip">
             <span>Stage</span>
-            <ion-select class="custom-dropdown" formcontrol="Stage" 
-            toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL" interface="popover">
+            <ion-select class="custom-dropdown" formcontrol="Stage" toggleIcon="chevron-down" expandedIcon="chevron-up"
+              placeholder="ALL" interface="popover">
               <ion-select-option>Visakhapatnam</ion-select-option>
               <ion-select-option>Hyderabad</ion-select-option>
               <ion-select-option>Night shift Visakhapatnam</ion-select-option>
@@ -70,8 +71,8 @@
           </div>
           <div class="filter-chip">
             <span>Offer Type</span>
-            <ion-select class="custom-dropdown" formcontrol="Offer Type" 
-            toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL" interface="popover">
+            <ion-select class="custom-dropdown" formcontrol="Offer Type" toggleIcon="chevron-down"
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
               <ion-select-option>Perminent</ion-select-option>
               <ion-select-option>Part Time</ion-select-option>
               <ion-select-option>Contarct</ion-select-option>
@@ -85,86 +86,88 @@
             <ion-icon name="search-outline"></ion-icon>
             <input placeholder="Search" />
           </div>
-        </ion-col>       
+        </ion-col>
       </ion-row>
     </ion-grid>
   </div>
 
   <!-- Table Header -->
   <div class="table">
-  <ion-row class="table-header">
-    <ion-col size="3" class="row-left">
-      <ion-checkbox class="pr-15"></ion-checkbox>
-      <p>Candidate Name</p>
-    </ion-col>
-    <ion-col size="2">
-      <p>Ofer Status</p>    
-    </ion-col>
-    <ion-col size="2">
-      <p>DEPT & Location</p>
-    </ion-col>
-    <ion-col size="2">
-      <p>Joining Date</p>
-    </ion-col>
-    <ion-col size="3">
-      <p>Actions</p>
-    </ion-col>
-  </ion-row>
-  <div class="table-list" >
-    <ion-grid *ngFor="let candidate of candidates"
-    [class.hidden]="hiddenCandidates.includes(candidate.id)">
-    <ion-row class="table-list-row" 
-    *ngIf="candidate.status === 'accepted' || candidate.status === 'pending'">
-     <ion-col size="3"  class="row-left">
-      <ion-checkbox class="pr-15"></ion-checkbox>
-       <div class="cell">
-         <div class="avatar">{{candidate.personalDetails.initials}}</div>
-         <div class="name-stack">
-           <p class="name-link">{{candidate.personalDetails.FirstName}}</p>
-           <p class="sub">{{candidate.jobDetailsForm.JobTitle}}</p>
-         </div>
-       </div>
-       <div class="stage-bars">
-           <span class="bar done" [class.done]="currentStage >= 1"></span>
-           <span class="bar done" *ngIf="currentStage >= 2" class="bar" [class.done]="currentStage >= 2"></span>
-           <span class="bar done" *ngIf="currentStage >= 3" class="bar" [class.done]="currentStage >= 3"></span>
-         </div>
-     </ion-col>
-     <ion-col size="2">
-         <h5 [ngClass]="candidate.status === 'pending'? 'status-title pending' : 'status-title accepted'" >{{candidate.status}}</h5>
-         <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div>  
-     </ion-col>
-     <ion-col size="2">
-         <p class="dept-title">{{candidate.jobDetailsForm.Department}}</p>
-         <p class="dept-sub">{{candidate.jobDetailsForm.JobLocation}}</p>
-     </ion-col>
-     <ion-col size="2">
-       <p>Joining Date</p>
-     </ion-col>
-     <ion-col size="3">
-         <div class="cell cell-actions">
-             <ion-button class="primary-outline-btn ion-display-none">Revise</ion-button>
-             <ion-button class="primary-outline-btn" (click)="startpreonboarding(candidate)">Start
-               Pre-Onboarding</ion-button>
-               <ion-button fill="clear"  [attr.id]="'accept-button' + candidate.id"
-               class="dot-button">
-                 <ion-icon name="ellipsis-vertical-circle-outline"></ion-icon></ion-button>
-                 <ion-popover [attr.trigger]="'accept-button' + candidate.id" [dismissOnSelect]="true">
-                   <ng-template>
-                     <ion-content>
-                       <ion-list>
-                         <ion-item [button]="true" [detail]="false" (click)="employeehire(candidate)" *ngIf="candidate.status === 'accepted'"> Hire as employee</ion-item>
-                         <ion-item [button]="true" [detail]="false">Pending</ion-item>
-                         <ion-item [button]="true" [detail]="false">Reject</ion-item>
-                       </ion-list>
-                     </ion-content>
-                   </ng-template>
-                 </ion-popover>                
-           </div>
-     </ion-col>
-   </ion-row>  
-    </ion-grid>  
-  </div>
+    <ion-row class="table-header">
+      <ion-col size="3" class="row-left">
+        <ion-checkbox class="pr-15"></ion-checkbox>
+        <p>Candidate Name</p>
+      </ion-col>
+      <ion-col size="2">
+        <p>Ofer Status</p>
+      </ion-col>
+      <ion-col size="2">
+        <p>DEPT & Location</p>
+      </ion-col>
+      <ion-col size="2">
+        <p>Joining Date</p>
+      </ion-col>
+      <ion-col size="3">
+        <p>Actions</p>
+      </ion-col>
+    </ion-row>
+    <div class="table-list">
+      <ion-grid *ngFor="let candidate of candidates">
+        <ion-row class="table-list-row">
+          <ion-col size="3" class="row-left">
+            <ion-checkbox class="pr-15"></ion-checkbox>
+            <div class="cell">
+              <!-- <div class="avatar">{{candidate.personalDetails.initials}}</div> -->
+              <div class="name-stack">
+                <p class="name-link"> {{candidate.FirstName}}</p>
+                <p class="sub">{{candidate.JobTitle}}</p>
+              </div>
+            </div>
+            <!-- <div class="stage-bars">
+              <span class="bar done" [class.done]="currentStage >= 1"></span>
+              <span class="bar done" *ngIf="currentStage >= 2" class="bar" [class.done]="currentStage >= 2"></span>
+              <span class="bar done" *ngIf="currentStage >= 3" class="bar" [class.done]="currentStage >= 3"></span>
+            </div> -->
+          </ion-col>
+          <ion-col size="2">
+            <h5 [ngClass]="candidate.status === 'pending'? 'status-title pending' : 'status-title accepted'">
+              {{candidate.status}}</h5>
+            <!-- <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div> -->
+          </ion-col>
+          <ion-col size="2">
+            <div style="display: flex;">
+              <p class="dept-title">{{candidate.Department}}</p>
+              <p class="dept-title">{{candidate.JobLocation}}</p>
+            </div>
+
+          </ion-col>
+          <ion-col size="2">
+            <p>Joining Date</p>
+          </ion-col>
+          <ion-col size="3">
+            <div class="cell cell-actions">
+              <ion-button class="primary-outline-btn ion-display-none">Revise</ion-button>
+              <ion-button class="primary-outline-btn" (click)="startpreonboarding(candidate)">Start
+                Pre-Onboarding</ion-button>
+              <ion-button fill="clear" [attr.id]="'accept-button' + candidate.id" class="dot-button">
+                <ion-icon name="ellipsis-vertical-circle-outline"></ion-icon></ion-button>
+              <ion-popover [attr.trigger]="'accept-button' + candidate.id" [dismissOnSelect]="true">
+                <ng-template>
+                  <ion-content>
+                    <ion-list>
+                      <ion-item [button]="true" [detail]="false" (click)="employeehire(candidate)"
+                        *ngIf="candidate.status === 'accepted'"> Hire as employee</ion-item>
+                      <ion-item [button]="true" [detail]="false">Pending</ion-item>
+                      <ion-item [button]="true" [detail]="false">Reject</ion-item>
+                    </ion-list>
+                  </ion-content>
+                </ng-template>
+              </ion-popover>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
   </div>
 
 </ion-content>

@@ -69,7 +69,7 @@ export class AttendanceLogComponent implements OnInit {
   // calendarDays: any[] = []; 
   calendarDays: CalendarDay[] = [];
   attendanceRequests: AttendanceRequest[] = [];
-  selectedLog: AttendanceLog | null = null;
+  selectedLog: any = null;
   showPopover = false;
   attendanceLogs: any[] = [];
   attendanceLogss: any[] = [];
@@ -170,72 +170,55 @@ export class AttendanceLogComponent implements OnInit {
       this.employee_det = JSON.parse(t);
       console.log(this.employee_det, "asdasdads");
     }
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
 
-    const currentDate = new Date().toISOString().split('T')[0];
-    console.log(new Date(), " not formatted")
-    console.log(new Date("2025-10-29T18:30:00.000Z").toISOString().split('T')[0], "formatted date");
-    this.attendanceService.getallattendace({ employee_id: this.employee_det[0][0].employee_id }).subscribe((data) => {
+    const startDate = pastDate.toISOString().split('T')[0];
+    const endDate = currentDate.toISOString().split('T')[0];
+
+    console.log('Start Date (30 days ago):', startDate);
+    console.log('End Date (today):', endDate);
+
+    this.attendanceService.getallattendace({
+      employee_id: this.employee_det[0][0].employee_id,
+      startDate: startDate,
+      endDate: endDate
+    }).subscribe((data) => {
       console.log('All Attendance Records:', data);
-      const chnageDate = data.attendance
-        .map((item: any) => {
-          return {
-            ...item,
-            attendance_date: new Date(item.attendance_date).toDateString()
+
+      // Step 1: Normalize date format
+      const normalized = data.attendance.map((item: any) => ({
+        ...item,
+        attendance_date: new Date(item.attendance_date).toISOString().split('T')[0]
+      }));
+
+      // Step 2: Group all check-ins/check-outs per date
+      const groupedByDate: any = {};
+      normalized.forEach((record: any) => {
+        const date = record.attendance_date;
+
+        if (!groupedByDate[date]) {
+          groupedByDate[date] = {
+            attendance_date: date,
+            records: [] // store all pairs here
           };
+        }
+
+        groupedByDate[date].records.push({
+          check_in: record.check_in,
+          check_out: record.check_out
         });
+      });
 
-      const uniqueByDate = chnageDate.reduce((acc: any[], current: any) => {
-        const exists = acc.find(item => item.attendance_date === current.attendance_date);
-        if (!exists) acc.push(current);
-        return acc;
-      }, []);
-      this.attendanceLogss = chnageDate;
-      this.attendanceHistory = uniqueByDate;
-      console.log(chnageDate, "changed date");
+      // Step 3: Convert to array for display
+      this.attendanceLogss = Object.values(groupedByDate);
 
-
+      console.log(this.attendanceLogss, "Grouped Attendance with all records");
     });
 
-    this.attendanceLogs = [
-      {
-        date: 'Mon, 01 Sept',
-        progress: 0.7,
-        effective: '6h 44m',
-        gross: '8h 42m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (01 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
 
-          webClockIn: { in: '09:19:14', out: 'MISSING' },
-        },
-      },
-      {
-        date: 'Tue, 02 Sept',
-        progress: 0.5,
-        effective: '3h 56m',
-        gross: '4h 9m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (02 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-        },
-      },
-      {
-        date: 'Wed, 03 Sept',
-        progress: 0.75,
-        effective: '6h 38m',
-        gross: '8h 46m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (03 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: 'HQ',
-        },
-      },
-    ];
+
     this.generateCalendar(this.currentMonth);
   }
 
