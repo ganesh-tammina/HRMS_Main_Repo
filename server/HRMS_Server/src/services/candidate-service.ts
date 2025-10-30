@@ -176,8 +176,8 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 });
 
-// ✅ PUT: Update candidate status (accepted / rejected)
-router.put('/status/:id', async (req: Request, res: Response) => {
+// ✅ PUT: Update candidate status (accepted / rejected / pending)
+router.put('/:id/status', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
 
