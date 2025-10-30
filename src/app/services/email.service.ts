@@ -196,8 +196,8 @@ export class EmailService {
 													<table class="button_block block-4" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad">
-															<div class="alignment" align="center"><a href="http://localhost:4200/candidate_status/${candidate.id}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
-															<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href=""http://localhost:4200/candidate_status/${candidate.id}""  style="height:48px;width:142px;v-text-anchor:middle;" arcsize="17%" fillcolor="#3498db">
+															<div class="alignment" align="center"><a href="http://localhost:4200/candidate_status/${candidate.candidate_id}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
+															<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href=""http://localhost:4200/candidate_status/${candidate.candidate_id}""  style="height:48px;width:142px;v-text-anchor:middle;" arcsize="17%" fillcolor="#3498db">
 															<v:stroke dashstyle="Solid" weight="0px" color="#3498db"/>
 															<w:anchorlock/>
 															<v:textbox inset="0px,0px,0px,0px">

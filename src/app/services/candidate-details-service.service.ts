@@ -74,6 +74,10 @@ export class CandidateDetailsService {
       catchError(this.handleError)
     );
   }
+  /** 🔍 Get candidate by ID */
+  getCandidateById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${id}`).pipe(catchError(this.handleError));
+  }
 
   /** ⚠️ Handle all API errors */
   private handleError(error: HttpErrorResponse) {

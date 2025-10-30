@@ -30,7 +30,7 @@ class Server {
     this.app.use(express.json({ limit: '100mb' }));
     this.app.use(cors(corsOptions));
     this.port = config.PORT;
-    this.app.use('/', candidateRoutes); // mount route
+    this.app.use('/candidates', candidateRoutes);
     this.app.use('/', offerDetails);
     this.app.use('/', mailRoutes);
     this.app.use('/', salaryStructureRoutes);
