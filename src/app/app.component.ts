@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
   currentUser: Observable<Candidate | null>;
   isLoginPage = false
   iscandiateofferPage = false
+  iscandiateofferLetterPage = false
   CurrentuserType: string = ''
   userType: string | null = null;
   one: any;
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit {
         this.showMenu = !event.urlAfterRedirects.includes('/login');
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
         this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
+        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter')
 
         const userData = localStorage.getItem('loggedInUser');
         if (userData) {

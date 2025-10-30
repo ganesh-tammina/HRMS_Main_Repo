@@ -40,19 +40,20 @@ export class CandidateOfferLetterComponent implements OnInit {
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      console.log('Route param id:', id);
-
+      console.log('🔍 Candidate ID from route:', id);
 
       if (id) {
-        this.candidateService.getCandidateById(id).subscribe((data: any) => {
-          this.candidate = data;
-          console.log('Fetched Candidate by ID:', this.candidate);
+        this.candidateService.getCandidateById(id).subscribe({
+          next: (res: any) => {
+            // API returns `{ success: true, candidate: {...} }`
+            this.candidate = res.candidate;
+            console.log('Candidate fetched from backend:', this.candidate);
+          },
+          error: (err) => {
+            console.error('❌ Error fetching candidate:', err);
+          }
         });
       }
-      this.candidateService.currentCandidate$.subscribe(user => {
-        this.currentCandidate = user;
-        console.log('Current Candidate from Service:', user);
-      });
     });
 
 
