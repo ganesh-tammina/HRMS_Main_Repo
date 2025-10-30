@@ -1,68 +1,54 @@
 <ion-grid class="create-offer-header">
   <ion-row style="align-items: center;">
     <!-- Title -->
-    <ion-col size="2">
+    <ion-col class="pr-15">
       <ion-toolbar>
         <ion-title>Create Offer</ion-title>
       </ion-toolbar>
     </ion-col>
+ <!-- Navigation Tabs -->
+ <ion-col>
+  <div class="wizard-container row-right">
+    <div class="stepper">
+      <div [ngClass]="activeTab === 'CreateOffer' ? 'step active' : 'step inactive'"  (click)="navigate('CreateOffer')">
+        <div class="circle">1</div>
+        <p>JOB DETAILS</p>
+      </div>
+      
+      <div class="line"></div>
 
-    <!-- Navigation Tabs -->
-    <ion-col size="8">
-      <ion-button fill="clear" (click)="navigate('CreateOffer')" [class.active-btn]="activeTab === 'salaryStaructure'">
-        JOB DETAILS
+      <div [ngClass]="activeTab === 'salaryStaructure' ? 'step active' : 'step inactive'"  (click)="navigate('salaryStaructure')">
+        <div class="circle">2</div>
+        <p> COMPENSATION</p>
+      </div>
+
+      <div class="line"></div>
+      
+      <div  [ngClass]="activeTab === 'OfferDetailsComponent' ? 'step active' : 'step inactive'"  (click)="navigate('OfferDetailsComponent')">
+        <div class="circle">3</div>
+        <p> OFFER DETAILS </p>
+      </div>
+      
+      <div class="line"></div>
+      
+      <div [ngClass]="activeTab === 'preview_send' ? 'step active' : 'step inactive'" (click)="navigate('preview_send')">
+        <div class="circle">4</div>
+        <p>PREVIEW & SEND</p>
+      </div>
+    </div>
+
+    <div class="ion-padding d-flex">
+      <ion-button class="primary-outline-btn" (click)="onContinue()">
+        Continue
       </ion-button>
-
-      <ion-button fill="clear" (click)="navigate('salaryStaructure')"
-        [class.active-btn]="activeTab === 'salaryStaructure'">
-        COMPENSATION
-      </ion-button>
-
-      <ion-button fill="clear" (click)="navigate('OfferDetailsComponent')"
-        [class.active-btn]="activeTab === 'salaryStaructure'">
-        OFFER DETAILS
-      </ion-button>
-
-      <ion-button fill="clear" (click)="navigate('preview_send')" [class.active-btn]="activeTab === 'preview_send'">
-        PREVIEW & SEND
-      </ion-button>
-    </ion-col>
-
-    <!-- Continue Button -->
-    <ion-col size="2">
-      <div class="button-container">
-        <ion-button expand="block" (click)="onContinue()" color="primary">
-          Continue
-        </ion-button>
-        <ion-button expand="block" (click)="onCreateOfferemail()" color="primary">
+      <ion-button class="primary-btn" (click)="onCreateOfferemail()">
           Create Offer
         </ion-button>
-      </div>
-    </ion-col>
-
-
-
-    <!-- <ion-col size="2">
-      <div class="button-container">
-    
-        <ion-button
-          *ngIf="!isPreviewSend"
-          expand="block"
-          (click)="onContinue()"
-          color="primary">
-          Continue
-        </ion-button>
-
- 
-        <ion-button
-          *ngIf="isPreviewSend"
-          expand="block"
-          color="primary"
-          (click)="onCreateOffer()">
-          Create Offer
-        </ion-button>
-      </div>
-    </ion-col> -->
-
-  </ion-row>
+    </div>
+  </div>
+</ion-col>
+</ion-row>
 </ion-grid>
+
+
+

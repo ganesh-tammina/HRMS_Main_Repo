@@ -1,9 +1,11 @@
+
 import { Component, OnInit, Input, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CandidateService } from '../pre-onboarding.service';
 import { AttendanceService, AttendanceRecord } from '../attendance.service';
 import { Subscription, interval } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-clock-button',
@@ -11,24 +13,27 @@ import { Subscription, interval } from 'rxjs';
   standalone: true,
   imports: [CommonModule, IonicModule],
   template: `
-    <div *ngIf="currentCandidate">
-      <ion-button
-        class="btn-clockin"
-        *ngIf="!isClockedIn"
+    <div *ngIf="currentCandidate" class="ion-text-left">
+    
+      <ion-button class="btn-clockin"
+        *ngIf="(!isClockedIn && (currentUrl!=='/Me'))"
         (click)="clockIn()"
       >
         Web Clock-In
       </ion-button>
-
+      <ion-button fill="clear" class="clear" *ngIf="(!isClockedIn && (currentUrl=='/Me'))" (click)="clockIn()">
+      <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16">
+      web Clock_In
+    </ion-button>
       <ion-button
         class="btn-clockout"
         *ngIf="isClockedIn"
         (click)="clockOut()"
       >
-        Clock-Out
+      Web Clock-Out
       </ion-button>
 
-      <div class="ms-2">
+      <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))">
         Since Last Login :
         <strong>{{ timeSinceLastLogin }}</strong>
       </div>
@@ -43,16 +48,23 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   currentCandidate?: any;
   @Input() record?: AttendanceRecord;
   @Output() statusChanged = new EventEmitter<AttendanceRecord>();
-
+  currentUrl : any;
   timeSinceLastLogin = '0h 0m 0s';
   private intervalSub?: Subscription;
 
   constructor(
+    private router: Router,
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
-  ) { }
+  ) { 
+
+
+
+  }
 
   ngOnInit() {
+    this.currentUrl = this.router.url;;
+    console.log('Current Page URL:', this.currentUrl);
     this.candidateService.getEmpDet().subscribe((user: any) => {
       this.currentCandidate = user || undefined;
       console.log('Current Candidate in ClockButton:', this.currentCandidate);
@@ -81,6 +93,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         this.updateTimeSinceLogin()
       );
     });
+
+   
   }
 
   ngOnDestroy() {
