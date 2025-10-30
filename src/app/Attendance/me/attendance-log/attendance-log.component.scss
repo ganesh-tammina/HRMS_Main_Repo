@@ -129,7 +129,7 @@ p.divider {
       @include body-text();
     }
     .clock-logs {
-      display: flex;
+      // display: flex;
       width: 100%;
       p{
         @include body-text();

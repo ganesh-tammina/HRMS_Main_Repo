@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "fe": "concurrently \"ng serve\" \"npm run dev --prefix ./server/HRMS_Server\""
+    "test_the_frontend": "concurrently \"ng serve\" \"npm start --prefix ./HRMS_Server\""
   },
   "private": true,
   "dependencies": {
@@ -27,10 +27,8 @@
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
-    "@ionic/angular": "^8.7.6",
-    "@rdlabo/ionic-angular-collect-icons": "^1.4.5",
+    "@ionic/angular": "^8.0.0",
     "emailjs": "^4.0.3",
-    "idb": "^8.0.3",
     "ionicons": "^7.0.0",
     "json-server": "^1.0.0-beta.3",
     "moment": "^2.30.1",

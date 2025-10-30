@@ -1,5 +1,5 @@
- <!-- Filters -->
- <div class="row-space-between">
+<!-- Filters -->
+<div class="row-space-between">
   <div>
     <p>Last 30 Days</p>
   </div>
@@ -17,7 +17,7 @@
 </div>
 
 
-<!-- Table -->
+
 <ion-grid class="attendance-table">
   <ion-row class="table-header">
     <ion-col size="2">Date</ion-col>
@@ -28,14 +28,14 @@
     <ion-col size="1">Log</ion-col>
   </ion-row>
 
-  <ion-row *ngFor="let log of attendanceLogs" class="table-row">
-    <ion-col size="2">{{ currentDate }}</ion-col>
+  <ion-row *ngFor="let log of attendanceHistory" class="table-row">
+    <ion-col size="2">{{log.attendance_date}}</ion-col>
     <ion-col size="3">
       <ion-progress-bar [value]="log.progress"></ion-progress-bar>
     </ion-col>
-    <ion-col size="2">{{ effectiveHours }}</ion-col>
+    <ion-col size="2">{{ log.effective }}</ion-col>
     <ion-col size="2">
-      {{ grossHours }}
+      {{ log.gross }}
     </ion-col>
     <ion-col size="2">
       <ion-icon name="checkmark-outline" color="success"></ion-icon>
@@ -54,14 +54,17 @@
         <p class="divider"></p>
         <p><strong>Location:</strong></p>
         <p class="card-title">{{ selectedLog?.details?.location }}</p>
-        <ion-row class="ion-no-padding">
-          <ion-col *ngFor="let event of history" class="clock-logs" size="6">
-            <div class="d-flex">
-              <p *ngIf="event.type === 'CLOCK_IN'"><img src="../../assets/Icons/clock-in.svg" width="12"> {{
-                event.displayTime }}</p>
-              <p *ngIf="event.type !== 'CLOCK_IN'"><img src="../../assets/Icons/clock-out.svg" width="12">{{
-                event.displayTime }}</p>
-
+        <ion-row class="ion-no-padding" *ngFor="let log of attendanceLogss">
+          <ion-col class="clock-logs" size="6">
+            <div class="">
+              <p>{{log.check_in}}<img src="../../assets/Icons/clock-out.svg" width="12">
+              </p>
+            </div>
+          </ion-col>
+          <ion-col class="clock-logs" size="6">
+            <div class="">
+              <p>{{log.check_out}}<img src="../../assets/Icons/clock-out.svg" width="12">
+              </p>
             </div>
           </ion-col>
         </ion-row>
@@ -69,7 +72,7 @@
     </ng-template>
   </ion-popover>
 
-  <!-- Weekly off row -->
+
   <ion-row class="table-row weekoff-row">
     <ion-col size="2">Sun, 31 Aug<label>W-OFF</label></ion-col>
     <ion-col size="10" class="text-center">Full day Weekly-off</ion-col>

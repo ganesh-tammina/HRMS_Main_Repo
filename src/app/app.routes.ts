@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { HomePage } from './home/home.page';
 import { MePage } from '../app/Attendance/me/me.page';
@@ -16,14 +17,18 @@ import { CreateOfferComponent } from './onboarding/create-offer/create-offer.com
 import { LeavesComponent } from '../app/Attendance/me/leaves/leaves.component';
 import { authGuard } from './authgurd.guard';
 import { AuthGuard } from './Administration/services/auth-guard.guard';
+import { adminRoutes } from './Administration/admin.routes';
 
 export const routes: Routes = [
+  ...adminRoutes,
+
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
   },
-  { path: 'Home', component: HomePage, canActivate: [AuthGuard], data: { role: 'employee' } },
+  // canActivate: [AuthGuard], data: { role: 'employee' } 
+  { path: 'Home', component: HomePage, },
   // { path: 'Me', component: MePage },
   { path: 'MyTeam', component: MyTeamPage },
   { path: 'login', component: LoginPage },
@@ -36,9 +41,11 @@ export const routes: Routes = [
   { path: 'Startonboardingitem', component: StartOnboardingComponent },
   { path: 'CreateOffer/:id/:FirstName', component: CreateOfferComponent },
   { path: 'leaves', component: LeavesComponent },
-
-
-
+ 
+  {
+    path: 'pre-onboarding-cards',
+    loadComponent: () => import('./onboarding/pre-onboarding-cards/pre-onboarding-cards.component').then(m => m.PreOnboardingCardsComponent),
+  },
   {
     path: 'pre_onboarding',
     loadComponent: () => import('./onboarding/pre.page').then(m => m.PostPage),
@@ -104,17 +111,7 @@ export const routes: Routes = [
       import('./profile-page/profile-page.component').then(
         m => m.ProfilePageComponent
       ),
-  },
-  {
-    path: 'admin',
-    loadComponent: () =>
-      import('./Administration/admin/admin.component').then(
-        m => m.AdminComponent
-      ),
-    canActivate: [AuthGuard],  // <-- corrected
-    data: { role: 'admin' }
   }
-
 
 
 ];

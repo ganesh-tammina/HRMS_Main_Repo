@@ -7,7 +7,7 @@
   <ion-grid class="ion-no-padding">
     <div class="dashboard">
       <ion-row class="attendance-block">
-        <ion-col  size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+        <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
           <!-- Attendance Status -->
           <ion-card class="attendance-status">
             <ion-card-header>
@@ -19,10 +19,8 @@
               <ion-grid class="days-grid ion-no-padding">
                 <ion-row>
                   <ion-col class="row-left">
-
                     <img src="../../assets/user.svg" width="25">
                     <p class="pl-5"> Me</p>
-
                   </ion-col>
                   <ion-col>
                     <div>
@@ -38,12 +36,11 @@
                   </ion-col>
                 </ion-row>
               </ion-grid>
-
             </ion-card-content>
           </ion-card>
         </ion-col>
 
-        <ion-col  size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+        <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
           <!-- Timings -->
           <ion-card class="timings-card">
             <ion-card-header>
@@ -69,14 +66,12 @@
           </ion-card>
         </ion-col>
 
-        <ion-col  size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
-
+        <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
           <ion-card class="actions">
             <ion-card-header>
               <ion-card-title>Actions</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <!-- Actions -->
               <ion-row class="actions-card">
                 <ion-col size="4">
                   <h5 class="clock">{{ currentTime }}</h5>
@@ -84,10 +79,14 @@
                 </ion-col>
 
                 <ion-col size="6">
-                  <app-clock-button></app-clock-button>
+                  <!-- Pass record changes to parent component -->
+                  <app-clock-button [record]="record" (statusChanged)="onClockStatusChanged($event)">
+                  </app-clock-button>
+                  <!-- 
                   <div class="info m-5 ion-text-center" *ngIf="record?.isClockedIn">
                     Since Last Login: {{ timeSinceLastLogin }}
-                  </div>
+                  </div> -->
+
                   <ion-button fill="clear" class="clear" *ngIf="!record?.isClockedIn">
                     <img src="../../assets/Icons/attendance-icons/remote.svg" width="16" height="16">
                     Remote Clock-In
@@ -110,36 +109,30 @@
           </ion-card>
         </ion-col>
       </ion-row>
-
-
-
-
     </div>
   </ion-grid>
 
   <div class="attendance-log-card">
     <h2>Logs & Requests</h2>
-    <!-- logs & request Tabs -->
     <div class="tabs-container custom-tabs">
       <button [class.active]="activeTab === 'log'" (click)="setTab('log')">Attendance Log</button>
       <button [class.active]="activeTab === 'calendar'" (click)="setTab('calendar')">Calendar</button>
       <button [class.active]="activeTab === 'requests'" (click)="setTab('requests')">Attendance Requests</button>
     </div>
-<!-- Attedance Log Tab -->
+
+    <!-- Attendance Log Tab -->
     <div *ngIf="activeTab === 'log'">
-          <app-attendance-log></app-attendance-log>     
+      <app-attendance-log></app-attendance-log>
     </div>
-<!-- Calendar Tab -->
+
+    <!-- Calendar Tab -->
     <div *ngIf="activeTab === 'calendar'">
-        <app-calendar></app-calendar>
+      <app-calendar></app-calendar>
     </div>
-    
-   <!-- Attendance Requests Tab -->
 
-<div *ngIf="activeTab === 'requests'">
-  <app-attendance-request></app-attendance-request>
-</div>
-
-
+    <!-- Attendance Requests Tab -->
+    <div *ngIf="activeTab === 'requests'">
+      <app-attendance-request></app-attendance-request>
+    </div>
   </div>
 </ion-content>

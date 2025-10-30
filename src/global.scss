@@ -35,8 +35,18 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-// @import '@ionic/angular/css/palettes/dark.system.css';
+@import '@ionic/angular/css/palettes/dark.system.css';
 @import 'theme/variables.scss';
+html.md {
+--ion-default-font: 'Open Sans';
+}
+
+html, body {
+     font-family: 'Open Sans';
+}
+:host {
+    font-family: 'Open Sans';
+}
 
 ion-split-pane{
     --side-min-width: 70px !important;
@@ -79,8 +89,7 @@ ion-list-header, ion-item{
 
 
 :host(.menu-pane-visible.split-pane-side.menu-enabled) {
-    display: flex
-;
+    display: flex;
     flex-shrink: 0;
     min-width: 150px;
 }
@@ -140,6 +149,12 @@ ion-list-header, ion-item{
 .mb-30 {
     margin-bottom: 30px !important;
 }
+.mt-30 {
+    margin-top: 30px !important;
+}
+.mb-15 {
+    margin-bottom: 15px !important;
+}
 .p-8 {
     padding: 8px;
 }
@@ -152,13 +167,36 @@ ion-list-header, ion-item{
 .mt-8 {
   margin-top: 8px !important;
 }
+.my-15 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 // Modal popup
+ion-modal {
+    --width: 800px;
+    --height: calc(100vh - 60px);
+    --max-height: calc(100vh - 60px);
+    --border-radius: 18px;
+   
+    ion-content::part(scroll) {
+        @include scroll-style();
+    }
+    &.start-preboarding-modal {
+        --height: calc(100vh - 235px);
+    }
+}
 .custom-popup {
     ion-header {
         box-shadow: none;
         ion-title {
             @include card-header();
         }
+    }
+    .modal-header {
+        h1{
+            @include card-header();
+        }
+        margin-bottom: 15px;
     }
   .form-block {
       padding: 0px 24px;
@@ -183,6 +221,10 @@ ion-list-header, ion-item{
       }      
   }
 }
+ion-popover.select-popover {
+    margin-left: 66px;
+    margin-top: 12px;
+}
 .text-center {
     text-align: center;
 }
@@ -202,9 +244,9 @@ ion-list-header, ion-item{
     @extend .custom-button ;
 }
 .primary-outline-btn {
-    --background: #fff;
+    background: #fff;
     --color: #2986CE;
-    --border: 1.5px solid #2986CE;
+    border: 1.5px solid #2986CE;
     @extend .custom-button ;
 }
 .danger-outline-btn {
@@ -216,4 +258,7 @@ ion-list-header, ion-item{
     --color: #fff;
     --background: #E45353;
     @extend .custom-button ;
+}
+#main-content {
+    --background: var(--ion-bg-color); 
 }

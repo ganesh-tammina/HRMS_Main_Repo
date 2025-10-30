@@ -55,6 +55,7 @@ export class PreonboardingComponent implements OnInit {
   async startpreonboarding(candidate: any) {
     const modal = await this.modalCtrl.create({
       component: StartOnboardingComponent,
+      cssClass: 'start-preboarding-modal',
       componentProps: {
         candidate: candidate,        // ✅ selected candidate’s ID
       }
