@@ -1,106 +1,120 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-candidate-offer-letter',
   templateUrl: './candidate-offer-letter.component.html',
   styleUrls: ['./candidate-offer-letter.component.scss'],
   standalone: true,
-  imports: [HeaderComponent, CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [HeaderComponent, CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class CandidateOfferLetterComponent implements OnInit {
-  currentCandidate: any
-  activePage: string = 'openPage';
-  candidate: any;
-  ids: string = ''
+  candidate: any = {};
   acceptDisabled = false;
   rejectDisabled = false;
-  currentCandidate$!: Observable<any>;
-  onboardingForms!: FormGroup
+  onboardingForms!: FormGroup;
 
-
-  constructor(private candidateService: CandidateService, private router: Router, private http: HttpClient, private alertController: AlertController, private route: ActivatedRoute, private fb: FormBuilder) { }
+  constructor(
+    private candidateService: CandidateService,
+    private router: Router,
+    private http: HttpClient,
+    private alertController: AlertController,
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
 
   ngOnInit() {
-    const nav = this.router.getCurrentNavigation();
-    this.candidate = nav?.extras.state?.['candidate'] || {};
-    console.log('Candidate:', this.candidate);
-
+    // Initialize form
     this.onboardingForms = this.fb.group({
-      PhoneNumber: ['', Validators.required]
+      PhoneNumber: ['', Validators.required],
     });
 
-    this.route.paramMap.subscribe(params => {
+    // Get candidate from navigation state (if available)
+    const nav = this.router.getCurrentNavigation();
+    const stateCandidate = nav?.extras.state?.['candidate'];
+
+    if (stateCandidate) {
+      this.candidate = stateCandidate;
+      console.log('✅ Candidate from navigation:', this.candidate);
+    }
+
+    // Fetch candidate by route param (if not passed through navigation)
+    this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
-      console.log('Route param id:', id);
-
-
       if (id) {
-        this.candidateService.getCandidateById(id).subscribe((data: any) => {
-          this.candidate = data;
-          console.log('Fetched Candidate by ID:', this.candidate);
-        });
+        console.log('🔍 Candidate ID from route:', id);
+        this.loadCandidateById(id);
       }
-      this.candidateService.currentCandidate$.subscribe(user => {
-        this.currentCandidate = user;
-        console.log('Current Candidate from Service:', user);
-      });
     });
-
-
   }
 
+  // 🔹 Load candidate details by ID from backend
+  loadCandidateById(id: string) {
+    this.candidateService.getCandidateById(id).subscribe({
+      next: (res: any) => {
+        this.candidate = res?.candidate || res;
+        console.log('✅ Candidate fetched from backend:', this.candidate);
+      },
+      error: (err) => {
+        console.error('❌ Error fetching candidate:', err);
+      },
+    });
+  }
 
-
+  // 🔹 Accept candidate offer and navigate to OfferDetails
   async acceptCandidate(candidateId: number) {
     this.rejectDisabled = true;
-    const alert = await this.alertController.create({
-      header: 'Accept Candidate',
-      message: `You accepted candidate with ID: ${candidateId}`,
-      buttons: ['OK'],
-    });
-
-    try {
-      const url = `http://localhost:3562/offerstatus/accept`;
-      const response = await this.http.put(url, { id: candidateId }).toPromise();
-      console.log('Accept response:', response);
-    } catch (error) {
-      console.error('Error accepting candidate:', error);
-    }
-
-    await alert.present();
-  }
-
-  async rejectCandidate(candidateId: number) {
     this.acceptDisabled = true;
-    const alert = await this.alertController.create({
-      header: 'Reject Candidate',
-      message: `You rejected candidate with ID: ${candidateId}`,
-      buttons: ['OK'],
-    });
 
     try {
-      const url = `http://localhost:3562/offerstatus/reject`;
-      const response = await this.http.put(url, { id: candidateId }).toPromise();
-      console.log('Reject response:', response);
-    } catch (error) {
-      console.error('Error rejecting candidate:', error);
-    }
+      const url = `http://localhost:3562/candidates/${this.candidate.candidate_id}/status`;
+      const response = await this.http.put(url, { status: 'accepted' }).toPromise();
+      console.log('✅ Accept response:', response);
 
-    await alert.present();
+      const alert = await this.alertController.create({
+        header: 'Offer Accepted 🎉',
+        message: `Welcome aboard, ${this.candidate.FirstName}!`,
+        buttons: ['OK'],
+      });
+      await alert.present();
+
+      // Navigate to Offer Details after acceptance
+      this.router.navigate(['/offer-details'], {
+        state: { candidate: this.candidate },
+      });
+    } catch (error) {
+      console.error('❌ Error accepting candidate:', error);
+      this.acceptDisabled = false;
+      this.rejectDisabled = false;
+    }
   }
 
+  // 🔹 Reject candidate offer
+  async rejectCandidate(candidate: number) {
+    this.acceptDisabled = true;
+    this.rejectDisabled = true;
 
+    try {
+      const url = `http://localhost:3562/candidates/${this.candidate.candidate_id}/status`;
+      const response = await this.http.put(url, { status: 'rejected' }).toPromise();
+      console.log('✅ Reject response:', response);
 
-
-
+      const alert = await this.alertController.create({
+        header: 'Offer Rejected',
+        message: `You have declined the offer. Thank you for your time.`,
+        buttons: ['OK'],
+      });
+      await alert.present();
+    } catch (error) {
+      console.error('❌ Error rejecting candidate:', error);
+      this.acceptDisabled = false;
+      this.rejectDisabled = false;
+    }
+  }
 }
-
