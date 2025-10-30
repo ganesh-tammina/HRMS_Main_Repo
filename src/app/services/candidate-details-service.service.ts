@@ -18,8 +18,20 @@ export interface Candidate {
 
 export interface OfferDetails {
   Email: string;
-  JoiningDate: string;  // YYYY-MM-DD format
-  OfferValidity: number; // in days (e.g. 7, 15)
+  JoiningDate: string;  // YYYY-MM-DD
+  OfferValidity: number; // days
+}
+
+export interface SalaryStructure {
+  candidate_id: number;
+  basic: number;
+  hra: number;
+  medical_allowance: number;
+  transport_allowance: number;
+  special_allowance: number;
+  sub_total: number;
+  pf_employer: number;
+  total_annual: number;
 }
 
 @Injectable({
@@ -28,6 +40,7 @@ export interface OfferDetails {
 export class CandidateDetailsService {
   private baseUrl = 'http://localhost:3562/candidates';
   private offerUrl = 'http://localhost:3562/offer-details';
+  private packageUrl = 'http://localhost:3562/salary-structure';
 
   constructor(private http: HttpClient) { }
 
@@ -50,6 +63,14 @@ export class CandidateDetailsService {
   createOfferDetails(offer: OfferDetails): Observable<any> {
     console.log('📤 Sending offer details:', offer);
     return this.http.post(this.offerUrl, offer).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /** 💰 Create Salary Structure for candidate */
+  createSalaryStructure(salary: SalaryStructure): Observable<any> {
+    console.log('📤 Sending salary structure:', salary);
+    return this.http.post(this.packageUrl, salary).pipe(
       catchError(this.handleError)
     );
   }

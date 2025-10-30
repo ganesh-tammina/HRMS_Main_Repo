@@ -1,11 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../shared/header/header.component';
 import { CreateOfferHeaderComponent } from '../onboarding/create-offer-header/create-offer-header.component';
-import { CandidateService } from '../services/pre-onboarding.service';
+import { CandidateDetailsService } from '../services/candidate-details-service.service';
 
 @Component({
   selector: 'app-salary-structure',
@@ -18,7 +24,7 @@ import { CandidateService } from '../services/pre-onboarding.service';
     IonicModule,
     HeaderComponent,
     CreateOfferHeaderComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
 })
 export class salaryStaructureComponent implements OnInit {
@@ -29,11 +35,11 @@ export class salaryStaructureComponent implements OnInit {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private candidateService: CandidateService
+    private candidateService: CandidateDetailsService
   ) {
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras.state?.['candidate'] || {};
-    console.log('Candidate:', this.candidate);
+    console.log('📋 Candidate:', this.candidate);
   }
 
   ngOnInit() {
@@ -42,7 +48,10 @@ export class salaryStaructureComponent implements OnInit {
     }
 
     this.salaryForm = this.fb.group({
-      salary: [this.candidate.packageDetails.annualSalary || '', [Validators.required, Validators.min(1)]],
+      salary: [
+        this.candidate.packageDetails.annualSalary || '',
+        [Validators.required, Validators.min(1)],
+      ],
     });
 
     this.salaryForm.get('salary')?.valueChanges.subscribe((value) => {
@@ -56,8 +65,9 @@ export class salaryStaructureComponent implements OnInit {
     }
   }
 
+  // ✅ Salary calculation logic
   calculateSalary(annualSalary: number) {
-    const basic = annualSalary * 0.40;
+    const basic = annualSalary * 0.4;
     const hra = annualSalary * 0.16;
     const medical = 15000;
     const transport = 19200;
@@ -77,8 +87,11 @@ export class salaryStaructureComponent implements OnInit {
       pfEmployee,
       total: basic + hra + medical + transport + special + pfEmployer,
     };
+
+    console.log('💰 Calculated Salary Structure:', this.salaryStructure);
   }
 
+  // ✅ View salary preview
   onViewSalary() {
     if (this.salaryForm.invalid) {
       alert('Please enter a valid salary.');
@@ -88,6 +101,7 @@ export class salaryStaructureComponent implements OnInit {
     this.calculateSalary(annualSalary);
   }
 
+  // ✅ Save salary structure and navigate immediately
   goToOfferDetails() {
     if (this.salaryForm.invalid) {
       alert('Please enter salary before continuing.');
@@ -95,38 +109,47 @@ export class salaryStaructureComponent implements OnInit {
     }
 
     const annualSalary = this.salaryForm.value.salary;
+    this.calculateSalary(annualSalary);
 
-    // ✅ Build package details
-    this.candidate.packageDetails = {
-      annualSalary,
-      ...this.salaryStructure,
-    };
-
-    console.log('Candidate with Package Details:', this.candidate);
-
-    if (!this.candidate.id) {
+    const candidateId = this.candidate.id || this.candidate.candidate_id;
+    if (!candidateId) {
       alert('Candidate ID not found. Please go back and select a candidate.');
       this.router.navigate(['/previous-page']);
       return;
     }
 
-    // ✅ Call new service method
-    this.candidateService.addPackageDetails(this.candidate).subscribe({
-      next: (res) => {
-        console.log('Package details saved:', res);
-        this.router.navigate(
-          [
-            '/OfferDetailsComponent',
-            this.candidate.id,
-            encodeURIComponent(this.candidate.personalDetails.FirstName || ''),
-          ],
-          { state: { candidate: this.candidate } }
-        );
+    const salaryData = {
+      candidate_id: candidateId,
+      basic: this.salaryStructure.basic,
+      hra: this.salaryStructure.hra,
+      medical_allowance: this.salaryStructure.medical,
+      transport_allowance: this.salaryStructure.transport,
+      special_allowance: this.salaryStructure.special,
+      sub_total: this.salaryStructure.subtotal,
+      pf_employer: this.salaryStructure.pfEmployer,
+      total_annual: annualSalary,
+    };
+
+    console.log('📤 Sending salary structure payload:', salaryData);
+
+    // ✅ Trigger API call (asynchronous)
+    this.candidateService.createSalaryStructure(salaryData).subscribe({
+      next: (res: any) => {
+        console.log('✅ Salary structure saved successfully:', res);
       },
-      error: (err) => {
-        console.error('Error saving package details:', err);
-        alert('Failed to save package details. Please try again.');
+      error: (err: any) => {
+        console.error('❌ Error saving salary structure:', err);
       },
     });
+
+    // ✅ Immediately navigate to OfferDetailsComponent
+    this.router.navigate(
+      [
+        '/OfferDetailsComponent',
+        candidateId,
+        encodeURIComponent(this.candidate.FirstName || ''),
+      ],
+      { state: { candidate: this.candidate } }
+    );
   }
 }
