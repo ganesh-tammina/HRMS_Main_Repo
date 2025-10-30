@@ -3,14 +3,13 @@
     <ion-img src="../../assets/tammina-blue-logo.svg" alt="On Leave"></ion-img>
     <div>
       <ion-icon name="person-circle"></ion-icon>
-      {{currentCandidate.FirstName}}
+      {{ candidate?.FirstName }}
     </div>
   </div>
-  <div class="offerletter-continer">
+
+  <div class="offerletter-continer" *ngIf="candidate">
     <div class="header-block">
-      <p class="text-bold">
-        Welcome {{currentCandidate.FirstName}}
-      </p>
+      <p class="text-bold">Welcome {{ candidate?.FirstName }}</p>
       <p class="text-dec">
         It was great interacting with you as part of our interview process.
         We are quite excited about the possibilities of working together.
@@ -28,49 +27,36 @@
         <ion-card>
           <ion-img src="../../assets/tammina-blue-logo.svg" alt="logo"></ion-img>
           <div>
-            <p>Dear {{currentCandidate.FirstName}},</p>
+            <p>Dear {{ candidate?.FirstName }},</p>
             <p>Welcome Tech Tammina !!!</p>
             <p>
               It was a pleasure interacting with you during our hiring process and we believe that
               you would make a great asset to Sree Tammina Software Solutions Pvt. Ltd. hence we are
-              pleased to release this offer for the role of UI/UX Designer. While the hiring process
-              allowed us to get a brief glimpse of your capabilities, we believe we have an environment
-              that can get the best of you. We are looking forward to working with you at the earliest.
-              You are required to join us on or before 01-09-2025 and the offer stands withdrawn there
-              after unless the date is extended by us and communicated to youin writing.
+              pleased to release this offer for the role of <b>{{ candidate?.JobTitle }}</b>.
+              You are required to join us on or before 01-09-2025 and the offer stands withdrawn thereafter unless
+              extended by us in writing.
             </p>
+
             <ol type="I">
               <li>
                 You will be working in our office located in #49-24-64, Sri Venkata Sai Towers,
-                Madhuranagar, Visakhapatnam, Andhra Pradesh, India-530016. But wil
-                l work for the company or any of its subsidiaries or associated companies in any location
-                within or outside India. You will be governed automatically by the rules and regulations and terms and
-                conditions applicable to the new assignment.
+                Madhuranagar, Visakhapatnam, Andhra Pradesh, India-530016.
               </li>
               <li>
                 Your annual gross salary will be INR 2,40,000.00 calculated as Cost to Company
-                and the break-up of the salary is attached herewith in Annexure A. (This includes
-                Basic, Allowances, Statutory contributions and other benefits as per the policy of
-                Government regulatory bodies. You will be responsible for the payment of the
-                income tax, and other applicable taxes.)
+                and the break-up of the salary is attached herewith in Annexure A.
               </li>
+              <li>Your offer is contingent upon successful background verification.</li>
               <li>
-                Your offer is contingent upon successful background verification and a positive
-                reference check.
+                You shall be eligible for promotions and increments based on performance.
               </li>
-              <li>
-                You shall be eligible for promotions and increments based on your performance
-                and contributions to the Company as per the review and appraisal policies of the
-                company.
-              </li>
-              <li>
-                You will be entitled to leaves and holidays as per the Policy of the company.
-              </li>
+              <li>You will be entitled to leaves and holidays as per company policy.</li>
             </ol>
           </div>
         </ion-card>
       </div>
     </div>
+
     <div class="action-block row-right">
       <ion-button (click)="rejectCandidate(candidate.id)" [disabled]="rejectDisabled" class="danger-outline-btn">
         Reject
@@ -80,21 +66,19 @@
         Accept
       </ion-button>
     </div>
+
     <div class="footer-block">
       <p class="mail-text">Any questions? Reach out to us</p>
       <div class="row-space-between">
-        <div class="row-left" *ngIf="currentCandidate">
-          <ion-icon name="mail"></ion-icon>
-          <p>{{currentCandidate.employeeCredentials?.companyEmail}}</p>
-        </div>
         <div class="row-left">
           <ion-icon name="mail"></ion-icon>
           <p>hr@tammina.com</p>
         </div>
         <div class="row-left">
           <ion-icon name="phone-portrait"></ion-icon>
-          <p>{{currentCandidate.personalDetails?.PhoneNumber}}</p>
+          <p>{{ candidate?.PhoneNumber }}</p>
         </div>
       </div>
     </div>
   </div>
+</div>
