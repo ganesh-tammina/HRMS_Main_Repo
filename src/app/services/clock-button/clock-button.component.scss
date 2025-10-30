@@ -12,3 +12,22 @@
   .btn-clockin {
     --background: #1870B9;
   }
+  .clear {
+    min-height: auto;
+   @include body-text();
+   font-size: 13px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+    --padding-start: 0;
+    --padding-end: 0;
+    display: block;
+    text-align: left;
+    text-transform: capitalize;
+    justify-self: flex-start;
+    &:hover {
+      --background: transparent; 
+    }
+    img {
+      margin-right: 8px;
+    }
+  }
