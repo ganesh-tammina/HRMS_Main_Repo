@@ -33,6 +33,7 @@ export default class AttendanceService {
   }
   public static async clockIn(data: TT) {
     try {
+
       const query = `
         INSERT INTO attendance (employee_id, attendance_date, check_in)
         VALUES (?, CURDATE(), ?)
@@ -41,6 +42,7 @@ export default class AttendanceService {
         data.employee_id,
         data.check_in,
       ]);
+
       return result;
     } catch (err) {
       throw err;
