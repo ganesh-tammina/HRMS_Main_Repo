@@ -35,4 +35,22 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  public static async addLeaves(req: Request, res: Response) {
+    try {
+      const result = await LeaveService.addLeaves(req.body);
+      res.status(200).json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  public static async getLeaves(req: Request, res: Response) {
+    try {
+      const result = await LeaveService.getLeavesByEmployeeId(req.body.employeeId);
+      res.status(200).json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 }

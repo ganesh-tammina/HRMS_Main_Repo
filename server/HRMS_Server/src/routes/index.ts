@@ -62,7 +62,6 @@ router.post(
 );
 router.post(
   '/v1/bulk-data-entry',
-
   EmployeeController.insertBulkEmployees
 );
 router.post(
@@ -95,25 +94,17 @@ router.get(
 );
 
 router.post(
-  '/v1/leave-balance',
+  '/v1/leaves',
   verifyAccessToken,
-  LeaveController.createLeaveBalance
-);
-router.get(
-  '/v1/leave-balance',
-  verifyAccessToken,
-  LeaveController.getLeaveBalances
-);
+  LeaveController.addLeaves
+)
+
 router.post(
-  '/v1/leave-request',
+  '/v1/get-leaves',
   verifyAccessToken,
-  LeaveController.createLeaveRequest
-);
-router.get(
-  '/v1/leave-request',
-  verifyAccessToken,
-  LeaveController.getLeaveRequests
-);
+  LeaveController.getLeaves
+)
+
 
 // test apis here 🤡
 
