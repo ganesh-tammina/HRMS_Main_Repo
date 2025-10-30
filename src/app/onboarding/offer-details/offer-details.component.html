@@ -10,9 +10,9 @@
       <ion-row>
         <ion-col size="4">
              <!-- Right Side - Controls -->
-              <ion-card>
+              <ion-card *ngIf="selectedOption === 'template'" class="dropdown-section">
                   <!-- Dropdown shown only if template option selected -->
-                  <div *ngIf="selectedOption === 'template'" class="dropdown-section">
+                  <div>
                       <ion-label>Select offer letter template</ion-label>
                       <ion-select  class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
                        [value]="selectedTemplate" (ionChange)="onTemplateChange($event)" interface="popover">
@@ -25,25 +25,25 @@
                 <!-- Radio options -->
                 <ion-card>
                     <ion-list>
-                        <h3>Template Options</h3> 
+                        <h3 class="pb-8">Template Options</h3> 
                         <ion-radio-group [value]="selectedOption" (ionChange)="onOptionChange($event)">
-                          <ion-item>
-                            <ion-label>Offer letter template</ion-label>
-                            <ion-radio slot="start" value="template"></ion-radio>
-                          </ion-item>
-                          <ion-item>
-                            <ion-label>Upload custom offer letter</ion-label>
-                            <ion-radio slot="start" value="custom"></ion-radio>
-                          </ion-item>
-                        </ion-radio-group>
+                            <ion-radio value="template" labelPlacement="end" justify="start">
+                              <p>Default Template</p>
+                              <p>Standard Offer letter Format</p>
+                            </ion-radio>
+                            <ion-radio value="custom" labelPlacement="end" justify="start">
+                              <p>Custom Template</p>
+                              <p>Upload custom offer letter</p></ion-radio>
+                          </ion-radio-group>
+                       
                       </ion-list>
                 </ion-card>
 
-                <ion-card>
+                <ion-card *ngIf="selectedOption === 'custom'">
                     <!-- File upload shown only if custom option selected -->
-                <div *ngIf="selectedOption === 'custom'" class="upload-section">
-                    <ion-label>Upload Offer Letter</ion-label>
-                    <input type="file" (change)="onFileUpload($event)" />
+                <div  class="upload-section">
+                    <h3 class="pb-8">Upload Offer Letter</h3> 
+                    <input type="file" class="ion-padding" (change)="onFileUpload($event)" />
                     <p *ngIf="uploadedFileName">Uploaded: {{ uploadedFileName }}</p>
                   </div>
                 </ion-card>  
@@ -51,8 +51,8 @@
                  <ion-card>
                       <!-- Workflow info -->
                 <div class="workflow">
-                    <ion-label>Offer letter Workflow</ion-label>
-                    <p>Workflow is not required</p>
+                    <h3>Offer letter Workflow</h3> 
+                    <p class="p-8">Workflow is not required</p>
                   </div>
                  </ion-card>
         </ion-col>

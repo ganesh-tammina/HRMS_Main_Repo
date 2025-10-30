@@ -66,7 +66,7 @@ export class OfferDetailsComponent implements OnInit {
         <br><br>
         Welcome to <b>Tech Tammina Family</b>!! <br><br>
         It was a pleasure interacting with you during our hiring process and
-        we believe you would make a great asset to {{CompanyInfo.CompanyName}}.
+        we believe you would make a great asset to.
       `;
     } else if (this.selectedTemplate === 'TechTammina') {
       this.previewText = `
