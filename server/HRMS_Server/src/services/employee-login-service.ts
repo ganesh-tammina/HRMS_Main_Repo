@@ -396,7 +396,7 @@ export default class LoginService {
   }
   static async refreshToken(req: Request, res: Response): Promise<any> {
     try {
-      const refreshToken = req.cookies?.refresh_token;
+      const refreshToken = req.body?.refresh_token;
       if (!refreshToken) {
         res
           .status(401)
@@ -509,7 +509,7 @@ export default class LoginService {
       return { status: 500, success: false, message: 'Internal server error' };
     }
   }
-  private static async resetTokens(employee_id: number): Promise<{
+static async resetTokens(employee_id: number): Promise<{
     success: boolean;
     deleted?: number;
     message?: string;

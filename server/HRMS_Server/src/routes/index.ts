@@ -67,8 +67,8 @@ router.post(
 );
 router.post(
   '/v1/employee',
-  // verifyAccessToken,
-  // checkMyRole,
+  verifyAccessToken,
+  checkMyRole,
   EmployeeController.viewAllEmployeesEverything
 );
 router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);

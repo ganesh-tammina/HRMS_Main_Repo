@@ -9,14 +9,17 @@ export class RouteGuardService {
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly ROLE_KEY = 'role';
+  private readonly EMPLOYEE_ID_KEY = 'employee_id';
   constructor(private http: HttpClient, private router: Router) {}
   storeTokens(
     accessToken: string,
     refreshToken: string | null,
+    employee_id: string | null,
     role: string
   ): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(this.ROLE_KEY, role);
+    localStorage.setItem(this.EMPLOYEE_ID_KEY, employee_id!);
     if (refreshToken) {
       localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
     }
@@ -65,5 +68,9 @@ export class RouteGuardService {
 
   get userRole(): string | null {
     return localStorage.getItem(this.ROLE_KEY);
+  }
+
+  get employeeID(): string | null {
+    return localStorage.getItem(this.EMPLOYEE_ID_KEY);
   }
 }

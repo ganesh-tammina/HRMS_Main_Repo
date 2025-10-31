@@ -126,7 +126,13 @@ export class LoginPage implements OnInit {
       next: async (val) => {
         console.log('Login val', val);
         this.alertViewer('Information', val.message, 'OK');
-        this._route_service.login(val.token!, val.role!);
+        this._route_service.storeTokens(
+          val.access_token!,
+          val.refresh_token!,
+          val.employee_id!,
+          val.role!
+        );
+
         this._route_service.redirectBasedOnRole(val.role);
       },
       error: (err) => {
