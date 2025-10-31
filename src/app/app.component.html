@@ -1,14 +1,14 @@
 <ion-app>
   <app-header
-    *ngIf="!isLoginPage && !iscandiateofferPage"
+    *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage" 
     [employee]="one"
   ></app-header>
 
   <ion-split-pane
     contentId="main-content"
-    [ngClass]="!isLoginPage && !iscandiateofferPage ? 'main-content-block' : ''"
+    [ngClass]="isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''"
   >
-    <ng-container *ngIf="!iscandiateofferPage">
+    <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
       <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">

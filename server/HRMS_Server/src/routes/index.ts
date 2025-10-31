@@ -74,36 +74,39 @@ router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);
 
 router.post(
   '/v1/leave-balance',
-  verifyAccessToken,
+  // verifyAccessToken,
   LeaveController.createLeaveBalance
 );
 router.get(
   '/v1/leave-balance',
-  verifyAccessToken,
+  // verifyAccessToken,
   LeaveController.getLeaveBalances
 );
 router.post(
   '/v1/leave-request',
-  verifyAccessToken,
+  // verifyAccessToken,
   LeaveController.createLeaveRequest
 );
 router.get(
   '/v1/leave-request',
-  verifyAccessToken,
+  // verifyAccessToken,
   LeaveController.getLeaveRequests
 );
 
-router.post(
-  '/v1/leaves',
-  verifyAccessToken,
-  LeaveController.addLeaves
-)
+// router.post(
+//   '/v1/leaves',
+//   // verifyAccessToken,
+//   LeaveController.addLeaves
+// )
 
 router.post(
   '/v1/get-leaves',
-  verifyAccessToken,
+  // verifyAccessToken,
   LeaveController.getLeaves
 )
+
+
+router.post('/v1/get-leave-request', LeaveController.getLeaveRequest)
 
 
 // test apis here 🤡

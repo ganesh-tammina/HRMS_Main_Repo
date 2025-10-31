@@ -48,11 +48,16 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         // Hide menu on login page
         this.showMenu = !event.urlAfterRedirects.includes('/login');
+        console.log("this.showMenu", this.showMenu)
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
+        console.log("this.isLoginPage", this.isLoginPage)
         this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
-        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter')
+        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
+        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter');
+        console.log("this.iscandiateofferLetterPage", this.iscandiateofferLetterPage)
         this.iscandiateofferPage =
           event.urlAfterRedirects.includes('/candidate_status');
+        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
 
         const userData = localStorage.getItem('loggedInUser');
         if (userData) {

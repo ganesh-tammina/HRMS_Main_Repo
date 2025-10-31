@@ -9,10 +9,10 @@ export class roleHandlerGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const expectedRole = route.data['role'];
     const userRole = this.auth.userRole;
-    if (userRole !== expectedRole) {
-      this.router.navigate(['/login']);
-      return false;
-    }
+    // if (userRole !== expectedRole) {
+    //   this.router.navigate(['/login']);
+    //   return false;
+    // }
 
     return true;
   }
