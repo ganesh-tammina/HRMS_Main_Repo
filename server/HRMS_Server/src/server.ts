@@ -21,15 +21,26 @@ class Server {
 
   constructor() {
     this.app = express();
-    var corsOptions = {
-      origin: /[^.*:4200$]/,
-      optionsSuccessStatus: 200,
+    const corsOptions = {
+      origin: true,
       credentials: true,
+      optionsSuccessStatus: 200,
     };
+
     this.app.use(express.json({ limit: '100mb' }));
     this.app.use(cors(corsOptions));
+    // test
+    this.app.use((req, res, next) => {
+      const clientIp =
+        req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
+      console.log(
+        `[${new Date().toLocaleDateString().split(' ')[0]} | ${new Date().toLocaleTimeString()}] ${req.method} ${
+          req.originalUrl
+        } - from ${clientIp}`
+      );
+      next();
+    });
     this.port = config.PORT;
-    this.app.use('/', candidateRoutes); // mount route
     this.middlewares();
     this.routes();
   }
@@ -50,6 +61,7 @@ class Server {
     this.app.use('/api', index);
     this.app.use('/api', AttendanceRouter);
     this.app.use('/api', rolecrud);
+    this.app.use('/', candidateRoutes);
     this.app.get('/api', async (req, res) => {
       res.json('Server is running');
     });

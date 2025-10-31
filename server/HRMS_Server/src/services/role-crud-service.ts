@@ -1,4 +1,4 @@
-import { pool } from "../config/database";
+import { pool } from '../config/database';
 
 export interface Department {
   department_id?: number;
@@ -23,6 +23,11 @@ export interface JobTitle {
 
 export interface JobTitleRole {
   job_title_id: number;
+  role_id: number;
+}
+
+export interface DepartmentRole {
+  department_id: number;
   role_id: number;
 }
 
@@ -199,17 +204,72 @@ export class RoleService {
     );
     return result.affectedRows > 0;
   }
+  // Dept
+  static async assignRoleToDepartment(
+    data: DepartmentRole
+  ): Promise<DepartmentRole> {
+    await pool.execute(
+      `INSERT INTO department_role (department_id, role_id)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE department_id = VALUES(department_id), role_id = VALUES(role_id)`,
+      [data.department_id, data.role_id]
+    );
+    return data;
+  }
 
+  static async getRolesByDepartment(department_id: number): Promise<Role[]> {
+    const [rows]: any = await pool.execute(
+      `SELECT r.* 
+     FROM department_role dr
+     INNER JOIN roles r ON dr.role_id = r.role_id
+     WHERE dr.department_id = ?`,
+      [department_id]
+    );
+    return rows;
+  }
+
+  static async getDepartmentsByRole(role_id: number): Promise<Department[]> {
+    const [rows]: any = await pool.execute(
+      `SELECT d.* 
+     FROM department_role dr
+     INNER JOIN departments d ON dr.department_id = d.department_id
+     WHERE dr.role_id = ?`,
+      [role_id]
+    );
+    return rows;
+  }
+
+  static async removeRoleFromDepartment(
+    department_id: number,
+    role_id: number
+  ): Promise<boolean> {
+    const [result]: any = await pool.execute(
+      `DELETE FROM department_role WHERE department_id = ? AND role_id = ?`,
+      [department_id, role_id]
+    );
+    return result.affectedRows > 0;
+  }
+
+  static async getAllDepartmentRoles(): Promise<any[]> {
+    const [rows]: any = await pool.execute(
+      `SELECT dr.*, d.department_name, r.role_name 
+     FROM department_role dr
+     INNER JOIN departments d ON dr.department_id = d.department_id
+     INNER JOIN roles r ON dr.role_id = r.role_id
+     ORDER BY d.department_name, r.role_name`
+    );
+    return rows;
+  }
+  // Dept
   static async assignRoleToEmployee(data: EmployeeRole): Promise<EmployeeRole> {
     await pool.execute(
-      `INSERT INTO employee_roles (employee_id, role_id, assigned_by, assigned_source)
-       VALUES (?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE assigned_by = VALUES(assigned_by), assigned_source = VALUES(assigned_source)`,
+      `INSERT INTO employee_roles (employee_id, role_id, assigned_by)
+       VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE assigned_by = VALUES(assigned_by)`,
       [
         data.employee_id,
         data.role_id,
         data.assigned_by || null,
-        data.assigned_source || 'manual',
       ]
     );
     return data;

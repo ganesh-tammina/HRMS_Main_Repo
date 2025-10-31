@@ -1,0 +1,69 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class RouteGuardService {
+  private readonly ACCESS_TOKEN_KEY = 'access_token';
+  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
+  private readonly ROLE_KEY = 'role';
+  constructor(private http: HttpClient, private router: Router) {}
+  storeTokens(
+    accessToken: string,
+    refreshToken: string | null,
+    role: string
+  ): void {
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+    localStorage.setItem(this.ROLE_KEY, role);
+    if (refreshToken) {
+      localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+    }
+  }
+
+  login(token: string, role: string): void {
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+    localStorage.setItem(this.ROLE_KEY, role);
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem(this.ROLE_KEY);
+    this.router.navigate(['/']);
+  }
+
+  redirectBasedOnRole(role: string): void {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        this.router.navigate(['/admin']);
+        break;
+      case 'user':
+        this.router.navigate(['/Home']);
+        break;
+      case 'hr':
+        this.router.navigate(['/Home']);
+        break;
+      default:
+        console.warn('Unknown role:', role);
+        this.router.navigate(['/login']);
+    }
+  }
+
+  get token(): string | null {
+    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+  }
+
+  get refreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  }
+
+  get isLoggedIn(): boolean {
+    return !!this.token;
+  }
+
+  get userRole(): string | null {
+    return localStorage.getItem(this.ROLE_KEY);
+  }
+}
