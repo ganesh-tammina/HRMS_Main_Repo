@@ -70,7 +70,7 @@ class Server {
           );
         }
       });
-      console.log(`Server running on port http://localhost:${this.port}/api`);
+      console.log(`Server running on port http://30.0.0.78:${this.port}/api`);
     });
   }
 }

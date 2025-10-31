@@ -35,7 +35,7 @@ export class BankDetailsPage implements OnInit {
     const candidateId = localStorage.getItem('candidateId');
     const data = { ...this.bankForm.value, candidateId };
 
-    await this.http.post('http://localhost:3000/bank-details', data).toPromise();
+    await this.http.post('http://30.0.0.78:3000/bank-details', data).toPromise();
 
     const alert = await this.alertCtrl.create({
       header: 'Success',
