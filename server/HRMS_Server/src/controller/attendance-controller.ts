@@ -62,17 +62,18 @@ export default class AttendanceController {
           startDate: req.body.startDate,
           endDate: req.body.endDate,
         });
-      }
-      else if (req.body.date) {
-        result = await AttendanceService.getTodayAttendanceExtra(req.body.employee_id, req.body.date);
+      } else if (req.body.date) {
+        result = await AttendanceService.getTodayAttendanceExtra(
+          req.body.employee_id,
+          req.body.date
+        );
       } else {
         result = await AttendanceService.getAttendance({
           employee_id: req.body.employee_id,
         });
       }
-      
-      res.status(200).json({ attendance: result });
 
+      res.status(200).json({ attendance: result });
     }
   }
   public static async notinyet(req: Request, res: Response) {
@@ -212,7 +213,20 @@ export default class AttendanceController {
         employee_id: EmpID,
         date: currentDate,
       });
-
+      const { shift_policy_name } = await AttendanceService.qeiwoi(EmpID);
+      if (!shift_policy_name) {
+        return res.status(400).json({
+          status: false,
+          message: 'No Shift Policy Assigned, contact administrator',
+        });
+      }
+      const shiftPolicy = await AttendanceService.qeiwoasi(shift_policy_name);
+      if (!shiftPolicy) {
+        return res.status(400).json({
+          status: false,
+          message: 'No Shift Policy, contact administrator',
+        });
+      }
       if (LogType === 'IN') {
         const hasOpenSession = todayRecords.some(
           (rec: any) => rec.check_in && !rec.check_out
@@ -224,10 +238,6 @@ export default class AttendanceController {
             message: 'Already Clocked In — please Clock Out first',
           });
         }
-
-        const { shift_policy_name } = await AttendanceService.qeiwoi(EmpID);
-        const shiftPolicy = await AttendanceService.qeiwoasi(shift_policy_name);
-
         const clockInResult = await AttendanceService.clockIn({
           employee_id: EmpID,
           check_in: currentTime,
@@ -284,12 +294,12 @@ export default class AttendanceController {
         if (clockOutResult.status === false) {
           return res.status(400).json(clockOutResult);
         }
-
         return res.status(200).json({
           status: true,
           message: 'Clocked Out Successfully',
           currentDate: currentDate,
           data: clockOutResult,
+          shift_check_out: shiftPolicy.check_out,
         });
       }
 

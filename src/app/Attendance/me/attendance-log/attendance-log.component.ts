@@ -87,84 +87,6 @@ export class AttendanceLogComponent implements OnInit {
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
   ) {
-    // this.attendanceService.response$.subscribe(res => {
-    //   if (res) {
-    //     console.log('📩 Received response in AttendanceLogComponent:', res);
-
-    //     if (res.action === 'in') {
-    //       console.log(res);
-    //       this.attendanceLogs.push({
-    //         action: res.action,
-    //         message: res.data?.message || res.data?.data?.message,
-    //         actual_check_in: res.data?.late?.actual_check_in || res.data?.data?.late?.actual_check_in,
-    //         shift_check_in: res.data?.late?.shift_check_in || res.data?.data?.late?.shift_check_in,
-    //         is_late: res.data?.late?.is_late || res.data?.data?.late?.is_late,
-    //         diff: res.data?.late?.diff || res.data?.data?.late?.diff
-    //       });
-    //       // const checkOutTime = res.data?.late?.actual_check_in;
-    //       // console.log('✅ Check-in time:', checkOutTime);
-    //       // handle clock-in result
-    //     } else if (res.action === 'out') {
-    //       console.log(res);
-    //       this.attendanceLogs.push({
-    //         action: res.action,
-    //         message: res.data?.message || res.data?.data?.message,
-    //         actual_check_in: res.data?.data?.check_out,
-    //         shift_check_in: res.data?.late?.shift_check_in || res.data?.data?.late?.shift_check_in,
-    //         is_late: res.data?.late?.is_late || res.data?.data?.late?.is_late,
-    //         diff: res.data?.late?.diff || res.data?.data?.late?.diff
-    //       })
-    //       // const checkOutTime = res.data?.data?.check_out;
-    //       // console.log('✅ Check-out time:', checkOutTime);
-    //       // handle clock-out result
-    //     }
-    //   }
-    // });
-    // this.attendanceLogs = [
-    //   {
-    //     date: 'Mon, 01 Sept',
-    //     progress: 0.7,
-    //     effective: '6h 44m',
-    //     gross: '8h 42m',
-    //     arrival: 'On Time',
-    //     details: {
-    //       shift: 'Day shift 1 (01 Sept)',
-    //       shiftTime: '9:30 - 18:30',
-    //       location: '4th Floor SVS Towers',
-    //       logs: [
-    //         { in: '09:16:48', out: '12:01:14' },
-    //         { in: '12:13:29', out: '13:25:47' },
-    //       ],
-    //       webClockIn: { in: '09:19:14', out: 'MISSING' },
-    //     },
-    //   },
-    //   {
-    //     date: 'Tue, 02 Sept',
-    //     progress: 0.5,
-    //     effective: '3h 56m',
-    //     gross: '4h 9m',
-    //     arrival: 'On Time',
-    //     details: {
-    //       shift: 'Day shift 1 (02 Sept)',
-    //       shiftTime: '9:30 - 18:30',
-    //       location: '4th Floor SVS Towers',
-    //       logs: [{ in: '09:10:00', out: '14:30:00' }],
-    //     },
-    //   },
-    //   {
-    //     date: 'Wed, 03 Sept',
-    //     progress: 0.75,
-    //     effective: '6h 38m',
-    //     gross: '8h 46m',
-    //     arrival: 'On Time',
-    //     details: {
-    //       shift: 'Day shift 1 (03 Sept)',
-    //       shiftTime: '9:30 - 18:30',
-    //       location: 'HQ',
-    //       logs: [{ in: '09:20:00', out: '18:15:00' }],
-    //     },
-    //   },
-    // ];
     const t = localStorage.getItem('employee_details');
     if (t) {
       this.employee_det = JSON.parse(t);
@@ -186,7 +108,6 @@ export class AttendanceLogComponent implements OnInit {
       endDate: endDate
     }).subscribe((data) => {
       console.log('All Attendance Records:', data);
-
       // Step 1: Normalize date format
       const normalized = data.attendance.map((item: any) => ({
         ...item,
@@ -196,7 +117,10 @@ export class AttendanceLogComponent implements OnInit {
       // Step 2: Group all check-ins/check-outs per date
       const groupedByDate: any = {};
       normalized.forEach((record: any) => {
-        const date = record.attendance_date;
+        // const date = record.attendance_date;
+        const dateObj = new Date(record.attendance_date);
+        dateObj.setDate(dateObj.getDate() + 1); // ➕ Add 1 day
+        const date = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 
         if (!groupedByDate[date]) {
           groupedByDate[date] = {
