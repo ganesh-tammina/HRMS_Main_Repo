@@ -8,10 +8,13 @@ import index from './routes/index';
 import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
-import candidateRoutes from './services/candidate-service'; // path to your route file
+import candidateRoutes from './services/candidate-service';
 
 import AttendanceRouter from './routes/attendance-route';
 import rolecrud from './routes/role-crud-routes';
+import fs from 'fs';
+import https from 'https';
+import path from 'path';
 
 dotenv.config();
 
@@ -29,17 +32,17 @@ class Server {
 
     this.app.use(express.json({ limit: '100mb' }));
     this.app.use(cors(corsOptions));
-    // test
+
+    // Request logger
     this.app.use((req, res, next) => {
       const clientIp =
         req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
       console.log(
-        `[${new Date().toLocaleDateString().split(' ')[0]} | ${new Date().toLocaleTimeString()}] ${req.method} ${
-          req.originalUrl
-        } - from ${clientIp}`
+        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${req.method} ${req.originalUrl} - from ${clientIp}`
       );
       next();
     });
+
     this.port = config.PORT;
     this.middlewares();
     this.routes();
@@ -69,15 +72,26 @@ class Server {
   }
 
   public start(): void {
-    this.app.listen(this.port, async () => {
-      await pool.getConnection().then((res) => {
-        if (res) {
+    const sslOptions = {
+      key: fs.readFileSync(path.join(__dirname, '../../../ssl/myserver.key')),
+      cert: fs.readFileSync(path.join(__dirname, '../../../ssl/myserver.crt')),
+    };
+    const httpsServer = https.createServer(sslOptions, this.app);
+
+    httpsServer.listen(this.port, async () => {
+      try {
+        const conn = await pool.getConnection();
+        if (conn) {
           console.log(
-            'Connected to database on https://' + res.connection.config.host
+            `Connected to database on host ${conn.connection.config.host}`
           );
+          conn.release();
         }
-      });
-      console.log(`Server running on port http://localhost:${this.port}/api`);
+      } catch (err) {
+        console.error('Database connection failed:', err);
+      }
+
+      console.log(`Server running at https://localhost:${this.port}/api`);
     });
   }
 }
