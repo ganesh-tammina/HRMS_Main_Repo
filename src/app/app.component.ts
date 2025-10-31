@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { Candidate, CandidateService } from './services/pre-onboarding.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { HeaderComponent } from './shared/header/header.component';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',

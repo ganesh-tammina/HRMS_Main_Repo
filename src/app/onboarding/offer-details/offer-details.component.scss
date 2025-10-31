@@ -1,4 +1,6 @@
 @import '../../../global.scss';
+// @import '../../shared/header/header.component.scss';
+@import 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css';
 .offer-container {
   --background: var(--ion-bg-color);
   h1 {
@@ -36,6 +38,12 @@ ion-radio {
   border: 1px solid #ABABAB;
   margin-bottom: 5px;
   border-radius: 10px;
+  ion-img {
+    width: 24px;
+    position: absolute;
+    right: 0;
+  }
+
 }
 
 ion-radio.ios::part(container) {
@@ -47,4 +55,37 @@ ion-radio.ios::part(container) {
 
 .radio-checked.ios::part(container) {
   border-color: #24A0ED;
+}
+
+.template-preview {
+  padding: 24px !important;
+  .company-logo {
+    ion-img {
+      width: fit-content;
+      margin-bottom: 30px;
+    }
+  }
+}
+
+.editor-container {
+  height: 100%;
+  padding: 10px;
+
+  .ql-toolbar {
+    background: #f4f5f8;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .ql-container {
+    background: white;
+    border-radius: 12px;
+    min-height: 300px;
+    font-size: 15px;
+  }
+
+  .ql-editor {
+    min-height: 280px;
+    line-height: 1.6;
+  }
 }
