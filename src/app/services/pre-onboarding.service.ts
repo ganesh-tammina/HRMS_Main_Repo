@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { AttendanceService } from './attendance.service';
+import { RouteGuardService } from './route-guard/route-service/route-guard.service';
+import { refresh } from 'ionicons/icons';
 
 export interface Candidate {
   id: number;
@@ -168,7 +170,8 @@ export class CandidateService {
 
   constructor(
     private http: HttpClient,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private routeGuardService: RouteGuardService
   ) {
     this.loadCandidates();
   }
@@ -225,7 +228,11 @@ export class CandidateService {
     return this.http.get<any>(this.imagesUrl);
   }
   getEmpDet(): Observable<EmployeeResponse> {
-    return this.http.post<any>(this.empUrl, {}, { withCredentials: true });
+    const body = {
+      access_token: this.routeGuardService.token,
+      refresh_token: this.routeGuardService.refreshToken,
+    };
+    return this.http.post<any>(this.empUrl, body, { withCredentials: true });
   }
   getAllEmployees(): Observable<EmployeeResponse> {
     return this.http.get<EmployeeResponse>(this.empUrl).pipe();
@@ -422,12 +429,7 @@ export class CandidateService {
   }
 
   logout() {
-    const activeId = localStorage.getItem('loggedInUser');
-    if (activeId) {
-      localStorage.removeItem(`loggedInUser_${activeId}`);
-      localStorage.removeItem('activeUserId');
-    }
-    this.http.post<any>(this.api + 'api/v1/log-out', {}, { withCredentials: true }).subscribe();
+    localStorage.clear();
     this.currentCandidateSubject.next(null);
   }
 

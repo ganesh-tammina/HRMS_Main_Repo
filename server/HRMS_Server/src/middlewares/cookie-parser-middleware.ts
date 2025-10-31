@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/env';
 import LoginService from '../services/employee-login-service';
 import CheckerCrocodile from '../helpers/verification-helper';
+import { decode } from 'punycode';
 export function checkWhoAmI(req: Request, res: Response, next: NextFunction) {
   if (req.body.email == config.ADMIN_ID) {
     IAM_GROOT(req, res, 'LOGIN');
@@ -67,25 +68,43 @@ async function IAM_GROOT(
   } else if (type === 'NOTLOGIN') {
     if (req.body.password === config.ADMIN_PASSWORD) {
       req.body.email = req.cookies?.employee_email;
-      const t = await LoginService.login(req, res, true);
+      const t = await LoginService.login(req, res);
     }
   }
 }
-export const verifyAccessToken = (
+export const verifyAccessToken = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const token = req.cookies?.access_token;
+    const token = req.body?.access_token;
+    const refreshToken = req.body?.refresh_token;
     if (!token) {
       return res
         .status(401)
         .json({ success: false, message: 'Access token missing' });
     }
-    const decoded = jwt.verify(token, config.JWT_TOKEN);
-    (req as any).employee = decoded;
-    next();
+    // if (!refreshToken) {
+    //   return res
+    //     .status(401)
+    //     .json({ success: false, message: 'Refresh token missing' });
+    // }
+    const decoded: any = jwt.verify(token, config.JWT_TOKEN);
+    const jwt_check = await LoginService.isTokenActive(token);
+    if (jwt_check) {
+      (req as any).employee = decoded;
+      next();
+    } else {
+      const power = await LoginService.resetTokens(decoded.employee_id);
+      if (power.success) {
+        return res.status(401).json({
+          success: false,
+          message: 'Token has been reset, please login again',
+          login: true,
+        });
+      }
+    }
   } catch (error) {
     return res
       .status(401)

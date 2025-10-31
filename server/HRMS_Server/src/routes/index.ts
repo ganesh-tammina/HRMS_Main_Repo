@@ -116,6 +116,6 @@ router.get(
 );
 
 // test apis here 🤡
-
+router.post('/v1/test-api', EmployeeLoginController.getRole)
 // add test apis here only
 export default router;

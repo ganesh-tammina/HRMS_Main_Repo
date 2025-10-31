@@ -15,6 +15,7 @@ import {
   LoggedUser,
 } from '../Administration/services/auth-service.service';
 import { _LoginService } from '../services/login-services.service';
+import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 
 @Component({
   selector: 'app-login',
@@ -53,8 +54,9 @@ export class LoginPage implements OnInit {
     private candidateService: CandidateService,
     private authService: AuthService,
     private alertController: AlertController,
-    private _loginSer: _LoginService
-  ) { }
+    private _loginSer: _LoginService,
+    private _route_service: RouteGuardService
+  ) {}
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -121,16 +123,23 @@ export class LoginPage implements OnInit {
     };
 
     this._loginSer.loginForAll(body).subscribe({
-      next: (val) => {
-        console.log(val);
+      next: async (val) => {
+        console.log('Login val', val);
         this.alertViewer('Information', val.message, 'OK');
-        this.router.navigate(['/Home']);
+        this._route_service.storeTokens(
+          val.access_token!,
+          val.refresh_token!,
+          val.employee_id!,
+          val.role!
+        );
+
+        this._route_service.redirectBasedOnRole(val.role);
       },
       error: (err) => {
         if (err.error.message) {
           this.alertViewer('Error', err.error.message, 'Try Again');
         } else {
-          console.log(err)
+          console.log(err);
           this.alertViewer('Error', err.error, 'Cancel');
         }
       },
@@ -181,7 +190,6 @@ export class LoginPage implements OnInit {
         next: (val) => {
           this.alertViewer('Information', val.message, 'OK');
           this.router.navigate(['/Home']);
-
         },
         error: (err) => {
           this.alertViewer('Error', err.error.message, 'Try Again');
