@@ -6,7 +6,7 @@
 
   <ion-split-pane
     contentId="main-content"
-    [ngClass]="isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''"
+    [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''"
   >
     <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
       <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
