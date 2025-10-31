@@ -94,27 +94,30 @@
   <!-- Table Header -->
   <div class="table">
     <ion-row class="table-header">
-      <ion-col size="3" class="row-left">
+      <ion-col size="2" class="row-left">
         <ion-checkbox class="pr-15"></ion-checkbox>
         <p>Candidate Name</p>
       </ion-col>
       <ion-col size="2">
-        <p>Ofer Status</p>
+        <p>Offer Status</p>
       </ion-col>
       <ion-col size="2">
-        <p>DEPT & Location</p>
+        <p>Department</p>
       </ion-col>
+      <ion-col size="2">
+          <p>Location</p>
+        </ion-col>
       <ion-col size="2">
         <p>Joining Date</p>
       </ion-col>
-      <ion-col size="3">
+      <ion-col size="2">
         <p>Actions</p>
       </ion-col>
     </ion-row>
     <div class="table-list">
       <ion-grid *ngFor="let candidate of candidates">
         <ion-row class="table-list-row">
-          <ion-col size="3" class="row-left">
+          <ion-col size="2" class="row-left">
             <ion-checkbox class="pr-15"></ion-checkbox>
             <div class="cell">
               <!-- <div class="avatar">{{candidate.personalDetails.initials}}</div> -->
@@ -135,16 +138,15 @@
             <!-- <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div> -->
           </ion-col>
           <ion-col size="2">
-            <div style="display: flex;">
               <p class="dept-title">{{candidate.Department}}</p>
-              <p class="dept-title">{{candidate.JobLocation}}</p>
-            </div>
-
           </ion-col>
           <ion-col size="2">
-            <p>Joining Date</p>
+                <p class="dept-title">{{candidate.JobLocation}}</p>
+            </ion-col>
+          <ion-col size="2">
+            <p>{{candidate.date_joined}}</p>
           </ion-col>
-          <ion-col size="3">
+          <ion-col size="2">
             <div class="cell cell-actions">
               <ion-button class="primary-outline-btn ion-display-none">Revise</ion-button>
               <ion-button class="primary-outline-btn" (click)="startpreonboarding(candidate)">Start
