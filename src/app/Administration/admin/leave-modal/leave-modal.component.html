@@ -1,21 +1,25 @@
 <div class="modal-backdrop">
   <div class="modal">
     <h2>Enter Leave Details</h2>
+    <label>Start Year</label>
+    <input type="date" [(ngModel)]="leave_year_start" />
+    <label>End Year</label>
+    <input type="date" [(ngModel)]="leave_year_end" />
 
-    <label>
-      Sick Leaves:
-      <input type="number" [(ngModel)]="sickLeaves" />
-    </label>
+    <label>Casual Leave Allocated</label>
+    <input type="number" [(ngModel)]="casual_leave_allocated" />
 
-    <label>
-      Paid Leaves:
-      <input type="number" [(ngModel)]="paidLeaves" />
-    </label>
+    <label>Marriage Leave Allocated</label>
+    <input type="number" [(ngModel)]="marriage_leave_allocated" />
+  
+    <label>Comp Offs Allocated</label>
+    <input type="number" [(ngModel)]="comp_offs_allocated" />
+  
+    <label>Sick Leave Allocated</label>
+    <input type="number" [(ngModel)]="sick_leave_allocated" />
 
-    <label>
-      Marriage Leaves:
-      <input type="number" [(ngModel)]="marriageLeaves" />
-    </label>
+    <label>Paid Leave Allocated</label>
+    <input type="number" [(ngModel)]="paid_leave_allocated" />
 
     <div class="buttons">
       <button (click)="onSave()">Save</button>
