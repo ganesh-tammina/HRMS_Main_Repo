@@ -19,10 +19,12 @@ export default class LeaveService {
   }
 
   public static async createLeaveRequest(data: LeaveRequest) {
+    console.log('Creating leave request with data:', data);
     const [rows] = await pool.query(
-      `INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, total_days, remarks) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO leave_requests (employee_id,full_name,leave_type, start_date, end_date, total_days, remarks) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         data.employee_id,
+        data.full_name,
         data.leave_type,
         data.start_date,
         data.end_date,
