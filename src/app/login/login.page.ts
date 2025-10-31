@@ -56,7 +56,7 @@ export class LoginPage implements OnInit {
     private alertController: AlertController,
     private _loginSer: _LoginService,
     private _route_service: RouteGuardService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -119,6 +119,7 @@ export class LoginPage implements OnInit {
   }
   onLogin() {
     const body = {
+      email: this.loginForm.controls['email'].value,
       password: this.existingEmpl.controls['password'].value,
     };
 
@@ -172,7 +173,6 @@ export class LoginPage implements OnInit {
             this.er = err.error.message;
           },
           complete: () => {
-            this.loginForm.reset();
             console.log(this.empType);
           },
         });
@@ -222,25 +222,25 @@ export class LoginPage implements OnInit {
     this.forgotError = '';
     this.forgotSuccess = '';
 
-    // ✅ First check if email already exists (old user)
+    // ? First check if email already exists (old user)
     this.candidateService.getotp(email).subscribe({
       next: (res) => {
-        console.log('✅ Old email OTP sent:', res);
+        console.log('? Old email OTP sent:', res);
         this.forgotSuccess = `OTP sent to ${email}.`;
         this.handleOtpSuccess(email);
       },
       error: (err) => {
-        console.warn('⚠️ getotp failed, trying newpasswordCreation...', err);
+        console.warn('?? getotp failed, trying newpasswordCreation...', err);
 
-        // If getotp fails → assume new email → call newpasswordCreation
+        // If getotp fails ? assume new email ? call newpasswordCreation
         this.candidateService.newpasswordCreation(email).subscribe({
           next: (res) => {
-            console.log('✅ New email OTP sent:', res);
+            console.log('? New email OTP sent:', res);
             this.forgotSuccess = `OTP sent to ${email}.`;
             this.handleOtpSuccess(email);
           },
           error: (err2) => {
-            console.error('❌ Both OTP methods failed:', err2);
+            console.error('? Both OTP methods failed:', err2);
             this.sending = false;
             this.forgotError = 'Failed to send OTP. Try again later.';
           },
@@ -253,7 +253,7 @@ export class LoginPage implements OnInit {
     setTimeout(() => {
       this.sending = false;
       this.closeForgotModal();
-      // 🔥 Switch to password update form
+      // ?? Switch to password update form
       this.showLoginForm = false;
       this.showPasswordUpdateForm = true;
       this.passwordUpdateForm.patchValue({ email });
@@ -268,7 +268,7 @@ export class LoginPage implements OnInit {
 
     const { email, otp, newPassword } = this.passwordUpdateForm.value;
 
-    // ✅ First try new-user flow
+    // ? First try new-user flow
     this.candidateService
       .verifyAndResetPassword(email, otp, newPassword)
       .subscribe({
@@ -277,11 +277,11 @@ export class LoginPage implements OnInit {
         },
         error: (err) => {
           console.warn(
-            '⚠️ verifyAndResetPassword failed, trying changeoldEmpPassword...',
+            '?? verifyAndResetPassword failed, trying changeoldEmpPassword...',
             err
           );
 
-          // 🔄 fallback → old user flow
+          // ?? fallback ? old user flow
           this.candidateService
             .changeoldEmpPassword(email, otp, newPassword)
             .subscribe({
@@ -289,7 +289,7 @@ export class LoginPage implements OnInit {
                 this.handlePasswordSuccess();
               },
               error: (err2) => {
-                console.error('❌ Both password update methods failed:', err2);
+                console.error('? Both password update methods failed:', err2);
                 alert('Failed to update password. Check OTP and try again.');
               },
             });

@@ -55,7 +55,7 @@ export default class LoginService {
       if (credentialRows.length > 0) {
         res.cookie('employee_email', email, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
         });
         res.status(200).json({
@@ -90,12 +90,12 @@ export default class LoginService {
       if (otpResponse.success) {
         res.cookie('employee_email', email, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
         });
         res.cookie('employee_id', employee_id, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
         });
         res.status(200).json({
@@ -500,7 +500,7 @@ export default class LoginService {
         'Password Reset OTP',
         `Your OTP is ${otp}`,
         `<p>Your OTP for password reset is <b>${otp}</b>. It will expire in 5 minutes.</p>
-         <a href="http://30.0.0.78:4200/login">Click here to reset your password</a>`
+         <a href="https://30.0.0.78:4200/login">Click here to reset your password</a>`
       );
 
       return { status: 200, success: true, message: 'OTP sent successfully' };

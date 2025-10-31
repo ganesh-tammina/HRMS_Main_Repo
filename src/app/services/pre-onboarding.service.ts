@@ -136,9 +136,9 @@ export interface EmployeeResponse {
   providedIn: 'root',
 })
 export class CandidateService {
-  private api = 'http://30.0.0.78:3562/';
+  private api = 'https://30.0.0.78:3562/';
   private apiUrl = `${this.api}candidates/jd`;
-  private adminUrl = 'http://30.0.0.78:3562/1/admin';
+  private adminUrl = 'https://30.0.0.78:3562/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
@@ -147,10 +147,10 @@ export class CandidateService {
   private newpassword = `${this.api}add-pwd`;
   private updatepassword = `${this.api}change-new-pwd`;
   private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = 'http://30.0.0.78:3562/offerstatus/status';
+  private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = 'http://30.0.0.78:3562/api/v1/employee';
+  private empUrl = 'https://30.0.0.78:3562/api/v1/employee';
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -388,7 +388,7 @@ export class CandidateService {
   }
   createRejectedEmployee(Emp: any): Observable<any> {
     return this.http
-      .post<any>('http://30.0.0.78:3562/employees/rejectedemployees', Emp)
+      .post<any>('https://30.0.0.78:3562/employees/rejectedemployees', Emp)
       .pipe(
         tap((newCandidate) => {
           console.log(newCandidate);

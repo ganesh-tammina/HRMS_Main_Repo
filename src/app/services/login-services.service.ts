@@ -7,7 +7,7 @@ import { tap, map, switchMap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class _LoginService {
-  private api: string = 'http://30.0.0.78:3562/api';
+  private api: string = 'https://30.0.0.78:3562/api';
   constructor(private http: HttpClient) { }
 
   public checkEmail(body: any) {

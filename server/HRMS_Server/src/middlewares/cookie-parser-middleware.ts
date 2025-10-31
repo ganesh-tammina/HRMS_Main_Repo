@@ -42,13 +42,12 @@ export function checkIfIamEmployeeAtAll(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.cookies?.employee_email) {
+  if (!req.body?.email) {
     res.json('Nope, invalid request.').status(500);
   } else {
-    if (req.cookies?.employee_email === config.ADMIN_ID) {
+    if (req.body.email === config.ADMIN_ID) {
       return IAM_GROOT(req, res, 'NOTLOGIN');
     }
-    req.body.email = req.cookies?.employee_email;
     next();
   }
 }
@@ -94,16 +93,12 @@ export const verifyAccessToken = async (
     const jwt_check = await LoginService.isTokenActive(token);
     if (jwt_check) {
       (req as any).employee = decoded;
+      (req as any).id = decoded.employee_id
       next();
     } else {
-      const power = await LoginService.resetTokens(decoded.employee_id);
-      if (power.success) {
-        return res.status(401).json({
-          success: false,
-          message: 'Token has been reset, please login again',
-          login: true,
-        });
-      }
+      (req as any).employee = decoded;
+      (req as any).id = decoded.employee_id
+      next()
     }
   } catch (error) {
     return res

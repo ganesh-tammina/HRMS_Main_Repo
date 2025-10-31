@@ -6,7 +6,7 @@ import { Observable, tap } from 'rxjs';
 	providedIn: 'root'
 })
 export class EmailService {
-	private beURL = 'http://30.0.0.78:3562/send-email';
+	private beURL = 'https://30.0.0.78:3562/send-email';
 
 	constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class EmailService {
         <p>Hello ${candidate.FirstName},</p>
         <p>We’re thrilled to welcome you as <b>${candidate.JobTitle}</b> at Tech Tammina!</p>
         <p>Please review your offer letter and confirm by <b>${candidate.JoiningDate}</b>.</p>
-        <a href="http://30.0.0.78:4200/candidate_status/${candidate.id}" 
+        <a href="https://30.0.0.78:4200/candidate_status/${candidate.id}" 
            style="background-color:#3498db;color:white;padding:10px 16px;text-decoration:none;border-radius:5px">
            View Offer
         </a>
@@ -196,8 +196,8 @@ export class EmailService {
 													<table class="button_block block-4" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad">
-															<div class="alignment" align="center"><a href="http://30.0.0.78:4200/candidate_status/${candidate.candidate_id}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
-															<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href=""http://30.0.0.78:4200/candidate_status/${candidate.candidate_id}""  style="height:48px;width:142px;v-text-anchor:middle;" arcsize="17%" fillcolor="#3498db">
+															<div class="alignment" align="center"><a href="https://30.0.0.78:4200/candidate_status/${candidate.candidate_id}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
+															<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href=""https://30.0.0.78:4200/candidate_status/${candidate.candidate_id}""  style="height:48px;width:142px;v-text-anchor:middle;" arcsize="17%" fillcolor="#3498db">
 															<v:stroke dashstyle="Solid" weight="0px" color="#3498db"/>
 															<w:anchorlock/>
 															<v:textbox inset="0px,0px,0px,0px">

@@ -8,13 +8,9 @@ import index from './routes/index';
 import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
-
 import candidateRoutes from './services/candidate-service'; // path to your route file
 import offerDetails from './services/offerDetails';
-
-
-
-
+import salaryStructureRoutes from './services/salary-structure'
 import AttendanceRouter from './routes/attendance-route';
 import mailRoutes from './routes/mail-route';
 import rolecrud from './routes/role-crud-routes';
@@ -70,8 +66,12 @@ class Server {
     this.app.use('/api', index);
     this.app.use('/api', AttendanceRouter);
     this.app.use('/api', rolecrud);
-    this.app.use('/', candidateRoutes);
-    this.app.get('/api', async (req, res) => {
+    this.app.use('/', offerDetails);
+    this.app.use('/', mailRoutes);
+    this.app.use('/', salaryStructureRoutes);
+    this.app.use('/candidates', candidateRoutes);
+    
+     this.app.get('/health', async (req, res) => {
       res.json('Server is running');
     });
     this.app.use(notFound);
@@ -97,7 +97,7 @@ class Server {
         console.error('Database connection failed:', err);
       }
 
-      console.log(`Server running at https://localhost:${this.port}/api`);
+      console.log(`Server running at https://30.0.0.78:${this.port}/api`);
     });
   }
 }

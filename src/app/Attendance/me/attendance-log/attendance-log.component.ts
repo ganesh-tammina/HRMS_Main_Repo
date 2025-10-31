@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
 import { AttendanceService, AttendanceRecord, AttendanceEvent } from 'src/app/services/attendance.service';
+import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 interface AttendanceRequest {
   type: string;
   dateRange: string;
@@ -85,7 +86,8 @@ export class AttendanceLogComponent implements OnInit {
   }[] = [];
   constructor(
     private candidateService: CandidateService,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private abcd: RouteGuardService
   ) {
     const t = localStorage.getItem('employee_details');
     if (t) {
@@ -103,7 +105,7 @@ export class AttendanceLogComponent implements OnInit {
     console.log('End Date (today):', endDate);
 
     this.attendanceService.getallattendace({
-      employee_id: this.employee_det[0][0].employee_id,
+      employee_id: this.abcd.employeeID,
       startDate: startDate,
       endDate: endDate
     }).subscribe((data) => {

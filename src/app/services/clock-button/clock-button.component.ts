@@ -6,6 +6,7 @@ import { CandidateService } from '../pre-onboarding.service';
 import { AttendanceService, AttendanceRecord } from '../attendance.service';
 import { Subscription, interval } from 'rxjs';
 import { Router } from '@angular/router';
+import { RouteGuardService } from '../route-guard/route-service/route-guard.service';
 
 @Component({
   selector: 'app-clock-button',
@@ -48,15 +49,16 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   currentCandidate?: any;
   @Input() record?: AttendanceRecord;
   @Output() statusChanged = new EventEmitter<AttendanceRecord>();
-  currentUrl : any;
+  currentUrl: any;
   timeSinceLastLogin = '0h 0m 0s';
   private intervalSub?: Subscription;
 
   constructor(
     private router: Router,
     private candidateService: CandidateService,
-    private attendanceService: AttendanceService
-  ) { 
+    private attendanceService: AttendanceService,
+    private routeGaurdService: RouteGuardService
+  ) {
 
 
 
@@ -65,36 +67,38 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.currentUrl = this.router.url;;
     console.log('Current Page URL:', this.currentUrl);
-    this.candidateService.getEmpDet().subscribe((user: any) => {
-      this.currentCandidate = user || undefined;
-      console.log('Current Candidate in ClockButton:', this.currentCandidate);
+    if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
+      this.candidateService.getEmpDet().subscribe((user: any) => {
+        this.currentCandidate = user || undefined;
+        console.log('Current Candidate in ClockButton:', this.currentCandidate);
 
-      // Restore from localStorage if available
-      const storedRecord = localStorage.getItem('attendanceRecord');
-      if (storedRecord) {
-        this.record = JSON.parse(storedRecord);
-      }
+        // Restore from localStorage if available
+        const storedRecord = localStorage.getItem('attendanceRecord');
+        if (storedRecord) {
+          this.record = JSON.parse(storedRecord);
+        }
 
-      // Subscribe to attendance updates
-      if (this.currentCandidate && !this.record) {
-        this.attendanceService.record$.subscribe((record) => {
-          if (record && record.employeeId === this.currentCandidate?.id) {
-            this.record = record;
-            this.statusChanged.emit(record);
-            localStorage.setItem('attendanceRecord', JSON.stringify(record));
-          }
-        });
+        // Subscribe to attendance updates
+        if (this.currentCandidate && !this.record) {
+          this.attendanceService.record$.subscribe((record) => {
+            if (record && record.employeeId === this.currentCandidate?.id) {
+              this.record = record;
+              this.statusChanged.emit(record);
+              localStorage.setItem('attendanceRecord', JSON.stringify(record));
+            }
+          });
 
-        this.attendanceService.getRecord(this.currentCandidate.id);
-      }
+          this.attendanceService.getRecord(this.currentCandidate.id);
+        }
 
-      // Timer for time since login
-      this.intervalSub = interval(1000).subscribe(() =>
-        this.updateTimeSinceLogin()
-      );
-    });
+        // Timer for time since login
+        this.intervalSub = interval(1000).subscribe(() =>
+          this.updateTimeSinceLogin()
+        );
+      });
+    }
 
-   
+
   }
 
   ngOnDestroy() {
