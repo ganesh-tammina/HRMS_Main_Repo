@@ -55,7 +55,7 @@ export default class LoginService {
       if (credentialRows.length > 0) {
         res.cookie('employee_email', email, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
         });
         res.status(200).json({
@@ -90,12 +90,12 @@ export default class LoginService {
       if (otpResponse.success) {
         res.cookie('employee_email', email, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
         });
         res.cookie('employee_id', employee_id, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
         });
         res.status(200).json({
@@ -310,31 +310,31 @@ export default class LoginService {
       if (tiger.status === 'success') {
         res.cookie('role', tiger.data[0].role_name, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'strict',
           maxAge: 24 * 60 * 60 * 1000,
         });
       }
       res.cookie('access_token', access_token, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.cookie('refresh_token', refresh_token, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
       res.cookie('employee_email', email, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'strict',
       });
       res.cookie('id', employee_id, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'strict',
       });
 
