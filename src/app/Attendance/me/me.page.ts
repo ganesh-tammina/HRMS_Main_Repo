@@ -10,6 +10,7 @@ import { AttendanceLogComponent } from './attendance-log/attendance-log.componen
 import { CalendarComponent } from './calendar/calendar.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { RadialTimeGraphComponent } from './radial-time-graph/radial-time-graph.component';
+import { CandidateDetailsService } from 'src/app/services/candidate-details-service.service';
 
 interface AttendanceRequest { type: string; dateRange: string; items: string[] }
 interface AttendanceRequestHistory { date: string; request: string; requestedOn: string; note: string; reason?: string; status: string; lastAction: string; nextApprover?: string }
@@ -53,21 +54,29 @@ export class MePage implements OnInit {
   showPopover = false;
   attendanceLogs: AttendanceLog[] = [];
   days: Date[] = [];
+  shiftDetails: [] = []
   today: Date = new Date();
   attendanceRequestsHistory: {
     type: string;
     dateRange: string;
     records: AttendanceRequestHistory[];
   }[] = [];
-  
+
   constructor(
     private candidateService: CandidateService,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private candidateDetails: CandidateDetailsService
+
   ) {
     this.generateCalendar(this.currentMonth);
   }
 
   ngOnInit() {
+
+    this.candidateDetails.getShiftPolicies().subscribe((shiftDetails: any) => {
+      this.shiftDetails = shiftDetails.data[0]; // ✅ take first object
+      console.log('Shift details:', this.shiftDetails);
+    })
     setInterval(() => {
       this.currentTime = new Date().toLocaleTimeString('en-US', {
         hour12: true,
@@ -99,7 +108,10 @@ export class MePage implements OnInit {
     // Existing attendance requests & logs initialization
     this.initRequestsAndLogs();
     this.generateDays();
+
+
   }
+
 
 
 

@@ -14,6 +14,7 @@ import AttendanceRouter from './routes/attendance-route';
 import mailRoutes from './routes/mail-route';
 import rolecrud from './routes/role-crud-routes';
 import salaryStructureRoutes from './services/salary-structure';
+import shiftPolicyRoutes from './routes/shift-route';
 dotenv.config();
 
 class Server {
@@ -34,6 +35,7 @@ class Server {
     this.app.use('/', mailRoutes);
     this.app.use('/', salaryStructureRoutes);
     this.app.use('/candidates', candidateRoutes);
+    this.app.use('/api', shiftPolicyRoutes);
 
     this.middlewares();
     this.routes();

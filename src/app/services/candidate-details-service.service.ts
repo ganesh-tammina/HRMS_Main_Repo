@@ -41,9 +41,16 @@ export class CandidateDetailsService {
   private baseUrl = 'http://localhost:3562/candidates';
   private offerUrl = 'http://localhost:3562/offer-details';
   private packageUrl = 'http://localhost:3562/salary-structure';
+  private shiftUrl = "http://localhost:3562/api/shift-policies";
 
   constructor(private http: HttpClient) { }
 
+
+  getShiftPolicies(): Observable<any> {
+    return this.http.get<any>(this.shiftUrl).pipe(
+      catchError(this.handleError)
+    );
+  }
   /** 🧍 Create new candidate */
   createCandidate(candidate: Candidate): Observable<any> {
     console.log('📤 Sending candidate data:', candidate);

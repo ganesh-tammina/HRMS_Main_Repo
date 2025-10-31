@@ -56,8 +56,10 @@
                   </ion-col>
                 </ion-row>
               </ion-grid>
+              <div *ngIf="shiftDetails">
+                <p>Today ({{ shiftDetails.check_in }} - {{ shiftDetails.check_out }})</p>
 
-              <p>Today (9:30 AM - 6:30 PM)</p>
+              </div>
 
               <ion-progress-bar value="0.85"></ion-progress-bar>
 
