@@ -56,7 +56,7 @@ export const routes: Routes = [
   { path: 'onboarding_Tasks', component: OnboardingTasksComponent },
   { path: 'CandiateCreate', component: CandiateCreateComponent },
   { path: 'Startonboardingitem', component: StartOnboardingComponent },
-  { path: 'CreateOffer/:id/:FirstName', component: CreateOfferComponent },
+  { path: 'CreateOffer/:id', component: CreateOfferComponent },
   { path: 'leaves', component: LeavesComponent },
   { path: 'pre-onboarding-cards', component: PreOnboardingCardsComponent },
   { path: 'pre_onboarding', component: PostPage },

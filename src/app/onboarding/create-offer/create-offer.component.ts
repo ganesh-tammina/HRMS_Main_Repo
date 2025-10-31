@@ -2,11 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { IonicModule, IonPopover } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { OnboardingMainheaderComponent } from '../onboarding-mainheader/onboarding-mainheader.component';
 import { CreateOfferHeaderComponent } from '../create-offer-header/create-offer-header.component';
+import { CandidateDetailsService } from '../../services/candidate-details-service.service'; // ✅ Use new service
 
 @Component({
   selector: 'app-create-offer',
@@ -30,35 +30,32 @@ export class CreateOfferComponent implements OnInit {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private candidateService: CandidateService
+    private candidateService: CandidateDetailsService // ✅ Updated service injected
   ) {
-
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras.state?.['candidate'] || {};
-    console.log('Candidate:', this.candidate);
-
+    console.log('🧾 Candidate:', this.candidate);
   }
 
   ngOnInit() {
-
-
     if (!this.candidate.offerDetails) {
       this.candidate.offerDetails = { DOJ: '', offerValidity: '' };
     }
 
     this.offerForm = this.fb.group({
       DOJ: [this.candidate.offerDetails.DOJ || '', Validators.required],
-      offerValidity: [this.candidate.offerDetails.offerValidity || '', Validators.required]
+      offerValidity: [this.candidate.offerDetails.offerValidity || '', [Validators.required, Validators.min(1)]]
     });
 
     this.selectedDate = this.candidate.offerDetails.DOJ || '';
   }
 
+  /** 📅 Date picker handler */
   onDateChange(event: any, popover: IonPopover) {
     const value = event.detail.value;
     if (value) {
       const date = new Date(value);
-      const formatted = date.toLocaleDateString('en-GB');
+      const formatted = date.toLocaleDateString('en-GB'); // DD/MM/YYYY
       this.selectedDate = formatted;
       this.candidate.offerDetails.DOJ = formatted;
       this.offerForm.patchValue({ DOJ: formatted });
@@ -66,50 +63,56 @@ export class CreateOfferComponent implements OnInit {
     popover.dismiss();
   }
 
+  /** 🧠 Convert DD/MM/YYYY → YYYY-MM-DD */
+  private formatDate(dateStr: string | undefined): string | null {
+    if (!dateStr) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr; // already formatted
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    const [day, month, year] = parts;
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  /** ✅ Submit Offer Form */
   submitOfferForm() {
     if (this.offerForm.valid) {
+      const formattedJoiningDate = this.formatDate(this.offerForm.value.DOJ) || '';
 
-      // Helper to parse DD/MM/YYYY → YYYY-MM-DD
-      const formatDate = (dateStr: string | undefined): string | null => {
-        if (!dateStr) return null;
-        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-        const parts = dateStr.split('/');
-        if (parts.length !== 3) return null;
-        const [day, month, year] = parts;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      const offerPayload = {
+        Email: this.candidate?.personalDetails?.Email || this.candidate?.Email,
+        JoiningDate: formattedJoiningDate,
+        OfferValidity: this.offerForm.value.offerValidity
       };
 
-      // Update candidate offerDetails from form
-      if (!this.candidate.offerDetails) this.candidate.offerDetails = {};
-
-      this.candidate.offerDetails.DOJ = this.offerForm.value.DOJ;
-      this.candidate.offerDetails.offerValidity = this.offerForm.value.offerValidity;
-
-      // Optional: if you have JoiningDate field in form, format it
-      if (this.candidate.offerDetails.JoiningDate) {
-        this.candidate.offerDetails.JoiningDate = formatDate(this.candidate.offerDetails.JoiningDate) || undefined;
+      if (!offerPayload.Email) {
+        alert('❌ Candidate Email not found!');
+        return;
       }
 
+      console.log('📤 Sending Offer Details:', offerPayload);
 
-      // Format DOJ for service
-      this.candidate.offerDetails.DOJ = formatDate(this.candidate.offerDetails.DOJ) || '';
+      this.candidateService.createOfferDetails(offerPayload).subscribe({
+        next: (res: any) => {
+          console.log('✅ Offer details saved successfully:', res);
+          alert('Offer details saved successfully!');
 
-      this.candidateService.updateCandidate(this.candidate).subscribe({
-        next: (res) => {
-          console.log('Candidate updated on server:', res);
-          alert('DOJ saved successfully in DB!');
+          // ✅ Navigate using ID and Name (handles different property locations)
           this.router.navigate(
-            ['/salaryStaructure', this.candidate.id, encodeURIComponent(this.candidate.personalDetails.FirstName)],
+            [
+              '/salaryStaructure',
+              this.candidate?.candidate_id || this.candidate?.id || res?.data?.candidate_id,
+              encodeURIComponent(this.candidate?.personalDetails?.FirstName || this.candidate?.FirstName || 'User')
+            ],
             { state: { candidate: this.candidate } }
           );
         },
-        error: (err) => {
-          console.error('Error updating candidate:', err);
-          alert('Failed to save DOJ in DB.');
+        error: (err: any) => {
+          console.error('❌ Error saving offer details:', err);
+          alert('Failed to save offer details.');
         }
       });
     } else {
-      alert('Please select a Date of Joining!');
+      alert('Please fill all required fields!');
     }
   }
 

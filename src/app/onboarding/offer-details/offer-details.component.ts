@@ -52,7 +52,7 @@ export class OfferDetailsComponent implements OnInit {
       }
     });
 
-    console.log('Candidate:', this.candidate);
+    console.log('Candidate: ganesh', this.candidate,);
 
     this.updatePreview();
   }
@@ -62,15 +62,15 @@ export class OfferDetailsComponent implements OnInit {
 
     if (this.selectedTemplate === 'SVS') {
       this.previewText = `
-        Dear ${this.candidate.personalDetails.FirstName},
+        Dear ${this.candidate.FirstName},
         <br><br>
         Welcome to <b>Tech Tammina Family</b>!! <br><br>
         It was a pleasure interacting with you during our hiring process and
-        we believe you would make a great asset to {{CompanyInfo.CompanyName}}.
+        we believe you would make a great asset to.
       `;
     } else if (this.selectedTemplate === 'TechTammina') {
       this.previewText = `
-        Dear ${this.candidate.personalDetails.FirstName},
+        Dear ${this.candidate.FirstName},
         <br><br>
         Welcome to <b>Tech Tammina Family</b>!! <br><br>
         We are excited to have you onboard and look forward to seeing the best of your capabilities.
@@ -97,7 +97,7 @@ export class OfferDetailsComponent implements OnInit {
       this.previewText = `<b>Custom Offer Letter uploaded:</b> ${file.name}`;
     }
   }
-  sendpreview(){
-  this.router.navigate(['/preview_send', this.candidate.id, encodeURIComponent(this.candidate.personalDetails.FirstName)], { state: { candidate: this.candidate } });
-}
+  sendpreview() {
+    this.router.navigate(['/preview_send', this.candidate.candidate_id, encodeURIComponent(this.candidate.FirstName)], { state: { candidate: this.candidate } });
   }
+}

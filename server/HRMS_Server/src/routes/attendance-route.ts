@@ -18,7 +18,7 @@ AttendanceRouter.post(
 );
 AttendanceRouter.post(
   '/v1/get-attendance',
-  verifyAccessToken,
+  // verifyAccessToken,
   AttendanceController.getAttendance
 );
 AttendanceRouter.post(
@@ -52,5 +52,5 @@ AttendanceRouter.post(
   AttendanceController.llakdjlfjas
 );
 
-AttendanceRouter.post('/v1/attendance',kjhkhk, AttendanceController.kasdja)
+AttendanceRouter.post('/v1/attendance', kjhkhk, AttendanceController.kasdja)
 export default AttendanceRouter;

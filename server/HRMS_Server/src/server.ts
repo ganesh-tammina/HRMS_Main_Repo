@@ -8,9 +8,15 @@ import index from './routes/index';
 import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
-import candidateRoutes from './services/candidate-service';
+
+import candidateRoutes from './services/candidate-service'; // path to your route file
+import offerDetails from './services/offerDetails';
+
+
+
 
 import AttendanceRouter from './routes/attendance-route';
+import mailRoutes from './routes/mail-route';
 import rolecrud from './routes/role-crud-routes';
 import fs from 'fs';
 import https from 'https';

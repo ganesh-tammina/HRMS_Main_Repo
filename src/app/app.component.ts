@@ -1,27 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-} from '@angular/router';
-import { addIcons } from 'ionicons';
-import {
-  mailOutline,
-  mailSharp,
-  paperPlaneOutline,
-  paperPlaneSharp,
-  heartOutline,
-  heartSharp,
-  archiveOutline,
-  archiveSharp,
-  trashOutline,
-  trashSharp,
-  warningOutline,
-  warningSharp,
-  bookmarkOutline,
-  bookmarkSharp,
-} from 'ionicons/icons';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+// import { addIcons } from 'ionicons';
+// import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Candidate, CandidateService } from './services/pre-onboarding.service';
@@ -45,9 +25,10 @@ export class AppComponent implements OnInit {
   public showCategories = false;
   showMenu = true;
   currentUser: Observable<Candidate | null>;
-  isLoginPage = false;
-  iscandiateofferPage = false;
-  CurrentuserType: string = '';
+  isLoginPage = false
+  iscandiateofferPage = false
+  iscandiateofferLetterPage = false
+  CurrentuserType: string = ''
   userType: string | null = null;
   one: any;
   full_name: string = '';
@@ -61,28 +42,15 @@ export class AppComponent implements OnInit {
     private routeGaurdService: RouteGuardService
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
-    addIcons({
-      mailOutline,
-      mailSharp,
-      paperPlaneOutline,
-      paperPlaneSharp,
-      heartOutline,
-      heartSharp,
-      archiveOutline,
-      archiveSharp,
-      trashOutline,
-      trashSharp,
-      warningOutline,
-      warningSharp,
-      bookmarkOutline,
-      bookmarkSharp,
-    });
+    // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         // Hide menu on login page
         this.showMenu = !event.urlAfterRedirects.includes('/login');
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
+        this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
+        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter')
         this.iscandiateofferPage =
           event.urlAfterRedirects.includes('/candidate_status');
 
