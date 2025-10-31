@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -25,7 +25,12 @@ export class HeaderComponent implements OnInit {
   // Search functionality
   searchQuery: string = '';
   searchResults: Candidate[] = [];
-  results:any
+  results: any
+  one: any;
+  full_name: string = ""
+  currentTime: string = '';
+  allEmployees: any[] = [];
+  @Input() employee: any;
 
   constructor(
     private candidateService: CandidateService,
@@ -33,6 +38,17 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('Received employee in header:', this.employee);
+    this.candidateService.getEmpDet().subscribe({
+      next: (response: any) => {
+        this.allEmployees = response.data || [];
+        this.one = response.data[0];
+        console.log(this.one);
+      },
+      error: (err) => {
+        console.error('Error fetching all employees:', err);
+      },
+    });
     // Subscribe to current candidate observable
     this.candidateService.currentCandidate$.subscribe(user => {
       this.currentCandidate = user;
@@ -53,21 +69,21 @@ export class HeaderComponent implements OnInit {
   viewProfile() {
     window.location.href = '../../profile-page';
   }
-
+  
   // Search employees by name
   onSearch() {
-     if (!this.searchQuery || this.searchQuery.trim().length < 3) {
-    this.searchResults = [];
-    this.results = [];
-    return;
-  }
+    if (!this.searchQuery || this.searchQuery.trim().length < 3) {
+      this.searchResults = [];
+      this.results = [];
+      return;
+    }
 
     this.searchResults = this.candidateService.searchCandidates(this.searchQuery);
     // this.results = JSON.stringify(this.searchResults)
     // console.log(this.results)
-     this.results = this.searchResults.map(emp => `${emp.personalDetails.FirstName} ${emp.personalDetails.LastName}`);
+    this.results = this.searchResults.map(emp => `${emp.personalDetails.FirstName} ${emp.personalDetails.LastName}`);
 
-  console.log(this.results); 
+    console.log(this.results);
 
 
   }

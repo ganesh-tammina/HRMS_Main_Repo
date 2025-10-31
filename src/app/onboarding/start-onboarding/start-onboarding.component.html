@@ -1,65 +1,71 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Start Preboarding</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="close()">Close</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content class="ion-padding">
-
-<div class="candidate-card">
-    <div class="avatar">
- <div class="avatar">{{ candidate.personalDetails.initials }}</div>
+<ion-content class="ion-padding custom-popup">
+    <div class="row-space-between">
+      <div class="modal-header mb-30">
+        <h1> Start Preboarding</h1>
+      </div>
+        <!-- <ion-button fill="clear" (click)="close()"><ion-icon name="close-outline"></ion-icon></ion-button> -->
     </div>
+<div class="candidate-card">
+    <!-- {{ candidate.personalDetails.initials }} -->
+    <div class="d-flex pr-5">
+        <img class="pr-5" src="../../assets/user.svg" width="46" />    
     <div class="info">
-   <h6 style="font-size: 16px;">{{ candidate.personalDetails.FirstName}}</h6>
+   <p class="name pb-8">{{ candidate.personalDetails.FirstName}}</p>
     <p class="designation">{{ candidate.jobDetailsForm.JobTitle}}</p>
     </div>
-    <div class="info">
-      <p class="meta">Pending since</p>
-      <p class="meta">20 Aug 2025</p>
     </div>
     <div class="info">
-            <p class="meta">Department</p>
+      <p class="meta-status pb-8">Pending </p>
+      <p class="meta">since 20 Aug 2025</p>
+    </div>
+    <div class="info">
+        <p class="info-name pb-8">
+          <img class="pr-5" src="../../assets/contact-form.svg" width="18" />
+          Department
+        </p>
+           
             <p class="meta">{{ candidate.jobDetailsForm.Department}}</p>
     </div>
        <div class="info">
-            <p class="meta">Location</p>
+          <p class="info-name pb-8">
+            <ion-icon class="pr-5" name="location"></ion-icon>
+            Location
+          </p>
             <p class="meta">{{ candidate.jobDetailsForm.JobLocation}}</p>
     </div>
   </div>
 
   <!-- Contact Details -->
   <div class="section">
-    <h3>Confirm contact details:</h3>
-
-    <ion-grid>
-  <ion-row>
-    <ion-col>
-          <ion-item class="input-item">
-      <ion-label position="stacked">Personal email</ion-label>
-      <ion-input value="{{candidate.personalDetails.email}}" disabled></ion-input>
-    </ion-item>
-    </ion-col>
-    <ion-col>
-    <ion-item class="input-item">
-      <ion-label position="stacked">Mobile number</ion-label>
-      <ion-input value="{{candidate.personalDetails.PhoneNumber}}" disabled></ion-input>
-    </ion-item>
-    </ion-col>
-  </ion-row>
-</ion-grid>
-
-
-
+    <div class="section-header ion-padding-start ion-padding-vertical">
+        <img class="pr-5" src="../../assets/contact-form.svg" width="24" />
+        Confirm contact details
+      </div>
+      <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">               
+                <ion-label position="stacked">Personal email<span class="required">*</span></ion-label>
+                <ion-input value="{{candidate.personalDetails.email}}" disabled></ion-input>            
+              </ion-item>
+             
+            </ion-col>
+            <ion-col size="12" size-md="6">
+              <ion-item lines="none">
+                <ion-label position="stacked">Mobile number</ion-label>
+                <ion-input value="{{candidate.personalDetails.PhoneNumber}}" disabled></ion-input>
+              </ion-item>             
+            </ion-col>
+          </ion-row>
+      </ion-grid>
 
     <ion-item lines="none" class="checkbox-item">
-      <ion-checkbox slot="start" checked="true"></ion-checkbox>
+        <ion-checkbox checked="true" label-placement="end">Candidate will receive email / SMS invite to onboard and receive details to complete tasks</ion-checkbox>
+      <!-- <ion-checkbox slot="start" checked="true"></ion-checkbox>
       <ion-label>
         Candidate will receive email / SMS invite to onboard and receive details to complete tasks
-      </ion-label>
+      </ion-label> -->
     </ion-item>
   </div>
 
@@ -74,7 +80,8 @@
 
   <!-- Bottom Button -->
   <div class="footer">
-    <ion-button expand="block" color="primary" (click)="createOffer()">Move to create offer</ion-button>
+      <ion-button class="danger-outline-btn" (click)="close()">Cancel</ion-button>
+    <ion-button class="primary-btn" (click)="createOffer()">Move to create offer</ion-button>
   </div>
 
 

@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../shared/header/header.component';
 import moment from 'moment';
-// ✅ Import all Ionic components you are using
-
 import { IonicModule } from '@ionic/angular';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
@@ -14,46 +12,52 @@ import { ClockButtonComponent } from '../services/clock-button/clock-button.comp
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    HeaderComponent,
-    IonicModule,
-    ClockButtonComponent
-
-  ]
+  imports: [CommonModule, FormsModule, IonicModule, ClockButtonComponent],
 })
 export class HomePage implements OnInit {
-  days: { date: string, status: 'Complete' | 'Remaining' }[] = [];
-  currentCandidate: any
+  days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
+  currentEmployee: any;
+  one: any;
+  full_name: string = ""
   currentTime: string = '';
-  constructor(private candidateService: CandidateService) { }
-  ngOnInit() {
-    this.candidateService.currentCandidate$.subscribe(user => {
-      this.currentCandidate = user;
-      console.log('Current Candidate:', this.currentCandidate);
-    });
-    const today = moment();
-    for (let i = 0; i < 7; i++) {
-      const day = today.clone().add(i, 'days');
-      const status = day.isBefore(moment(), 'day') ? 'Complete' :
-        day.isSame(moment(), 'day') ? 'Complete' :
-          'Remaining';
-      this.days.push({
-        date: day.format('ddd'),
-        status
-      });
-    }
-    const now = new Date();
-    setInterval(() => {
-      this.currentTime = new Date().toLocaleTimeString('en-US', { hour12: true });
-    }, 1000);
-  }
+  allEmployees: any[] = [];
 
   backgroundImageUrl: string = '../../assets/holidays-pics/holidays-img.svg';
+
+  constructor(
+    private candidateService: CandidateService,
+    private cdr: ChangeDetectorRef
+  ) {
+    const loggedInUserStr = localStorage.getItem('loggedInUser');
+    if (!loggedInUserStr) {
+      console.error('No logged-in user in localStorage');
+      return;
+    }
+
+    const loggedInUser = JSON.parse(loggedInUserStr);
+    const currentEmployeeId = loggedInUser?.employee_id;
+    if (!currentEmployeeId) {
+      console.error('No employee_id found for logged-in user');
+      return;
+    }
+    console.log('Current Employee ID:', currentEmployeeId);
+  }
+
+  ngOnInit() {
+
+
+    const today = moment();
+    this.days = Array.from({ length: 7 }, (_, i) => {
+      const day = today.clone().add(i, 'days');
+      const status = day.isSameOrBefore(today, 'day')
+        ? 'Complete'
+        : 'Remaining';
+      return { date: day.format('ddd'), status };
+    });
+    setInterval(() => {
+      this.currentTime = new Date().toLocaleTimeString('en-US', {
+        hour12: true,
+      });
+    }, 1000);
+  }
 }
-
-
-
-
-

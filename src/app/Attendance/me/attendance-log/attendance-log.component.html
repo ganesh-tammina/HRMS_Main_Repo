@@ -1,5 +1,5 @@
- <!-- Filters -->
- <div class="row-space-between">
+<!-- Filters -->
+<div class="row-space-between">
   <div>
     <p>Last 30 Days</p>
   </div>
@@ -29,13 +29,13 @@
   </ion-row>
 
   <ion-row *ngFor="let log of attendanceLogs" class="table-row">
-    <ion-col size="2">{{ currentDate }}</ion-col>
+    <ion-col size="2">{{log.date}}</ion-col>
     <ion-col size="3">
       <ion-progress-bar [value]="log.progress"></ion-progress-bar>
     </ion-col>
-    <ion-col size="2">{{ effectiveHours }}</ion-col>
+    <ion-col size="2">{{ log.effective }}</ion-col>
     <ion-col size="2">
-      {{ grossHours }}
+      {{ log.gross }}
     </ion-col>
     <ion-col size="2">
       <ion-icon name="checkmark-outline" color="success"></ion-icon>
@@ -55,12 +55,12 @@
         <p><strong>Location:</strong></p>
         <p class="card-title">{{ selectedLog?.details?.location }}</p>
         <ion-row class="ion-no-padding">
-          <ion-col *ngFor="let event of history" class="clock-logs" size="6">
+          <ion-col *ngFor="let event of attendanceHistory" class="clock-logs" size="6">
             <div class="d-flex">
               <p *ngIf="event.type === 'CLOCK_IN'"><img src="../../assets/Icons/clock-in.svg" width="12"> {{
-                event.displayTime }}</p>
+                event.time }}</p>
               <p *ngIf="event.type !== 'CLOCK_IN'"><img src="../../assets/Icons/clock-out.svg" width="12">{{
-                event.displayTime }}</p>
+                event.time }}</p>
 
             </div>
           </ion-col>

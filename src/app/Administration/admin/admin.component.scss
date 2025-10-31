@@ -101,6 +101,54 @@ button:disabled {
   }
 
   span {
-    font-size: 14px;
+    @include body-text();
   }
+}
+.upload-block {
+  p {
+    @include body-text();
+  }
+  .folder-icon {
+    font-size: 35px;
+    color: var(--ion-color-medium);
+    margin-bottom: 15px;
+  }
+  
+  .drag-drop-area {
+    border: 2px dashed var(--ion-color-medium);
+    padding: 20px 12px;
+    text-align: center;
+    margin-bottom: 15px;
+    &:hover {
+      border-color: #007bff;
+    }
+  }
+  
+  .upload-icon {
+    font-size: 32px;
+    color: var(--ion-color-primary);
+  }
+  
+  .select-file-link {
+    color: var(--ion-color-primary);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+
+/* Hide the actual file input */
+#file-upload-input {
+  display: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 20px;
+}
+.upload-main-block {
+  --width: 400px;
+    --height: 400px;
 }
