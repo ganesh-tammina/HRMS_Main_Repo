@@ -49,23 +49,23 @@ export class CandidateOfferLetterComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         console.log('🔍 Candidate ID from route:', id);
-        this.loadCandidateById(id);
+        this.candidate.candiate_id;
       }
     });
   }
 
   // 🔹 Load candidate details by ID from backend
-  loadCandidateById(id: string) {
-    this.candidateService.getCandidateById(id).subscribe({
-      next: (res: any) => {
-        this.candidate = res?.candidate || res;
-        console.log('✅ Candidate fetched from backend:', this.candidate);
-      },
-      error: (err) => {
-        console.error('❌ Error fetching candidate:', err);
-      },
-    });
-  }
+  // loadCandidateById(id: string) {
+  //   this.candidateService.getCandidateById(id).subscribe({
+  //     next: (res: any) => {
+  //       this.candidate = res?.candidate || res;
+  //       console.log('✅ Candidate fetched from backend:', this.candidate.candidate_id);
+  //     },
+  //     error: (err) => {
+  //       console.error('❌ Error fetching candidate:', err);
+  //     },
+  //   });
+  // }
 
   // 🔹 Accept candidate offer and navigate to OfferDetails
   async acceptCandidate(candidateId: number) {

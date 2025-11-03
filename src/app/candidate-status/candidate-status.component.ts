@@ -76,12 +76,14 @@ export class CandidateStatusComponent implements OnInit {
   submitOnboarding() {
     const enteredPhone = this.onboardingForms.value.PhoneNumber;
     const actualPhone = this.candidate?.PhoneNumber;
+    console.log(this.candidate.candidate_id)
 
     if (enteredPhone === actualPhone) {
       console.log('✅ Phone verified. Navigating to offer details...');
       this.router.navigate(
-        ['/candidate-offer-letter', this.candidate.candidate_id || this.candidate.id],
+        ['/candidate-offer-letter', this.candidate.candidate_id],
         { state: { candidate: this.candidate } }
+
       );
     } else {
       this.showAlert('Please enter a valid Phone Number');
