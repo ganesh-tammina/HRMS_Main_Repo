@@ -3,7 +3,7 @@ import { LeaveBalance, LeaveRequest } from '../interface/leave-interface';
 export default class LeaveService {
   public static async createLeaveBalance(data: LeaveBalance) {
     const [rows] = await pool.query(
-      `INSERT INTO leave_balance (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, medical_leave_allocated, paid_leave_allocated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO leave_balance (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, medical_leave_allocated, unpaid_leave_allocated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.employee_id,
         data.leave_year_start,
@@ -12,7 +12,7 @@ export default class LeaveService {
         data.marriage_leave_allocated || 0,
         data.comp_offs_allocated || 0,
         data.medical_leave_allocated || 0,
-        data.paid_leave_allocated || 0,
+        data.unpaid_leave_allocated || 0,
       ]
     );
     return rows;
@@ -72,7 +72,7 @@ export default class LeaveService {
         marriage_leave_allocated: data.marriage_leave_allocated || 0,
         comp_offs_allocated: data.comp_offs_allocated || 0,
         medical_leave_allocated: data.medical_leave_allocated || 0,
-        paid_leave_allocated: data.paid_leave_allocated || 0,
+        unpaid_leave_allocated: data.unpaid_leave_allocated || 0,
       }));
 
       const [existing]: any = await pool.query(
@@ -101,12 +101,12 @@ export default class LeaveService {
         emp.marriage_leave_allocated,
         emp.comp_offs_allocated,
         emp.medical_leave_allocated,
-        emp.paid_leave_allocated,
+        emp.unpaid_leave_allocated,
       ]);
 
       const query = `
       INSERT INTO leave_balance 
-      (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, medical_leave_allocated, paid_leave_allocated)
+      (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, medical_leave_allocated, unpaid_leave_allocated)
       VALUES ?
     `;
 
