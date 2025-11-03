@@ -26,14 +26,10 @@ import { HttpClient } from '@angular/common/http';
     IonCard,
     IonButton,
     IonHeader,
-    IonToolbar,
     IonCardContent,
-    IonTitle,
     IonSelect,
-    HeaderComponent,
-    IonSelectOption,
-    IonCardTitle, IonCardHeader
-  ]
+    IonSelectOption
+]
 })
 export class OnboardingPage implements OnInit {
   onboardingForm!: FormGroup;
@@ -63,7 +59,7 @@ export class OnboardingPage implements OnInit {
   }
 
   fetchLatestCandidates() {
-    this.http.get<any[]>('https://30.0.0.78:3000/employees?_sort=id&_order=desc&_limit=5')
+    this.http.get<any[]>('https://localhost:3000/employees?_sort=id&_order=desc&_limit=5')
       .subscribe(data => {
         console.log('Fetched candidate records:', data);
 
@@ -110,7 +106,7 @@ export class OnboardingPage implements OnInit {
   }
 
   onCandidateSelected(id: string) {
-    this.http.get<any[]>(`https://30.0.0.78:3000/employees?candidateId=${id}`)
+    this.http.get<any[]>(`https://localhost:3000/employees?candidateId=${id}`)
       .subscribe(data => {
         if (data.length > 0) {
           this.selectedCandidate = data[0];  // get the first match

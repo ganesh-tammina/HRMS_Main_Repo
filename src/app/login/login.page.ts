@@ -106,10 +106,6 @@ export class LoginPage implements OnInit {
     this.forgotForm = this.fb.group({
       forgotEmail: ['', [Validators.required, Validators.email]],
     });
-
-    this.candidateService.getAdminById('1').subscribe((data) => {
-      this.adminData = data;
-    });
   }
 
   passwordMatchValidator(formGroup: FormGroup) {

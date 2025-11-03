@@ -9,7 +9,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './pre-onboarding-cards.component.html',
   styleUrls: ['./pre-onboarding-cards.component.scss'],
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, CommonModule, IonicModule, HeaderComponent]
+  imports: [RouterLink, CommonModule, IonicModule]
 
 })
 export class PreOnboardingCardsComponent  implements OnInit {

@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "test_the_frontend": "concurrently \"ng serve\" \"npm start --prefix ./HRMS_Server\""
+    "test_the_frontend": "concurrently \"ng serve\" \"npm start --prefix ./HRMS_Server\"",
+    "fe": "startup.bat"
   },
   "private": true,
   "dependencies": {

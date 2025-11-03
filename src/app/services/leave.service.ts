@@ -7,7 +7,7 @@ import { Observable } from "rxjs";
 })
 
 export class LeaveService {
-    private apiUrl = "https://30.0.0.78:3562/api";
+    private apiUrl = "https://localhost:3562/api";
 
     constructor(private http: HttpClient) { }
 

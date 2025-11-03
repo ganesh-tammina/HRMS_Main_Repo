@@ -38,9 +38,9 @@ export interface SalaryStructure {
   providedIn: 'root'
 })
 export class CandidateDetailsService {
-  private baseUrl = 'https://30.0.0.78:3562/candidates';
-  private offerUrl = 'https://30.0.0.78:3562/offer-details';
-  private packageUrl = 'https://30.0.0.78:3562/salary-structure';
+  private baseUrl = 'https://localhost:3562/candidates';
+  private offerUrl = 'https://localhost:3562/offer-details';
+  private packageUrl = 'https://localhost:3562/salary-structure';
 
   constructor(private http: HttpClient) { }
 

@@ -21,16 +21,8 @@ import { HeaderComponent } from '../shared/header/header.component';
     CommonModule,
     FormsModule,
     IonContent,
-    IonHeader,
-    IonToolbar,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonSearchbar,
-    IonIcon,
-    HeaderComponent
-
-  ]
+    IonHeader
+]
 })
 export class MyTeamPage implements OnInit {
 

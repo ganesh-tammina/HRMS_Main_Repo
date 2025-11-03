@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class LeaveService {
-  private apiUrl = 'https://30.0.0.78:3562/api';
+  private apiUrl = `https://${environment.apiURL}:3562/api`;
 
     constructor(private http: HttpClient) {}
 

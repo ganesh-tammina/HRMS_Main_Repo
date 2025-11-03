@@ -97,7 +97,7 @@ class Server {
         console.error('Database connection failed:', err);
       }
 
-      console.log(`Server running at https://30.0.0.78:${this.port}/api`);
+      console.log(`Server running at https://localhost:${this.port}/api`);
     });
   }
 }
