@@ -5,18 +5,31 @@ import { Observable } from "rxjs";
 @Injectable({
     providedIn: "root",
 })
-
 export class LeaveService {
-    private apiUrl = "https://30.0.0.78:3562/api";
+    private baseUrl = "https://localhost:3562/api/v1"; // backend base URL
 
     constructor(private http: HttpClient) { }
 
+    // ✅ Save or Add leave details (this matches your backend endpoint)
+    saveLeaves(leaves: any): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/add-leaves-all`, leaves, {
+            withCredentials: true,
+        });
+    }
+
+    // ✅ (Optional) Get all leaves for a specific employee
     getLeaves(employeeId: number): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/v1/get-leaves`, { employeeId: employeeId }, { withCredentials: true });
+        return this.http.post<any>(
+            `${this.baseUrl}/get-leaves`,
+            { employeeId },
+        );
     }
 
+    // ✅ (Optional) Submit a new leave request
     requestLeave(leaveRequest: any): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/v1/leave-request`, leaveRequest, { withCredentials: true });
+        return this.http.post<any>(
+            `${this.baseUrl}/leave-request`,
+            leaveRequest,
+        );
     }
-
 }

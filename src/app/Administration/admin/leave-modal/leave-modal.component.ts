@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { LeaveService } from '../../services/leaves.services';
+import { LeaveService } from '../../../services/leave.service';
 
 @Component({
   selector: 'app-leave-modal',
@@ -18,8 +18,7 @@ export class LeaveModalComponent implements OnInit {
   marriage_leave_allocated: number = 0;
   comp_offs_allocated: number = 0;
   sick_leave_allocated: number = 0;
-  paid_leave_allocated: number = 0;
-  
+  unpaid_leave_allocated: number = 0;
 
   years: number[] = [];
   leaveData: any = null;
@@ -30,13 +29,11 @@ export class LeaveModalComponent implements OnInit {
   constructor(
     private leaveService: LeaveService,
     private alertCtrl: AlertController
-  ) {}
+  ) { }
 
   ngOnInit() {
-    // Generate years from current year to next 10 years
     const currentYear = new Date().getFullYear();
     this.years = Array.from({ length: 11 }, (_, i) => currentYear + i);
-
   }
 
   onSave() {
@@ -52,16 +49,14 @@ export class LeaveModalComponent implements OnInit {
       marriage_leave_allocated: this.marriage_leave_allocated ?? 0,
       comp_offs_allocated: this.comp_offs_allocated ?? 0,
       sick_leave_allocated: this.sick_leave_allocated ?? 0,
-      paid_leave_allocated: this.paid_leave_allocated ?? 0,
+      unpaid_leave_allocated: this.unpaid_leave_allocated ?? 0,
     };
 
     console.log('Saving leaves:', leaves);
 
-    // Save leave structure via LeaveService
     this.leaveService.saveLeaves(leaves).subscribe(
-      async (response) => {
+      async (response: any) => {
         console.log('Leaves saved successfully:', response);
-
         this.onClose();
 
         const alert = await this.alertCtrl.create({
@@ -73,7 +68,6 @@ export class LeaveModalComponent implements OnInit {
       },
       async (error) => {
         console.error('Error saving leaves:', error);
-
         const alert = await this.alertCtrl.create({
           header: 'Error',
           message: 'Failed to save leave structure. Please try again.',
@@ -83,11 +77,10 @@ export class LeaveModalComponent implements OnInit {
       }
     );
   }
-  
+
   onClose() {
     this.closeModal.emit();
   }
-
 
   private async showAlert(header: string, message: string) {
     const alert = await this.alertCtrl.create({
