@@ -93,20 +93,12 @@ router.get(
   LeaveController.getLeaveRequests
 );
 
-// router.post(
-//   '/v1/leaves',
-//   // verifyAccessToken,
-//   LeaveController.addLeaves
-// )
-
 router.post(
-  '/v1/get-leaves',
+  '/v1/add-leaves-all',
   // verifyAccessToken,
-  LeaveController.getLeaves
+  LeaveController.addLeaves
 )
 
-
-router.post('/v1/get-leave-request', LeaveController.getLeaveRequest)
 
 
 // test apis here 🤡
