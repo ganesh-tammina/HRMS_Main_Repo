@@ -8,7 +8,7 @@ export interface LeaveBalance {
   marriage_leave_allocated?: number;
   comp_offs_allocated?: number;
   medical_leave_allocated?: number;
-  paid_leave_allocated?: number;
+  unpaid_leave_allocated?: number;
 }
 
 export interface LeaveRequest {
