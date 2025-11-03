@@ -79,8 +79,8 @@ class Server {
 
   public start(): void {
     const sslOptions = {
-      key: fs.readFileSync(path.join(__dirname, '../../../ssl/myserver.key')),
-      cert: fs.readFileSync(path.join(__dirname, '../../../ssl/myserver.crt')),
+      key: fs.readFileSync(path.join(__dirname, '../../../ssl/privkey.pem')),
+      cert: fs.readFileSync(path.join(__dirname, '../../../ssl/fullchain.pem')),
     };
     const httpsServer = https.createServer(sslOptions, this.app);
 

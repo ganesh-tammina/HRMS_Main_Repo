@@ -71,8 +71,8 @@
         "serve": {
           "options": {
             "ssl": true,
-            "sslKey": "ssl/myserver.key",
-            "sslCert": "ssl/myserver.crt",
+            "sslKey": "ssl/privkey.pem",
+            "sslCert": "ssl/fullchain.pem",
             "port": 4200,
             "host": "30.0.0.78"
           },

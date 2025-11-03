@@ -3,7 +3,7 @@ import { LeaveBalance, LeaveRequest } from '../interface/leave-interface';
 export default class LeaveService {
   public static async createLeaveBalance(data: LeaveBalance) {
     const [rows] = await pool.query(
-      `INSERT INTO leave_balance (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, sick_leave_allocated, paid_leave_allocated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO leave_balance (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, medical_leave_allocated, paid_leave_allocated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.employee_id,
         data.leave_year_start,
@@ -11,7 +11,7 @@ export default class LeaveService {
         data.casual_leave_allocated || 0,
         data.marriage_leave_allocated || 0,
         data.comp_offs_allocated || 0,
-        data.sick_leave_allocated || 0,
+        data.medical_leave_allocated || 0,
         data.paid_leave_allocated || 0,
       ]
     );
@@ -42,87 +42,97 @@ export default class LeaveService {
     return rows;
   }
 
-
   public static async getLeaveBalance(employee_id: any) {
+    const [row]: any = await pool.query(
+      'SELECT * FROM hrms_master_data.leave_balance where employee_id = ?',
+      [employee_id]
+    );
 
-    const [row]: any = await pool.query("SELECT * FROM hrms_master_data.leave_balance where employee_id = ?", [employee_id])
+    const [leaveRequest]: any = await pool.query(
+      'SELECT * FROM hrms_master_data.leave_requests where employee_id = ?',
+      [employee_id]
+    );
 
-    const [leaveRequest]: any = await pool.query("SELECT * FROM hrms_master_data.leave_requests where employee_id = ?", [employee_id])
-
-
-
-    return { leaveBalance: row[0], leaveRequest: leaveRequest }
+    return { leaveBalance: row[0], leaveRequest: leaveRequest };
   }
 
+  public static async getLeaveRequestID(employee_id: any) {}
 
-  public static async getLeaveRequestID(employee_id: any) {
+  public static async addLeaves(data: LeaveBalance) {
+    try {
+      const [rows]: any = await pool.query(
+        'SELECT employee_id FROM employees;'
+      );
 
+      const emp_ID: LeaveBalance[] = rows.map((t: any) => ({
+        employee_id: t.employee_id,
+        leave_year_start: data.leave_year_start,
+        leave_year_end: data.leave_year_end,
+        casual_leave_allocated: data.casual_leave_allocated || 0,
+        marriage_leave_allocated: data.marriage_leave_allocated || 0,
+        comp_offs_allocated: data.comp_offs_allocated || 0,
+        medical_leave_allocated: data.medical_leave_allocated || 0,
+        paid_leave_allocated: data.paid_leave_allocated || 0,
+      }));
 
-    // console.log(row)
-    // return row
+      const [existing]: any = await pool.query(
+        `SELECT employee_id FROM leave_balance WHERE leave_year_start = ? AND leave_year_end = ?`,
+        [data.leave_year_start, data.leave_year_end]
+      );
+
+      const existingIds = new Set(existing.map((e: any) => e.employee_id));
+
+      const filteredEmployees = emp_ID.filter(
+        (emp) => !existingIds.has(emp.employee_id)
+      );
+
+      if (filteredEmployees.length === 0) {
+        return {
+          message:
+            'All employees already have leave balances for this year range.',
+        };
+      }
+
+      const values = filteredEmployees.map((emp) => [
+        emp.employee_id,
+        emp.leave_year_start,
+        emp.leave_year_end,
+        emp.casual_leave_allocated,
+        emp.marriage_leave_allocated,
+        emp.comp_offs_allocated,
+        emp.medical_leave_allocated,
+        emp.paid_leave_allocated,
+      ]);
+
+      const query = `
+      INSERT INTO leave_balance 
+      (employee_id, leave_year_start, leave_year_end, casual_leave_allocated, marriage_leave_allocated, comp_offs_allocated, medical_leave_allocated, paid_leave_allocated)
+      VALUES ?
+    `;
+
+      const [result]: any = await pool.query(query, [values]);
+
+      return {
+        message: 'Leave balances created successfully for eligible employees.',
+        insertedCount: filteredEmployees.length,
+        skippedCount: existingIds.size,
+        result,
+      };
+    } catch (error) {
+      console.error('Error creating leave balances:', error);
+      throw new Error('Failed to create leave balances.');
+    }
   }
-  //   public static async addLeaves(data: LeaveBalance) {
 
-  //   console.log('Received leave data:', data);
-
-  //   const [rows] = await pool.query(
-  //     `INSERT IGNORE INTO leaves (
-  //       employee_id, employee_number, full_name, leave_year_start, leave_year_end,
-  //       casual_leave_allocated, marriage_leave_allocated,
-  //       comp_offs_allocated, sick_leave_allocated,
-  //       paid_leave_allocated
-  //     ) 
-  //     SELECT e.employee_id, e.employee_number, e.full_name, ?, ?, ?, ?, ?, ?, ?
-  //     FROM employees e`,
-  //     [
-  //       data.leave_year_start,
-  //       data.leave_year_end,
-  //       data.casual_leave_allocated ,
-  //       data.marriage_leave_allocated ,
-  //       data.comp_offs_allocated ,
-  //       data.sick_leave_allocated ,
-  //       data.paid_leave_allocated 
-  //     ]
-  //   );
-  //   return rows;
-  // }
-
-  // public static async getLeavesByEmployeeId(employeeId: number) {
-  //   const [rows] = await pool.query(
-  //     `
-  //     SELECT 
-  //       lr.employee_id,
-  //       lr.leave_type,
-  //       DATE_FORMAT(lr.start_date, '%Y-%m-%d') AS start_date,
-  //       DATE_FORMAT(lr.end_date, '%Y-%m-%d') AS end_date,
-  //       DATEDIFF(lr.end_date, lr.start_date) + 1 AS total_days,
-  //       lr.remarks,
-  //       lr.status,
-  //       DATE_FORMAT(lr.created_at, '%Y-%m-%d') AS submitted_on,
-
-  //       -- Include balance info from leaves table
-  //       l.casual_leave_allocated,
-  //       l.casual_leave_taken,
-  //       l.sick_leave_allocated,
-  //       l.sick_leave_taken,
-  //       l.paid_leave_allocated,
-  //       l.paid_leave_taken,
-  //       l.marriage_leave_allocated,
-  //       l.marriage_leave_taken,
-  //       l.comp_offs_allocated,
-  //       l.comp_offs_taken
-
-  //     FROM leave_requests lr
-  //     LEFT JOIN leaves l 
-  //       ON lr.employee_id = l.employee_id
-  //     WHERE lr.employee_id = ?
-  //     ORDER BY lr.created_at DESC
-  //     `,
-  //     [employeeId]
-  //   );
-
-  //   return rows;
-  // }
-
-
+  public static async takeActionLeaveRequest(
+    leave_req_id: number,
+    action_by_emp_id: number,
+  ) {
+    const connection = pool.getConnection();
+    (await connection).beginTransaction();
+    const [rows] = await pool.query(
+      `INSERT INTO hrms_master_data.leave_action(leave_req_id, action_by_emp_id) VALUES(?, ?)`,
+      [leave_req_id, action_by_emp_id]
+    );
+  }
 }

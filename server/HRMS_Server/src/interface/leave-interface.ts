@@ -7,7 +7,7 @@ export interface LeaveBalance {
   casual_leave_allocated?: number;
   marriage_leave_allocated?: number;
   comp_offs_allocated?: number;
-  sick_leave_allocated?: number;
+  medical_leave_allocated?: number;
   paid_leave_allocated?: number;
 }
 
