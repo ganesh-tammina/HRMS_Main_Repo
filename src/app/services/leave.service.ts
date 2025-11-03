@@ -3,20 +3,20 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 @Injectable({
-    providedIn: "root", 
+    providedIn: "root",
 })
 
 export class LeaveService {
-    private apiUrl = "http://localhost:3562/api"; 
+    private apiUrl = "https://30.0.0.78:3562/api";
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     getLeaves(employeeId: number): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/v1/get-leaves`, { employeeId } , { withCredentials: true });
+        return this.http.post<any>(`${this.apiUrl}/v1/get-leaves`, { employeeId: employeeId }, { withCredentials: true });
     }
 
     requestLeave(leaveRequest: any): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/v1/leave-request`, leaveRequest , { withCredentials: true });
+        return this.http.post<any>(`${this.apiUrl}/v1/leave-request`, leaveRequest, { withCredentials: true });
     }
-    
+
 }

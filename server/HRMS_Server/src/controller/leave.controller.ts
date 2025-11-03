@@ -36,18 +36,26 @@ export default class LeaveController {
     }
   }
 
-  public static async addLeaves(req: Request, res: Response) {
+  // public static async addLeaves(req: Request, res: Response) {
+  //   try {
+  //     const result = await LeaveService.addLeaves(req.body);
+  //     res.status(200).json(result);
+  //   } catch (err: any) {
+  //     res.status(500).json({ error: err.message });
+  //   }
+  // }
+
+  public static async getLeaves(req: Request, res: Response) {
     try {
-      const result = await LeaveService.addLeaves(req.body);
+      const result = await LeaveService.getLeaveBalance(req.body.employeeId);
       res.status(200).json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   }
-
-  public static async getLeaves(req: Request, res: Response) {
+  public static async getLeaveRequest(req: Request, res: Response) {
     try {
-      const result = await LeaveService.getLeavesByEmployeeId(req.body.employeeId);
+      const result = await LeaveService.getLeaveRequestID(req.body.employeeId);
       res.status(200).json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });

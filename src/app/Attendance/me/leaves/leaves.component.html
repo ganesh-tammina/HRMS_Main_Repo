@@ -94,9 +94,10 @@
 </ion-modal>
 
 
-  <ion-grid class="card-tabs-block" *ngIf="leaveData != null ">
+  <ion-grid class="card-tabs-block" >
   <p class="card-header">Leave Balances</p>
   <ion-row>
+   
     <ion-col size="2" class="card-block">
       <p class="card-header">Casual Leaves</p>
       <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
@@ -114,7 +115,7 @@
     <ion-col size="2" class="card-block">
       <p class="card-header">Sick Leaves</p>
       <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
-      <p class="number">{{ leaveData.sick_leave_taken || 0 }}/{{ leaveData.sick_leave_allocated }}</p>
+      <p class="number">{{ leaveData.medical_leave_taken || 0 }}/{{ leaveData.medical_leave_allocated }}</p>
       <p class="label">days available</p>
     </ion-col>
 
@@ -134,7 +135,7 @@
   </ion-row>    
 </ion-grid>
 
-   <ion-grid class="card-tabs-block table-block" *ngIf="leaveRequests?.length">
+   <ion-grid class="card-tabs-block table-block" *ngIf="leaveRequests">
   <div class="row-space-between">
     <div class="row-left">
       <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>

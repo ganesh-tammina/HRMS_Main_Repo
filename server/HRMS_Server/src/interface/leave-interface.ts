@@ -13,6 +13,7 @@ export interface LeaveBalance {
 
 export interface LeaveRequest {
   employee_id: number;
+  full_name: string;
   leave_type: 'CASUAL' | 'MARRIAGE' | 'COMP_OFF' | 'MEDICAL' | 'PAID';
   start_date: string;
   end_date: string;

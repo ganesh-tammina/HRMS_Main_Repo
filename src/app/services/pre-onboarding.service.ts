@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { AttendanceService } from './attendance.service';
+import { RouteGuardService } from './route-guard/route-service/route-guard.service';
+import { refresh } from 'ionicons/icons';
 
 export interface Candidate {
   id: number;
@@ -134,9 +136,9 @@ export interface EmployeeResponse {
   providedIn: 'root',
 })
 export class CandidateService {
-  private api = 'http://localhost:3562/';
+  private api = 'https://30.0.0.78:3562/';
   private apiUrl = `${this.api}candidates/jd`;
-  private adminUrl = 'http://localhost:3562/1/admin';
+  private adminUrl = 'https://30.0.0.78:3562/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
@@ -145,10 +147,10 @@ export class CandidateService {
   private newpassword = `${this.api}add-pwd`;
   private updatepassword = `${this.api}change-new-pwd`;
   private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = 'http://localhost:3562/offerstatus/status';
+  private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = 'http://localhost:3562/api/v1/employee';
+  private empUrl = 'https://30.0.0.78:3562/api/v1/employee';
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -168,7 +170,8 @@ export class CandidateService {
 
   constructor(
     private http: HttpClient,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private routeGuardService: RouteGuardService
   ) {
     this.loadCandidates();
   }
@@ -225,7 +228,11 @@ export class CandidateService {
     return this.http.get<any>(this.imagesUrl);
   }
   getEmpDet(): Observable<EmployeeResponse> {
-    return this.http.post<any>(this.empUrl, {}, { withCredentials: true });
+    const body = {
+      access_token: this.routeGuardService.token,
+      refresh_token: this.routeGuardService.refreshToken,
+    };
+    return this.http.post<any>(this.empUrl, body, { withCredentials: true });
   }
   getAllEmployees(): Observable<EmployeeResponse> {
     return this.http.get<EmployeeResponse>(this.empUrl).pipe();
@@ -381,7 +388,7 @@ export class CandidateService {
   }
   createRejectedEmployee(Emp: any): Observable<any> {
     return this.http
-      .post<any>('http://localhost:3562/employees/rejectedemployees', Emp)
+      .post<any>('https://30.0.0.78:3562/employees/rejectedemployees', Emp)
       .pipe(
         tap((newCandidate) => {
           console.log(newCandidate);
@@ -422,12 +429,7 @@ export class CandidateService {
   }
 
   logout() {
-    const activeId = localStorage.getItem('loggedInUser');
-    if (activeId) {
-      localStorage.removeItem(`loggedInUser_${activeId}`);
-      localStorage.removeItem('activeUserId');
-    }
-    this.http.post<any>(this.api + 'api/v1/log-out', {}, { withCredentials: true }).subscribe();
+    localStorage.clear();
     this.currentCandidateSubject.next(null);
   }
 

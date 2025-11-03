@@ -6,6 +6,7 @@ import { CandidateService } from '../../../services/pre-onboarding.service';
 import { LeaveService } from '../../../services/leave.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 
 @Component({
   selector: 'app-leaves',
@@ -31,11 +32,13 @@ export class LeavesComponent implements OnInit {
   constructor(
     private candidateService: CandidateService,
     private leaveService: LeaveService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private routerGaurd: RouteGuardService
+  ) { }
 
   ngOnInit() {
     // Initialize leave form
+    this.loadLeaves()
     this.leaveForm = this.fb.group({
       leave_type: ['', Validators.required],
       start_date: ['', Validators.required],
@@ -68,7 +71,6 @@ export class LeavesComponent implements OnInit {
           let parsed = JSON.parse(stored);
           while (Array.isArray(parsed)) parsed = parsed[0];
           this.currentCandidate = parsed;
-          this.loadLeaves();
         }
       }
 
@@ -78,18 +80,13 @@ export class LeavesComponent implements OnInit {
 
   // Load leave balances and leave requests
   loadLeaves() {
-    if (this.currentCandidate?.employee_id) {
-      this.leaveService.getLeaves(this.currentCandidate.employee_id).subscribe({
+    if (this.routerGaurd.employeeID) {
+      this.leaveService.getLeaves(parseInt(this.routerGaurd.employeeID)).subscribe({
         next: (data: any) => {
-          if (Array.isArray(data)) {
-            this.leaveData = data[0]; // leave balances
-            this.leaveRequests = data; // all leave requests
-          } else {
-            this.leaveData = data;
-            this.leaveRequests = [data];
-          }
+          this.leaveData = data.leaveBalance; // leave balances
+          this.leaveRequests = data.leaveRequest; // all leave requests
           // Optional: sort by submitted_on descending
-          this.leaveRequests.sort((a, b) => new Date(b.submitted_on).getTime() - new Date(a.submitted_on).getTime());
+          // this.leaveRequests.sort((a, b) => new Date(b.submitted_on).getTime() - new Date(a.submitted_on).getTime());
           console.log('Leave Data:', this.leaveData);
           console.log('Leave Requests:', this.leaveRequests);
         },
@@ -108,7 +105,7 @@ export class LeavesComponent implements OnInit {
 
     const formData = this.leaveForm.value;
     const leaveRequest = {
-      employee_id: this.currentCandidate?.employee_id,
+      employee_id: this.routerGaurd.employeeID,
       leave_type: formData.leave_type,
       start_date: formData.start_date,
       end_date: formData.end_date,

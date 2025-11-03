@@ -223,21 +223,7 @@ export default class LoginService {
       conn.release();
     }
   }
-  static async login(
-    req: Request,
-    res: Response,
-    specialLogin = false
-  ): Promise<void> {
-    if (specialLogin) {
-      await LoginService.cookieSetter(2026, req.body.email, res);
-      res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        employee_id: 2026,
-      });
-      return;
-    }
-
+  static async login(req: Request, res: Response): Promise<void> {
     try {
       const { error, value }: any = LoginService.loginSchema.validate(
         req.body,
@@ -277,11 +263,20 @@ export default class LoginService {
       }
 
       await LoginService.cookieSetter(user.employee_id, email, res);
-      res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        employee_id: user.employee_id,
-      });
+      const { access_token, refresh_token } = await LoginService.jwtAuth(
+        user.employee_id
+      );
+      const tiger = await this.getEmployeeRoles(user.employee_id);
+      if (tiger.status === 'success') {
+        res.status(200).json({
+          success: true,
+          message: 'Login successful',
+          employee_id: user.employee_id,
+          role: tiger.data[0].role_name,
+          access_token,
+          refresh_token
+        });
+      }
     } catch (error) {
       console.error('Login error:', error);
       res
@@ -311,26 +306,35 @@ export default class LoginService {
         [employee_id, access_token, refresh_token]
       );
 
+      const tiger = await this.getEmployeeRoles(employee_id);
+      if (tiger.status === 'success') {
+        res.cookie('role', tiger.data[0].role_name, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'strict',
+          maxAge: 24 * 60 * 60 * 1000,
+        });
+      }
       res.cookie('access_token', access_token, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.cookie('refresh_token', refresh_token, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
       res.cookie('employee_email', email, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: 'strict',
       });
       res.cookie('id', employee_id, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: 'strict',
       });
 
@@ -392,7 +396,7 @@ export default class LoginService {
   }
   static async refreshToken(req: Request, res: Response): Promise<any> {
     try {
-      const refreshToken = req.cookies?.refresh_token;
+      const refreshToken = req.body?.refresh_token;
       if (!refreshToken) {
         res
           .status(401)
@@ -496,7 +500,7 @@ export default class LoginService {
         'Password Reset OTP',
         `Your OTP is ${otp}`,
         `<p>Your OTP for password reset is <b>${otp}</b>. It will expire in 5 minutes.</p>
-         <a href="http://localhost:4200/login">Click here to reset your password</a>`
+         <a href="https://30.0.0.78:4200/login">Click here to reset your password</a>`
       );
 
       return { status: 200, success: true, message: 'OTP sent successfully' };
@@ -505,7 +509,7 @@ export default class LoginService {
       return { status: 500, success: false, message: 'Internal server error' };
     }
   }
-  private static async resetTokens(employee_id: number): Promise<{
+static async resetTokens(employee_id: number): Promise<{
     success: boolean;
     deleted?: number;
     message?: string;
@@ -571,6 +575,76 @@ export default class LoginService {
     } catch (error) {
       console.error('Error checking token status:', error);
       return false;
+    }
+  }
+  public static async getEmployeeRoles(employee_id: number) {
+    if (!employee_id || isNaN(employee_id)) {
+      return {
+        status: 'error',
+        message: 'Invalid or missing employee_id.',
+      };
+    }
+    let connection;
+    try {
+      connection = await pool.getConnection();
+      const [employeeRoles]: any = await connection.query(
+        `SELECT r.role_id, r.role_name, r.description
+       FROM employee_roles er
+       JOIN roles r ON er.role_id = r.role_id
+       WHERE er.employee_id = ?`,
+        [employee_id]
+      );
+      if (employeeRoles.length > 0) {
+        return {
+          status: 'success',
+          data: employeeRoles,
+        };
+      }
+      const [jobTitleRoles]: any = await connection.query(
+        `SELECT r.role_id, r.role_name, r.description
+       FROM employment_details ed
+       JOIN job_titles jt ON ed.job_title = jt.job_title_name
+       JOIN job_title_roles jtr ON jt.job_title_id = jtr.job_title_id
+       JOIN roles r ON jtr.role_id = r.role_id
+       WHERE ed.employee_id = ?`,
+        [employee_id]
+      );
+      if (jobTitleRoles.length > 0) {
+        return {
+          status: 'success',
+          data: jobTitleRoles,
+        };
+      }
+      const [departmentRoles]: any = await connection.query(
+        `SELECT r.role_id, r.role_name, r.description
+       FROM employment_details ed
+       JOIN departments d ON ed.department = d.department_name
+       JOIN department_role dr ON d.department_id = dr.department_id
+       JOIN roles r ON dr.role_id = r.role_id
+       WHERE ed.employee_id = ?`,
+        [employee_id]
+      );
+      if (departmentRoles.length > 0) {
+        return {
+          status: 'success',
+          data: departmentRoles,
+        };
+      }
+      return {
+        status: 'error',
+        message: 'Contact System Admin',
+      };
+    } catch (error) {
+      console.error('Error fetching employee roles:', error);
+      return {
+        status: 'error',
+        message:
+          'An error occurred while retrieving roles. Please try again later.',
+      };
+    } finally {
+      if (connection) {
+        connection.release();
+      }
     }
   }
 }

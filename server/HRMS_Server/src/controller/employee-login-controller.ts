@@ -46,4 +46,26 @@ export default class EmployeeLoginController {
       });
     }
   }
+
+  public static async getRole(req: Request, res: Response) {
+    if (!req.body?.employee_id) {
+      return res.status(400).json({
+        success: false,
+      });
+    }
+    try {
+      const tiger = await LoginService.getEmployeeRoles(req.body.employee_id);
+      if (tiger.status === 'success') {
+        return res.status(200).json(tiger);
+      } else {
+        return res.status(400).json(tiger);
+      }
+    } catch (error: any) {
+      console.error('Error in LogOut route:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error in LogOut route.',
+      });
+    }
+  }
 }
