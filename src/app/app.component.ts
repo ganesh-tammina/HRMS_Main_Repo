@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
   full_name: string = '';
   currentTime: string = '';
   allEmployees: any[] = [];
+  currentUrl: any;    //get current page
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(
@@ -75,6 +76,8 @@ export class AppComponent implements OnInit {
     this.showCategories = !this.showCategories;
   }
   ngOnInit(): void {
+    this.currentUrl = this.router.url;
+    console.log("url", this.currentUrl);
     if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
       this.candidateService.getEmpDet().subscribe({
         next: (response: any) => {
