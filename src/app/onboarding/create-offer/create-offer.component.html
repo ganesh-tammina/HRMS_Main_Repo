@@ -71,13 +71,13 @@
                       <ion-col size="6">
                         <ion-item>
                           <ion-label position="stacked">Date of Joining</ion-label>
-                          <ion-input id="date-input" formControlName="DOJ" [value]="selectedDate" readonly>
+                          <ion-input id="date-input" placeholder="Select Date" formControlName="DOJ" [value]="selectedDate" readonly>
                           </ion-input>
                         </ion-item>
           
                         <ion-popover #datePopover trigger="date-input" show-backdrop="true">
                           <ng-template>
-                            <ion-datetime presentation="date" (ionChange)="onDateChange($event, datePopover)">
+                            <ion-datetime  presentation="date" (ionChange)="onDateChange($event, datePopover)">
                             </ion-datetime>
                           </ng-template>
                         </ion-popover>
@@ -118,9 +118,9 @@
               </div>
     
               <div class="candidate-info">
-                <p><strong>Email ID:</strong> {{candidate?.personalDetails?.email}}</p>
-                <p><strong>Phone Number:</strong> {{candidate?.personalDetails?.PhoneNumber}}</p>
-                <p><strong>Joining Date:</strong> {{candidate?.offerDetails?.JoiningDate}}</p>
+                <p><strong>Email ID:</strong> {{candidate.Email}}</p>
+                <p><strong>Phone Number:</strong> {{candidate.PhoneNumber}}</p>
+                <p><strong>Joining Date:</strong> {{candidate.JoiningDate}}</p>
                 <p><strong>Source:</strong> Direct Offer</p>
               </div>
             </ion-card-content>

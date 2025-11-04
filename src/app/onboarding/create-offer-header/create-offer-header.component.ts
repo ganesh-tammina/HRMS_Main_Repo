@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -11,7 +12,7 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
   templateUrl: './create-offer-header.component.html',
   styleUrls: ['./create-offer-header.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [IonicModule, CommonModule, FormsModule,]
 })
 export class CreateOfferHeaderComponent implements OnInit {
   candidate: any = {};
@@ -52,6 +53,9 @@ export class CreateOfferHeaderComponent implements OnInit {
    */
   /*******  ac28750e-21cd-4044-a6aa-d4fa9ca84802  *******/
   ngOnInit() {
+    if( this.currentUrl=='/preview_send/'+this.candidateId+"/"+this.firstName){
+      this.showCreateoffer=true;
+    }
     this.currentUrl = this.router.url;
     console.log('url', this.currentUrl);
     const nav = this.router.getCurrentNavigation();
@@ -75,6 +79,9 @@ export class CreateOfferHeaderComponent implements OnInit {
   navigate(tab: string) {
     if (this.candidateId && this.firstName) {
       this.router.navigate(['/', tab, this.candidateId, this.firstName]);
+      if( this.currentUrl=='/preview_send/'+this.candidateId+"/"+this.firstName){
+        this.showCreateoffer=true;
+      }
     } else {
       console.error('Missing route params: id or firstName');
     }

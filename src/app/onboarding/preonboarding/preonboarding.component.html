@@ -106,14 +106,11 @@
       </ion-col>
       <ion-col size="2">
         <p>Location</p>
-      </ion-col>
-      <ion-col size="2">
-          <p>Location</p>
-        </ion-col>
+      </ion-col>  
       <ion-col size="2">
         <p>Joining Date</p>
       </ion-col>
-      <ion-col size="2">
+      <ion-col size="3">
         <p>Actions</p>
       </ion-col>
     </ion-row>
@@ -149,7 +146,7 @@
           <ion-col size="2">
             <p>{{candidate.date_joined}}</p>
           </ion-col>
-          <ion-col size="2">
+          <ion-col size="3">
             <div class="cell cell-actions">
               <ion-button class="primary-outline-btn" *ngIf="candidate?.status === 'accepted'">Revise</ion-button>
               <ion-button class="primary-outline-btn" *ngIf="candidate?.status === 'pending'"

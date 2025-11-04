@@ -65,6 +65,10 @@ ion-radio.ios::part(container) {
       margin-bottom: 30px;
     }
   }
+  .offer-header {
+    border-bottom: 1px solid #00000040;
+    @include text-style-bold();
+  }
 }
 
 .editor-container {
