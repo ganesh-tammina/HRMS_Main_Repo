@@ -182,7 +182,7 @@ ion-modal {
         @include scroll-style();
     }
     &.start-preboarding-modal {
-        --height: calc(100vh - 235px);
+        --height: calc(100vh - 200px);
     }
 }
 .custom-popup {
