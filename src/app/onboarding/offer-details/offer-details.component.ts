@@ -6,6 +6,8 @@ import { CreateOfferHeaderComponent } from '../create-offer-header/create-offer-
 import { HeaderComponent } from 'src/app/shared/header/header.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
+// import { QuillModule } from 'ngx-quill';
+import { QuillModule } from 'ngx-quill';
 
 @Component({
   selector: 'app-offer-letter',
@@ -17,17 +19,33 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
     FormsModule,
     IonicModule,
     CreateOfferHeaderComponent,
-    HeaderComponent
+    HeaderComponent,
+    QuillModule
   ]
 })
 export class OfferDetailsComponent implements OnInit {
-
+ 
   selectedOption: string = 'template'; // default
   selectedTemplate: string = 'SVS';   // default
   previewText: string = '';
   uploadedFileName: string | null = null;
+  viewEditor: boolean = false;
 
   @Input() candidate: any = {};
+  content = '<p>Start typing here...</p>';
+  modules = {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link', 'image'],
+      ['clean'] // remove formatting
+    ]
+  };
+
+
+
 
   constructor(
     private router: Router,
@@ -55,11 +73,11 @@ export class OfferDetailsComponent implements OnInit {
     console.log('Candidate: ganesh', this.candidate,);
 
     this.updatePreview();
+   
   }
 
   // Switch preview content based on selected template
   updatePreview() {
-
     if (this.selectedTemplate === 'SVS') {
       this.previewText = `
         Dear ${this.candidate.FirstName},
@@ -99,5 +117,12 @@ export class OfferDetailsComponent implements OnInit {
   }
   sendpreview() {
     this.router.navigate(['/preview_send', this.candidate.candidate_id, encodeURIComponent(this.candidate.FirstName)], { state: { candidate: this.candidate } });
+  }
+  hideShow() {
+    if(this.viewEditor) {
+      this.viewEditor= false;
+    }else {
+      this.viewEditor= true;
+    }
   }
 }

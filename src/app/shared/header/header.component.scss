@@ -1,4 +1,6 @@
 @import '../../../global.scss';
+@import '../../../../node_modules/quill//dist/quill.core.css';
+@import '../../../../node_modules/quill//dist/quill.snow.css';
 /* open-sans-regular - latin */
 @font-face {
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */

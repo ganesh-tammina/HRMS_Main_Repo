@@ -138,7 +138,7 @@ export interface EmployeeResponse {
 })
 export class CandidateService {
   private env = environment;
-  private api = this.env.apiURL;
+  private api = `https://${this.env.apiURL}`;
   private apiUrl = `${this.api}candidates/jd`;
   private adminUrl = 'https://localhost:3562/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;

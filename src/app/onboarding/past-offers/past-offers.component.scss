@@ -44,3 +44,16 @@ ion-datetime::part(month-year-button) {
 ion-select::part(container) {
   width: 210px !important;
  }
+ ion-datetime-button {
+  width: 250px !important;
+  background: var(--ion-white-color);
+  padding: 4px 12px;
+  border: 1px solid #ABABAB;
+  --highlight-height: 0;
+  border-radius: 6px;
+  min-height: auto;
+  margin-top: 8px;
+ }
+ ion-datetime-button::part(native) {
+  background: var(--ion-white-color);
+ }
