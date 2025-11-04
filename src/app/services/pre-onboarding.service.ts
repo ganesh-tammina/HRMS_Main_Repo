@@ -138,13 +138,13 @@ export interface EmployeeResponse {
 })
 export class CandidateService {
   private env = environment;
-  private api = this.env.apiURL;
+  private api = `https://${this.env.apiURL}:3562/api/v1/`;
   private apiUrl = `${this.api}candidates/jd`;
   private adminUrl = 'https://localhost:3562/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
-  private getEmployees = `${this.api}employees`;
+  private getEmployees = `${this.api}employee`;
   private forgotpwd = `${this.api}forgot-pwd`;
   private newpassword = `${this.api}add-pwd`;
   private updatepassword = `${this.api}change-new-pwd`;
@@ -152,7 +152,7 @@ export class CandidateService {
   private offerStatusapi = 'https://localhost:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = 'https://localhost:3562/api/v1/employee';
+  private empUrl = this.getEmployees
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -174,7 +174,7 @@ export class CandidateService {
     private http: HttpClient,
     private attendanceService: AttendanceService,
     private routeGuardService: RouteGuardService
-  ) {}
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;

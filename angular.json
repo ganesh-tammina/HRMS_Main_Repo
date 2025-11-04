@@ -73,7 +73,7 @@
             "ssl": true,
             "sslKey": "ssl/privkey.pem",
             "sslCert": "ssl/fullchain.pem",
-            "port": 9292,
+            "port": 4200,
             "host": "30.0.0.78"
           },
           "builder": "@angular-devkit/build-angular:dev-server",
