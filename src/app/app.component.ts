@@ -77,7 +77,6 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     this.currentUrl = this.router.url;
-    console.log("url", this.currentUrl);
     if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
       this.candidateService.getEmpDet().subscribe({
         next: (response: any) => {

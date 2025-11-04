@@ -26,6 +26,8 @@ export class CreateOfferHeaderComponent implements OnInit {
 
   // preview_send = false
   currentRoute: string = '';
+  currentUrl: any;    //get current page
+  showCreateoffer: boolean= false;
 
   constructor(private router: Router, private email: EmailService, private candidateService: CandidateService, private route: ActivatedRoute) {
     // track active tab by URL
@@ -50,6 +52,8 @@ export class CreateOfferHeaderComponent implements OnInit {
    */
   /*******  ac28750e-21cd-4044-a6aa-d4fa9ca84802  *******/
   ngOnInit() {
+    this.currentUrl = this.router.url;
+    console.log('url', this.currentUrl);
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras.state?.['candidate'] || {};
 
@@ -60,6 +64,9 @@ export class CreateOfferHeaderComponent implements OnInit {
 
   onContinue() {
     this.continueClick.emit();
+    if( this.currentUrl=='/preview_send/'+this.candidateId+"/"+this.firstName){
+      this.showCreateoffer=true;
+    }
   }
   onCreateOffer() {
     this.createOfferClick.emit(); // You can handle final API call or navigation here
