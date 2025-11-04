@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export interface Candidate {
   FirstName: string;
@@ -38,7 +39,8 @@ export interface SalaryStructure {
   providedIn: 'root'
 })
 export class CandidateDetailsService {
-  private baseUrl = 'https://localhost:3562/candidates';
+    private env = environment;
+  private baseUrl = `https://${this.env.apiURL}:3562/candidates`;
   private offerUrl = 'https://localhost:3562/offer-details';
   private packageUrl = 'https://localhost:3562/salary-structure';
 

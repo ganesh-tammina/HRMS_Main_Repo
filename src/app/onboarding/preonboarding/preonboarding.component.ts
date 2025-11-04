@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { StartOnboardingComponent } from '../start-onboarding/start-onboarding.component';
 import { HireEmployeesService } from 'src/app/services/hire-employees.service';
+import { CandidateDetailsService } from 'src/app/services/candidate-details-service.service';
 
 @Component({
   selector: 'app-preonboarding',
@@ -19,11 +20,10 @@ import { HireEmployeesService } from 'src/app/services/hire-employees.service';
     OnboardingMainheaderComponent,
     CommonModule,
     IonicModule,
-    HeaderComponent
-  ]
+    HeaderComponent,
+  ],
 })
 export class PreonboardingComponent implements OnInit {
-
   // 👇 All candidates loaded from service
   candidates: any[] = [];
   hiddenCandidates: number[] = [];
@@ -34,16 +34,23 @@ export class PreonboardingComponent implements OnInit {
     private http: HttpClient,
     private modalCtrl: ModalController,
     private candidateService: CandidateService,
-    private hireEmployeeService: HireEmployeesService
-  ) { }
+    private hireEmployeeService: HireEmployeesService,
+    private CandidatedetailsService: CandidateDetailsService
+  ) {}
 
   ngOnInit() {
     // Subscribe to candidates from service
-    this.candidateService.candidates$.subscribe(data => {
-      this.candidates = data;
+    // this.candidateService.candidates$.subscribe(data => {
+    //   this.candidates = data;
+    //   console.log('Candidates:', this.candidates);
+    // });
+    this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
+      this.candidates = data.candidates;
       console.log('Candidates:', this.candidates);
     });
-    this.hiddenCandidates = JSON.parse(sessionStorage.getItem('hiddenCandidates') || '[]');
+    this.hiddenCandidates = JSON.parse(
+      sessionStorage.getItem('hiddenCandidates') || '[]'
+    );
   }
 
   // Navigate to candidate create (non-modal)
@@ -57,8 +64,8 @@ export class PreonboardingComponent implements OnInit {
       component: StartOnboardingComponent,
       cssClass: 'start-preboarding-modal',
       componentProps: {
-        candidate: candidate,        // ✅ selected candidate’s ID
-      }
+        candidate: candidate, // ✅ selected candidate’s ID
+      },
     });
 
     await modal.present();
@@ -67,7 +74,7 @@ export class PreonboardingComponent implements OnInit {
   // Open form in modal
   async openCandidateForm() {
     const modal = await this.modalCtrl.create({
-      component: CandiateCreateComponent
+      component: CandiateCreateComponent,
     });
 
     await modal.present();
@@ -82,49 +89,43 @@ export class PreonboardingComponent implements OnInit {
   }
 
   employee(candidate: any) {
-
-
     const settingData = {
-      "id": candidate.id,
-      "firstName": candidate.personalDetails.FirstName,
-      "lastName": candidate.personalDetails.LastName,
-      "email": candidate.personalDetails.email,
-      "MiddleName": candidate.personalDetails.gender,
-      "PhoneNumber": candidate.personalDetails.PhoneNumber,
-      "gender": candidate.personalDetails.gender,
-      "initials": candidate.personalDetails.initials,
-      "JobTitle": candidate.jobDetailsForm.JobTitle,
-      "Department": candidate.jobDetailsForm.Department,
-      "JobLocation": candidate.jobDetailsForm.JobLocation,
-      "WorkType": candidate.jobDetailsForm.WorkType,
-      "BusinessUnit": candidate.jobDetailsForm.BussinessUnit
-    }
-    this.candidateService.createEmployee(settingData).subscribe()
+      id: candidate.id,
+      firstName: candidate.personalDetails.FirstName,
+      lastName: candidate.personalDetails.LastName,
+      email: candidate.personalDetails.email,
+      MiddleName: candidate.personalDetails.gender,
+      PhoneNumber: candidate.personalDetails.PhoneNumber,
+      gender: candidate.personalDetails.gender,
+      initials: candidate.personalDetails.initials,
+      JobTitle: candidate.jobDetailsForm.JobTitle,
+      Department: candidate.jobDetailsForm.Department,
+      JobLocation: candidate.jobDetailsForm.JobLocation,
+      WorkType: candidate.jobDetailsForm.WorkType,
+      BusinessUnit: candidate.jobDetailsForm.BussinessUnit,
+    };
+    this.candidateService.createEmployee(settingData).subscribe();
   }
   Rejectedemployee(candidate: any) {
-
-
     const settingData = {
-      "id": candidate.id,
-      "firstName": candidate.personalDetails.FirstName,
-      "lastName": candidate.personalDetails.LastName,
-      "email": candidate.personalDetails.email,
-      "MiddleName": candidate.personalDetails.gender,
-      "PhoneNumber": candidate.personalDetails.PhoneNumber,
-      "gender": candidate.personalDetails.gender,
-      "initials": candidate.personalDetails.initials,
-      "JobTitle": candidate.jobDetailsForm.JobTitle,
-      "Department": candidate.jobDetailsForm.Department,
-      "JobLocation": candidate.jobDetailsForm.JobLocation,
-      "WorkType": candidate.jobDetailsForm.WorkType,
-      "BusinessUnit": candidate.jobDetailsForm.BussinessUnit
-    }
-    this.candidateService.createRejectedEmployee(settingData).subscribe()
+      id: candidate.id,
+      firstName: candidate.personalDetails.FirstName,
+      lastName: candidate.personalDetails.LastName,
+      email: candidate.personalDetails.email,
+      MiddleName: candidate.personalDetails.gender,
+      PhoneNumber: candidate.personalDetails.PhoneNumber,
+      gender: candidate.personalDetails.gender,
+      initials: candidate.personalDetails.initials,
+      JobTitle: candidate.jobDetailsForm.JobTitle,
+      Department: candidate.jobDetailsForm.Department,
+      JobLocation: candidate.jobDetailsForm.JobLocation,
+      WorkType: candidate.jobDetailsForm.WorkType,
+      BusinessUnit: candidate.jobDetailsForm.BussinessUnit,
+    };
+    this.candidateService.createRejectedEmployee(settingData).subscribe();
   }
   employeehire(candidate: any) {
     this.hireEmployeeService.setCandidate(candidate);
-    this.candidates = this.candidates.filter(c => c.id !== candidate.id);
+    this.candidates = this.candidates.filter((c) => c.id !== candidate.id);
   }
 }
-
-

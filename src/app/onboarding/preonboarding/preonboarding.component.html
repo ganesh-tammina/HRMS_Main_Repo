@@ -98,11 +98,14 @@
         <ion-checkbox class="pr-15"></ion-checkbox>
         <p>Candidate Name</p>
       </ion-col>
-      <ion-col size="2">
-        <p>Offer Status</p>
+      <ion-col size="1">
+        <p>Ofer Status</p>
       </ion-col>
       <ion-col size="2">
         <p>Department</p>
+      </ion-col>
+      <ion-col size="2">
+        <p>Location</p>
       </ion-col>
       <ion-col size="2">
           <p>Location</p>
@@ -117,7 +120,7 @@
     <div class="table-list">
       <ion-grid *ngFor="let candidate of candidates">
         <ion-row class="table-list-row" *ngIf="candidate.status === 'accepted' || candidate.status === 'pending'">
-          <ion-col size="3" class="row-left">
+          <ion-col size="2" class="row-left">
             <ion-checkbox class="pr-15"></ion-checkbox>
             <div class="cell">
               <!-- <div class="avatar">{{candidate.personalDetails.initials}}</div> -->
@@ -132,17 +135,17 @@
               <span class="bar done" *ngIf="currentStage >= 3" class="bar" [class.done]="currentStage >= 3"></span>
             </div> -->
           </ion-col>
-          <ion-col size="2">
+          <ion-col size="1">
             <h5 [ngClass]="candidate.status === 'pending'? 'status-title pending' : 'status-title accepted'">
               {{candidate.status}}</h5>
             <!-- <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div> -->
           </ion-col>
           <ion-col size="2">
-              <p class="dept-title">{{candidate.Department}}</p>
+              <p>{{candidate.Department}}</p>
           </ion-col>
           <ion-col size="2">
-                <p class="dept-title">{{candidate.JobLocation}}</p>
-            </ion-col>
+              <p>{{candidate.JobLocation}}</p>
+          </ion-col>
           <ion-col size="2">
             <p>{{candidate.date_joined}}</p>
           </ion-col>
