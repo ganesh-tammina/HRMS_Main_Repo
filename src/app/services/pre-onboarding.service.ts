@@ -227,6 +227,8 @@ export class CandidateService {
   getImages(): Observable<any> {
     return this.http.get<any>(this.imagesUrl);
   }
+
+
   getEmpDet(): Observable<EmployeeResponse> {
     const body = {
       access_token: this.routeGuardService.token,
@@ -441,4 +443,19 @@ export class CandidateService {
         c.personalDetails.LastName.toLowerCase().includes(lowerQuery)
     );
   }
+  setCurrentEmployee(employee: Employee | null): void {
+    this.currentEmployeeSubject.next(employee);
+
+    if (employee) {
+      // Persist to localStorage for session restore
+      localStorage.setItem(
+        `loggedInEmployee_${employee.employee_id}`,
+        JSON.stringify(employee)
+      );
+      localStorage.setItem('activeEmployeeId', employee.employee_id.toString());
+    } else {
+      localStorage.removeItem('activeEmployeeId');
+    }
+  }
 }
+

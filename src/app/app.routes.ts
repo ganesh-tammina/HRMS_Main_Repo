@@ -78,7 +78,11 @@ export const routes: Routes = [
     path: 'candidate-offer-letter/:id',
     component: CandidateOfferLetterComponent,
   },
-  { path: 'profile-page', component: ProfilePageComponent },
+  {
+    path: 'profile-page',
+    loadComponent: () =>
+      import('./profile-page/profile-page.component').then(m => m.ProfilePageComponent),
+  },
   {
     path: 'admin',
     component: AdminComponent,

@@ -8,6 +8,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EmployeeListModalComponent } from '../employee-list-modal/employee-list-modal.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   standalone: true,
@@ -33,8 +35,10 @@ export class HeaderComponent implements OnInit {
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
-    private routeGuardService: RouteGuardService
-  ) {}
+    private routeGuardService: RouteGuardService,
+    private router: Router,
+    private navCtrl: NavController   // ✅ add this
+  ) { }
 
   ngOnInit() {
     if (this.routeGuardService.employeeID) {
@@ -64,11 +68,11 @@ export class HeaderComponent implements OnInit {
   // Logout method
   logout() {
     this.candidateService.logout();
-    window.location.href = '/login';
+
   }
 
   viewProfile() {
-    window.location.href = '../../profile-page';
+    this.navCtrl.navigateForward('/profile-page');
   }
 
   // Search employees by name

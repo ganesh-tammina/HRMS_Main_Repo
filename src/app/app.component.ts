@@ -8,6 +8,7 @@ import { Candidate, CandidateService } from './services/pre-onboarding.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { HeaderComponent } from './shared/header/header.component';
 import { RouteGuardService } from './services/route-guard/route-service/route-guard.service';
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -40,7 +41,9 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private candidateService: CandidateService,
-    private routeGaurdService: RouteGuardService
+    private routeGaurdService: RouteGuardService,
+    private navCtrl: NavController   // ✅ add this
+
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
     // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
@@ -83,6 +86,7 @@ export class AppComponent implements OnInit {
           this.allEmployees = response.data || [];
           this.one = response.data[0];
           console.log(this.one);
+          this.candidateService.setCurrentEmployee(this.one);
         },
         error: (err) => {
           console.error('Error fetching all employees:', err);
@@ -102,7 +106,6 @@ export class AppComponent implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/pre-onboarding-cards']);
     });
-    window.location.href = '/pre-onboarding-cards';
   }
 
   logout() {

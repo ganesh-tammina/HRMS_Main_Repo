@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
 
 import { IonicModule } from '@ionic/angular';
-import { CandidateService } from '../services/pre-onboarding.service';
+import { CandidateService, Employee } from '../services/pre-onboarding.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -17,15 +17,23 @@ import { Observable } from 'rxjs';
     IonicModule,
   ]
 })
-export class ProfilePageComponent  implements OnInit {
-  currentCandidate: any;
+export class ProfilePageComponent implements OnInit {
+  currentemp: any;
   currentCandidate$!: Observable<any>;
-  constructor(private candidateService: CandidateService) {  }
+  currentEmployee$!: Observable<Employee | null>;
+  constructor(private candidateService: CandidateService) { }
 
   ngOnInit() {
-    this.candidateService.currentCandidate$.subscribe((user:any) => {
-      this.currentCandidate = user;
-      console.log('Current Candidate:', this.currentCandidate);
+    this.currentEmployee$ = this.candidateService.currentEmployee$;
+
+    this.currentEmployee$.subscribe((emp: any) => {
+      if (Array.isArray(emp) && emp.length > 0) {
+        this.currentemp = emp[0]; // ✅ pick first employee object
+      } else {
+        this.currentemp = emp; // if it's already a single object
+      }
+
+      console.log('Current Employee:', this.currentemp);
     });
   }
 
