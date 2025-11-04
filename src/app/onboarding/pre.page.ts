@@ -16,6 +16,7 @@ import { OnboardingMainheaderComponent } from './onboarding-mainheader/onboardin
 import { CandidateService } from '../services/pre-onboarding.service';
 import { CandiateCreateComponent } from './candiate-create/candiate-create.component';
 import { ModalController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-pre',
   templateUrl: './pre.page.html',
@@ -28,7 +29,7 @@ import { ModalController } from '@ionic/angular';
     IonHeader, HttpClientModule,
     CommonModule, FormsModule, ReactiveFormsModule, OfferTemplateComponent,
     IonCardTitle, IonCardHeader, IonCard, IonCardContent, IonList
-],
+  ],
 
 
 })
@@ -155,7 +156,7 @@ export class PostPage implements OnInit {
       }
     };
 
-    this.http.post(https://${environment.apiURL}:3000/employees, employeeData).subscribe({
+    this.http.post(`https://${environment.apiURL}:3000/employees`, employeeData).subscribe({
       next: () => {
         this.closeSalaryModal();
         this.selectedCard = 'offer';

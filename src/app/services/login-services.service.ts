@@ -8,8 +8,8 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class _LoginService {
-  private api: string = environment.apiURL;
-  constructor(private http: HttpClient) {}
+  private api: string = `https://${environment.apiURL}:3562/api/v1/`;
+  constructor(private http: HttpClient) { }
 
   public checkEmail(body: any) {
     return this.http.post<any>(`${this.api}check-email`, body, {
