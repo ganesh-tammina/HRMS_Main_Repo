@@ -22,10 +22,25 @@ import { RouteGuardService } from 'src/app/services/route-guard/route-service/ro
   ]
 })
 export class LeavesComponent implements OnInit {
+
   currentCandidate: any;
   IsOpenleavePopup = false;
-  leaveData: any = null; // leave balances
-  leaveRequests: any[] = []; // all leave requests
+
+  // ✅ Default structure to prevent null errors
+  leaveData: any = {
+    casual_leave_taken: 0,
+    casual_leave_allocated: 0,
+    marriage_leave_taken: 0,
+    marriage_leave_allocated: 0,
+    medical_leave_taken: 0,
+    medical_leave_allocated: 0,
+    comp_offs_taken: 0,
+    comp_offs_allocated: 0,
+    paid_leave_taken: 0,
+    paid_leave_allocated: 0
+  };
+
+  leaveRequests: any[] = [];
   leaveForm!: FormGroup;
   total_days: number = 0;
 
@@ -37,8 +52,8 @@ export class LeavesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // Initialize leave form
-    this.loadLeaves()
+    this.loadLeaves();
+
     this.leaveForm = this.fb.group({
       leave_type: ['', Validators.required],
       start_date: ['', Validators.required],
@@ -47,7 +62,6 @@ export class LeavesComponent implements OnInit {
       notify: ['']
     });
 
-    // Calculate total days dynamically
     this.leaveForm.valueChanges.subscribe(val => {
       const from = val.start_date ? new Date(val.start_date) : null;
       const to = val.end_date ? new Date(val.end_date) : null;
@@ -60,46 +74,29 @@ export class LeavesComponent implements OnInit {
       }
     });
 
-    // Subscribe to current employee
     this.candidateService.currentEmployee$.subscribe(emp => {
       if (emp) {
         this.currentCandidate = emp;
         this.loadLeaves();
-      } else {
-        const stored = localStorage.getItem('employee_details');
-        if (stored) {
-          let parsed = JSON.parse(stored);
-          while (Array.isArray(parsed)) parsed = parsed[0];
-          this.currentCandidate = parsed;
-        }
       }
-
-      console.log('Current Employee:', this.currentCandidate);
     });
   }
 
-  // Load leave balances and leave requests
   loadLeaves() {
     if (this.routerGaurd.employeeID) {
       this.leaveService.getLeaves(parseInt(this.routerGaurd.employeeID)).subscribe({
         next: (data: any) => {
-          this.leaveData = data.leaveBalance; // leave balances
-          this.leaveRequests = data.leaveRequest; // all leave requests
-          // Optional: sort by submitted_on descending
-          // this.leaveRequests.sort((a, b) => new Date(b.submitted_on).getTime() - new Date(a.submitted_on).getTime());
-          console.log('Leave Data:', this.leaveData);
-          console.log('Leave Requests:', this.leaveRequests);
+          this.leaveData = data.leaveBalance || this.leaveData;
+          this.leaveRequests = data.leaveRequest || [];
         },
         error: (err) => console.error('Error fetching leave data:', err)
       });
     }
   }
 
-  // Submit leave request
   submitRequest() {
     if (this.leaveForm.invalid || this.total_days <= 0) {
       this.leaveForm.markAllAsTouched();
-      console.warn('Form is invalid. Please complete all required fields.');
       return;
     }
 
@@ -114,19 +111,14 @@ export class LeavesComponent implements OnInit {
       total_days: this.total_days
     };
 
-    console.log('Submitting leave request:', leaveRequest);
-
     this.leaveService.requestLeave(leaveRequest).subscribe({
-      next: (res) => {
-        console.log('Leave requested successfully:', res);
+      next: () => {
         this.closeleavePopup();
         this.loadLeaves();
         this.leaveForm.reset();
         this.total_days = 0;
       },
-      error: (err) => {
-        console.error('Error submitting leave request:', err);
-      }
+      error: (err) => console.error('Error submitting leave request:', err)
     });
   }
 
