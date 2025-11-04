@@ -12,7 +12,7 @@ export default class Employeeservices implements EmployeesInterface {
   public async viewEmployement_details(
     req: Request,
     res: Response
-  ): Promise<promised> {
+  ): Promise<any> {
     const getAllQUery: string = `SELECT 
     e.employee_id,
     e.employee_number,
@@ -203,6 +203,7 @@ LEFT JOIN addresses pa
        ON e.employee_id = pa.employee_id 
       AND pa.address_type = 'Permanent' where e.employee_id = ?;
 `;
+
     const [result]: any = req?.body?.id
       ? await pool.query(getAllUsingID, [req.body.id])
       : await pool.query(getAllQUery);
@@ -1109,11 +1110,11 @@ LEFT JOIN addresses pa
 
       const reportingMgrNum = updates.reporting_manager_employee_number
         ? await this.getEmployeeIdByNumber(
-            conn,
-            this.resolveReportingManager(
-              updates.reporting_manager_employee_number
-            )!
-          )
+          conn,
+          this.resolveReportingManager(
+            updates.reporting_manager_employee_number
+          )!
+        )
         : null;
 
       const setClause = allowed.map((f) => `${f} = ?`).join(', ');

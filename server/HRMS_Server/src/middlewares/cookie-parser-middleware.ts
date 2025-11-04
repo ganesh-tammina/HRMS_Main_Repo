@@ -93,11 +93,12 @@ export const verifyAccessToken = async (
     const jwt_check = await LoginService.isTokenActive(token);
     if (jwt_check) {
       (req as any).employee = decoded;
-      (req as any).id = decoded.employee_id
+      (req.body as any).id = decoded.employee_id
+
       next();
     } else {
       (req as any).employee = decoded;
-      (req as any).id = decoded.employee_id
+      (req.body as any).id = decoded.employee_id
       next()
     }
   } catch (error) {
