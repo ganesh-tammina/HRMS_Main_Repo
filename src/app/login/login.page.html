@@ -96,8 +96,10 @@
         @if(old){
         <form [formGroup]="existingEmpl" (ngSubmit)="onLogin()">
           <div class="input-group">
-            <ion-input label="Password" type="password" label-placement="floating" formControlName="password"
-              placeholder="Password"></ion-input>
+              <ion-input type="password" label="Password" label-placement="floating" formControlName="password"
+              placeholder="Password">
+                  <ion-input-password-toggle slot="end" color="secondary"></ion-input-password-toggle>
+                </ion-input>          
           </div>
           <p class="forgot-link">
             <a (click)="openForgotModal()">Forgot Password?</a>
