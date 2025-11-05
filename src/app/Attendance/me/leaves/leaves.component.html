@@ -71,7 +71,6 @@
   </ng-template>
 </ion-modal>
 
-<!-- ✅ ONLY SHOW WHEN LEAVE DATA IS READY -->
 <ion-grid class="card-tabs-block" *ngIf="leaveData">
 
   <p class="card-header">Leave Balances</p>
@@ -116,41 +115,55 @@
   </ion-row>
 </ion-grid>
 
-<!-- Leave Request Table -->
-<ion-grid class="card-tabs-block table-block" *ngIf="leaveRequests?.length">
+<!-- Leave History Table -->
+<ion-grid class="card-tabs-block table-block">
 
   <div class="row-space-between">
     <div class="row-left">
       <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
-      <p class="header-title">Casual Leaves</p>
+      <p class="header-title">Leave History</p>
     </div>
-    <p>Last days</p>
+    <p>Total: </p>
   </div>
 
-  <ion-row class="table-header">
-    <ion-col size="2"><p>Period</p></ion-col>
-    <ion-col size="1"><p>Days</p></ion-col>
-    <ion-col size="3"><p>Reason</p></ion-col>
-    <ion-col size="2"><p>Submitted On</p></ion-col>
-    <ion-col size="2"><p>Applied to</p></ion-col>
-    <ion-col size="2"><p>Status</p></ion-col>
-  </ion-row>
+  <!-- Check if there are leaves -->
+  <ng-container *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
+    <ion-row class="table-header">
+      <ion-col size="2"><p>Period</p></ion-col>
+      <ion-col size="2"><p>Leave Type</p></ion-col>
+      <ion-col size="1"><p>Days</p></ion-col>
+      <ion-col size="3"><p>Reason</p></ion-col>
+      <ion-col size="2"><p>Submitted On</p></ion-col>
+      <ion-col size="2"><p>Status</p></ion-col>
+    </ion-row>
 
-  <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
-    <ion-col size="2"><p>{{ leave.start_date | date:'MMM d' }} - {{ leave.end_date | date:'MMM d' }}</p></ion-col>
-    <ion-col size="1"><p>{{ leave.total_days }}</p></ion-col>
-    <ion-col size="3"><p>{{ leave.remarks }}</p></ion-col>
-    <ion-col size="2"><p>{{ leave.submitted_on | date:'MMM d' }}</p></ion-col>
-    <ion-col size="2"><p>{{ leave.notify || 'HR' }}</p></ion-col>
-    <ion-col size="2">
-      <p [ngClass]="{
-        'pending': leave.status === 'PENDING',
-        'approved': leave.status === 'APPROVED',
-        'rejected': leave.status === 'REJECTED'
-      }">{{ leave.status }}</p>
-    </ion-col>
-  </ion-row>
+    <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
+      <ion-col size="2"><p>{{ leave.start_date | date:'MMM d' }} - {{ leave.end_date | date:'MMM d' }}</p></ion-col>
+      <ion-col size="2"><p>{{ leave.leave_type }}</p></ion-col>
+      <ion-col size="1"><p>{{ leave.total_days }}</p></ion-col>
+      <ion-col size="3"><p>{{ leave.remarks }}</p></ion-col>
+      <ion-col size="2"><p>{{ leave.created_at | date:'MMM d' }}</p></ion-col>
+      <!-- <ion-col size="2"><p>{{ leave.notify || 'HR' }}</p></ion-col> -->
+      <ion-col size="2">
+        <p [ngClass]="{
+          'pending': leave.status === 'PENDING',
+          'approved': leave.status === 'APPROVED',
+          'rejected': leave.status === 'REJECTED'
+        }">{{ leave.status }}</p>
+      </ion-col>
+    </ion-row>
+  </ng-container>
+
+  <!-- No Leaves Inside Same Grid -->
+  <ng-template #noLeavesInside>
+    <ion-row class="no-leaves-row">
+      <ion-col size="12" class="ion-text-center">
+        <p class="no-data-text">No leave requests found</p>
+      </ion-col>
+    </ion-row>
+  </ng-template>
 
 </ion-grid>
+
 
 </ion-content>

@@ -13,7 +13,7 @@ export class LeaveService {
     constructor(private http: HttpClient) {}
 
     saveLeaves(leaveData: any): Observable<any> {
-      return this.http.post<any>(`${this.apiUrl}/v1/leaves`, leaveData, {
+      return this.http.post<any>(`${this.apiUrl}/v1/add-leaves-all`, leaveData, {
         withCredentials: true,
       });
     }

@@ -55,7 +55,7 @@ export default class LeaveController {
   }
   public static async getLeaveRequest(req: Request, res: Response) {
     try {
-      const result = await LeaveService.getLeaveRequestID(req.body.employeeId);
+      const result = await LeaveService.getLeaveRequestById(req.body.employeeId);
       res.status(200).json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });

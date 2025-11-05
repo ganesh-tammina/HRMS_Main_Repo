@@ -56,7 +56,14 @@ export default class LeaveService {
     return { leaveBalance: row[0], leaveRequest: leaveRequest };
   }
 
-  public static async getLeaveRequestID(employee_id: any) {}
+  public static async getLeaveRequestById(employee_id: any) {
+    const [row]: any = await pool.query(
+      'SELECT * FROM hrms_master_data.leave_requests where employee_id = ?',
+      [employee_id]
+    );
+
+    return row;
+  }
 
   public static async addLeaves(data: LeaveBalance) {
     try {
