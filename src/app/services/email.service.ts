@@ -6,7 +6,7 @@ import { Observable, tap } from 'rxjs';
 	providedIn: 'root'
 })
 export class EmailService {
-	private beURL = 'https://localhost:3562/send-email';
+	private beURL = 'https://${environment.apiURL}/send-email';
 
 	constructor(private http: HttpClient) { }
 
