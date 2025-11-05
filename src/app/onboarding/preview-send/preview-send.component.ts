@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CreateOfferHeaderComponent } from '../create-offer-header/create-offer-header.component';
 import { HeaderComponent } from 'src/app/shared/header/header.component';
@@ -13,6 +13,7 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
   standalone: true,
   imports: [CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
     CreateOfferHeaderComponent,
     HeaderComponent]
@@ -34,6 +35,7 @@ export class PreviewSendComponent implements OnInit {
   ngOnInit() {
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras?.state?.['candidate'] || {};
+    console.log(this.candidate)
 
     this.route.queryParams.subscribe(params => {
       if (!this.candidate && params['candidate']) {
@@ -58,7 +60,7 @@ export class PreviewSendComponent implements OnInit {
       `;
     } else {
       this.previewText = `
-        Dear ${this.candidate.personalDetails?.FirstName},
+        Dear ${this.candidate.FirstName},
         <br><br>
         Welcome to <b>Tech Tammina Family</b>!! <br><br>
         We are excited to have you onboard and look forward to seeing the best of your capabilities.

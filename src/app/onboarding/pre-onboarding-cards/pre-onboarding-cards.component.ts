@@ -23,6 +23,5 @@ export class PreOnboardingCardsComponent  implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['./pre.page']);
     });
-    window.location.href = '/pre_onboarding';
   }
 }
