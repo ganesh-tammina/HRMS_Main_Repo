@@ -1,5 +1,5 @@
 <ion-header [translucent]="true" class="keka-navbar">
-  <ion-toolbar class="navbar-toolbar">
+  <ion-toolbar class="navbar-toolbar" *ngIf="currentemp">
     <ion-grid [fixed]="true">
       <ion-row class="ion-align-items-center ion-justify-content-between">
         <!-- Left: Company Name -->
@@ -28,7 +28,7 @@
               </ion-popover> -->
 
           <div style="margin-left: auto" class="candidate-name">
-            {{ fullName }}
+            {{ currentemp.first_name }}
           </div>
         </ion-col>
 
