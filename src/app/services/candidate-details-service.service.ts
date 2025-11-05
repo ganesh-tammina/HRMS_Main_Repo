@@ -39,16 +39,10 @@ export interface SalaryStructure {
   providedIn: 'root'
 })
 export class CandidateDetailsService {
-<<<<<<< Updated upstream
-    private env = environment;
-  private baseUrl = `https://${this.env.apiURL}:3562/candidates`;
-  private offerUrl = 'https://localhost:3562/offer-details';
-  private packageUrl = 'https://localhost:3562/salary-structure';
-=======
-  private baseUrl = 'https://${environment.apiURL}/candidates';
-  private offerUrl = 'https://${environment.apiURL}/offer-details';
-  private packageUrl = 'https://${environment.apiURL}/salary-structure';
->>>>>>> Stashed changes
+  private env = environment;
+  private baseUrl = `https://${this.env.apiURL}/candidates`;
+  private offerUrl = `https://${this.env.apiURL}/offer-details`;
+  private packageUrl = `https://${this.env.apiURL}/salary-structure`;
 
   constructor(private http: HttpClient) { }
 

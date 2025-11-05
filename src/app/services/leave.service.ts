@@ -8,11 +8,7 @@ import { environment } from "src/environments/environment";
 })
 
 export class LeaveService {
-<<<<<<< Updated upstream
-    private apiUrl = `https://${environment.apiURL}:3562/api`;
-=======
-    private apiUrl = "https://${environment.apiURL}/api";
->>>>>>> Stashed changes
+    private apiUrl = `https://${environment.apiURL}/api`;
 
     constructor(private http: HttpClient) { }
 
