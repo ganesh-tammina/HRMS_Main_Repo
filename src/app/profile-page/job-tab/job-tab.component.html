@@ -1,0 +1,50 @@
+ <!-- Personal Details -->
+ <div class="ion-padding profile-page">             
+    <p class="header-text">Job Details<ion-icon name="create" (click)="IseditJobJob()"></ion-icon></p>
+    
+    <form>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <div>
+          <p>EMPLOYEE NUMBER</p>
+          <h6 *ngIf="!IseditJob">{{currentemp.employee_number}}</h6>
+          <ion-input [value]="currentemp.employee_number" *ngIf="IseditJob"></ion-input>
+        </div>                 
+        <div>
+            <p>JOB TITLE</p>
+            <h6 *ngIf="!IseditJob">{{currentemp.job_title}}</h6>
+            <ion-input [value]="currentemp.job_title" *ngIf="IseditJob"></ion-input>
+          </div>
+          <div>
+            <p>Worker Type</p>
+            <h6 *ngIf="!IseditJob">{{currentemp.worker_type}}</h6>
+            <ion-input [value]="currentemp.worker_type" *ngIf="IseditJob"></ion-input>
+          </div>
+        
+        </ion-col>
+        <ion-col>
+          <div>
+              <p>DATE OF JOINING</p>
+              <h6 *ngIf="!IseditJob">{{currentemp.date_joined}}</h6>
+              <ion-input [value]="currentemp.date_joined" *ngIf="IseditJob"></ion-input>
+            </div>
+           
+              <div>
+                  <p>Notice Period</p>
+                  <h6 *ngIf="!IseditJob"> Default Notice period - 3months (3 Months)</h6>
+                  <ion-input value=" Default Notice period - 3months (3 Months)" *ngIf="IseditJob" readonly></ion-input>
+                </div>
+                <div>
+                    <p>Time Type</p>
+                    <h6 *ngIf="!IseditJob">{{currentemp.time_type}}</h6>
+                    <ion-input [value]="currentemp.time_type" *ngIf="IseditJob"></ion-input>
+                  </div>
+                  <ion-button class="primary-btn row-right" type="submit" *ngIf="IseditJob">
+                      Submit
+                    </ion-button>
+          </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</div>

@@ -4,127 +4,101 @@
 
   <ion-grid class="ion-margin ion-margin-horizontal" *ngIf="currentemp">
     <ion-row>
-      <ion-col size="6" class="welcome-block ion-no-padding row-space-between">
-        <div class="d-flex ion-align-items-start">
-          <!-- <img class="pl-5" [attr.alt]="currentCandidate.personalDetails.FirstName" src="../../assets/user.svg"
-            width="100" /> -->
-          <div class="pl-5">
+      <ion-col size="4" class="welcome-block ion-no-padding">
+          <ion-card>
+          <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg"
+            width="100" />
+          <div class="ion-text-center">
             <p class="name">{{currentemp.full_name}}</p>
             <p class="des">{{currentemp.job_title}}</p>
           </div>
-
-        </div>
-        <img class="bg2" src="../../assets/bg-welcome1.svg" />
+          <div class="info-block">
+              <div class="row-left">
+                  <ion-icon name="mail"></ion-icon>
+                  <p class="pl-5">{{currentemp.work_email}}</p>
+              </div>
+              <!-- <div class="row-left">
+                  <ion-icon name="phone-portrait"></ion-icon>
+                <p class="pl-5">{{currentemp.PhoneNumber}}</p>
+            </div> -->
+              <div class="row-left">
+                  <ion-icon name="location"></ion-icon>
+                <p class="pl-5">{{currentemp.location}}</p>
+            </div>
+          </div>
+          <div class="report-block">
+              <div>
+                <p>Business Unit</p>
+                <h6>{{currentemp.business_unit}}</h6>
+              </div>
+              <div>
+               <p>Department</p>
+                <h6>{{currentemp.department}}</h6>
+              </div>
+              <div>
+               <p>Reporting Manager</p>
+               <h6 class="row-left"> <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg"
+                width="18" />{{currentemp.reporting_to}}</h6>
+              </div>
+            </div>
+      </ion-card>
       </ion-col>
-    </ion-row>
-    <ion-row class="main-block">
 
+      <ion-col size="8">
+ <!-- Tabs started -->
+ <ion-card>
+    <ion-tabs class="custom-underline-tabs">
+        <ion-tab-bar slot="top">
+          <ion-tab-button class="row-center" tab="about">
+            <ion-icon name="home"></ion-icon>
+            <p>ABOUT</p> 
+          </ion-tab-button>
+          <ion-tab-button class="row-center" tab="profile">
+            <ion-icon name="person-circle"></ion-icon>
+            <p>PROFILE</p>
+          </ion-tab-button>
+          <ion-tab-button class="row-center" tab="job">
+            <ion-icon name="bag-handle"></ion-icon>
+            <p>JOB</p>
+          </ion-tab-button>
+          <ion-tab-button class="row-center" tab="documents">
+            <ion-icon name="document-attach"></ion-icon>
+            <p>Documents</p>
+          </ion-tab-button>
+          <ion-tab-button class="row-center" tab="assets">
+          <ion-icon name="library"></ion-icon>
+          <p> Assets</p>
+          </ion-tab-button>
+        </ion-tab-bar>
+    
+        <ion-tab tab="about">
+          <!-- about us tab -->
+          <app-aboutus></app-aboutus>         
+        </ion-tab>
+        <ion-tab tab="profile">
+           <!-- about us tab -->
+          <app-profile></app-profile>
+        </ion-tab>
+        <ion-tab tab="job">
+           <!-- job us tab -->
+           <app-job-tab></app-job-tab>
+        </ion-tab>        
+        <ion-tab tab="documents">
+           <!-- documents us tab -->
+           <app-document-tab></app-document-tab>
+          </ion-tab>
+        <ion-tab tab="assets">
+           <!-- assets us tab -->
+           <app-assets-tab></app-assets-tab>
+        </ion-tab>    
+      </ion-tabs>
+</ion-card> 
+      </ion-col>
     </ion-row>
 
   </ion-grid>
-  <div class="row-left">
-    <div class="row-left pl-30">
-      <ion-icon name="mail-outline"></ion-icon>
-      <p class="pl-5">{{currentemp.work_email}}</p>
-    </div>
 
-    <div class="row-left pl-30">
-      <ion-icon name="phone-portrait-outline"></ion-icon>
-      <!-- <p class="pl-5">{{currentCandidate.personalDetails?.PhoneNumber}}</p> -->
-    </div>
+  
 
-    <div class="row-left pl-30">
-      <ion-icon name="location-outline"></ion-icon>
-      <p class="pl-5">{{currentemp.location}}</p>
-    </div>
-
-
-
-
-  </div>
-  <ion-grid class="report-block">
-    <ion-row>
-      <ion-col aria-setsize="2">
-        Business Unit
-        <h6>{{currentemp.business_unit}}</h6>
-      </ion-col>
-      <ion-col aria-setsize="2">
-        Department
-        <h6>{{currentemp.department}}</h6>
-      </ion-col>
-      <ion-col aria-setsize="2">
-        Reporting Manager
-        <h6>{{currentemp.reporting_to}}</h6>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col aria-setsize="2">
-        <!-- {{currentCandidate.jobDetailsForm?.JobLocation}} -->
-      </ion-col>
-      <ion-col aria-setsize="2">
-        <!-- {{currentCandidate.jobDetailsForm?.Department}} -->
-      </ion-col>
-      <ion-col aria-setsize="2">
-        <!-- {{currentCandidate.jobDetailsForm?.Department}} -->
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Tabs started -->
-
-  <ion-tabs class="custom-underline-tabs">
-    <ion-tab-bar slot="top">
-      <ion-tab-button tab="home">
-        <ion-icon name="play-circle"></ion-icon>
-        ABOUT
-      </ion-tab-button>
-      <ion-tab-button tab="radio">
-        <ion-icon name="radio"></ion-icon>
-        PROFILE
-      </ion-tab-button>
-      <ion-tab-button tab="library">
-        <ion-icon name="library"></ion-icon>
-        JOB
-      </ion-tab-button>
-      <ion-tab-button tab="search">
-        <ion-icon name="search"></ion-icon>
-        Documents
-      </ion-tab-button>
-      <ion-tab-button tab="search">
-        <ion-icon name="search"></ion-icon>
-        Assets
-      </ion-tab-button>
-    </ion-tab-bar>
-
-    <ion-tab tab="home">
-      <div id="home-page">
-
-        <ion-content>
-          <div class="example-content">About us</div>
-        </ion-content>
-      </div>
-    </ion-tab>
-    <ion-tab tab="radio">
-      <div id="radio-page">
-        <ion-content>
-          <div class="example-content">Profile</div>
-        </ion-content>
-      </div>
-    </ion-tab>
-    <ion-tab tab="library">
-      <div id="library-page">
-        <ion-content>
-          <div class="example-content">Library content</div>
-        </ion-content>
-      </div>
-    </ion-tab>
-    <ion-tab tab="search">
-      <div id="search-page">
-        <ion-content>
-          <div class="example-content">Search content</div>
-        </ion-content>
-      </div>
-    </ion-tab>
-
-  </ion-tabs>
+ 
 </ion-content>

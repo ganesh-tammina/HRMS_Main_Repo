@@ -1,38 +1,28 @@
 import { Component, OnInit } from '@angular/core';
+import { CandidateService, Employee } from '../../services/pre-onboarding.service';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from '../shared/header/header.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { CandidateService, Employee } from '../services/pre-onboarding.service';
-import { Observable } from 'rxjs';
-import { AboutusComponent } from './aboutus/aboutus.component';
-import { ProfileComponent } from './profile/profile.component';
-import { JobTabComponent } from './job-tab/job-tab.component';
-import { DocumentTabComponent } from './document-tab/document-tab.component';
-import { AssetsTabComponent } from './assets-tab/assets-tab.component';
 
 @Component({
-  selector: 'app-profile-page',
-  templateUrl: './profile-page.component.html',
-  styleUrls: ['./profile-page.component.scss'],
+  selector: 'app-job-tab',
+  templateUrl: './job-tab.component.html',
+  styleUrls: ['./job-tab.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    HeaderComponent,
     IonicModule,
     FormsModule, 
     ReactiveFormsModule,
-    AboutusComponent,
-    ProfileComponent,
-    JobTabComponent,
-    DocumentTabComponent,
-    AssetsTabComponent
+    CommonModule,
   ]
 })
-export class ProfilePageComponent implements OnInit {
+export class JobTabComponent  implements OnInit {
   currentemp: any;
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
+  IseditJob: boolean = false;
   constructor(private candidateService: CandidateService) { }
 
   ngOnInit() {
@@ -48,5 +38,7 @@ export class ProfilePageComponent implements OnInit {
       console.log('Current Employee:', this.currentemp);
     });
   }
-
+  IseditJobJob() {
+    this.IseditJob = !this.IseditJob;
+  }
 }
