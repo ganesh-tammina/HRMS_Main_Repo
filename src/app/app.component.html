@@ -1,26 +1,15 @@
 <ion-app>
-  <app-header
-    *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage" 
-    [employee]="one"
-  ></app-header>
+  <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage" [employee]="one"></app-header>
 
-  <ion-split-pane
-    contentId="main-content"
-    [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''"
-  >
+  <ion-split-pane contentId="main-content"
+    [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''">
     <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
       <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
             <ion-menu-toggle auto-hide="false">
-              <ion-item
-                routerDirection="root"
-                [routerLink]="['/Home']"
-                lines="none"
-                detail="false"
-                routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/Home') ? 'selected':''"
-              >
+              <ion-item routerDirection="root" [routerLink]="['/Home']" lines="none" detail="false"
+                routerLinkActive="selected" [ngClass]="(currentUrl=='/Home') ? 'selected':''">
                 <div class="text-center">
                   <img src="assets/Icons/home-05.svg" width="24" height="24" />
                   <ion-label>Home</ion-label>
@@ -29,14 +18,8 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item
-                routerDirection="root"
-                [routerLink]="['/Me']"
-                lines="none"
-                detail="false"
-                routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/Me') ? 'selected':''"
-              >
+              <ion-item routerDirection="root" [routerLink]="['/Me']" lines="none" detail="false"
+                routerLinkActive="selected" [ngClass]="(currentUrl=='/Me') ? 'selected':''">
                 <div class="text-center">
                   <img src="assets/Icons/user-01.svg" width="24" height="24" />
                   <ion-label>Me</ion-label>
@@ -47,37 +30,21 @@
             <!-- <div class="dropdown-wrapper"> -->
             <!-- Org Parent Item -->
             <ion-menu-toggle auto-hide="false" id="menu-button">
-              <ion-item lines="none" detail="false" 
-              routerLink="/pre-onboarding-cards"
-              routerLinkActive="selected"
-               [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
+              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
                 <div class="text-center">
-                  <img
-                    src="assets/Icons/building-07.svg"
-                    width="24"
-                    height="24"
-                  />
+                  <img src="assets/Icons/building-07.svg" width="24" height="24" />
                   <ion-label>Org</ion-label>
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-popover
-              trigger="menu-button"
-              [dismissOnSelect]="true"
-              triggerAction="hover"
-              class="menu-dropdown"
-            >
+            <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown">
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
                     <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item
-                      routerLink="/pre-onboarding-cards"
-                      (click)="preonboard()"
-                      lines="none"
-                      detail="false"
-                      [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected':''"
-                    >
+                    <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false"
+                      [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected':''">
                       <ion-label>Pre Onboarding</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
@@ -88,11 +55,7 @@
                     </ion-item>
                   </ion-menu-toggle> -->
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item
-                      routerLink="/post-onboarding"
-                      lines="none"
-                      detail="false"
-                    >
+                    <ion-item routerLink="/post-onboarding" lines="none" detail="false">
                       <ion-label>Post Onboarding</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
@@ -126,20 +89,10 @@
             <!-- My Team -->
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item
-                routerDirection="root"
-                [routerLink]="['/MyTeam']"
-                lines="none"
-                detail="false"
-                routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/MyTeam') ? 'selected':''"
-              >
+              <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
+                routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected':''">
                 <div class="text-center">
-                  <img
-                    src="assets/Icons/Group 104.svg"
-                    width="24"
-                    height="24"
-                  />
+                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
                   <ion-label>My Team</ion-label>
                 </div>
               </ion-item>
@@ -161,25 +114,17 @@
             <!-- ///////////////////////////////////////////////// -->
 
             <!-- Admin -->
+            @if(isAdmin){
             <ion-menu-toggle auto-hide="false">
-              <ion-item
-                routerDirection="root"
-                [routerLink]="['/admin']"
-                lines="none"
-                detail="false"
-                routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/admin') ? 'selected':''"
-              >
+              <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" detail="false"
+                routerLinkActive="selected" [ngClass]="(currentUrl=='/admin') ? 'selected':''">
                 <div class="text-center">
-                  <img
-                    src="assets/Icons/Group 104.svg"
-                    width="24"
-                    height="24"
-                  />
+                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
                   <ion-label>Admin</ion-label>
                 </div>
               </ion-item>
             </ion-menu-toggle>
+            }
             <!-- Admin -->
 
             <!-- ///////////////////////////////////////////////// -->
@@ -190,11 +135,7 @@
             <ion-menu-toggle auto-hide="false">
               <ion-item lines="none" detail="false" routerLinkActive="selected">
                 <div class="text-center">
-                  <img
-                    src="assets/Icons/Group 104.svg"
-                    width="24"
-                    height="24"
-                  />
+                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
                   <ion-label>Inbox</ion-label>
                 </div>
               </ion-item>
@@ -207,19 +148,10 @@
 
             <!-- Log Out -->
             <ion-menu-toggle auto-hide="false">
-              <ion-item
-                routerDirection="root"
-                (click)="logout()"
-                lines="none"
-                detail="false"
-                routerLinkActive="selected"
-              >
+              <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
+                routerLinkActive="selected">
                 <div class="text-center">
-                  <img
-                    src="assets/Icons/logout_duoline 1.svg"
-                    width="24"
-                    height="24"
-                  />
+                  <img src="assets/Icons/logout_duoline 1.svg" width="24" height="24" />
                   <ion-label>Log out</ion-label>
                 </div>
               </ion-item>
