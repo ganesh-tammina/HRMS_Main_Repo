@@ -112,6 +112,11 @@ router.post(
   LeaveController.getLeaves
 );
 
+router.post(
+  '/v1/cancel-leave',
+  //verifyAccessToken
+  LeaveController.cancelLeaveRequest
+)
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole)
 // add test apis here only

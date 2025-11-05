@@ -61,4 +61,13 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  public static async cancelLeaveRequest(req: Request, res: Response) {
+    try {
+      const result = await LeaveService.cancelLeaveRequest(req.body.leaveId);
+      res.status(200).json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    } 
+  }
 }
