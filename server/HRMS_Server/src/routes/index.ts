@@ -104,6 +104,11 @@ router.post(
   LeaveController.addLeaves
 )
 
+router.post(
+  '/v1/get-leaves-requests',
+  //verifyAccessToken
+  LeaveController.getLeaveRequest
+)
 
 
 // Admin route
@@ -115,6 +120,11 @@ router.get('/1/admin', (req, res) => {
     role: 'admin'
   });
 });
+router.post(
+  '/v1/get-leaves-balance',
+  //verifyAccessToken
+  LeaveController.getLeaves
+);
 
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole)

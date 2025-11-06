@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { CandidateService } from '../services/pre-onboarding.service';
+import { CandidateService, Employee } from '../services/pre-onboarding.service';
 import { Observable } from 'rxjs';
+import { AboutusComponent } from './aboutus/aboutus.component';
+import { ProfileComponent } from './profile/profile.component';
+import { JobTabComponent } from './job-tab/job-tab.component';
+import { DocumentTabComponent } from './document-tab/document-tab.component';
+import { AssetsTabComponent } from './assets-tab/assets-tab.component';
+import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -13,20 +19,42 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    HeaderComponent,
     IonicModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AboutusComponent,
+    ProfileComponent,
+    JobTabComponent,
+    DocumentTabComponent,
+    AssetsTabComponent,
+    HeaderComponent,
   ]
 })
-export class ProfilePageComponent  implements OnInit {
-  currentCandidate: any;
-  currentCandidate$!: Observable<any>;
-  constructor(private candidateService: CandidateService) {  }
+export class ProfilePageComponent implements OnInit {
+  currentemp: any = []; // Single employee object
+
+  constructor(
+    private candidateService: CandidateService,
+    private routeGuardService: RouteGuardService
+  ) { }
 
   ngOnInit() {
-    this.candidateService.currentCandidate$.subscribe((user:any) => {
-      this.currentCandidate = user;
-      console.log('Current Candidate:', this.currentCandidate);
-    });
+    if (this.routeGuardService.employeeID) {
+      this.candidateService.getEmpDet().subscribe({
+        next: (response: any) => {
+          if (response?.data?.length > 0) {
+            this.currentemp = response.data[0]; // ✅ Pick first employee object
+            console.log('✅ Employee Details:', this.currentemp);
+          } else {
+            console.warn('⚠️ No employee data found in response');
+          }
+        },
+        error: (err) => {
+          console.error('❌ Error fetching employee details:', err);
+        },
+      });
+    } else {
+      console.warn('⚠️ No employeeID found in routeGuardService');
+    }
   }
-
 }

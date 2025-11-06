@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class EmailService {
-	private beURL = 'https://30.0.0.78:3562/send-email';
+
+	private beURL = `https://${environment.apiURL}/send-email`;
 
 	constructor(private http: HttpClient) { }
 

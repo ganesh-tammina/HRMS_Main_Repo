@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
 import { AttendanceService, AttendanceRecord, AttendanceEvent } from 'src/app/services/attendance.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+
 interface AttendanceRequest {
   type: string;
   dateRange: string;
   items: string[];
 }
+
 interface AttendanceRequestHistory {
   date: string;
   request: string;
@@ -41,6 +43,7 @@ interface CalendarDay {
   isOff: boolean;
   date?: Date;
 }
+
 @Component({
   selector: 'app-attendance-log',
   templateUrl: './attendance-log.component.html',
@@ -67,7 +70,6 @@ export class AttendanceLogComponent implements OnInit {
   activeTab: string = 'log';
   currentMonth: Date = new Date();
   weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-  // calendarDays: any[] = []; 
   calendarDays: CalendarDay[] = [];
   attendanceRequests: AttendanceRequest[] = [];
   selectedLog: any = null;
@@ -76,14 +78,16 @@ export class AttendanceLogComponent implements OnInit {
   attendanceLogss: any[] = [];
 
   attendanceHistory: any = [];
-  private employee_det: any
+  private employee_det: any;
   days: Date[] = [];
   today: Date = new Date();
+
   attendanceRequestsHistory: {
     type: string;
     dateRange: string;
     records: AttendanceRequestHistory[];
   }[] = [];
+
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
@@ -92,8 +96,9 @@ export class AttendanceLogComponent implements OnInit {
     const t = localStorage.getItem('employee_details');
     if (t) {
       this.employee_det = JSON.parse(t);
-      console.log(this.employee_det, "asdasdads");
+      console.log(this.employee_det, "Employee details");
     }
+
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -104,12 +109,14 @@ export class AttendanceLogComponent implements OnInit {
     console.log('Start Date (30 days ago):', startDate);
     console.log('End Date (today):', endDate);
 
+    // Fetch attendance data
     this.attendanceService.getallattendace({
       employee_id: this.abcd.employeeID,
       startDate: startDate,
       endDate: endDate
     }).subscribe((data) => {
       console.log('All Attendance Records:', data);
+
       // Step 1: Normalize date format
       const normalized = data.attendance.map((item: any) => ({
         ...item,
@@ -119,15 +126,14 @@ export class AttendanceLogComponent implements OnInit {
       // Step 2: Group all check-ins/check-outs per date
       const groupedByDate: any = {};
       normalized.forEach((record: any) => {
-        // const date = record.attendance_date;
         const dateObj = new Date(record.attendance_date);
-        dateObj.setDate(dateObj.getDate() + 1); // ➕ Add 1 day
-        const date = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        dateObj.setDate(dateObj.getDate() + 1); // ➕ Add 1 day for display alignment
+        const date = dateObj.toISOString().split('T')[0];
 
         if (!groupedByDate[date]) {
           groupedByDate[date] = {
             attendance_date: date,
-            records: [] // store all pairs here
+            records: []
           };
         }
 
@@ -137,19 +143,90 @@ export class AttendanceLogComponent implements OnInit {
         });
       });
 
-      // Step 3: Convert to array for display
-      this.attendanceLogss = Object.values(groupedByDate);
+      // Step 3: Calculate gross/effective hours for each day
+      this.attendanceLogss = Object.values(groupedByDate).map((log: any) => {
+        let totalMinutes = 0;
+        let arrivalTime = '';
 
-      console.log(this.attendanceLogss, "Grouped Attendance with all records");
+        log.records.forEach((rec: any, index: number) => {
+          if (rec.check_in && index === 0) {
+            arrivalTime = rec.check_in; // first check-in of the day
+          }
+          if (rec.check_in && rec.check_out) {
+            const inTime = new Date(`1970-01-01T${rec.check_in}`);
+            const outTime = new Date(`1970-01-01T${rec.check_out}`);
+            const diffMinutes = (outTime.getTime() - inTime.getTime()) / 60000;
+            totalMinutes += diffMinutes;
+          }
+        });
+
+        const grossHours = this.formatHoursMinutes(Math.floor(totalMinutes));
+        const effectiveMinutes = Math.max(totalMinutes - this.breakMinutes, 0);
+        const effectiveHours = this.formatHoursMinutes(Math.floor(effectiveMinutes));
+
+        return {
+          ...log,
+          gross: grossHours,
+          effective: effectiveHours,
+          arrival: arrivalTime || '-',
+          progress: Math.min(totalMinutes / 480, 1) // 480 = 8h shift
+        };
+      });
+
+      console.log(this.attendanceLogss, "Grouped Attendance with gross/effective hours");
     });
-
-
 
     this.generateCalendar(this.currentMonth);
   }
 
-  setTab(tab: string) {
-    this.activeTab = tab;
+  ngOnInit() {
+    this.employee = this.candidateService.getCurrentCandidate() || undefined;
+    if (!this.employee) return;
+    console.log('Current Employee:', this.employee);
+
+    this.attendanceService.record$.subscribe(record => {
+      if (record && record.employeeId === this.employee?.id) {
+        this.record = record;
+        this.updateTimes();
+        this.loadHistory();
+      }
+    });
+
+    this.attendanceService.getRecord(this.employee.id);
+    this.generateDays();
+    this.attendanceRecord();
+  }
+
+  attendanceRecord() {
+    if (!this.employee) return;
+    this.attendanceService.clockAction(this.employee, 'in');
+  }
+
+  // Calendar generation
+  generateCalendar(date: Date) {
+    this.calendarDays = [];
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+      this.calendarDays.push({ day: '', timing: '', isOff: false });
+    }
+
+    for (let day = 1; day <= lastDate; day++) {
+      let timing = '9:30 AM - 6:30 PM';
+      let isOff = false;
+      const d = new Date(year, month, day).getDay();
+      if (d === 0 || d === 6) {
+        timing = '';
+        isOff = true;
+      }
+      this.calendarDays.push({
+        day, timing, isOff,
+        date: new Date(year, month, day)
+      });
+    }
   }
 
   prevMonth() {
@@ -162,99 +239,19 @@ export class AttendanceLogComponent implements OnInit {
     this.generateCalendar(this.currentMonth);
   }
 
-  generateCalendar(date: Date) {
-    this.calendarDays = [];
-    const year = date.getFullYear();
-    const month = date.getMonth();
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
-      this.calendarDays.push({ day: '', timing: '', isOff: false });
-    }
-    for (let day = 1; day <= lastDate; day++) {
-      let timing = '9:30 AM - 6:30 PM';
-      let isOff = false;
-      const d = new Date(year, month, day).getDay();
-      if (d === 0 || d === 6) {
-        timing = '';
-        isOff = true;
-      }
-
-      this.calendarDays.push({
-        day, timing, isOff,
-        date: new Date(year, month, day)
-      });
-    }
-  }
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Initialize attendance log component
-   * Get current employee and set up attendance record subscription
-   * Get current employee's attendance record
-   * Set up attendance requests history
-   * Generate days for calendar
-   */
-  /*******  bf79ddf5-f32a-460a-b35a-d7bbc24975f6  *******/
-  ngOnInit() {
-    this.employee = this.candidateService.getCurrentCandidate() || undefined;
-    if (!this.employee) return;
-    console.log('Current Employee in AttendanceLogComponent:', this.employee);
-
-    this.attendanceService.record$.subscribe(record => {
-      if (record && record.employeeId === this.employee?.id) {
-        this.record = record;
-        this.updateTimes();
-        this.loadHistory();
-      } else if (!record) {
-        // Clear data when no record (user logged out)
-        this.record = undefined;
-        this.history = [];
-        this.attendanceLogss = [];
-      }
-    });
-
-    // Only get record for current employee
-    this.attendanceService.getRecord(this.employee.id);
-
-    this.generateDays();
-    this.attendanceRecord();
-  }
-  attendanceRecord() {
-    if (!this.employee) return;
-    this.attendanceService.clockAction(this.employee, 'in');
+  setTab(tab: string) {
+    this.activeTab = tab;
   }
   generateDays() {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust for Sunday
+    const dayOfWeek = today.getDay();
+    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
     const firstDayOfWeek = new Date(today.setDate(diff));
     for (let i = 0; i < 7; i++) {
       const date = new Date(firstDayOfWeek);
       date.setDate(firstDayOfWeek.getDate() + i);
       this.days.push(date);
     }
-  }
-
-  isTodayCalendarDay(cd: CalendarDay): boolean {
-    if (!cd.date) return false;
-    return (cd.date.getDate() === this.today.getDate() &&
-      cd.date.getMonth() === this.today.getMonth() &&
-      cd.date.getFullYear() === this.today.getFullYear()
-    );
-  }
-
-  isToday(day: Date): boolean {
-    return (
-      day.getDate() === this.today.getDate() &&
-      day.getMonth() === this.today.getMonth() &&
-      day.getFullYear() === this.today.getFullYear()
-    );
-  }
-
-
-  get employeeName(): string {
-    return this.employee?.personalDetails?.FirstName || '';
   }
 
   openLogDetails(log: AttendanceLog) {
@@ -266,6 +263,7 @@ export class AttendanceLogComponent implements OnInit {
     this.showPopover = false;
     this.selectedLog = null;
   }
+
   updateTimes() {
     if (!this.record) return;
     const now = new Date();
@@ -275,7 +273,6 @@ export class AttendanceLogComponent implements OnInit {
     const today = this.currentDate;
     const dailyMs = this.record.dailyAccumulatedMs?.[today] || 0;
 
-    // Total gross = all accumulated today + ongoing session
     let totalMs = dailyMs;
     let sessionMs = 0;
     if (this.record.isClockedIn && this.record.clockInTime) {
@@ -283,17 +280,11 @@ export class AttendanceLogComponent implements OnInit {
       totalMs += sessionMs;
     }
 
-    // Session timer since last login
     this.timeSinceLastLogin = this.formatHMS(sessionMs);
-
-    // Gross hours today
     const grossMinutes = Math.floor(totalMs / 60000);
     this.grossHours = this.formatHoursMinutes(grossMinutes);
-
     const effectiveMinutes = Math.max(grossMinutes - this.breakMinutes, 0);
     this.effectiveHours = this.formatHoursMinutes(effectiveMinutes);
-
-    // Status: Present if any accumulated hours today
     this.status = totalMs > 0 ? 'Present' : 'Absent';
   }
 
@@ -324,6 +315,4 @@ export class AttendanceLogComponent implements OnInit {
     const seconds = totalSeconds % 60;
     return `${hours}h ${minutes}m ${seconds}s`;
   }
-
-
 }

@@ -7,6 +7,9 @@ import { AppComponent } from './app/app.component';
 import { addIcons } from 'ionicons';
 import * as allIcons from 'ionicons/icons';
 
+import { QuillModule } from 'ngx-quill';
+import { importProvidersFrom } from '@angular/core';
+
 // addIcons({
 //   'checkmark-outline': checkmarkOutline,
 //   'checkmark-circle': checkmarkCircle,
@@ -34,5 +37,6 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideHttpClient(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
+    importProvidersFrom(QuillModule.forRoot())
   ],
 });

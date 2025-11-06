@@ -1,0 +1,93 @@
+  <!-- Personal Details -->
+  <div class="ion-padding">
+      <p class="header-text">Primary Details</p>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <div>
+            <p>First Name</p>
+            <h6>{{currentemp.first_name}}</h6>
+          </div>                 
+          <div>
+              <p>Gender</p>
+              <h6>{{currentemp.gender}}</h6>
+            </div>
+            <div>
+              <p>Marital Status</p>
+              <h6>{{currentemp.marital_status}}</h6>
+            </div>
+            <div>
+              <p>Marriage Date</p>
+              <h6>NA</h6>
+            </div>
+          </ion-col>
+          <ion-col>
+            <div>
+                <p>Last Name</p>
+                <h6>{{currentemp.last_name}}</h6>
+              </div>
+              <div>
+                  <p>Date of Birth</p>
+                  <h6>NA</h6>
+                </div>
+                <div>
+                    <p>Blood Group</p>
+                    <h6>{{currentemp.blood_group}}</h6>
+                  </div>
+                  <div>
+                      <p>Physically Handicapped</p>
+                      <h6>{{currentemp.physically_handicapped}}</h6>
+                    </div>
+            </ion-col>
+        </ion-row>
+      </ion-grid>
+
+  </div>
+    <!-- Address Details -->
+    <div class="ion-padding">
+        <p class="header-text">Addresses</p>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <div>
+              <p>Current Address</p>
+              <h6>{{currentemp.current_address_line1}}</h6>
+              <h6>
+                  {{currentemp.current_city}} {{currentemp.current_state}} {{currentemp.current_country}} {{currentemp.current_zip}}
+              </h6>
+            </div>                 
+           
+            </ion-col>
+            <ion-col>
+              <div>
+                  <p>Permanent Address</p>
+                  <h6>{{currentemp.permanent_address_line1}}</h6>
+                </div>                       
+              </ion-col>
+          </ion-row>
+        </ion-grid>
+        </div>
+      <!-- Family Details -->
+      <div class="ion-padding">
+          <p class="header-text">Relations</p>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <div>
+                <p>Father</p>
+                <h6>{{currentemp.father_name}}</h6>                  
+              </div>                 
+              <div>
+                  <p>Spouse</p>
+                  <h6>{{currentemp.spouse_name}}</h6>                      
+                </div>  
+              </ion-col>
+              <ion-col>
+                <div>
+                    <p>Mother</p>
+                    <h6>{{currentemp.mother_name}}</h6>
+                  </div>                       
+                </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>

@@ -65,7 +65,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.currentUrl = this.router.url;;
+    this.currentUrl = this.router.url;
     console.log('Current Page URL:', this.currentUrl);
     if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
       this.candidateService.getEmpDet().subscribe((user: any) => {

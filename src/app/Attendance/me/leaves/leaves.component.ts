@@ -52,7 +52,8 @@ export class LeavesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadLeaves();
+    this.loadLeaveRequests();
+    this.loadLeaveBalance();
 
     this.leaveForm = this.fb.group({
       leave_type: ['', Validators.required],
@@ -77,19 +78,32 @@ export class LeavesComponent implements OnInit {
     this.candidateService.currentEmployee$.subscribe(emp => {
       if (emp) {
         this.currentCandidate = emp;
-        this.loadLeaves();
+        this.loadLeaveRequests();
+        this.loadLeaveBalance();
       }
     });
   }
 
-  loadLeaves() {
+  loadLeaveRequests() {
     if (this.routerGaurd.employeeID) {
-      this.leaveService.getLeaves(parseInt(this.routerGaurd.employeeID)).subscribe({
+      this.leaveService.getLeaveRequests(parseInt(this.routerGaurd.employeeID)).subscribe({
         next: (data: any) => {
-          this.leaveData = data.leaveBalance || this.leaveData;
-          this.leaveRequests = data.leaveRequest || [];
+          this.leaveRequests = data;
+          console.log('Leave Requests:', this.leaveRequests);
         },
         error: (err) => console.error('Error fetching leave data:', err)
+      });
+    }
+  }
+
+  loadLeaveBalance() {
+    if (this.routerGaurd.employeeID) {
+      this.leaveService.getLeaveBalance(parseInt(this.routerGaurd.employeeID)).subscribe({
+        next: (data: any) => {  
+          this.leaveData = data.leaveBalance || this.leaveData;
+          console.log('Leave Balance:', this.leaveData);
+        },
+        error: (err) => console.error('Error fetching leave balance:', err)
       });
     }
   }
@@ -114,7 +128,8 @@ export class LeavesComponent implements OnInit {
     this.leaveService.requestLeave(leaveRequest).subscribe({
       next: () => {
         this.closeleavePopup();
-        this.loadLeaves();
+        this.loadLeaveRequests();
+        this.loadLeaveBalance();
         this.leaveForm.reset();
         this.total_days = 0;
       },

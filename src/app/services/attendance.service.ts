@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface AttendanceEvent {
   type: 'CLOCK_IN' | 'CLOCK_OUT';
@@ -22,7 +23,7 @@ export interface AttendanceRecord {
 })
 export class AttendanceService {
   private prefix = 'attendance_';
-  private baseURL = 'https://30.0.0.78:3562/api/v1';
+  private baseURL = `https://${environment.apiURL}/api/v1`;
   private recordSubject = new BehaviorSubject<AttendanceRecord | null>(null);
   record$ = this.recordSubject.asObservable();
   private responseSubject = new BehaviorSubject<any>(null);

@@ -29,7 +29,7 @@
   </ion-row>
 
   <!-- Rows -->
-  <ion-row *ngFor="let log of attendanceLogss" class="table-row">
+  <ion-row *ngFor="let log of attendanceLogss.slice().reverse()" class="table-row">
     <ion-col size="2">{{ log.attendance_date }}</ion-col>
     <ion-col size="3">
       <ion-progress-bar [value]="log.progress || 0"></ion-progress-bar>
@@ -55,11 +55,11 @@
         <p class="divider"></p>
 
         <div *ngIf="selectedLog?.records?.length > 0; else noRecords">
-          <ion-row class="ion-no-padding" *ngFor="let rec of selectedLog.records; let i = index">
+          <ion-row class="ion-no-padding" *ngFor="let rec of selectedLog.records.slice().reverse(); let i = index">
             <ion-col class="clock-logs" size="6">
               <div>
                 <p *ngIf="rec.check_in">
-                  <strong>Check-In {{ i + 1 }}:</strong>
+                  <strong>Check-In {{ selectedLog.records.length - i }}:</strong>
                   {{ rec.check_in }}
                   <img src="../../assets/Icons/clock-in.svg" width="12" style="margin-left: 5px;" />
                 </p>
@@ -69,7 +69,7 @@
             <ion-col class="clock-logs" size="6">
               <div>
                 <p *ngIf="rec.check_out">
-                  <strong>Check-Out {{ i + 1 }}:</strong>
+                  <strong>Check-Out {{ selectedLog.records.length - i }}:</strong>
                   {{ rec.check_out }}
                   <img src="../../assets/Icons/clock-out.svg" width="12" style="margin-left: 5px;" />
                 </p>

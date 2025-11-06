@@ -500,7 +500,7 @@ export default class LoginService {
         'Password Reset OTP',
         `Your OTP is ${otp}`,
         `<p>Your OTP for password reset is <b>${otp}</b>. It will expire in 5 minutes.</p>
-         <a href="https://30.0.0.78:4200/login">Click here to reset your password</a>`
+         <a href="https://localhost:4200/login">Click here to reset your password</a>`
       );
 
       return { status: 200, success: true, message: 'OTP sent successfully' };

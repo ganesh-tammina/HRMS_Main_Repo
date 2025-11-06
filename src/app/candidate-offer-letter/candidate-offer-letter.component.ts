@@ -6,13 +6,14 @@ import { CandidateService } from '../services/pre-onboarding.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-candidate-offer-letter',
   templateUrl: './candidate-offer-letter.component.html',
   styleUrls: ['./candidate-offer-letter.component.scss'],
   standalone: true,
-  imports: [HeaderComponent, CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class CandidateOfferLetterComponent implements OnInit {
   candidate: any = {};
@@ -73,7 +74,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.acceptDisabled = true;
 
     try {
-      const url = `https://30.0.0.78:3562/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.candidate_id}/status`;
       const response = await this.http.put(url, { status: 'accepted' }).toPromise();
       console.log('✅ Accept response:', response);
 
@@ -101,7 +102,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.rejectDisabled = true;
 
     try {
-      const url = `https://30.0.0.78:3562/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.candidate_id}/status`;
       const response = await this.http.put(url, { status: 'rejected' }).toPromise();
       console.log('✅ Reject response:', response);
 

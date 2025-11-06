@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "test_the_frontend": "concurrently \"ng serve\" \"npm start --prefix ./server/HRMS_Server\""
+    "test_the_frontend": "concurrently \"ng serve\" \"npm start --prefix ./HRMS_Server\"",
+    "fe": "startup.bat"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +33,8 @@
     "ionicons": "^7.0.0",
     "json-server": "^1.0.0-beta.3",
     "moment": "^2.30.1",
+    "ngx-quill": "^28.0.2",
+    "quill": "^2.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5",

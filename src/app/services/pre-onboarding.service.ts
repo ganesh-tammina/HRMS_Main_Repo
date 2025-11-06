@@ -5,6 +5,7 @@ import { tap, map, switchMap } from 'rxjs/operators';
 
 import { RouteGuardService } from './route-guard/route-service/route-guard.service';
 import { refresh } from 'ionicons/icons';
+import { environment } from 'src/environments/environment';
 
 export interface Candidate {
   id: number;
@@ -136,9 +137,10 @@ export interface EmployeeResponse {
   providedIn: 'root',
 })
 export class CandidateService {
-  private api = 'https://30.0.0.78:3562/';
+  private env = environment;
+  private api = `https://${this.env.apiURL}/api/v1/`;
   private apiUrl = `${this.api}candidates/jd`;
-  private adminUrl = 'https://30.0.0.78:3562/1/admin';
+  private adminUrl = 'https://${this.env.apiURL}/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
@@ -150,7 +152,7 @@ export class CandidateService {
   private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
-  private empUrl = 'https://30.0.0.78:3562/api/v1/employee';
+  private empUrl = this.getEmployees
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -171,9 +173,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {
-    this.loadCandidates();
-  }
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -226,6 +226,8 @@ export class CandidateService {
   getImages(): Observable<any> {
     return this.http.get<any>(this.imagesUrl);
   }
+
+
   getEmpDet(): Observable<EmployeeResponse> {
     const body = {
       access_token: this.routeGuardService.token,
@@ -387,7 +389,7 @@ export class CandidateService {
   }
   createRejectedEmployee(Emp: any): Observable<any> {
     return this.http
-      .post<any>('https://30.0.0.78:3562/employees/rejectedemployees', Emp)
+      .post<any>('https://${environment.apiURL}/employees/rejectedemployees', Emp)
       .pipe(
         tap((newCandidate) => {
           console.log(newCandidate);
@@ -440,4 +442,19 @@ export class CandidateService {
         c.personalDetails.LastName.toLowerCase().includes(lowerQuery)
     );
   }
+  setCurrentEmployee(employee: Employee | null): void {
+    this.currentEmployeeSubject.next(employee);
+
+    if (employee) {
+      // Persist to localStorage for session restore
+      localStorage.setItem(
+        `loggedInEmployee_${employee.employee_id}`,
+        JSON.stringify(employee)
+      );
+      localStorage.setItem('activeEmployeeId', employee.employee_id.toString());
+    } else {
+      localStorage.removeItem('activeEmployeeId');
+    }
+  }
 }
+

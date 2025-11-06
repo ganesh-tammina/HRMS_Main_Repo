@@ -37,6 +37,9 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 @import 'theme/variables.scss';
+
+
+
 html.md {
 --ion-default-font: 'Open Sans';
 }
@@ -86,7 +89,9 @@ ion-list-header, ion-item{
 .d-flex {
   display: flex;
 }
-
+.d-block {
+    display: block !important;
+}
 
 :host(.menu-pane-visible.split-pane-side.menu-enabled) {
     display: flex;
@@ -182,7 +187,7 @@ ion-modal {
         @include scroll-style();
     }
     &.start-preboarding-modal {
-        --height: calc(100vh - 235px);
+        --height: calc(100vh - 200px);
     }
 }
 .custom-popup {
