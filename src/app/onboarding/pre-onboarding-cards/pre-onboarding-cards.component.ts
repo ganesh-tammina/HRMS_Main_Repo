@@ -12,12 +12,12 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   imports: [RouterLink, CommonModule, IonicModule]
 
 })
-export class PreOnboardingCardsComponent  implements OnInit {
+export class PreOnboardingCardsComponent implements OnInit {
 
   constructor(private router: Router) { }
 
   ngOnInit() {
-    
+
   }
   preonboard() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {

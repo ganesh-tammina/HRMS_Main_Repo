@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import {
   CandidateService,
   Candidate,
+  Employee,
 } from 'src/app/services/pre-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +11,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -31,37 +33,52 @@ export class HeaderComponent implements OnInit {
   allEmployees: any[] = [];
   @Input() employee: any;
   fullName: any;
-
+  currentemp: any;
+  currentCandidate$!: Observable<any>;
+  currentEmployee$!: Observable<Employee | null>;
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService,
     private router: Router,
     private navCtrl: NavController   // ✅ add this
+
   ) { }
 
   ngOnInit() {
+
+    // this.currentEmployee$ = this.candidateService.currentEmployee$;
+
+    // this.currentEmployee$.subscribe((emp: any) => {
+    //   if (Array.isArray(emp) && emp.length > 0) {
+    //     this.currentemp = emp[0]; // ✅ pick first employee object
+    //   } else {
+    //     this.currentemp = emp; // if it's already a single object
+    //   }
+
+    //   console.log('Current Employee:', this.currentemp);
+    // });
+
+
     if (this.routeGuardService.employeeID) {
       this.candidateService.getEmpDet().subscribe({
         next: (response: any) => {
           this.allEmployees = response.data || [];
-          this.one = response.data[0];
-          this.fullName = this.one[0].full_name;
-          console.log(this.one);
+          if (this.allEmployees.length > 0) {
+            this.one = this.allEmployees[0];
+            this.fullName = this.one[0].full_name;
+            console.log(this.fullName);
+          }
         },
         error: (err) => {
           console.error('Error fetching all employees:', err);
         },
       });
       // Subscribe to current candidate observable
-      this.candidateService.currentCandidate$.subscribe((user) => {
-        this.currentCandidate = user;
-      });
+
 
       // Fallback: if page refreshed
-      if (!this.currentCandidate) {
-        this.currentCandidate = this.candidateService.getCurrentCandidate();
-      }
+
     }
   }
 

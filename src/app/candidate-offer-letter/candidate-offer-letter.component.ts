@@ -74,7 +74,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.acceptDisabled = true;
 
     try {
-      const url = `https://${environment.apiURL}:3562/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.candidate_id}/status`;
       const response = await this.http.put(url, { status: 'accepted' }).toPromise();
       console.log('✅ Accept response:', response);
 
@@ -102,7 +102,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.rejectDisabled = true;
 
     try {
-      const url = `https://${environment.apiURL}:3562/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.candidate_id}/status`;
       const response = await this.http.put(url, { status: 'rejected' }).toPromise();
       console.log('✅ Reject response:', response);
 

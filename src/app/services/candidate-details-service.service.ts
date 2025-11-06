@@ -39,10 +39,10 @@ export interface SalaryStructure {
   providedIn: 'root'
 })
 export class CandidateDetailsService {
-    private env = environment;
-  private baseUrl = `https://${this.env.apiURL}:3562/candidates`;
-  private offerUrl = 'https://localhost:3562/offer-details';
-  private packageUrl = 'https://localhost:3562/salary-structure';
+  private env = environment;
+  private baseUrl = `https://${this.env.apiURL}/candidates`;
+  private offerUrl = `https://${this.env.apiURL}/offer-details`;
+  private packageUrl = `https://${this.env.apiURL}/salary-structure`;
 
   constructor(private http: HttpClient) { }
 

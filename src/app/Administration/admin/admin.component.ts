@@ -103,7 +103,7 @@ export class AdminComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', this.EmployeeselectedFile);
     this.http
-      .post(`https://${environment.apiURL}:3562/existingemployees`, formData)
+      .post(`https://${environment.apiURL}/existingemployees`, formData)
       .subscribe({
         next: (res) => {
           console.log(res);
@@ -115,7 +115,7 @@ export class AdminComponent implements OnInit {
         },
       });
     this.http
-      .post(`https://${environment.apiURL}:3562/existingemployees`, formData)
+      .post(`https://${environment.apiURL}/existingemployees`, formData)
       .subscribe(
         (res: any) => console.log(res),
         (err: any) => console.error(err)
@@ -130,7 +130,7 @@ export class AdminComponent implements OnInit {
 
     this.http
       .post(
-        `https://${environment.apiURL}:3562/holidays/public_holidays`,
+        `https://${environment.apiURL}/holidays/public_holidays`,
         formData
       )
       .subscribe({
@@ -144,7 +144,7 @@ export class AdminComponent implements OnInit {
         },
       });
     this.http
-      .post(`https://${environment.apiURL}:3562/upload-holidays`, formData)
+      .post(`https://${environment.apiURL}/upload-holidays`, formData)
       .subscribe(
         (res: any) => console.log(res),
         (err: any) => console.error(err)

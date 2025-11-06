@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class _LoginService {
-  private api: string = `https://${environment.apiURL}:3562/api/v1/`;
+  private api: string = `https://${environment.apiURL}/api/v1/`;
   constructor(private http: HttpClient) { }
 
   public checkEmail(body: any) {
