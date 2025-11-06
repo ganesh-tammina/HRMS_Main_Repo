@@ -17,7 +17,6 @@ const upload = multer({ dest: 'uploads/' });
 
 const router = Router();
 
-
 router.post('/v1/send-email', MailController.mailsender);
 
 router.post('/v1/check-email', checkWhoAmI, EmployeeLoginController.EmailCheck);
@@ -31,7 +30,12 @@ router.post(
   checkIfIamEmployeeAtAll,
   EmployeeLoginController.Login
 );
-
+router.post(
+  '/v1/forgot-password-email',
+  checkWhoAmI,
+  EmployeeLoginController.ForgotEmailCheck
+);
+router.post('/v1/forgot-password', EmployeeLoginController.forgot);
 router.post(
   '/v1/parse-excel',
   upload.single('file'),
@@ -60,10 +64,7 @@ router.post(
   '/v1/permanent-address',
   EmployeeController.insertEmployeePermanentAddress
 );
-router.post(
-  '/v1/bulk-data-entry',
-  EmployeeController.insertBulkEmployees
-);
+router.post('/v1/bulk-data-entry', EmployeeController.insertBulkEmployees);
 router.post(
   '/v1/employee',
   verifyAccessToken,
@@ -97,14 +98,13 @@ router.post(
   '/v1/add-leaves-all',
   // verifyAccessToken,
   LeaveController.addLeaves
-)
+);
 
 router.post(
   '/v1/get-leaves-requests',
   //verifyAccessToken
   LeaveController.getLeaveRequest
-)
-
+);
 
 router.post(
   '/v1/get-leaves-balance',
@@ -113,6 +113,6 @@ router.post(
 );
 
 // test apis here 🤡
-router.post('/v1/test-api', EmployeeLoginController.getRole)
+router.post('/v1/test-api', EmployeeLoginController.getRole);
 // add test apis here only
 export default router;

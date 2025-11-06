@@ -29,10 +29,10 @@ export function checkIfIamValidEmployee(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.cookies?.employee_email || !req.cookies?.employee_id) {
+  if (!req.body?.email) {
     res.json('Nope, invalid request.').status(500);
   } else {
-    req.body.email = req.cookies?.employee_email;
+    req.body.email = req.body?.email;
     next();
   }
 }
@@ -93,13 +93,13 @@ export const verifyAccessToken = async (
     const jwt_check = await LoginService.isTokenActive(token);
     if (jwt_check) {
       (req as any).employee = decoded;
-      (req.body as any).id = decoded.employee_id
+      (req.body as any).id = decoded.employee_id;
 
       next();
     } else {
       (req as any).employee = decoded;
-      (req.body as any).id = decoded.employee_id
-      next()
+      (req.body as any).id = decoded.employee_id;
+      next();
     }
   } catch (error) {
     return res
