@@ -138,9 +138,9 @@ export interface EmployeeResponse {
 })
 export class CandidateService {
   private env = environment;
-  private api = `https://${this.env.apiURL}:3562/api/v1/`;
+  private api = `https://${this.env.apiURL}/api/v1/`;
   private apiUrl = `${this.api}candidates/jd`;
-  private adminUrl = 'https://localhost:3562/1/admin';
+  private adminUrl = 'https://${this.env.apiURL}/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
@@ -149,7 +149,7 @@ export class CandidateService {
   private newpassword = `${this.api}add-pwd`;
   private updatepassword = `${this.api}change-new-pwd`;
   private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = 'https://localhost:3562/offerstatus/status';
+  private offerStatusapi = 'https://${this.env.apiURL}/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
   private empUrl = this.getEmployees
@@ -390,7 +390,7 @@ export class CandidateService {
   }
   createRejectedEmployee(Emp: any): Observable<any> {
     return this.http
-      .post<any>('https://localhost:3562/employees/rejectedemployees', Emp)
+      .post<any>('https://${environment.apiURL}/employees/rejectedemployees', Emp)
       .pipe(
         tap((newCandidate) => {
           console.log(newCandidate);

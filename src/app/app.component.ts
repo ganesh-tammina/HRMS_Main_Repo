@@ -32,6 +32,7 @@ export class AppComponent implements OnInit {
   CurrentuserType: string = ''
   userType: string | null = null;
   one: any;
+  isAdmin: boolean = false
   full_name: string = '';
   currentTime: string = '';
   allEmployees: any[] = [];
@@ -80,21 +81,12 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     this.currentUrl = this.router.url;
-    if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
-      this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
-          this.one = response.data[0];
-          console.log(this.one);
-          this.candidateService.setCurrentEmployee(this.one);
-        },
-        error: (err) => {
-          console.error('Error fetching all employees:', err);
-        },
-      });
-    } else {
-      this.router.navigate(['/login']);
+
+    if (this.routeGaurdService.userRole) {
+      this.routeGaurdService.userRole === 'admin' ? this.isAdmin = true : this.isAdmin = false;
     }
+   
+
   }
   // preonboard() {
   //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -109,8 +101,8 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    // this.candidateService.logout();
-    this.candidateService.logout();
-    this.router.navigate(['/login']);
+    localStorage.clear();
+    sessionStorage.clear();
+    this.router.navigate(['/login'])
   }
 }
