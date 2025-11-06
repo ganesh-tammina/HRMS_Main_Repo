@@ -47,26 +47,28 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
 
-    this.currentEmployee$ = this.candidateService.currentEmployee$;
+    // this.currentEmployee$ = this.candidateService.currentEmployee$;
 
-    this.currentEmployee$.subscribe((emp: any) => {
-      if (Array.isArray(emp) && emp.length > 0) {
-        this.currentemp = emp[0]; // ✅ pick first employee object
-      } else {
-        this.currentemp = emp; // if it's already a single object
-      }
+    // this.currentEmployee$.subscribe((emp: any) => {
+    //   if (Array.isArray(emp) && emp.length > 0) {
+    //     this.currentemp = emp[0]; // ✅ pick first employee object
+    //   } else {
+    //     this.currentemp = emp; // if it's already a single object
+    //   }
 
-      console.log('Current Employee:', this.currentemp);
-    });
+    //   console.log('Current Employee:', this.currentemp);
+    // });
 
 
     if (this.routeGuardService.employeeID) {
       this.candidateService.getEmpDet().subscribe({
         next: (response: any) => {
           this.allEmployees = response.data || [];
-          this.one = response.data[0];
-          this.fullName = this.one[0].full_name;
-          console.log(this.one);
+          if (this.allEmployees.length > 0) {
+            this.one = this.allEmployees[0];
+            this.fullName = this.one[0].full_name;
+            console.log(this.fullName);
+          }
         },
         error: (err) => {
           console.error('Error fetching all employees:', err);
