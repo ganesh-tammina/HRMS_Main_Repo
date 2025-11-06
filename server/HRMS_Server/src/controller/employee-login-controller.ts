@@ -68,4 +68,28 @@ export default class EmployeeLoginController {
       });
     }
   }
+
+  public static async ForgotPwd(req: Request, res: Response) {
+    try {
+      await LoginService.forgotPwd(req, res);
+    } catch (error: any) {
+      console.error('Error in ForgotPwd route:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error in ForgotPwd route.',
+      });
+    }
+  }
+
+  public static async ChangePwd(req: Request, res: Response) {
+    try {
+      await LoginService.changePwd(req, res);
+    } catch (error: any) {
+      console.error('Error in ChangePwd route:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error in ChangePwd route.',
+      });
+    }
+  }
 }

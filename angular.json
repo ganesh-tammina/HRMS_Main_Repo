@@ -73,8 +73,8 @@
             "ssl": true,
             "sslKey": "ssl/privkey.pem",
             "sslCert": "ssl/fullchain.pem",
-            "port": 9292,
-            "host": "30.0.0.78"
+            "port": 4200,
+            "host": "localhost"
           },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
@@ -85,7 +85,7 @@
               "buildTarget": "app:build:development"
             },
             "ci": {
-              "progress": false
+              "buildTarget": "app:build:ci"
             }
           },
           "defaultConfiguration": "development"

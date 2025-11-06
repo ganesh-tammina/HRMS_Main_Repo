@@ -197,32 +197,28 @@ export class AttendanceLogComponent implements OnInit {
    */
   /*******  bf79ddf5-f32a-460a-b35a-d7bbc24975f6  *******/
   ngOnInit() {
-
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
     console.log('Current Employee in AttendanceLogComponent:', this.employee);
-
-    this.employee = this.candidateService.getCurrentCandidate() || undefined;
-    console.log('Current Employee in AttendanceLogComponent:', this.employee);
-
-    if (!this.employee) return;
 
     this.attendanceService.record$.subscribe(record => {
       if (record && record.employeeId === this.employee?.id) {
         this.record = record;
         this.updateTimes();
         this.loadHistory();
+      } else if (!record) {
+        // Clear data when no record (user logged out)
+        this.record = undefined;
+        this.history = [];
+        this.attendanceLogss = [];
       }
     });
 
+    // Only get record for current employee
     this.attendanceService.getRecord(this.employee.id);
-
-
 
     this.generateDays();
     this.attendanceRecord();
-
-
   }
   attendanceRecord() {
     if (!this.employee) return;

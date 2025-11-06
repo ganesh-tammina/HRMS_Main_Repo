@@ -72,6 +72,11 @@ router.post(
 );
 router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);
 
+router.post('/v1/forgot-pwd', EmployeeLoginController.ForgotPwd);
+router.post('/v1/add-pwd', EmployeeLoginController.PasswordGeneratorHey);
+router.post('/v1/change-pwd', EmployeeLoginController.ChangePwd);
+router.post('/v1/change-new-pwd', EmployeeLoginController.PasswordGeneratorHey);
+
 router.post(
   '/v1/leave-balance',
   // verifyAccessToken,
@@ -100,6 +105,16 @@ router.post(
 )
 
 
+
+// Admin route
+router.get('/1/admin', (req, res) => {
+  res.status(200).json({
+    id: 1,
+    name: 'Admin User',
+    email: 'admin@company.com',
+    role: 'admin'
+  });
+});
 
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole)

@@ -17,6 +17,7 @@ import rolecrud from './routes/role-crud-routes';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import LoginService from './services/employee-login-service'; 
 
 dotenv.config();
 
@@ -62,22 +63,40 @@ class Server {
     );
   }
 
-  private routes(): void {
-    this.app.use('/api', index);
-    this.app.use('/api', AttendanceRouter);
-    this.app.use('/api', rolecrud);
-    this.app.use('/', offerDetails);
-    this.app.use('/', mailRoutes);
-    this.app.use('/', salaryStructureRoutes);
-    this.app.use('/candidates', candidateRoutes);
-    
-     this.app.get('/health', async (req, res) => {
-      res.json('Server is running');
+ private routes(): void {
+  // ✅ Health check
+  this.app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: true,
+      message: '✅ HRMS Server is healthy and running',
+      time: new Date().toISOString(),
     });
-    this.app.use(notFound);
-  }
+  });
 
-  public start(): void {
+  // ✅ API root route
+  this.app.get('/api', (req, res) => {
+    res.status(200).json({
+      status: true,
+      message: '✅ HRMS API is running successfully!',
+      time: new Date().toISOString(),
+    });
+  });
+
+  // ✅ Attach route modules
+  this.app.use('/api', index);
+  this.app.use('/api', AttendanceRouter);
+  this.app.use('/api', rolecrud);
+  this.app.use('/', offerDetails);
+  this.app.use('/', mailRoutes);
+  this.app.use('/', salaryStructureRoutes);
+  this.app.use('/candidates', candidateRoutes);
+
+  // ✅ NotFound middleware MUST be last
+  this.app.use(notFound);
+}
+
+
+    public start(): void {
     const sslOptions = {
       key: fs.readFileSync(path.join(__dirname, '../../../ssl/privkey.pem')),
       cert: fs.readFileSync(path.join(__dirname, '../../../ssl/fullchain.pem')),
@@ -98,6 +117,14 @@ class Server {
       }
 
       console.log(`Server running at https://30.0.0.78:${this.port}/api`);
+
+      // 🔥 Auto-call your role service when server starts
+      try {
+        const result = await LoginService.getEmployeeRoles(594);
+        console.log('✅ Startup Role Check:', result);
+      } catch (err: any) {
+        console.error('❌ Error in startup role check:', err.message);
+      }
     });
   }
 }
