@@ -4,177 +4,233 @@
 
 <ion-content fullscreen class="leaves-block">
 
-<div class="request-btn">
-  <ion-button (click)="openLeaveModal()">
-    Request Leave
-  </ion-button>
-</div>
-
-<ion-modal [isOpen]="IsOpenleavePopup" (didDismiss)="closeleavePopup()" class="custom-popup">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Apply Leave</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeleavePopup()">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="ion-padding">
-      <form class="form-block" [formGroup]="leaveForm">
-        <div>
-          <label>Leave Type</label>
-          <ion-select
-            formControlName="leave_type"
-            placeholder="Select Leave Type">
-            <ion-select-option value="CASUAL">Casual Leaves</ion-select-option>
-            <ion-select-option value="MARRIAGE">Marriage Leaves</ion-select-option>
-            <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
-            <ion-select-option value="COMP_OFF">Comp-Offs</ion-select-option>
-            <ion-select-option value="UNPAID">Unpaid Leaves</ion-select-option>
-          </ion-select>
-        </div>
-
-        <div>
-          <label>From</label>
-          <ion-input type="date" formControlName="start_date"></ion-input>
-        </div>
-
-        <div>
-          <label>To</label>
-          <ion-input type="date" formControlName="end_date"></ion-input>
-        </div>
-
-        <!-- Error Message for Date Validation -->
-        <ion-item *ngIf="leaveForm.get('end_date')?.hasError('dateError')" lines="none">
-          <ion-label color="danger">End date cannot be before start date.</ion-label>
-        </ion-item>
-
-        <div *ngIf="total_days > 0" class="totalDays">
-          <ion-text color="medium">Total Days: {{ total_days }}</ion-text>
-        </div>
-
-        <div>
-          <label>Leave Reason</label>
-          <ion-textarea formControlName="remarks"></ion-textarea>
-        </div>
-
-        <div>
-          <label>Notify</label>
-          <ion-input formControlName="notify" placeholder="Search employee"></ion-input>
-        </div>
-
-        <ion-button expand="block" (click)="submitRequest()" 
-          [disabled]="leaveForm.invalid || total_days <= 0">
-          Request Leave
-        </ion-button>
-      </form>
-    </ion-content>
-  </ng-template>
-</ion-modal>
-
-<ion-grid class="card-tabs-block" *ngIf="leaveData">
-
-  <p class="card-header">Leave Balances</p>
-
-  <ion-row>
-
-    <ion-col size="2" class="card-block">
-      <p class="card-header">Casual Leaves</p>
-      <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
-      <p class="number">{{ leaveData?.casual_leave_taken || 0 }}/{{ leaveData?.casual_leave_allocated || 0 }}</p>
-      <p class="label">days available</p>
-    </ion-col>
-
-    <ion-col size="2" class="card-block">
-      <p class="card-header">Marriage Leaves</p>
-      <ion-img src="../../../assets/leave-icons/ML.svg"></ion-img>
-      <p class="number">{{ leaveData?.marriage_leave_taken || 0 }}/{{ leaveData?.marriage_leave_allocated || 0 }}</p>
-      <p class="label">days available</p>
-    </ion-col>
-
-    <ion-col size="2" class="card-block">
-      <p class="card-header">Sick Leaves</p>
-      <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
-      <p class="number">{{ leaveData?.medical_leave_taken || 0 }}/{{ leaveData?.medical_leave_allocated || 0 }}</p>
-      <p class="label">days available</p>
-    </ion-col>
-
-    <ion-col size="2" class="card-block">
-      <p class="card-header">Comp Offs</p>
-      <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
-      <p class="number">{{ leaveData?.comp_offs_taken || 0 }}/{{ leaveData?.comp_offs_allocated || 0 }}</p>
-      <p class="label">days available</p>
-    </ion-col>
-
-    <ion-col size="2" class="card-block">
-      <p class="card-header">Unpaid</p>
-      <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
-      <p class="number">{{ leaveData?.paid_leave_taken || 0 }}/&infin;</p>
-      <p class="label">days available</p>
-    </ion-col>
-
-  </ion-row>
-</ion-grid>
-
-<!-- Leave History Table -->
-<ion-grid class="card-tabs-block table-block">
-
-  <div class="row-space-between">
-    <div class="row-left">
-      <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
-      <p class="header-title">Leave History</p>
-    </div>
-    <p>Total: </p>
+  <!-- Request Leave Button -->
+  <div class="request-btn">
+    <ion-button (click)="openLeaveModal()">
+      Request Leave
+    </ion-button>
   </div>
 
-  <!-- Check if there are leaves -->
-  <ng-container *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
-    <ion-row class="table-header">
-      <ion-col size="2"><p>Period</p></ion-col>
-      <ion-col size="2"><p>Leave Type</p></ion-col>
-      <ion-col size="1"><p>Days</p></ion-col>
-      <ion-col size="2"><p>Reason</p></ion-col>
-      <ion-col size="2"><p>Submitted On</p></ion-col>
-      <ion-col size="2"><p>Status</p></ion-col>
-      <ion-col size="1"><p>Action</p></ion-col>
-    </ion-row>
+  <!-- Apply Leave Modal -->
+  <ion-modal [isOpen]="IsOpenleavePopup" (didDismiss)="closeleavePopup()" class="custom-popup">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Apply Leave</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeleavePopup()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
-    <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
-      <ion-col size="2"><p>{{ leave.start_date | date:'MMM d ' }} - {{ leave.end_date | date:'MMM d' }}</p></ion-col>
-      <ion-col size="2"><p>{{ leave.leave_type }}</p></ion-col>
-      <ion-col size="1"><p>{{ leave.total_days }}</p></ion-col>
-      <ion-col size="2"><p>{{ leave.remarks }}</p></ion-col>
-      <ion-col size="2"><p>{{ leave.created_at | date:'dd MMM y' }}</p></ion-col>
-      <!-- <ion-col size="2"><p>{{ leave.notify || 'HR' }}</p></ion-col> -->
-      <ion-col size="2">
-        <p [ngClass]="{
-          'pending': leave.status === 'PENDING',
-          'approved': leave.status === 'APPROVED',
-          'rejected': leave.status === 'REJECTED'
-        }">{{ leave.status }}</p>
+      <ion-content class="ion-padding">
+        <form class="form-block" [formGroup]="leaveForm">
+          <div>
+            <label>Leave Type</label>
+            <ion-select formControlName="leave_type" placeholder="Select Leave Type">
+              <ion-select-option value="CASUAL">Casual Leaves</ion-select-option>
+              <ion-select-option value="MARRIAGE">Marriage Leaves</ion-select-option>
+              <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
+              <ion-select-option value="COMP_OFF">Comp-Offs</ion-select-option>
+              <ion-select-option value="UNPAID">Unpaid Leaves</ion-select-option>
+            </ion-select>
+          </div>
+
+          <div>
+            <label>From</label>
+            <ion-input type="date" formControlName="start_date"></ion-input>
+          </div>
+
+          <div>
+            <label>To</label>
+            <ion-input type="date" formControlName="end_date"></ion-input>
+          </div>
+
+          <!-- Error Message for Date Validation -->
+          <ion-item *ngIf="leaveForm.get('end_date')?.hasError('dateError')" lines="none">
+            <ion-label color="danger">End date cannot be before start date.</ion-label>
+          </ion-item>
+
+          <div *ngIf="total_days > 0" class="totalDays">
+            <ion-text color="medium">Total Days: {{ total_days }}</ion-text>
+          </div>
+
+          <div>
+            <label>Leave Reason</label>
+            <ion-textarea formControlName="remarks"></ion-textarea>
+          </div>
+
+          <div>
+            <label>Notify</label>
+            <ion-input formControlName="notify" placeholder="Search employee"></ion-input>
+          </div>
+
+          <ion-button expand="block" (click)="submitRequest()" [disabled]="leaveForm.invalid || total_days <= 0">
+            Request Leave
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Leave Balance Cards -->
+  <ion-grid class="card-tabs-block" *ngIf="leaveData">
+    <p class="card-header">Leave Balances</p>
+    <ion-row>
+      <ion-col size="2" class="card-block">
+        <p class="card-header">Casual Leaves</p>
+        <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
+        <p class="number">{{ leaveData?.casual_leave_taken || 0 }}/{{ leaveData?.casual_leave_allocated || 0 }}</p>
+        <p class="label">days available</p>
       </ion-col>
-      <ion-col size="1" *ngIf="leave.status === 'PENDING'">
-        <ion-button fill="clear" color="danger" (click)="cancelLeave(leave.id)">
-          <ion-icon name="close-circle-outline"></ion-icon>
-        </ion-button>
+
+      <ion-col size="2" class="card-block">
+        <p class="card-header">Marriage Leaves</p>
+        <ion-img src="../../../assets/leave-icons/ML.svg"></ion-img>
+        <p class="number">{{ leaveData?.marriage_leave_taken || 0 }}/{{ leaveData?.marriage_leave_allocated || 0 }}</p>
+        <p class="label">days available</p>
+      </ion-col>
+
+      <ion-col size="2" class="card-block">
+        <p class="card-header">Sick Leaves</p>
+        <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
+        <p class="number">{{ leaveData?.medical_leave_taken || 0 }}/{{ leaveData?.medical_leave_allocated || 0 }}</p>
+        <p class="label">days available</p>
+      </ion-col>
+
+      <ion-col size="2" class="card-block">
+        <p class="card-header">Comp Offs</p>
+        <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
+        <p class="number">{{ leaveData?.comp_offs_taken || 0 }}/{{ leaveData?.comp_offs_allocated || 0 }}</p>
+        <p class="label">days available</p>
+      </ion-col>
+
+      <ion-col size="2" class="card-block">
+        <p class="card-header">Unpaid</p>
+        <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
+        <p class="number">{{ leaveData?.paid_leave_taken || 0 }}/&infin;</p>
+        <p class="label">days available</p>
       </ion-col>
     </ion-row>
-  </ng-container>
+  </ion-grid>
 
-  <!-- No Leaves Inside Same Grid -->
-  <ng-template #noLeavesInside>
-    <ion-row class="no-leaves-row">
-      <ion-col size="12" class="ion-text-center">
-        <p class="no-data-text">No leave requests found</p>
-      </ion-col>
-    </ion-row>
-  </ng-template>
+  <!-- Leave History Table -->
+  <ion-grid class="card-tabs-block table-block">
+    <div class="row-space-between">
+      <div class="row-left">
+        <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
+        <p class="header-title">Leave History</p>
+      </div>
+      <p>Total: {{ leaveRequests?.length || 0 }}</p>
+    </div>
 
-</ion-grid>
+    <!-- Check if there are leaves -->
+    <ng-container *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
+      <ion-row class="table-header">
+        <ion-col size="2"><p>Period</p></ion-col>
+        <ion-col size="2"><p>Leave Type</p></ion-col>
+        <ion-col size="1"><p>Days</p></ion-col>
+        <ion-col size="2"><p>Reason</p></ion-col>
+        <ion-col size="2"><p>Submitted On</p></ion-col>
+        <ion-col size="2"><p>Status</p></ion-col>
+        <ion-col size="1"><p>Action</p></ion-col>
+      </ion-row>
 
+      <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
+        <ion-col size="2">
+          <p>{{ leave.start_date | date:'MMM d' }} - {{ leave.end_date | date:'MMM d' }}</p>
+        </ion-col>
+        <ion-col size="2"><p>{{ leave.leave_type }}</p></ion-col>
+        <ion-col size="1"><p>{{ leave.total_days }}</p></ion-col>
+        <ion-col size="2"><p>{{ leave.remarks }}</p></ion-col>
+        <ion-col size="2"><p>{{ leave.created_at | date:'dd MMM y' }}</p></ion-col>
+        <ion-col size="2">
+          <p [ngClass]="{
+              'pending': leave.status === 'PENDING',
+              'approved': leave.status === 'APPROVED',
+              'rejected': leave.status === 'REJECTED'
+            }">
+            {{ leave.status }}
+          </p>
+        </ion-col>
+
+        <!-- Action Buttons -->
+        <ion-col size="1">
+          <ng-container *ngIf="leave.status === 'PENDING'; else viewTemplate">
+            <ion-button fill="clear" color="danger" (click)="openPopup(leave)">
+              <ion-icon name="close-circle-outline"></ion-icon>
+              Cancel
+            </ion-button>
+          </ng-container>
+          <ng-template #viewTemplate>
+            <ion-button fill="clear" color="primary" (click)="openPopup(leave)">
+              <ion-icon name="eye-outline"></ion-icon>
+              View
+            </ion-button>
+          </ng-template>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+
+    <!-- No Leaves -->
+    <ng-template #noLeavesInside>
+      <ion-row class="no-leaves-row">
+        <ion-col size="12" class="ion-text-center">
+          <p class="no-data-text">No leave requests found</p>
+        </ion-col>
+      </ion-row>
+    </ng-template>
+  </ion-grid>
+
+  <!-- Leave View/Cancel Popup -->
+  <ion-modal [isOpen]="isPopupOpen" (didDismiss)="closePopup()" class="custom-popup">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>
+            {{ selectedLeave?.status === 'PENDING' ? 'Cancel Leave' : 'Leave Details' }}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closePopup()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <!-- Cancel Leave -->
+        <ng-container *ngIf="selectedLeave?.status === 'PENDING'; else viewContent">
+          <p>Are you sure you want to cancel this leave request?</p>
+          <ion-button expand="block" color="danger" (click)="confirmCancel()">Confirm Cancel</ion-button>
+        </ng-container>
+
+        <!-- View Leave Details -->
+        <ng-template #viewContent>
+          <h3>Leave Details</h3>
+          <ion-list>
+            <ion-item>
+              <ion-label><strong>Type:</strong></ion-label>
+              <ion-text>{{ selectedLeave?.leave_type }}</ion-text>
+            </ion-item>
+            <ion-item>
+              <ion-label><strong>Period:</strong></ion-label>
+              <ion-text>{{ selectedLeave?.start_date | date:'MMM d' }} - {{ selectedLeave?.end_date | date:'MMM d' }}</ion-text>
+            </ion-item>
+            <ion-item>
+              <ion-label><strong>Reason:</strong></ion-label>
+              <ion-text>{{ selectedLeave?.remarks }}</ion-text>
+            </ion-item>
+            <ion-item>
+              <ion-label><strong>Status:</strong></ion-label>
+              <ion-text>{{ selectedLeave?.status }}</ion-text>
+            </ion-item>
+          </ion-list>
+        </ng-template>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>

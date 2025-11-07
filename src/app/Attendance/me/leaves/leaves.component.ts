@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
 import { CandidateService } from '../../../services/pre-onboarding.service';
@@ -7,7 +7,6 @@ import { LeaveService } from '../../../services/leave.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
-import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-leaves',
@@ -25,7 +24,9 @@ import { ToastController } from '@ionic/angular';
 export class LeavesComponent implements OnInit {
 
   currentCandidate: any;
-  IsOpenleavePopup = false;
+  IsOpenleavePopup = false; // for "Apply Leave" form modal
+  isPopupOpen = false;      // for "Cancel/View" popup
+  selectedLeave: any = null;
 
   leaveData: any = {
     casual_leave_taken: 0,
@@ -50,7 +51,7 @@ export class LeavesComponent implements OnInit {
     private fb: FormBuilder,
     private routerGaurd: RouteGuardService,
     private toastController: ToastController
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadLeaveRequests();
@@ -96,7 +97,6 @@ export class LeavesComponent implements OnInit {
     toast.present();
   }
 
-  // Custom validator for date range (start_date must be before or equal to end_date)
   dateValidator(control: any) {
     const start = this.leaveForm?.get('start_date')?.value;
     const end = control.value;
@@ -104,12 +104,10 @@ export class LeavesComponent implements OnInit {
     if (start && end) {
       const startDate = new Date(start);
       const endDate = new Date(end);
-
       if (endDate < startDate) {
         return { dateError: 'End date cannot be before start date.' };
       }
     }
-
     return null;
   }
 
@@ -186,7 +184,10 @@ export class LeavesComponent implements OnInit {
       }
     });
   }
-  
+
+  // -----------------------------
+  // Modal Controls
+  // -----------------------------
 
   openLeaveModal() {
     this.IsOpenleavePopup = true;
@@ -194,5 +195,26 @@ export class LeavesComponent implements OnInit {
 
   closeleavePopup() {
     this.IsOpenleavePopup = false;
+  }
+
+  // -----------------------------
+  // Popup Controls (Cancel/View)
+  // -----------------------------
+
+  openPopup(leave: any) {
+    this.selectedLeave = leave;
+    this.isPopupOpen = true;
+  }
+
+  closePopup() {
+    this.isPopupOpen = false;
+    this.selectedLeave = null;
+  }
+
+  confirmCancel() {
+    if (this.selectedLeave?.id) {
+      this.cancelLeave(this.selectedLeave.id);
+    }
+    this.closePopup();
   }
 }
