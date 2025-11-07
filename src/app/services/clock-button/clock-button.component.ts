@@ -67,31 +67,48 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.currentUrl = this.router.url;
     console.log('Current Page URL:', this.currentUrl);
+    
+    // Check if user is logged in
     if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
-      this.candidateService.getEmpDet().subscribe((user: any) => {
-        this.currentCandidate = user || undefined;
-        console.log('Current Candidate in ClockButton:', this.currentCandidate);
+      this.candidateService.getEmpDet().subscribe({
+        next: (user: any) => {
+          this.currentCandidate = user || undefined;
+          console.log('Current Candidate in ClockButton:', this.currentCandidate);
 
-        if (this.currentCandidate) {
-          const empId = this.currentCandidate.data[0][0].employee_id;
-          
-          // Get current attendance status from server
-          this.checkAttendanceStatus(empId);
-          
-          // Subscribe to attendance updates
-          this.attendanceService.record$.subscribe((record) => {
-            if (record && record.employeeId === empId) {
-              this.record = record;
-              this.statusChanged.emit(record);
-            }
-          });
+          if (this.currentCandidate && this.currentCandidate.data && this.currentCandidate.data[0]) {
+            const empId = this.currentCandidate.data[0][0].employee_id;
+            
+            // Always check server for current attendance status on page load
+            this.checkAttendanceStatus(empId);
+            
+            // Subscribe to attendance updates
+            this.attendanceService.record$.subscribe((record) => {
+              if (record && record.employeeId === empId) {
+                this.record = record;
+                this.statusChanged.emit(record);
+              }
+            });
+          }
+
+          // Timer for time since login
+          this.intervalSub = interval(1000).subscribe(() =>
+            this.updateTimeSinceLogin()
+          );
+        },
+        error: (err) => {
+          console.error('Error getting employee details:', err);
+          // Set default state if can't get employee data
+          this.record = {
+            employeeId: 0,
+            isClockedIn: false,
+            accumulatedMs: 0,
+            history: [],
+            dailyAccumulatedMs: {}
+          };
         }
-
-        // Timer for time since login
-        this.intervalSub = interval(1000).subscribe(() =>
-          this.updateTimeSinceLogin()
-        );
       });
+    } else {
+      console.log('No valid tokens found');
     }
   }
 
@@ -184,6 +201,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   private checkAttendanceStatus(empId: number) {
+    console.log('Checking attendance status for employee:', empId);
+    
     // Get today's attendance from server
     const today = new Date().toISOString().split('T')[0];
     const body = {
@@ -198,12 +217,15 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         console.log('Attendance status from server:', response);
         
         // Check if user is currently clocked in based on server data
-        const isClockedIn = this.checkIfClockedIn(response.data);
+        const isClockedIn = this.checkIfClockedIn(response.data || []);
+        const clockInTime = isClockedIn ? this.getLastClockInTime(response.data || []) : undefined;
+        
+        console.log('Is clocked in:', isClockedIn, 'Clock in time:', clockInTime);
         
         this.record = {
           employeeId: empId,
           isClockedIn: isClockedIn,
-          clockInTime: isClockedIn ? this.getLastClockInTime(response.data) : undefined,
+          clockInTime: clockInTime,
           accumulatedMs: 0,
           history: [],
           dailyAccumulatedMs: {}
@@ -213,7 +235,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error getting attendance status:', err);
-        // Default to not clocked in
+        // Default to not clocked in on error
         this.record = {
           employeeId: empId,
           isClockedIn: false,
@@ -221,6 +243,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
           history: [],
           dailyAccumulatedMs: {}
         };
+        this.statusChanged.emit(this.record);
       }
     });
   }
