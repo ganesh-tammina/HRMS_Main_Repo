@@ -14,85 +14,85 @@ export default class Employeeservices implements EmployeesInterface {
     res: Response
   ): Promise<any> {
     const getAllQUery: string = `SELECT 
-    e.employee_id,
-    e.employee_number,
-    e.first_name,
-    e.middle_name,
-    e.last_name,
-    e.full_name,
-    e.work_email,
-    e.gender,
-    e.marital_status,
-    e.blood_group,
-    e.physically_handicapped,
-    e.nationality,
-    e.created_at,
-    e.updated_at,
+e.employee_id,
+e.employee_number,
+e.first_name,
+e.middle_name,
+e.last_name,
+e.full_name,
+e.work_email,
+e.gender,
+e.marital_status,
+e.blood_group,
+e.physically_handicapped,
+e.nationality,
+e.created_at,
+e.updated_at,
 
-    -- Employment Details
-    ed.attendance_number,
-    ed.location,
-    ed.location_country,
-    ed.legal_entity,
-    ed.business_unit,
-    ed.department,
-    ed.sub_department,
-    ed.job_title,
-    ed.secondary_job_title,
-    ed.reporting_to,
-    ed.reporting_manager_employee_number,
-    ed.dotted_line_manager,
-    ed.date_joined,
-    ed.leave_plan,
-    ed.band,
-    ed.pay_grade,
-    ed.time_type,
-    ed.worker_type,
-    ed.shift_policy_name,
-    ed.weekly_off_policy_name,
-    ed.attendance_time_tracking_policy,
-    ed.attendance_capture_scheme,
-    ed.holiday_list_name,
-    ed.expense_policy_name,
-    ed.notice_period,
-    ed.cost_center,
+-- Employment Details
+ed.attendance_number,
+ed.location,
+ed.location_country,
+ed.legal_entity,
+ed.business_unit,
+ed.department,
+ed.sub_department,
+ed.job_title,
+ed.secondary_job_title,
+ed.reporting_to,
+ed.reporting_manager_employee_number,
+ed.dotted_line_manager,
+ed.date_joined,
+ed.leave_plan,
+ed.band,
+ed.pay_grade,
+ed.time_type,
+ed.worker_type,
+ed.shift_policy_name,
+ed.weekly_off_policy_name,
+ed.attendance_time_tracking_policy,
+ed.attendance_capture_scheme,
+ed.holiday_list_name,
+ed.expense_policy_name,
+ed.notice_period,
+ed.cost_center,
 
-    -- Current Address
-    ca.address_line1 AS current_address_line1,
-    ca.address_line2 AS current_address_line2,
-    ca.city AS current_city,
-    ca.state AS current_state,
-    ca.zip AS current_zip,
-    ca.country AS current_country,
+-- Current Address
+ca.address_line1 AS current_address_line1,
+ca.address_line2 AS current_address_line2,
+ca.city AS current_city,
+ca.state AS current_state,
+ca.zip AS current_zip,
+ca.country AS current_country,
 
-    -- Permanent Address
-    pa.address_line1 AS permanent_address_line1,
-    pa.address_line2 AS permanent_address_line2,
-    pa.city AS permanent_city,
-    pa.state AS permanent_state,
-    pa.zip AS permanent_zip,
-    pa.country AS permanent_country,
+-- Permanent Address
+pa.address_line1 AS permanent_address_line1,
+pa.address_line2 AS permanent_address_line2,
+pa.city AS permanent_city,
+pa.state AS permanent_state,
+pa.zip AS permanent_zip,
+pa.country AS permanent_country,
 
-    -- Family Info
-    f.father_name,
-    f.mother_name,
-    f.spouse_name,
-    f.children_names,
+-- Family Info
+f.father_name,
+f.mother_name,
+f.spouse_name,
+f.children_names,
 
-    -- Statutory Info
-    s.pan_number,
-    s.aadhaar_number,
-    s.pf_number,
-    s.uan_number,
+-- Statutory Info
+s.pan_number,
+s.aadhaar_number,
+s.pf_number,
+s.uan_number,
 
-    -- Exit Details
-    ex.employment_status,
-    ex.exit_date,
-    ex.comments,
-    ex.exit_status,
-    ex.termination_type,
-    ex.termination_reason,
-    ex.resignation_note
+-- Exit Details
+ex.employment_status,
+ex.exit_date,
+ex.comments,
+ex.exit_status,
+ex.termination_type,
+ex.termination_reason,
+ex.resignation_note
 
 FROM employees e
 LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
@@ -102,92 +102,92 @@ LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
 
 -- Pivot addresses
 LEFT JOIN addresses ca 
-       ON e.employee_id = ca.employee_id 
-      AND ca.address_type = 'Current'
+  ON e.employee_id = ca.employee_id 
+AND ca.address_type = 'Current'
 LEFT JOIN addresses pa 
-       ON e.employee_id = pa.employee_id 
-      AND pa.address_type = 'Permanent';
+  ON e.employee_id = pa.employee_id 
+AND pa.address_type = 'Permanent';
 `;
     const getAllUsingID: string = `SELECT 
-    e.employee_id,
-    e.employee_number,
-    e.first_name,
-    e.middle_name,
-    e.last_name,
-    e.full_name,
-    e.work_email,
-    e.gender,
-    e.marital_status,
-    e.blood_group,
-    e.physically_handicapped,
-    e.nationality,
-    e.created_at,
-    e.updated_at,
+e.employee_id,
+e.employee_number,
+e.first_name,
+e.middle_name,
+e.last_name,
+e.full_name,
+e.work_email,
+e.gender,
+e.marital_status,
+e.blood_group,
+e.physically_handicapped,
+e.nationality,
+e.created_at,
+e.updated_at,
 
-    -- Employment Details
-    ed.attendance_number,
-    ed.location,
-    ed.location_country,
-    ed.legal_entity,
-    ed.business_unit,
-    ed.department,
-    ed.sub_department,
-    ed.job_title,
-    ed.secondary_job_title,
-    ed.reporting_to,
-    ed.reporting_manager_employee_number,
-    ed.dotted_line_manager,
-    ed.date_joined,
-    ed.leave_plan,
-    ed.band,
-    ed.pay_grade,
-    ed.time_type,
-    ed.worker_type,
-    ed.shift_policy_name,
-    ed.weekly_off_policy_name,
-    ed.attendance_time_tracking_policy,
-    ed.attendance_capture_scheme,
-    ed.holiday_list_name,
-    ed.expense_policy_name,
-    ed.notice_period,
-    ed.cost_center,
+-- Employment Details
+ed.attendance_number,
+ed.location,
+ed.location_country,
+ed.legal_entity,
+ed.business_unit,
+ed.department,
+ed.sub_department,
+ed.job_title,
+ed.secondary_job_title,
+ed.reporting_to,
+ed.reporting_manager_employee_number,
+ed.dotted_line_manager,
+ed.date_joined,
+ed.leave_plan,
+ed.band,
+ed.pay_grade,
+ed.time_type,
+ed.worker_type,
+ed.shift_policy_name,
+ed.weekly_off_policy_name,
+ed.attendance_time_tracking_policy,
+ed.attendance_capture_scheme,
+ed.holiday_list_name,
+ed.expense_policy_name,
+ed.notice_period,
+ed.cost_center,
 
-    -- Current Address
-    ca.address_line1 AS current_address_line1,
-    ca.address_line2 AS current_address_line2,
-    ca.city AS current_city,
-    ca.state AS current_state,
-    ca.zip AS current_zip,
-    ca.country AS current_country,
+-- Current Address
+ca.address_line1 AS current_address_line1,
+ca.address_line2 AS current_address_line2,
+ca.city AS current_city,
+ca.state AS current_state,
+ca.zip AS current_zip,
+ca.country AS current_country,
 
-    -- Permanent Address
-    pa.address_line1 AS permanent_address_line1,
-    pa.address_line2 AS permanent_address_line2,
-    pa.city AS permanent_city,
-    pa.state AS permanent_state,
-    pa.zip AS permanent_zip,
-    pa.country AS permanent_country,
+-- Permanent Address
+pa.address_line1 AS permanent_address_line1,
+pa.address_line2 AS permanent_address_line2,
+pa.city AS permanent_city,
+pa.state AS permanent_state,
+pa.zip AS permanent_zip,
+pa.country AS permanent_country,
 
-    -- Family Info
-    f.father_name,
-    f.mother_name,
-    f.spouse_name,
-    f.children_names,
+-- Family Info
+f.father_name,
+f.mother_name,
+f.spouse_name,
+f.children_names,
 
-    -- Statutory Info
-    s.pan_number,
-    s.aadhaar_number,
-    s.pf_number,
-    s.uan_number,
+-- Statutory Info
+s.pan_number,
+s.aadhaar_number,
+s.pf_number,
+s.uan_number,
 
-    -- Exit Details
-    ex.employment_status,
-    ex.exit_date,
-    ex.comments,
-    ex.exit_status,
-    ex.termination_type,
-    ex.termination_reason,
-    ex.resignation_note
+-- Exit Details
+ex.employment_status,
+ex.exit_date,
+ex.comments,
+ex.exit_status,
+ex.termination_type,
+ex.termination_reason,
+ex.resignation_note
 
 FROM employees e
 LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
@@ -197,11 +197,11 @@ LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
 
 -- Pivot addresses
 LEFT JOIN addresses ca 
-       ON e.employee_id = ca.employee_id 
-      AND ca.address_type = 'Current'
+  ON e.employee_id = ca.employee_id 
+AND ca.address_type = 'Current'
 LEFT JOIN addresses pa 
-       ON e.employee_id = pa.employee_id 
-      AND pa.address_type = 'Permanent' where e.employee_id = ?;
+  ON e.employee_id = pa.employee_id 
+AND pa.address_type = 'Permanent' where e.employee_id = ?;
 `;
 
     const [result]: any = req?.body?.id
@@ -259,8 +259,8 @@ LEFT JOIN addresses pa
       if (queryConnection) {
         const [result]: [ResultSetHeader, any] = await queryConnection.query(
           `INSERT INTO employees 
-          (employee_number, first_name, middle_name, last_name, full_name, work_email, gender, marital_status, blood_group, physically_handicapped, nationality, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (employee_number, first_name, middle_name, last_name, full_name, work_email, gender, marital_status, blood_group, physically_handicapped, nationality, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             EmployeeNumber,
             FirstName || null,
@@ -353,8 +353,8 @@ LEFT JOIN addresses pa
       if (queryConnection) {
         const [result]: [ResultSetHeader, any] = await queryConnection.query(
           `INSERT INTO addresses 
-          (employee_id, address_type, address_line1, address_line2, city, state, zip, country)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    (employee_id, address_type, address_line1, address_line2, city, state, zip, country)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             employee_id,
             addType,
@@ -461,8 +461,8 @@ LEFT JOIN addresses pa
       if (queryConnection) {
         const [result]: [ResultSetHeader, any] = await queryConnection.query(
           `INSERT INTO employment_details 
-          (employee_id, attendance_number, location, location_country, legal_entity, business_unit, department, sub_department, job_title, secondary_job_title, reporting_to, reporting_manager_employee_number, dotted_line_manager, date_joined, leave_plan, band, pay_grade, time_type, worker_type, shift_policy_name, weekly_off_policy_name, attendance_time_tracking_policy, attendance_capture_scheme, holiday_list_name, expense_policy_name, notice_period, cost_center)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (employee_id, attendance_number, location, location_country, legal_entity, business_unit, department, sub_department, job_title, secondary_job_title, reporting_to, reporting_manager_employee_number, dotted_line_manager, date_joined, leave_plan, band, pay_grade, time_type, worker_type, shift_policy_name, weekly_off_policy_name, attendance_time_tracking_policy, attendance_capture_scheme, holiday_list_name, expense_policy_name, notice_period, cost_center)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             employee_id,
             AttendanceNumber || null,
@@ -568,8 +568,8 @@ LEFT JOIN addresses pa
       if (queryConnection) {
         const [result]: [ResultSetHeader, any] = await queryConnection.query(
           `INSERT INTO exit_details 
-          (employee_id, employment_status, exit_date, comments, exit_status, termination_type, termination_reason, resignation_note) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    (employee_id, employment_status, exit_date, comments, exit_status, termination_type, termination_reason, resignation_note) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             employee_id,
             EmploymentStatus || null,
@@ -649,8 +649,8 @@ LEFT JOIN addresses pa
       if (queryConnection) {
         const [result]: [ResultSetHeader, any] = await queryConnection.query(
           `INSERT INTO family_info 
-          (employee_id, father_name, mother_name, spouse_name, children_names)
-          VALUES (?, ?, ?, ?, ?)`,
+    (employee_id, father_name, mother_name, spouse_name, children_names)
+    VALUES (?, ?, ?, ?, ?)`,
           [
             employee_id,
             FatherName || null,
@@ -727,8 +727,8 @@ LEFT JOIN addresses pa
       if (queryConnection) {
         const [result]: [ResultSetHeader, any] = await queryConnection.query(
           `INSERT INTO statutory_info 
-          (employee_id, pan_number, aadhaar_number, pf_number, uan_number)
-          VALUES (?, ?, ?, ?, ?)`,
+    (employee_id, pan_number, aadhaar_number, pf_number, uan_number)
+    VALUES (?, ?, ?, ?, ?)`,
           [
             employee_id,
             PANNumber || null,
@@ -783,26 +783,26 @@ LEFT JOIN addresses pa
       const employee_id = req.body.employee_id || req.query.employee_id;
 
       const baseQuery = `
-        SELECT 
-          e.*,
-          ca.address_line1 AS current_line1, ca.address_line2 AS current_line2, ca.city AS current_city,
-          ca.state AS current_state, ca.zip AS current_zip, ca.country AS current_country,
-          pa.address_line1 AS permanent_line1, pa.address_line2 AS permanent_line2, pa.city AS permanent_city,
-          pa.state AS permanent_state, pa.zip AS permanent_zip, pa.country AS permanent_country,
-          ed.*,
-          fi.father_name, fi.mother_name, fi.spouse_name, fi.children_names,
-          si.pan_number, si.aadhaar_number, si.pf_number, si.uan_number,
-          ex.employment_status, ex.exit_date, ex.comments, ex.exit_status,
-          ex.termination_type, ex.termination_reason, ex.resignation_note
-        FROM employees e
-        LEFT JOIN addresses ca ON e.employee_id = ca.employee_id AND ca.address_type = 'Current'
-        LEFT JOIN addresses pa ON e.employee_id = pa.employee_id AND pa.address_type = 'Permanent'
-        LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
-        LEFT JOIN family_info fi ON e.employee_id = fi.employee_id
-        LEFT JOIN statutory_info si ON e.employee_id = si.employee_id
-        LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
-        ${employee_id ? 'WHERE e.employee_id = ?' : ''}
-      `;
+  SELECT 
+    e.*,
+    ca.address_line1 AS current_line1, ca.address_line2 AS current_line2, ca.city AS current_city,
+    ca.state AS current_state, ca.zip AS current_zip, ca.country AS current_country,
+    pa.address_line1 AS permanent_line1, pa.address_line2 AS permanent_line2, pa.city AS permanent_city,
+    pa.state AS permanent_state, pa.zip AS permanent_zip, pa.country AS permanent_country,
+    ed.*,
+    fi.father_name, fi.mother_name, fi.spouse_name, fi.children_names,
+    si.pan_number, si.aadhaar_number, si.pf_number, si.uan_number,
+    ex.employment_status, ex.exit_date, ex.comments, ex.exit_status,
+    ex.termination_type, ex.termination_reason, ex.resignation_note
+  FROM employees e
+  LEFT JOIN addresses ca ON e.employee_id = ca.employee_id AND ca.address_type = 'Current'
+  LEFT JOIN addresses pa ON e.employee_id = pa.employee_id AND pa.address_type = 'Permanent'
+  LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
+  LEFT JOIN family_info fi ON e.employee_id = fi.employee_id
+  LEFT JOIN statutory_info si ON e.employee_id = si.employee_id
+  LEFT JOIN exit_details ex ON e.employee_id = ex.employee_id
+  ${employee_id ? 'WHERE e.employee_id = ?' : ''}
+`;
 
       const [rows]: any = employee_id
         ? await conn.query(baseQuery, [employee_id])
@@ -1010,7 +1010,7 @@ LEFT JOIN addresses pa
       if (result.affectedRows === 0) {
         await conn.query(
           `INSERT INTO addresses (employee_id, address_type, address_line1, address_line2, city, state, zip, country)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [employee_id, address_type, ...values.slice(0, 6)]
         );
       }
@@ -1110,11 +1110,11 @@ LEFT JOIN addresses pa
 
       const reportingMgrNum = updates.reporting_manager_employee_number
         ? await this.getEmployeeIdByNumber(
-          conn,
-          this.resolveReportingManager(
-            updates.reporting_manager_employee_number
-          )!
-        )
+            conn,
+            this.resolveReportingManager(
+              updates.reporting_manager_employee_number
+            )!
+          )
         : null;
 
       const setClause = allowed.map((f) => `${f} = ?`).join(', ');
@@ -1245,7 +1245,7 @@ LEFT JOIN addresses pa
       if (result.affectedRows === 0) {
         await conn.query(
           `INSERT INTO exit_details (employee_id, ${fields.join(', ')})
-           VALUES (?, ${fields.map(() => '?').join(', ')})`,
+      VALUES (?, ${fields.map(() => '?').join(', ')})`,
           [employee_id, ...values.slice(0, -1)]
         );
       }
@@ -1339,7 +1339,7 @@ LEFT JOIN addresses pa
 
       const [result]: [ResultSetHeader, any] = await conn.query(
         `UPDATE family_info SET father_name = ?, mother_name = ?, spouse_name = ?, children_names = ?
-         WHERE employee_id = ?`,
+    WHERE employee_id = ?`,
         [
           father_name ?? null,
           mother_name ?? null,
@@ -1352,7 +1352,7 @@ LEFT JOIN addresses pa
       if (result.affectedRows === 0) {
         await conn.query(
           `INSERT INTO family_info (employee_id, father_name, mother_name, spouse_name, children_names)
-           VALUES (?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?)`,
           [
             employee_id,
             father_name ?? null,
@@ -1448,7 +1448,7 @@ LEFT JOIN addresses pa
 
       const [result]: [ResultSetHeader, any] = await conn.query(
         `UPDATE statutory_info SET pan_number = ?, aadhaar_number = ?, pf_number = ?, uan_number = ?
-         WHERE employee_id = ?`,
+    WHERE employee_id = ?`,
         [
           pan_number ?? null,
           aadhaar_number ?? null,
@@ -1461,7 +1461,7 @@ LEFT JOIN addresses pa
       if (result.affectedRows === 0) {
         await conn.query(
           `INSERT INTO statutory_info (employee_id, pan_number, aadhaar_number, pf_number, uan_number)
-           VALUES (?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?)`,
           [
             employee_id,
             pan_number ?? null,
@@ -1566,5 +1566,40 @@ LEFT JOIN addresses pa
       [employeeNumber]
     );
     return rows.length > 0 ? rows[0].employee_id : null;
+  }
+
+  public static async upsertProfilePic(
+    employee_id: number,
+    image: string
+  ): Promise<boolean> {
+    const connection = await pool.getConnection();
+    try {
+      // Step 1: Check if the employee already has a profile picture
+      const [rows]: any = await connection.query(
+        'SELECT id FROM employee_profile_pic WHERE employee_id = ?',
+        [employee_id]
+      );
+
+      if (rows.length > 0) {
+        // Step 2: Update existing record
+        const [updateResult]: any = await connection.query(
+          'UPDATE employee_profile_pic SET image = ? WHERE employee_id = ?',
+          [image, employee_id]
+        );
+        return updateResult.affectedRows > 0;
+      } else {
+        // Step 3: Insert new record
+        const [insertResult]: any = await connection.query(
+          'INSERT INTO employee_profile_pic (employee_id, image) VALUES (?, ?)',
+          [employee_id, image]
+        );
+        return insertResult.affectedRows > 0;
+      }
+    } catch (error) {
+      console.error('Error in upsertProfilePic:', error);
+      return false;
+    } finally {
+      connection.release();
+    }
   }
 }
