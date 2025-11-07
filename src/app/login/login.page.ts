@@ -170,6 +170,7 @@ export class LoginPage implements OnInit{
         })
         .subscribe({
           next: (val) => {
+            this.er = ''; // Clear any previous error message
             this.empType = val.type;
             this.loader = false;
             if (val.type === 'new_employee') {
@@ -185,13 +186,21 @@ export class LoginPage implements OnInit{
           },
           error: (err) => {
             this.er = err.error.message;
+            this.loader = false;
           },
           complete: () => {
             console.log(this.empType);
           },
         });
     } else {
-      this.er = 'Invalid Email';
+      const emailControl = this.loginForm.get('email');
+      if (emailControl?.hasError('required')) {
+        this.er = 'Email is required.';
+      } else if (emailControl?.hasError('email')) {
+        this.er = 'Please enter a valid email address.';
+      } else {
+        this.er = 'Please enter a valid email address.';
+      }
     }
   }
   async passwordGen() {
