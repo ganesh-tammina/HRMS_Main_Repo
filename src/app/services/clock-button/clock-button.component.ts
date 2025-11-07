@@ -104,8 +104,15 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
     const empId = this.currentCandidate.data[0][0].employee_id;
     
-    // Send clock-in to server
-    this.attendanceService.clockIn({ EmpID: empId, LogType: 'IN' });
+    // Send clock-in to server with proper format
+    const clockInData = {
+      access_token: this.routeGaurdService.token,
+      refresh_token: this.routeGaurdService.refreshToken,
+      EmpID: empId,
+      LogType: 'IN'
+    };
+    
+    this.attendanceService.clockIn(clockInData);
     
     // Update local state immediately
     this.record = {
@@ -125,8 +132,15 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
     const empId = this.currentCandidate.data[0][0].employee_id;
     
-    // Send clock-out to server
-    this.attendanceService.clockOut({ EmpID: empId, LogType: 'OUT' });
+    // Send clock-out to server with proper format
+    const clockOutData = {
+      access_token: this.routeGaurdService.token,
+      refresh_token: this.routeGaurdService.refreshToken,
+      EmpID: empId,
+      LogType: 'OUT'
+    };
+    
+    this.attendanceService.clockOut(clockOutData);
     
     // Update local state immediately
     this.record = {
