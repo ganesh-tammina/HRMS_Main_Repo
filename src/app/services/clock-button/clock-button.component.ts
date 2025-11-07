@@ -201,40 +201,52 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   private checkAttendanceStatus(empId: number) {
-    console.log('Checking attendance status for employee:', empId);
+    console.log('🔍 Checking attendance status for employee:', empId);
     
-    // Get today's attendance from server
-    const today = new Date().toISOString().split('T')[0];
+    // Try different API call format
     const body = {
       access_token: this.routeGaurdService.token,
       refresh_token: this.routeGaurdService.refreshToken,
-      employee_id: empId,
-      date: today
+      employee_id: empId
     };
+    
+    console.log('📡 Sending request body:', body);
     
     this.attendanceService.getallattendace(body).subscribe({
       next: (response: any) => {
-        console.log('Attendance status from server:', response);
+        console.log('✅ Server response:', response);
+        console.log('📊 Response data:', response.data);
         
-        // Check if user is currently clocked in based on server data
-        const isClockedIn = this.checkIfClockedIn(response.data || []);
-        const clockInTime = isClockedIn ? this.getLastClockInTime(response.data || []) : undefined;
-        
-        console.log('Is clocked in:', isClockedIn, 'Clock in time:', clockInTime);
-        
-        this.record = {
-          employeeId: empId,
-          isClockedIn: isClockedIn,
-          clockInTime: clockInTime,
-          accumulatedMs: 0,
-          history: [],
-          dailyAccumulatedMs: {}
-        };
+        if (response && response.data && Array.isArray(response.data)) {
+          // Check if user is currently clocked in based on server data
+          const isClockedIn = this.checkIfClockedIn(response.data);
+          const clockInTime = isClockedIn ? this.getLastClockInTime(response.data) : undefined;
+          
+          console.log('🎯 Final result - Is clocked in:', isClockedIn, 'Clock in time:', clockInTime);
+          
+          this.record = {
+            employeeId: empId,
+            isClockedIn: isClockedIn,
+            clockInTime: clockInTime,
+            accumulatedMs: 0,
+            history: [],
+            dailyAccumulatedMs: {}
+          };
+        } else {
+          console.log('⚠️ No valid data in response, defaulting to not clocked in');
+          this.record = {
+            employeeId: empId,
+            isClockedIn: false,
+            accumulatedMs: 0,
+            history: [],
+            dailyAccumulatedMs: {}
+          };
+        }
         
         this.statusChanged.emit(this.record);
       },
       error: (err) => {
-        console.error('Error getting attendance status:', err);
+        console.error('❌ Error getting attendance status:', err);
         // Default to not clocked in on error
         this.record = {
           employeeId: empId,
@@ -249,22 +261,37 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   private checkIfClockedIn(attendanceData: any[]): boolean {
-    if (!attendanceData || attendanceData.length === 0) return false;
+    console.log('🔍 checkIfClockedIn - Data:', attendanceData);
+    
+    if (!attendanceData || attendanceData.length === 0) {
+      console.log('⚠️ No attendance data found');
+      return false;
+    }
     
     // Get the last entry for today
     const lastEntry = attendanceData[attendanceData.length - 1];
-    return lastEntry?.LogType === 'IN';
+    console.log('📅 Last entry:', lastEntry);
+    
+    const isClockedIn = lastEntry?.LogType === 'IN';
+    console.log('🔄 Is clocked in result:', isClockedIn);
+    
+    return isClockedIn;
   }
 
   private getLastClockInTime(attendanceData: any[]): string | undefined {
+    console.log('🕰️ getLastClockInTime - Data:', attendanceData);
+    
     if (!attendanceData || attendanceData.length === 0) return undefined;
     
     // Find the last clock-in entry
     for (let i = attendanceData.length - 1; i >= 0; i--) {
       if (attendanceData[i].LogType === 'IN') {
+        console.log('✅ Found last clock-in time:', attendanceData[i].LogTime);
         return attendanceData[i].LogTime;
       }
     }
+    
+    console.log('⚠️ No clock-in time found');
     return undefined;
   }
 
