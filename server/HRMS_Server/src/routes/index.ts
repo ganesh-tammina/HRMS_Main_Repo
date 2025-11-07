@@ -17,6 +17,15 @@ const upload = multer({ dest: 'uploads/' });
 
 const router = Router();
 
+// Root API route
+router.get('/', (req, res) => {
+  res.json({
+    status: true,
+    message: '✅ HRMS API is running successfully!',
+    time: new Date().toLocaleString()
+  });
+});
+
 router.post('/v1/send-email', MailController.mailsender);
 
 router.post('/v1/check-email', checkWhoAmI, EmployeeLoginController.EmailCheck);
