@@ -170,16 +170,65 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   private checkAttendanceStatus(empId: number) {
-    // Always start with Clock In button after login
-    this.record = {
-      employeeId: empId,
-      isClockedIn: false,
-      accumulatedMs: 0,
-      history: [],
-      dailyAccumulatedMs: {}
+    // Get today's attendance from server
+    const today = new Date().toISOString().split('T')[0];
+    const body = {
+      access_token: this.routeGaurdService.token,
+      refresh_token: this.routeGaurdService.refreshToken,
+      employee_id: empId,
+      date: today
     };
     
-    this.statusChanged.emit(this.record);
+    this.attendanceService.getallattendace(body).subscribe({
+      next: (response: any) => {
+        console.log('Attendance status from server:', response);
+        
+        // Check if user is currently clocked in based on server data
+        const isClockedIn = this.checkIfClockedIn(response.data);
+        
+        this.record = {
+          employeeId: empId,
+          isClockedIn: isClockedIn,
+          clockInTime: isClockedIn ? this.getLastClockInTime(response.data) : undefined,
+          accumulatedMs: 0,
+          history: [],
+          dailyAccumulatedMs: {}
+        };
+        
+        this.statusChanged.emit(this.record);
+      },
+      error: (err) => {
+        console.error('Error getting attendance status:', err);
+        // Default to not clocked in
+        this.record = {
+          employeeId: empId,
+          isClockedIn: false,
+          accumulatedMs: 0,
+          history: [],
+          dailyAccumulatedMs: {}
+        };
+      }
+    });
+  }
+
+  private checkIfClockedIn(attendanceData: any[]): boolean {
+    if (!attendanceData || attendanceData.length === 0) return false;
+    
+    // Get the last entry for today
+    const lastEntry = attendanceData[attendanceData.length - 1];
+    return lastEntry?.LogType === 'IN';
+  }
+
+  private getLastClockInTime(attendanceData: any[]): string | undefined {
+    if (!attendanceData || attendanceData.length === 0) return undefined;
+    
+    // Find the last clock-in entry
+    for (let i = attendanceData.length - 1; i >= 0; i--) {
+      if (attendanceData[i].LogType === 'IN') {
+        return attendanceData[i].LogTime;
+      }
+    }
+    return undefined;
   }
 
 
