@@ -72,23 +72,19 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         this.currentCandidate = user || undefined;
         console.log('Current Candidate in ClockButton:', this.currentCandidate);
 
-        // Restore from localStorage if available
-        const storedRecord = localStorage.getItem('attendanceRecord');
-        if (storedRecord) {
-          this.record = JSON.parse(storedRecord);
-        }
-
-        // Subscribe to attendance updates
-        if (this.currentCandidate && !this.record) {
+        if (this.currentCandidate) {
+          const empId = this.currentCandidate.data[0][0].employee_id;
+          
+          // Get attendance record from service
+          this.record = this.attendanceService.getRecord(empId);
+          
+          // Subscribe to attendance updates
           this.attendanceService.record$.subscribe((record) => {
-            if (record && record.employeeId === this.currentCandidate?.id) {
+            if (record && record.employeeId === empId) {
               this.record = record;
               this.statusChanged.emit(record);
-              localStorage.setItem('attendanceRecord', JSON.stringify(record));
             }
           });
-
-          this.attendanceService.getRecord(this.currentCandidate.id);
         }
 
         // Timer for time since login
@@ -97,8 +93,6 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         );
       });
     }
-
-
   }
 
   ngOnDestroy() {
@@ -109,37 +103,53 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     if (!this.currentCandidate) return;
 
     const empId = this.currentCandidate.data[0][0].employee_id;
-    const record: any = {
+    const clockInTime = new Date().toISOString();
+    
+    // Update local record
+    const updatedRecord: AttendanceRecord = {
       employeeId: empId,
-      clockInTime: new Date().toISOString(),
+      clockInTime: clockInTime,
       isClockedIn: true,
-      clockOutTime: null,
-      accumulatedMs: 0,
-      history: [],
+      accumulatedMs: this.record?.accumulatedMs || 0,
+      history: [
+        ...(this.record?.history || []),
+        { type: 'CLOCK_IN', time: clockInTime }
+      ],
+      dailyAccumulatedMs: this.record?.dailyAccumulatedMs || {}
     };
 
+    // Send to server
     this.attendanceService.clockIn({ EmpID: empId, LogType: 'IN' });
-    this.record = record as AttendanceRecord;
-    localStorage.setItem('attendanceRecord', JSON.stringify(record));
+    
+    // Update service and local storage
+    this.attendanceService.saveRecord(updatedRecord);
+    this.record = updatedRecord;
     this.statusChanged.emit(this.record);
   }
 
   clockOut() {
-    if (!this.currentCandidate) return;
+    if (!this.currentCandidate || !this.record) return;
 
     const empId = this.currentCandidate.data[0][0].employee_id;
-    const record: any = {
-      employeeId: empId,
-      clockInTime: this.record?.clockInTime || null,
-      clockOutTime: new Date().toISOString(),
+    const clockOutTime = new Date().toISOString();
+    
+    // Update local record
+    const updatedRecord: AttendanceRecord = {
+      ...this.record,
       isClockedIn: false,
       accumulatedMs: this.calculateAccumulatedMs(),
-      history: this.record?.history || [],
+      history: [
+        ...this.record.history,
+        { type: 'CLOCK_OUT', time: clockOutTime }
+      ]
     };
 
+    // Send to server
     this.attendanceService.clockOut({ EmpID: empId, LogType: 'OUT' });
-    this.record = record as AttendanceRecord;
-    localStorage.setItem('attendanceRecord', JSON.stringify(record));
+    
+    // Update service and local storage
+    this.attendanceService.saveRecord(updatedRecord);
+    this.record = updatedRecord;
     this.statusChanged.emit(this.record);
   }
 
