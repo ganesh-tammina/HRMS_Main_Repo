@@ -431,27 +431,7 @@ export class CandidateService {
   }
 
   logout() {
-    // Preserve attendance data during logout
-    const attendanceKeys: string[] = [];
-    const attendanceData: { [key: string]: string } = {};
-    
-    // Save attendance records before clearing
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('attendance_')) {
-        attendanceKeys.push(key);
-        attendanceData[key] = localStorage.getItem(key) || '';
-      }
-    }
-    
-    // Clear all localStorage
     localStorage.clear();
-    
-    // Restore attendance data
-    attendanceKeys.forEach(key => {
-      localStorage.setItem(key, attendanceData[key]);
-    });
-    
     this.currentCandidateSubject.next(null);
   }
 
