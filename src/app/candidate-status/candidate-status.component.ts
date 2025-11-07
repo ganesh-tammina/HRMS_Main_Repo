@@ -29,30 +29,27 @@ export class CandidateStatusComponent implements OnInit {
     private alertController: AlertController,
     private route: ActivatedRoute,
     private fb: FormBuilder
-  ) { }
+  ) {}
 
   ngOnInit() {
-    // ✅ Initialize onboarding form
+    // ✅ Initialize form
     this.onboardingForms = this.fb.group({
       PhoneNumber: ['', Validators.required]
     });
 
-    // ✅ 1. Get navigation state candidate (if coming from previous page)
+    // ✅ Get candidate data from navigation (if sent via state)
     const nav = this.router.getCurrentNavigation();
     if (nav?.extras.state?.['candidate']) {
       this.candidate = nav.extras.state['candidate'];
       console.log('📦 Candidate from navigation:', this.candidate);
     }
 
-    // ✅ 2. Get candidate ID from route (e.g., /candidate-status/3)
+    // ✅ Get candidate ID from route if available
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      console.log('🔍 Candidate ID from route:', id);
-
       if (id) {
         this.candidateService.getCandidateById(id).subscribe({
           next: (res: any) => {
-            // API returns `{ success: true, candidate: {...} }`
             this.candidate = res.candidate;
             console.log('✅ Candidate fetched from backend:', this.candidate);
           },
@@ -63,7 +60,7 @@ export class CandidateStatusComponent implements OnInit {
       }
     });
 
-    // ✅ 3. Subscribe to current candidate observable (if maintained globally)
+    // ✅ Subscribe to service observable if used
     if (this.candidateService.currentCandidate$) {
       this.candidateService.currentCandidate$.subscribe(user => {
         this.currentCandidate = user;
@@ -72,25 +69,29 @@ export class CandidateStatusComponent implements OnInit {
     }
   }
 
-  // ✅ Verify phone and navigate to offer details
-  submitOnboarding() {
-    const enteredPhone = this.onboardingForms.value.PhoneNumber;
-    const actualPhone = this.candidate?.PhoneNumber;
-    console.log(this.candidate.candidate_id)
+  // ✅ Verify phone number and navigate
+ submitOnboarding() {
+  const enteredPhone = this.onboardingForms.value.PhoneNumber;
+  const actualPhone = this.candidate?.PhoneNumber;
 
-    if (enteredPhone === actualPhone) {
-      console.log('✅ Phone verified. Navigating to offer details...');
-      this.router.navigate(
-        ['/candidate-offer-letter', this.candidate.candidate_id],
-        { state: { candidate: this.candidate } }
+  if (enteredPhone === actualPhone) {
+    console.log('✅ Phone verified. Navigating to offer details...');
 
-      );
-    } else {
-      this.showAlert('Please enter a valid Phone Number');
-    }
+    // Pass ID in URL + full object in query params
+    this.router.navigate(
+      ['/candidate-offer-letter', this.candidate.Candidate_ID],
+      {
+        queryParams: {
+          data: JSON.stringify(this.candidate)
+        }
+      }
+    );
+
+  } else {
+    this.showAlert('Please enter a valid Phone Number');
   }
-
-  // ✅ Ionic Alert for better UX
+}
+  // ✅ Ionic Alert
   async showAlert(message: string) {
     const alert = await this.alertController.create({
       header: 'Validation Error',

@@ -139,13 +139,12 @@ export interface EmployeeResponse {
 export class CandidateService {
   private env = environment;
   private api = `https://${this.env.apiURL}/api/v1/`;
-  private candidateApi = `https://${this.env.candidateURL}/api/v1/`;
 
-  private apiUrl = `${this.api}candidates/jd`;
+  private apiUrl = `${this.api}/candidates/jd`;
   private adminUrl = 'https://${this.env.apiURL}/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
-  private getapiUrl = `${this.candidateApi}candidates`;
+  private getapiUrl =  `https://${this.env.apiURL}/candidates`;
   private getEmployees = `${this.api}employee`;
   private forgotpwd = `${this.api}forgot-pwd`;
   private newpassword = `${this.api}add-pwd`;

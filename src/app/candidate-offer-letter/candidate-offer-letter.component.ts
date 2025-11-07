@@ -46,11 +46,18 @@ export class CandidateOfferLetterComponent implements OnInit {
     }
 
     // Fetch candidate by route param (if not passed through navigation)
-    this.route.paramMap.subscribe((params) => {
+  this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
-        console.log('🔍 Candidate ID from route:', id);
-        this.candidate.candiate_id;
+        this.candidateService.getCandidateById(id).subscribe({
+          next: (res: any) => {
+            this.candidate = res.candidate;
+            console.log('✅ Candidate fetched from backend:', this.candidate);
+          },
+          error: (err) => {
+            console.error('❌ Error fetching candidate:', err);
+          }
+        });
       }
     });
   }
@@ -74,7 +81,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.acceptDisabled = true;
 
     try {
-      const url = `https://${environment.apiURL}/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.Candidate_ID}/status`;
       const response = await this.http.put(url, { status: 'accepted' }).toPromise();
       console.log('✅ Accept response:', response);
 
@@ -102,7 +109,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.rejectDisabled = true;
 
     try {
-      const url = `https://${environment.apiURL}/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.Candidate_ID}/status`;
       const response = await this.http.put(url, { status: 'rejected' }).toPromise();
       console.log('✅ Reject response:', response);
 
