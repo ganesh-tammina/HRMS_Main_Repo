@@ -116,7 +116,6 @@ router.post('/v1/bulk-data-entry', EmployeeController.insertBulkEmployees);
 router.post(
   '/v1/employee',
   verifyAccessToken,
-
   EmployeeController.viewAllEmployeesEverything
 );
 router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);

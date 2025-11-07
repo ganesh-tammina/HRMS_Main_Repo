@@ -92,7 +92,10 @@ ex.comments,
 ex.exit_status,
 ex.termination_type,
 ex.termination_reason,
-ex.resignation_note
+ex.resignation_note,
+
+-- tiger zinda hai
+tiger.image
 
 FROM employees e
 LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
@@ -106,7 +109,8 @@ LEFT JOIN addresses ca
 AND ca.address_type = 'Current'
 LEFT JOIN addresses pa 
   ON e.employee_id = pa.employee_id 
-AND pa.address_type = 'Permanent';
+AND pa.address_type = 'Permanent'
+Left Join employee_profile_pic tiger on tiger.employee_id = e.employee_id ;
 `;
     const getAllUsingID: string = `SELECT 
 e.employee_id,
@@ -187,7 +191,9 @@ ex.comments,
 ex.exit_status,
 ex.termination_type,
 ex.termination_reason,
-ex.resignation_note
+ex.resignation_note,
+
+tiger.image
 
 FROM employees e
 LEFT JOIN employment_details ed ON e.employee_id = ed.employee_id
@@ -201,7 +207,8 @@ LEFT JOIN addresses ca
 AND ca.address_type = 'Current'
 LEFT JOIN addresses pa 
   ON e.employee_id = pa.employee_id 
-AND pa.address_type = 'Permanent' where e.employee_id = ?;
+AND pa.address_type = 'Permanent' 
+Left Join employee_profile_pic tiger on tiger.employee_id = e.employee_id where e.employee_id = ?;
 `;
 
     const [result]: any = req?.body?.id
