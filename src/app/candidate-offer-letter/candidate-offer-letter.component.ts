@@ -20,6 +20,11 @@ export class CandidateOfferLetterComponent implements OnInit {
   acceptDisabled = false;
   rejectDisabled = false;
   onboardingForms!: FormGroup;
+     one: any;
+  full_name: string = '';
+  currentTime: string = '';
+  allEmployees: any[] = [];
+  fullName:any
 
   constructor(
     private candidateService: CandidateService,
@@ -60,6 +65,20 @@ export class CandidateOfferLetterComponent implements OnInit {
         });
       }
     });
+
+        this.candidateService.getEmpDet().subscribe({
+        next: (response: any) => {
+          this.allEmployees = response.data || [];
+          if (this.allEmployees.length > 0) {
+            this.one = this.allEmployees[0];
+            this.fullName = this.one[0].full_name;
+            console.log(this.one);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching all employees:', err);
+        },
+      });
   }
 
   // 🔹 Load candidate details by ID from backend

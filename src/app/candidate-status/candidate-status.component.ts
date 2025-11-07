@@ -21,6 +21,7 @@ export class CandidateStatusComponent implements OnInit {
   hideOffer: boolean = false;
   candidate: any = {};
   onboardingForms!: FormGroup;
+ 
 
   constructor(
     private candidateService: CandidateService,
@@ -60,13 +61,9 @@ export class CandidateStatusComponent implements OnInit {
       }
     });
 
-    // ✅ Subscribe to service observable if used
-    if (this.candidateService.currentCandidate$) {
-      this.candidateService.currentCandidate$.subscribe(user => {
-        this.currentCandidate = user;
-        console.log('🧭 Current candidate from service:', user);
-      });
-    }
+
+     
+ 
   }
 
   // ✅ Verify phone number and navigate
