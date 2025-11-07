@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CandidateService, Employee } from '../../services/pre-onboarding.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -13,14 +13,15 @@ import { IonicModule } from '@ionic/angular';
   imports: [
     CommonModule,
     IonicModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     CommonModule,
   ]
 })
 
-export class ProfileComponent  implements OnInit {
-  currentemp: any;
+export class ProfileComponent implements OnInit {
+  @Input() currentemp: any;
+
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   Isedit: boolean = false;
@@ -28,17 +29,9 @@ export class ProfileComponent  implements OnInit {
   constructor(private candidateService: CandidateService) { }
 
   ngOnInit() {
-    this.currentEmployee$ = this.candidateService.currentEmployee$;
 
-    this.currentEmployee$.subscribe((emp: any) => {
-      if (Array.isArray(emp) && emp.length > 0) {
-        this.currentemp = emp[0]; // ✅ pick first employee object
-      } else {
-        this.currentemp = emp; // if it's already a single object
-      }
 
-      console.log('Current Employee:', this.currentemp);
-    });
+
   }
   isEditForm() {
     this.Isedit = !this.Isedit;

@@ -5,100 +5,99 @@
   <ion-grid class="ion-margin ion-margin-horizontal">
     <ion-row>
       <ion-col size="4" class="welcome-block ion-no-padding">
-          <ion-card>
-          <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg"
-            width="100" />
+        <ion-card>
+          <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg" width="100" />
           <div class="ion-text-center">
             <p class="name">{{currentemp.full_name}}</p>
             <p class="des">{{currentemp.job_title}}</p>
           </div>
           <div class="info-block">
-              <div class="row-left">
-                  <ion-icon name="mail"></ion-icon>
-                  <p class="pl-5">{{currentemp.work_email}}</p>
-              </div>
-              <!-- <div class="row-left">
+            <div class="row-left">
+              <ion-icon name="mail"></ion-icon>
+              <p class="pl-5">{{currentemp.work_email}}</p>
+            </div>
+            <!-- <div class="row-left">
                   <ion-icon name="phone-portrait"></ion-icon>
                 <p class="pl-5">{{currentemp.PhoneNumber}}</p>
             </div> -->
-              <div class="row-left">
-                  <ion-icon name="location"></ion-icon>
-                <p class="pl-5">{{currentemp.location}}</p>
+            <div class="row-left">
+              <ion-icon name="location"></ion-icon>
+              <p class="pl-5">{{currentemp.location}}</p>
             </div>
           </div>
           <div class="report-block">
-              <div>
-                <p>Business Unit</p>
-                <h6>{{currentemp.business_unit}}</h6>
-              </div>
-              <div>
-               <p>Department</p>
-                <h6>{{currentemp.department}}</h6>
-              </div>
-              <div>
-               <p>Reporting Manager</p>
-               <h6 class="row-left"> <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg"
-                width="18" />{{currentemp.reporting_to}}</h6>
-              </div>
+            <div>
+              <p>Business Unit</p>
+              <h6>{{currentemp.business_unit}}</h6>
             </div>
-      </ion-card>
+            <div>
+              <p>Department</p>
+              <h6>{{currentemp.department}}</h6>
+            </div>
+            <div>
+              <p>Reporting Manager</p>
+              <h6 class="row-left"> <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg"
+                  width="18" />{{currentemp.reporting_to}}</h6>
+            </div>
+          </div>
+        </ion-card>
       </ion-col>
 
       <ion-col size="8">
- <!-- Tabs started -->
- <ion-card>
-    <ion-tabs class="custom-underline-tabs">
-        <ion-tab-bar slot="top">
-          <ion-tab-button class="row-center" tab="about">
-            <ion-icon name="home"></ion-icon>
-            <p>ABOUT</p> 
-          </ion-tab-button>
-          <ion-tab-button class="row-center" tab="profile">
-            <ion-icon name="person-circle"></ion-icon>
-            <p>PROFILE</p>
-          </ion-tab-button>
-          <ion-tab-button class="row-center" tab="job">
-            <ion-icon name="bag-handle"></ion-icon>
-            <p>JOB</p>
-          </ion-tab-button>
-          <ion-tab-button class="row-center" tab="documents">
-            <ion-icon name="document-attach"></ion-icon>
-            <p>Documents</p>
-          </ion-tab-button>
-          <ion-tab-button class="row-center" tab="assets">
-          <ion-icon name="library"></ion-icon>
-          <p> Assets</p>
-          </ion-tab-button>
-        </ion-tab-bar>
-    
-        <ion-tab tab="about">
-          <!-- about us tab -->
-          <app-aboutus></app-aboutus>         
-        </ion-tab>
-        <ion-tab tab="profile">
-           <!-- about us tab -->
-          <app-profile></app-profile>
-        </ion-tab>
-        <ion-tab tab="job">
-           <!-- job us tab -->
-           <app-job-tab></app-job-tab>
-        </ion-tab>        
-        <ion-tab tab="documents">
-           <!-- documents us tab -->
-           <app-document-tab></app-document-tab>
-          </ion-tab>
-        <ion-tab tab="assets">
-           <!-- assets us tab -->
-           <app-assets-tab></app-assets-tab>
-        </ion-tab>    
-      </ion-tabs>
-</ion-card> 
+        <!-- Tabs started -->
+        <ion-card>
+          <ion-tabs class="custom-underline-tabs">
+            <ion-tab-bar slot="top">
+              <ion-tab-button class="row-center" tab="about">
+                <ion-icon name="home"></ion-icon>
+                <p>ABOUT</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="profile">
+                <ion-icon name="person-circle"></ion-icon>
+                <p>PROFILE</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="job">
+                <ion-icon name="bag-handle"></ion-icon>
+                <p>JOB</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="documents">
+                <ion-icon name="document-attach"></ion-icon>
+                <p>Documents</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="assets">
+                <ion-icon name="library"></ion-icon>
+                <p> Assets</p>
+              </ion-tab-button>
+            </ion-tab-bar>
+
+            <ion-tab tab="about">
+              <!-- about us tab -->
+              <app-aboutus [currentemp]="currentemp"></app-aboutus>
+            </ion-tab>
+            <ion-tab tab="profile">
+              <!-- about us tab -->
+              <app-profile [currentemp]="currentemp"></app-profile>
+            </ion-tab>
+            <ion-tab tab="job">
+              <!-- job us tab -->
+              <app-job-tab [currentemp]="currentemp"></app-job-tab>
+            </ion-tab>
+            <ion-tab tab="documents">
+              <!-- documents us tab -->
+              <!-- <app-document-tab [currentemp]="currentemp"></app-document-tab> -->
+            </ion-tab>
+            <ion-tab tab="assets">
+              <!-- assets us tab -->
+              <!-- <app-assets-tab [currentemp]="currentemp"></app-assets-tab> -->
+            </ion-tab>
+          </ion-tabs>
+        </ion-card>
       </ion-col>
     </ion-row>
 
   </ion-grid>
 
-  
 
- 
+
+
 </ion-content>
