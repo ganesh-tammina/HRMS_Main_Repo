@@ -32,6 +32,13 @@ echo =======================================
 echo Starting Angular development server...
 echo =======================================
 call npx ng serve --host 0.0.0.0 --disable-host-check
+REM Set the folder path where your Angular project is located
+SET PROJECT_DIR=D:\HRMS MASTER\HRMS_Main_Repo\server\HRMS_Server
 
+REM Navigate to the project directory
+cd /d "%PROJECT_DIR%"
+REM Run the Server app
+echo Starting Server app...
+npm run dev
 endlocal
 pause

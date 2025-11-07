@@ -26,6 +26,20 @@ import { CandidateDetailsService } from 'src/app/services/candidate-details-serv
 export class PreonboardingComponent implements OnInit {
   // 👇 All candidates loaded from service
   candidates: any[] = [];
+
+
+  filterCandidates: any[] = [];
+  BusinessunitList: string[] = [];
+  selectedBusiness: string = '';
+  JobTitleList: string[] = [];
+  selectedJobTitle: string = '';
+  DeptList: string[] = [];
+  selectedDept: string = '';
+  LocationList: string[] = [];
+  selectedLocation: string = '';
+  searchText: string = '';
+
+
   hiddenCandidates: number[] = [];
   @Input() currentStage: number = 1;
 
@@ -36,7 +50,7 @@ export class PreonboardingComponent implements OnInit {
     private candidateService: CandidateService,
     private hireEmployeeService: HireEmployeesService,
     private CandidatedetailsService: CandidateDetailsService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Subscribe to candidates from service
@@ -46,7 +60,22 @@ export class PreonboardingComponent implements OnInit {
     // });
     this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
       this.candidates = data.candidates;
+      this.filterCandidates = data.candidates;
+      // job title list
+      this.JobTitleList = this.candidates.map(c => c.JobTitle)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      // Business unit List
+      this.BusinessunitList = this.candidates.map(c => c.BusinessUnit)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      //Department List
+      this.DeptList = this.candidates.map(c => c.Department)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      // Location List
+      this.LocationList = this.candidates.map(c => c.JobLocation)
+        .filter((value, index, self) => self.indexOf(value) === index);
+
       console.log('Candidates:', this.candidates);
+      console.log('Jobtitle:', this.BusinessunitList);
     });
     this.hiddenCandidates = JSON.parse(
       sessionStorage.getItem('hiddenCandidates') || '[]'
@@ -128,4 +157,74 @@ export class PreonboardingComponent implements OnInit {
     this.hireEmployeeService.setCandidate(candidate);
     this.candidates = this.candidates.filter((c) => c.id !== candidate.id);
   }
+
+  //Filtered by businessunit 
+  filterBusiness(event: any) {
+    console.log("business--->", event.detail.value);
+    this.selectedBusiness = event.detail.value;
+    if (this.selectedBusiness === '') {
+      this.candidates = this.filterCandidates;
+    } else {
+      this.candidates = this.filterCandidates.filter(
+        c => c.BusinessUnit === this.selectedBusiness
+      );
+    }
+  }
+
+  //Filtered by Job title
+  filterJobTitle(event: any) {
+    this.selectedJobTitle = event.detail.value;
+    if (this.selectedJobTitle === '') {
+      this.candidates = this.filterCandidates;
+    } else {
+      this.candidates = this.filterCandidates.filter(
+        c => c.JobTitle === this.selectedJobTitle
+      );
+    }
+  }
+
+
+  //Filtered by Department
+  filterDept(event: any) {
+    this.selectedDept = event.detail.value;
+    if (this.selectedDept === '') {
+      this.candidates = this.filterCandidates;
+    } else {
+      this.candidates = this.filterCandidates.filter(
+        c => c.Department === this.selectedDept
+      );
+    }
+  }
+
+  //Filtered by location
+  filterLocation(event: any) {
+    console.log("locations--->", this.candidates);
+    this.selectedLocation = event.detail.value;
+    if (this.selectedLocation === '') {
+      this.candidates = this.filterCandidates;
+    } else {
+      this.candidates = this.filterCandidates.filter(
+        c => c.JobLocation === this.selectedLocation
+      );
+
+    }
+  }
+
+  //Filtered by Search
+  SearchCandidates(event: any) {
+    const val = event.target.value.toLowerCase();
+    if (val === '') {
+      this.candidates = this.filterCandidates;
+    } else {
+      this.candidates = this.filterCandidates.filter(c =>
+        c.JobTitle.toLowerCase().includes(val) ||
+        c.Department.toLowerCase().includes(val) ||
+        c.JobLocation.toLowerCase().includes(val) ||
+        c.BusinessUnit.toLowerCase().includes(val) ||
+        c.status.toLowerCase().includes(val) ||
+        c.FirstName.toLowerCase().includes(val)
+      );
+    }
+  }
+
 }

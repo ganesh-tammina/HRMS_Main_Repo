@@ -89,7 +89,9 @@ ion-list-header, ion-item{
 .d-flex {
   display: flex;
 }
-
+.d-block {
+    display: block !important;
+}
 
 :host(.menu-pane-visible.split-pane-side.menu-enabled) {
     display: flex;

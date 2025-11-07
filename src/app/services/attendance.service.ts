@@ -23,7 +23,7 @@ export interface AttendanceRecord {
 })
 export class AttendanceService {
   private prefix = 'attendance_';
-  private baseURL = `https://${environment.apiURL}:3562/api/v1`;
+  private baseURL = `https://${environment.apiURL}/api/v1`;
   private recordSubject = new BehaviorSubject<AttendanceRecord | null>(null);
   record$ = this.recordSubject.asObservable();
   private responseSubject = new BehaviorSubject<any>(null);

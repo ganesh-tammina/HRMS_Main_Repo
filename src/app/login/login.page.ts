@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertController } from '@ionic/angular';
 import {
@@ -7,7 +7,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import {
@@ -24,7 +24,7 @@ import { RouteGuardService } from '../services/route-guard/route-service/route-g
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit{
   loginForm!: FormGroup;
   passwordUpdateForm!: FormGroup;
   forgotForm!: FormGroup;
@@ -47,6 +47,8 @@ export class LoginPage implements OnInit {
   loader: boolean = false;
   newEmployees!: FormGroup;
   existingEmpl!: FormGroup;
+  one: any;
+  allEmployees: any[] = [];
   // changes done by bipul
   constructor(
     private fb: FormBuilder,
@@ -57,6 +59,9 @@ export class LoginPage implements OnInit {
     private _loginSer: _LoginService,
     private _route_service: RouteGuardService
   ) { }
+ 
+
+
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -130,6 +135,17 @@ export class LoginPage implements OnInit {
           val.role!
         );
 
+        this.candidateService.getEmpDet().subscribe({
+          next: (response: any) => {
+            this.allEmployees = response.data || [];
+            this.one = response.data[0];
+            console.log('login page', this.one);
+            this.candidateService.setCurrentEmployee(this.one);
+          },
+          error: (err) => {
+            console.error('Error fetching all employees:', err);
+          },
+        });
         this._route_service.redirectBasedOnRole(val.role);
       },
       error: (err) => {
@@ -154,26 +170,37 @@ export class LoginPage implements OnInit {
         })
         .subscribe({
           next: (val) => {
+            this.er = ''; // Clear any previous error message
             this.empType = val.type;
             this.loader = false;
             if (val.type === 'new_employee') {
               this.new = true;
               this.showLoginForm = false;
+              this.newEmployees.reset();
               this.alertViewer('Information', val.message, 'OK');
             } else {
               this.old = true;
               this.showLoginForm = false;
+              this.existingEmpl.reset();
             }
           },
           error: (err) => {
             this.er = err.error.message;
+            this.loader = false;
           },
           complete: () => {
             console.log(this.empType);
           },
         });
     } else {
-      this.er = 'Invalid Email';
+      const emailControl = this.loginForm.get('email');
+      if (emailControl?.hasError('required')) {
+        this.er = 'Email is required.';
+      } else if (emailControl?.hasError('email')) {
+        this.er = 'Please enter a valid email address.';
+      } else {
+        this.er = 'Please enter a valid email address.';
+      }
     }
   }
   async passwordGen() {
