@@ -1,1 +1,0 @@
-{"version":3,"file":"attendance.middleware.d.ts","sourceRoot":"","sources":["../../src/middlewares/attendance.middleware.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,QAAQ,EAAE,YAAY,EAAE,MAAM,SAAS,CAAC;AAE1D,wBAAgB,MAAM,CAAC,GAAG,EAAE,OAAO,EAAE,GAAG,EAAE,QAAQ,EAAE,IAAI,EAAE,YAAY,kDAOrE"}
