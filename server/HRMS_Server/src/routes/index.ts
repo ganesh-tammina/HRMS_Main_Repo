@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
   res.json({
     status: true,
     message: '✅ HRMS API is running successfully!',
-    time: new Date().toISOString()
+    time: new Date().toLocaleString()
   });
 });
 
