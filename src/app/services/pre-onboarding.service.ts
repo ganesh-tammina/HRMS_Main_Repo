@@ -123,6 +123,7 @@ export interface Employee {
   termination_type: string | null;
   termination_reason: string | null;
   resignation_note: string | null;
+  image: string | null;
 }
 
 // Response structure
@@ -457,7 +458,9 @@ export class CandidateService {
       localStorage.removeItem('activeEmployeeId');
     }
   }
-  uploadImage(file: any): Observable<{ imageUrl: string }> {
+  uploadImage(file: any): Observable<{
+    [x: string]: any; imageUrl: string
+  }> {
     return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, file);
   }
   uploadEmployeeProfilePic(employeeId: number, profilePicUrl: string): Observable<any> {

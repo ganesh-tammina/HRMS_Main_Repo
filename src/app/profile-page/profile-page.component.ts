@@ -60,58 +60,51 @@ export class ProfilePageComponent implements OnInit {
       console.warn('⚠️ No employeeID found in routeGuardService');
     }
   }
-onFileSelected($event: any) {
-  const file = $event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
-    console.log('📸 Selected file:', this.selectedFile);
-  }
-}
-
-uploadProfilePic() {
-  if (!this.selectedFile) {
-    alert('⚠️ Please select a profile picture first!');
-    return;
+  onFileSelected($event: any) {
+    const file = $event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      console.log('📸 Selected file:', this.selectedFile);
+    }
   }
 
-  this.isUploading = true;
-  const formData = new FormData();
-  const empId = this.routeGuardService.employeeID;
+  uploadProfilePic() {
+    if (!this.selectedFile) {
+      alert('⚠️ Please select a profile picture first!');
+      return;
+    }
 
-  if (empId) {
-    // 👇 Corrected field name
-    formData.append('image', this.selectedFile);
-    formData.append('employee_id', empId);
-  } else {
-    console.warn('⚠️ No employeeID found in routeGuardService');
-    return;
+    this.isUploading = true;
+    const formData = new FormData();
+    const empId = this.routeGuardService.employeeID;
+
+    if (empId) {
+      // 👇 Corrected field name
+      formData.append('image', this.selectedFile);
+      formData.append('employee_id', empId);
+    } else {
+      console.warn('⚠️ No employeeID found in routeGuardService');
+      return;
+    }
+    console.log('empId---->', empId)
+    if (empId) {
+      this.candidateService.uploadImage(formData).subscribe({
+        next: (res: any) => {
+          if (res) {
+            console.log('✅ Image uploaded successfully:', res);
+            const imageUrl = res.image;
+            this.uploadedImageUrl = imageUrl
+
+          }
+        },
+        error: (err: any) => {
+          console.error('❌ Image upload failed:', err);
+          this.isUploading = false;
+        },
+      });
+    }
+
   }
-
-  this.candidateService.uploadImage(formData).subscribe({
-    next: (res) => {
-      const imageUrl = res.imageUrl;
-      this.uploadedImageUrl = imageUrl;
-      console.log('✅ Image uploaded successfully:', imageUrl);
-
-      this.candidateService.uploadEmployeeProfilePic(this.currentemp.employee_id, imageUrl)
-        .subscribe({
-          next: (response: any) => {
-            console.log('✅ Profile picture linked to employee:', response);
-            this.isUploading = false;
-            alert('🎉 Profile picture updated successfully!');
-          },
-          error: (err: any) => {
-            console.error('❌ Error linking profile pic:', err);
-            this.isUploading = false;
-          },
-        });
-    },
-    error: (err: any) => {
-      console.error('❌ Image upload failed:', err);
-      this.isUploading = false;
-    },
-  });
-}
 
 
   edit() {
