@@ -134,6 +134,11 @@ export class LoginPage implements OnInit{
           val.employee_id!,
           val.role!
         );
+        
+        // Store login time for "Since Last Login" calculation
+        const loginTime = new Date().toISOString();
+        localStorage.setItem('login_time', loginTime);
+        console.log('🔑 Login time stored:', loginTime);
 
         this.candidateService.getEmpDet().subscribe({
           next: (response: any) => {
