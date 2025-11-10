@@ -104,7 +104,7 @@ public static async createLeaveRequest(data: LeaveRequest) {
   } finally {
     connection.release();
   }
-}
+} 
 
 
   public static async getLeaveBalances() {
