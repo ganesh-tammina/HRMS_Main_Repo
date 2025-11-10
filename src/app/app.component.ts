@@ -95,9 +95,9 @@ export class AppComponent implements OnInit {
   //   window.location.href = '/pre_onboarding';
   // }
   preonboard() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/pre-onboarding-cards']);
-    });
+    //});
   }
 
   logout() {

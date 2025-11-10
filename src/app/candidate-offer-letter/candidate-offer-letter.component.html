@@ -67,16 +67,20 @@
       </ion-button>
     </div>
 
-    <div class="footer-block">
+    <div class="footer-block" *ngFor = "let item of one">
       <p class="mail-text">Any questions? Reach out to us</p>
       <div class="row-space-between">
         <div class="row-left">
           <ion-icon name="mail"></ion-icon>
-          <p>hr@tammina.com</p>
+          <p>{{item.work_email}}</p>
+        </div>
+           <div class="row-left">
+          <ion-icon name="mail"></ion-icon>
+          <p>{{item.full_name}}</p>
         </div>
         <div class="row-left">
           <ion-icon name="phone-portrait"></ion-icon>
-          <p>{{ candidate?.PhoneNumber }}</p>
+          <p>{{item.PhoneNumber}}</p>
         </div>
       </div>
     </div>

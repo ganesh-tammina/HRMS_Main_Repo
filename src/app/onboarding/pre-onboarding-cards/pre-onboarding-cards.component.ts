@@ -20,8 +20,8 @@ export class PreOnboardingCardsComponent implements OnInit {
 
   }
   preonboard() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['./pre_onboarding']);
-    });
+    //});
   }
 }
