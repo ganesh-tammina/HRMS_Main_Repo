@@ -174,4 +174,12 @@ router.get('/v1/image/:image_name', EmployeeController.serveImage);
 
 router.post('/v1/test-api', EmployeeLoginController.getRole);
 
+router.post(
+  '/v1/cancel-leave',
+  //verifyAccessToken
+  LeaveController.cancelLeaveRequest
+)
+// test apis here 🤡
+router.post('/v1/test-api', EmployeeLoginController.getRole)
+// add test apis here only
 export default router;
