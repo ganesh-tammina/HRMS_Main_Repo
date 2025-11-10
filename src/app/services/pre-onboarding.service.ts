@@ -447,7 +447,7 @@ export class CandidateService {
   setCurrentEmployee(employee: Employee | null): void {
     this.currentEmployeeSubject.next(employee);
 
-    if (employee) {
+    if (employee && employee.employee_id) {
       // Persist to localStorage for session restore
       localStorage.setItem(
         `loggedInEmployee_${employee.employee_id}`,
