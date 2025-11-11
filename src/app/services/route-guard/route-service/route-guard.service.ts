@@ -34,7 +34,6 @@ export class RouteGuardService {
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.EMPLOYEE_ID_KEY);
-<<<<<<< HEAD
     localStorage.removeItem('login_time'); // Clear login time on logout
     
     // Clear all attendance records for all users
@@ -44,8 +43,6 @@ export class RouteGuardService {
       }
     });
     
-=======
->>>>>>> e6556074353d2537e20a7079a93357d2a92a9ff2
     this.router.navigate(['/']);
   }
 

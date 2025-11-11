@@ -144,7 +144,7 @@ export class CandidateService {
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
-  private getEmployees = `${this.api}employees`;
+  private getEmployees = `${this.api}employee`;
   private forgotpwd = 'https://30.0.0.78:3562/api/v1/forgot-pwd';
   private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
   private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';

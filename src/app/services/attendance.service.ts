@@ -146,10 +146,4 @@ export class AttendanceService {
       }
     });
   }
-<<<<<<< HEAD
 }
-=======
-
-
-}
->>>>>>> e6556074353d2537e20a7079a93357d2a92a9ff2

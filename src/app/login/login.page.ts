@@ -190,16 +190,12 @@ export class LoginPage implements OnInit{
             }
           },
           error: (err) => {
-<<<<<<< HEAD
             // Override server email validation message
             if (err.error.message && err.error.message.includes('must be a valid email')) {
               this.er = 'Please enter a valid email address.';
             } else {
               this.er = err.error.message;
             }
-=======
-            this.er = err.error.message;
->>>>>>> e6556074353d2537e20a7079a93357d2a92a9ff2
             this.loader = false;
           },
           complete: () => {
