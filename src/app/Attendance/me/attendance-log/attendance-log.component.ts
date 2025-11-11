@@ -354,7 +354,6 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   setTab(tab: string) {
     this.activeTab = tab;
   }
-
   generateDays() {
     const today = new Date();
     const dayOfWeek = today.getDay();

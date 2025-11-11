@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
-import { AttendanceService } from './attendance.service';
+
 import { RouteGuardService } from './route-guard/route-service/route-guard.service';
 import { refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
@@ -144,12 +144,12 @@ export class CandidateService {
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `${this.api}candidates`;
-  private getEmployees = `${this.api}employee`;
-  private forgotpwd = `${this.api}forgot-pwd`;
-  private newpassword = `${this.api}add-pwd`;
-  private updatepassword = `${this.api}change-new-pwd`;
-  private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = 'https://${this.env.apiURL}/offerstatus/status';
+  private getEmployees = `${this.api}employees`;
+  private forgotpwd = 'https://30.0.0.78:3562/api/v1/forgot-pwd';
+  private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
+  private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';
+  private changeoldEmpwd = 'https://30.0.0.78:3562/api/v1/change-pwd';
+  private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}uploads`;
   private empUrl = this.getEmployees
@@ -172,7 +172,6 @@ export class CandidateService {
 
   constructor(
     private http: HttpClient,
-    private attendanceService: AttendanceService,
     private routeGuardService: RouteGuardService
   ) { }
   private getStoredEmployee(): Employee | null {
@@ -411,7 +410,6 @@ export class CandidateService {
             'activeEmployeeId',
             found.employee_id.toString()
           );
-          this.attendanceService.getRecord(found.employee_id);
         }
       })
     );
@@ -433,6 +431,7 @@ export class CandidateService {
   logout() {
     localStorage.clear();
     this.currentCandidateSubject.next(null);
+    this.currentEmployeeSubject.next(null);
   }
 
   searchCandidates(query: string): Candidate[] {
