@@ -37,6 +37,7 @@ export class CompensationComponent implements OnInit {
     // Get candidate object from router state
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras.state?.['candidate'] || {};
+    console.log('candidate', this.candidate);
 
     // Initialize employeeCredentials if it doesn't exist
     if (!this.candidate.employeeCredentials) {
