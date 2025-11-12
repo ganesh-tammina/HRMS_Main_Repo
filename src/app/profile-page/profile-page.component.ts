@@ -11,6 +11,7 @@ import { JobTabComponent } from './job-tab/job-tab.component';
 import { DocumentTabComponent } from './document-tab/document-tab.component';
 import { AssetsTabComponent } from './assets-tab/assets-tab.component';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile-page',
@@ -35,6 +36,8 @@ export class ProfilePageComponent implements OnInit {
   selectedFile: File | null = null;
   uploadedImageUrl: string | null = null;
   isUploading: boolean = false;
+    private env = environment;
+    private api = `https://${this.env.apiURL}/api/v1/`;
 
   constructor(
     private candidateService: CandidateService,

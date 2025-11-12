@@ -13,7 +13,7 @@
               {{ isUploading ? 'Uploading...' : 'Upload Profile Pic' }}
             </ion-button>
           </div>
-          <img [attr.alt]="currentemp.FirstName" [src]="uploadedImageUrl || '../../assets/user.svg'" width="100"
+          <img [attr.alt]="currentemp.FirstName" [src]="uploadedImageUrl ? 'https://30.0.0.78:3562' + uploadedImageUrl : '../../assets/user.svg'" width="100"
             height="100" />
           <div class="ion-text-center">
             <p class="name">{{currentemp.full_name}}</p>
