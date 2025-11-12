@@ -54,7 +54,7 @@ interface CalendarDay {
   standalone: true,
   imports: [IonicModule, CommonModule]
 })
-export class AttendanceLogComponent implements OnInit, OnDestroy {
+export class AttendanceLogComponent implements OnInit, OnDestroy, ViewWillEnter {
   employee?: Candidate;
   record?: AttendanceRecord;
 
@@ -121,6 +121,16 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
       }
     });
 
+    // Listen for clock actions and refresh data
+    this.attendanceService.response$.subscribe(response => {
+      if (response && response.data) {
+        console.log('Clock action detected, refreshing attendance logs...');
+        setTimeout(() => {
+          this.loadAllAttendanceData();
+        }, 1000); // Small delay to ensure server has processed the request
+      }
+    });
+
     this.attendanceService.getRecord(this.employee.id);
     this.generateDays();
     this.attendanceRecord();
@@ -172,9 +182,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
         const groupedByDate: any = {};
         normalized.forEach((record: any) => {
-          const dateObj = new Date(record.attendance_date);
-          dateObj.setDate(dateObj.getDate() + 1);
-          const date = dateObj.toISOString().split('T')[0];
+          const date = record.attendance_date;
 
           if (!groupedByDate[date]) {
             groupedByDate[date] = {
@@ -253,9 +261,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
       const groupedByDate: any = {};
       normalized.forEach((record: any) => {
-        const dateObj = new Date(record.attendance_date);
-        dateObj.setDate(dateObj.getDate() + 1);
-        const date = dateObj.toISOString().split('T')[0];
+        const date = record.attendance_date;
 
         if (!groupedByDate[date]) {
           groupedByDate[date] = {
@@ -305,6 +311,11 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.routerSubscription?.unsubscribe();
+  }
+
+  ionViewWillEnter() {
+    console.log('Attendance log view entered, refreshing data...');
+    this.loadAllAttendanceData();
   }
 
 
@@ -367,8 +378,32 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   }
 
   openLogDetails(log: AttendanceLog) {
-    this.selectedLog = log;
-    this.showPopover = true;
+    // Immediately refresh today's attendance data
+    this.attendanceService.getallattendace({
+      employee_id: this.abcd.employeeID,
+      date: new Date().toISOString().split('T')[0]
+    }).subscribe({
+      next: (data) => {
+        if (data && data.attendance && data.attendance.length > 0) {
+          // Update the selected log with fresh records
+          const updatedLog = {
+            ...log,
+            records: data.attendance.map((item: any) => ({
+              check_in: item.check_in,
+              check_out: item.check_out
+            }))
+          };
+          this.selectedLog = updatedLog;
+        } else {
+          this.selectedLog = log;
+        }
+        this.showPopover = true;
+      },
+      error: () => {
+        this.selectedLog = log;
+        this.showPopover = true;
+      }
+    });
   }
 
   closePopover() {

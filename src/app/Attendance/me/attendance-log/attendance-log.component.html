@@ -45,44 +45,40 @@
     </ion-col>
   </ion-row>
 
-  <!-- Popover showing all check-ins/check-outs -->
+  <!-- Popover showing detailed attendance log -->
   <ion-popover *ngIf="showPopover" [isOpen]="showPopover" [dismissOnSelect]="false">
     <ng-template>
       <ion-content class="popover-content ion-padding">
-        <p class="card-title">
-          Attendance Log — {{ selectedLog?.attendance_date }}
-        </p>
-        <p class="divider"></p>
+        <div class="log-header">
+          <h3>Day shift 1</h3>
+          <br>
+          <p>({{ selectedLog?.attendance_date }})</p>
+          <p><strong>9:30 - 18:30</strong></p>
+          <br>
+        </div>
+        
+        <!-- <div class="log-section">
+          <p class="section-title">Apply Partial Day</p>
+          <p class="location">1st Floor SVS Towers</p>
+        </div> -->
 
-        <div *ngIf="selectedLog?.records?.length > 0; else noRecords">
-          <ion-row class="ion-no-padding" *ngFor="let rec of selectedLog.records.slice().reverse(); let i = index">
-            <ion-col class="clock-logs" size="6">
-              <div>
-                <p *ngIf="rec.check_in">
-                  <strong>Check-In {{ selectedLog.records.length - i }}:</strong>
-                  {{ rec.check_in }}
-                  <img src="../../assets/Icons/clock-in.svg" width="12" style="margin-left: 5px;" />
-                </p>
+        <div class="log-section" *ngIf="selectedLog?.records?.length > 0">
+          <p class="section-title">Web Clock In</p>
+          <div class="time-entries-grid">
+            <div *ngFor="let rec of selectedLog.records" class="time-pair">
+              <div *ngIf="rec.check_in" class="time-entry clock-in">
+                <ion-icon name="arrow-up" class="arrow-in"></ion-icon>
+                <span class="time-stamp">{{ rec.check_in }}</span>
               </div>
-            </ion-col>
-
-            <ion-col class="clock-logs" size="6">
-              <div>
-                <p *ngIf="rec.check_out">
-                  <strong>Check-Out {{ selectedLog.records.length - i }}:</strong>
-                  {{ rec.check_out }}
-                  <img src="../../assets/Icons/clock-out.svg" width="12" style="margin-left: 5px;" />
-                </p>
+              <div *ngIf="rec.check_out" class="time-entry clock-out">
+                <ion-icon name="arrow-down" class="arrow-out"></ion-icon>
+                <span class="time-stamp">{{ rec.check_out }}</span>
               </div>
-            </ion-col>
-          </ion-row>
+            </div>
+          </div>
         </div>
 
-        <ng-template #noRecords>
-          <p>No check-in/check-out records found.</p>
-        </ng-template>
-
-        <ion-button expand="block" color="medium" (click)="showPopover = false" style="margin-top: 10px;">
+        <ion-button expand="block" color="medium" (click)="showPopover = false" style="margin-top: 15px;">
           Close
         </ion-button>
       </ion-content>

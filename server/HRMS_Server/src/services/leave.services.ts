@@ -19,19 +19,25 @@ export default class LeaveService {
   }
 
   public static async createLeaveRequest(data: LeaveRequest) {
-    console.log('Creating leave request with data:', data);
-    const [rows] = await pool.query(
-      `INSERT INTO leave_requests (employee_id,leave_type, start_date, end_date, total_days, remarks) VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        data.employee_id,
-        data.leave_type,
-        data.start_date,
-        data.end_date,
-        data.total_days,
-        data.remarks || null,
-      ]
-    );
-    return rows;
+    try {
+      console.log('Creating leave request with data:', data);
+      const [rows] = await pool.query(
+        `INSERT INTO leave_requests (employee_id,leave_type, start_date, end_date, total_days, remarks) VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          data.employee_id,
+          data.leave_type,
+          data.start_date,
+          data.end_date,
+          data.total_days,
+          data.remarks || null,
+        ]
+      );
+      console.log('Leave request created successfully for employee:', data.employee_id);
+      return rows;
+    } catch (error) {
+      console.error('Error creating leave request:', error);
+      throw error;
+    }
   }
   public static async getLeaveBalances() {
     const [rows] = await pool.query('SELECT * FROM leave_balance');
