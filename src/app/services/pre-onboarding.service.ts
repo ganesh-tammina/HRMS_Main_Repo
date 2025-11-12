@@ -153,9 +153,9 @@ export class CandidateService {
   private changeoldEmpwd = `${this.api}change-pwd`;
   private offerStatusapi = 'https://${this.env.apiURL}/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
-  private imagesUrl = `https://localhost:3562/api/v1/employee/profile-pic/upsert`;
+  private imagesUrl = `${this.api}/employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
-  private empProfileUrl = "https://localhost:3562/api/v1/employee/profile-pic/upsert";
+  private empProfileUrl = `${this.api}/employee/profile-pic/upsert`;
 
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
