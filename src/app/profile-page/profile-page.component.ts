@@ -38,7 +38,6 @@ export class ProfilePageComponent implements OnInit {
   isUploading: boolean = false;
     private env = environment;
     private api = `https://${this.env.apiURL}/api/v1/`;
-
   constructor(
     private candidateService: CandidateService,
     private routeGuardService: RouteGuardService
@@ -126,5 +125,7 @@ uploadProfilePic() {
 edit() {
   console.log('edit');
 }
+
+
 }
 

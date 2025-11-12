@@ -6,15 +6,44 @@
     <ion-row>
       <ion-col size="4" class="welcome-block ion-no-padding">
         <ion-card>
-          <div>
-            <input type="file" accept="image/*" (change)="onFileSelected($event)">
-            <ion-button (click)="uploadProfilePic()" [disabled]="!selectedFile || isUploading"
-              class="primary-btn row-right" type="submit">
-              {{ isUploading ? 'Uploading...' : 'Upload Profile Pic' }}
-            </ion-button>
-          </div>
+        <div class="img-block" id="image-trigger">
           <img [attr.alt]="currentemp.FirstName" [src]="uploadedImageUrl || '../../assets/user.svg'" width="100"
-            height="100" />
+          height="100" />
+          <ion-button class="img-button" id="image-trigger">
+            <div class="ion-text-center">
+                <ion-icon name="camera"></ion-icon>
+                <p class="text">upload image</p>
+            </div></ion-button>
+        </div>
+
+        <!-- modal popup for image uploader -->
+        <ion-popover trigger="image-trigger" class="image-popup" triggerAction="click">
+            <ng-template>
+                <div class="ion-padding">
+                    <p class="popup-title">Upload profile photo</p>
+                    <div class="img-border">
+                        <img [attr.alt]="currentemp.FirstName" [src]="uploadedImageUrl || '../../assets/user.svg'" width="100"
+                        height="100" />
+                    </div>
+                      <label class="file-attach">
+                          <input type="file" accept="image/*" (change)="onFileSelected($event)">
+                          <p>Choose file</p>
+                      </label>
+                      
+                      <ion-button (click)="uploadProfilePic()" [disabled]="!selectedFile || isUploading"
+                        class="primary-btn row-right" type="submit">
+                        {{ isUploading ? 'Uploading...' : 'Upload Profile Pic' }}
+                      </ion-button>
+                    </div>
+            </ng-template>
+          </ion-popover>
+   
+
+
+
+
+
+            
           <div class="ion-text-center">
             <p class="name">{{currentemp.full_name}}</p>
             <p class="des">{{currentemp.job_title}}</p>
