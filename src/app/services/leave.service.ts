@@ -23,4 +23,9 @@ export class LeaveService {
     requestLeave(leaveRequest: any): Observable<any> {
         return this.http.post<any>(`${this.apiUrl}/v1/leave-request`, leaveRequest, { withCredentials: true });
     }
+
+    cancelLeaveRequest(leaveId: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/v1/cancel-leave`, { leaveId: leaveId }, { withCredentials: true });
+    }
+
 }

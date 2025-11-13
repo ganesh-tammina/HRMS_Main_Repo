@@ -14,8 +14,6 @@ export async function checkMyRole(
   res: Response,
   next: NextFunction
 ) {
-  // const employee_ID = await CheckerCrocodile.RoleChecker(req, res);
-  // not implemented yet, still work need to be done.
   console.log('check role');
   const id = parseInt(req.cookies?.id);
 
@@ -29,10 +27,10 @@ export function checkIfIamValidEmployee(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.cookies?.employee_email || !req.cookies?.employee_id) {
+  if (!req.body?.email) {
     res.json('Nope, invalid request.').status(500);
   } else {
-    req.body.email = req.cookies?.employee_email;
+    req.body.email = req.body?.email;
     next();
   }
 }
@@ -84,26 +82,58 @@ export const verifyAccessToken = async (
         .status(401)
         .json({ success: false, message: 'Access token missing' });
     }
-    // if (!refreshToken) {
-    //   return res
-    //     .status(401)
-    //     .json({ success: false, message: 'Refresh token missing' });
-    // }
+
     const decoded: any = jwt.verify(token, config.JWT_TOKEN);
     const jwt_check = await LoginService.isTokenActive(token);
     if (jwt_check) {
       (req as any).employee = decoded;
-      (req.body as any).id = decoded.employee_id
+      (req.body as any).id = decoded.employee_id;
 
       next();
     } else {
       (req as any).employee = decoded;
-      (req.body as any).id = decoded.employee_id
-      next()
+      (req.body as any).id = decoded.employee_id;
+      next();
     }
   } catch (error) {
     return res
       .status(401)
       .json({ success: false, message: 'Invalid or expired token' });
+  }
+};
+
+export const profilepictypechecker = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const file = req.file;
+
+    if (!file) {
+      res.status(400).json({ success: false, message: 'No file uploaded' });
+      return;
+    }
+
+    const allowedTypes = [
+      'image/jpeg',
+      // 'image/png',
+      'image/jpg',
+      'image/gif',
+      'image/webp',
+    ];
+
+    if (!allowedTypes.includes(file.mimetype)) {
+      res.status(400).json({
+        success: false,
+        message: `Invalid file type: ${file.mimetype}. Only image files are allowed.`,
+      });
+      return;
+    }
+
+    next();
+  } catch (error) {
+    console.error('Error in profilepictypechecker:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };

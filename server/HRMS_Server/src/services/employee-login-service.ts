@@ -6,10 +6,33 @@ import { sendMail } from './mail-sender-service/mailer-service';
 import { PasswordUtil } from '../utils/Password-Encryption-Decryption';
 import { config } from '../config/env';
 
+type JwtPair = { access_token: string; refresh_token: string };
+type SimpleResult = {
+  success: boolean;
+  status?: number;
+  message?: string;
+  [k: string]: any;
+};
+
+const COOKIE_OPTS_HTTP_ONLY = {
+  httpOnly: true,
+  sameSite: 'strict' as const,
+};
+const COOKIE_OPTS_SECURE = { ...COOKIE_OPTS_HTTP_ONLY, secure: true as const };
+const COOKIE_OPTS_INSECURE = {
+  ...COOKIE_OPTS_HTTP_ONLY,
+  secure: false as const,
+};
+
+const ACCESS_TOKEN_AGE_MS = 24 * 60 * 60 * 1000;
+const REFRESH_TOKEN_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+const OTP_EXPIRY_MINUTES = 5;
+
 export default class LoginService {
   private static emailSchema = Joi.object({
     email: Joi.string().email().max(255).lowercase().required(),
   });
+
   private static passwordChangeSchema = Joi.object({
     email: Joi.string().email().max(255).lowercase().required(),
     otp: Joi.string()
@@ -24,10 +47,12 @@ export default class LoginService {
       .pattern(/[@$!%*?&#]/, 'special character')
       .required(),
   });
+
   private static loginSchema = Joi.object({
     email: Joi.string().email().max(255).lowercase().required(),
     password: Joi.string().required(),
   });
+
   static async emailCheck(req: Request, res: Response): Promise<void> {
     try {
       const { error, value }: any = LoginService.emailSchema.validate(
@@ -36,28 +61,22 @@ export default class LoginService {
           abortEarly: false,
         }
       );
-
       if (error) {
-        res.status(422).json({
-          success: false,
-          message: error.details[0].message,
-        });
+        res
+          .status(422)
+          .json({ success: false, message: error.details[0].message });
         return;
       }
 
       const { email } = value;
 
       const [credentialRows]: any = await pool.query(
-        `SELECT * FROM employee_credentials WHERE email = ?`,
+        `SELECT 1 FROM employee_credentials WHERE email = ? LIMIT 1`,
         [email]
       );
 
       if (credentialRows.length > 0) {
-        res.cookie('employee_email', email, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-        });
+        res.cookie('employee_email', email, COOKIE_OPTS_SECURE);
         res.status(200).json({
           success: true,
           type: 'existing_employee',
@@ -67,15 +86,12 @@ export default class LoginService {
       }
 
       const [employeeRows]: any = await pool.query(
-        `SELECT employee_id, work_email FROM employees WHERE work_email = ?`,
+        `SELECT employee_id, work_email FROM employees WHERE work_email = ? LIMIT 1`,
         [email]
       );
 
       if (employeeRows.length === 0) {
-        res.status(400).json({
-          success: false,
-          message: 'Email not found.',
-        });
+        res.status(400).json({ success: false, message: 'Email not found.' });
         return;
       }
 
@@ -84,20 +100,12 @@ export default class LoginService {
         [email]
       );
 
-      const { employee_id }: any = employeeRows[0];
+      const { employee_id } = employeeRows[0];
       const otpResponse = await LoginService.otpUtil(email);
 
       if (otpResponse.success) {
-        res.cookie('employee_email', email, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-        });
-        res.cookie('employee_id', employee_id, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-        });
+        res.cookie('employee_email', email, COOKIE_OPTS_SECURE);
+        res.cookie('employee_id', employee_id, COOKIE_OPTS_SECURE);
         res.status(200).json({
           success: true,
           type: 'new_employee',
@@ -106,26 +114,23 @@ export default class LoginService {
           employee_id,
         });
       } else {
-        res.status(otpResponse.status).json(otpResponse);
+        res.status(otpResponse.status || 500).json(otpResponse);
       }
-    } catch (error) {
-      console.error('Email check error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error.',
-      });
+    } catch (err) {
+      console.error('Email check error:', err);
+      res
+        .status(500)
+        .json({ success: false, message: 'Internal server error.' });
     }
   }
+
   static async passwordGen(req: Request, res: Response): Promise<void> {
     const conn = await pool.getConnection();
     try {
       const { error, value }: any = LoginService.passwordChangeSchema.validate(
         req.body,
-        {
-          abortEarly: false,
-        }
+        { abortEarly: false }
       );
-
       if (error) {
         res
           .status(422)
@@ -138,7 +143,7 @@ export default class LoginService {
       await conn.beginTransaction();
 
       const [rows]: any = await conn.query(
-        `SELECT * FROM password_change_otp WHERE email = ? AND otp = ? AND status = 'active' ORDER BY createdAt DESC LIMIT 1 FOR UPDATE`,
+        `SELECT sl_no, otp, createdAt FROM password_change_otp WHERE email = ? AND otp = ? AND status = 'active' ORDER BY createdAt DESC LIMIT 1 FOR UPDATE`,
         [email, otp]
       );
 
@@ -155,7 +160,7 @@ export default class LoginService {
       const now = new Date();
       const diffMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
 
-      if (diffMinutes > 5) {
+      if (diffMinutes > OTP_EXPIRY_MINUTES) {
         await conn.query(
           `UPDATE password_change_otp SET status = 'expired' WHERE sl_no = ?`,
           [otpRecord.sl_no]
@@ -169,7 +174,7 @@ export default class LoginService {
       }
 
       const [employeeRows]: any = await conn.query(
-        `SELECT employee_id FROM employees WHERE work_email = ?`,
+        `SELECT employee_id FROM employees WHERE work_email = ? LIMIT 1`,
         [email]
       );
 
@@ -182,10 +187,9 @@ export default class LoginService {
       }
 
       const empId = employeeRows[0].employee_id;
-      const hashedPassword = await PasswordUtil.hashPassword(newPassword);
 
       const [existingCred]: any = await conn.query(
-        `SELECT * FROM employee_credentials WHERE email = ?`,
+        `SELECT 1 FROM employee_credentials WHERE email = ? LIMIT 1`,
         [email]
       );
 
@@ -198,6 +202,8 @@ export default class LoginService {
         return;
       }
 
+      const hashedPassword = await PasswordUtil.hashPassword(newPassword);
+
       await conn.query(
         `INSERT INTO employee_credentials (employee_id, email, password) VALUES (?, ?, ?)`,
         [empId, email, hashedPassword]
@@ -209,13 +215,14 @@ export default class LoginService {
       );
 
       await conn.commit();
-      res.json({
-        success: true,
-        message: 'Password updated successfully',
-      });
+      res.json({ success: true, message: 'Password updated successfully' });
     } catch (err) {
       console.error('Error in passwordGen:', err);
-      await conn.rollback();
+      try {
+        await conn.rollback();
+      } catch (rollbackErr) {
+        console.error('Rollback failed:', rollbackErr);
+      }
       res
         .status(500)
         .json({ success: false, message: 'Internal server error' });
@@ -223,15 +230,13 @@ export default class LoginService {
       conn.release();
     }
   }
+
   static async login(req: Request, res: Response): Promise<void> {
     try {
       const { error, value }: any = LoginService.loginSchema.validate(
         req.body,
-        {
-          abortEarly: false,
-        }
+        { abortEarly: false }
       );
-
       if (error) {
         res
           .status(422)
@@ -242,7 +247,7 @@ export default class LoginService {
       const { email, password } = value;
 
       const [rows]: any = await pool.query(
-        `SELECT employee_id, password FROM employee_credentials WHERE email = ?`,
+        `SELECT employee_id, password FROM employee_credentials WHERE email = ? LIMIT 1`,
         [email]
       );
 
@@ -256,102 +261,35 @@ export default class LoginService {
         password,
         user.password
       );
-
       if (!isMatch) {
         res.status(401).json({ success: false, message: 'Invalid password' });
         return;
       }
 
-      await LoginService.cookieSetter(user.employee_id, email, res);
-      const { access_token, refresh_token } = await LoginService.jwtAuth(
-        user.employee_id
-      );
-      const tiger = await this.getEmployeeRoles(user.employee_id);
-      if (tiger.status === 'success') {
-        res.status(200).json({
-          success: true,
-          message: 'Login successful',
-          employee_id: user.employee_id,
-          role: tiger.data[0].role_name,
-          access_token,
-          refresh_token
-        });
-      }
-    } catch (error) {
-      console.error('Login error:', error);
+      const { access_token, refresh_token, role } =
+        await LoginService.cookieSetter(user.employee_id, email, res);
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        employee_id: user.employee_id,
+        role,
+        access_token,
+        refresh_token,
+      });
+    } catch (err) {
+      console.error('Login error:', err);
       res
         .status(500)
         .json({ success: false, message: 'Internal server error' });
     }
   }
-  private static async cookieSetter(
-    employee_id: number,
-    email: string,
-    res: Response
-  ): Promise<void> {
-    const conn = await pool.getConnection();
-    try {
-      await conn.beginTransaction();
-      const tokenCheck = await this.resetTokens(employee_id);
-      if (!tokenCheck.success) {
-        throw new Error('Failed to reset tokens');
-      }
 
-      const { access_token, refresh_token } = await LoginService.jwtAuth(
-        employee_id
-      );
-
-      await conn.query(
-        `INSERT INTO jwt_auth (employee_id, access_token, refresh_token, status) VALUES (?, ?, ?, 'active')`,
-        [employee_id, access_token, refresh_token]
-      );
-
-      const tiger = await this.getEmployeeRoles(employee_id);
-      if (tiger.status === 'success') {
-        res.cookie('role', tiger.data[0].role_name, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          maxAge: 24 * 60 * 60 * 1000,
-        });
-      }
-      res.cookie('access_token', access_token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      res.cookie('refresh_token', refresh_token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-      });
-      res.cookie('employee_email', email, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'strict',
-      });
-      res.cookie('id', employee_id, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'strict',
-      });
-
-      await conn.commit();
-    } catch (error) {
-      await conn.rollback();
-      throw error;
-    } finally {
-      conn.release();
-    }
-  }
   static async invalidateExpiredTokens(): Promise<void> {
     try {
       const [tokens]: any = await pool.query(
         `SELECT id, access_token, refresh_token FROM jwt_auth WHERE status = 'active'`
       );
-
       for (const token of tokens) {
         try {
           jwt.verify(token.access_token, config.JWT_TOKEN);
@@ -363,12 +301,12 @@ export default class LoginService {
           );
         }
       }
-
       console.log('Expired tokens invalidated successfully.');
-    } catch (error) {
-      console.error('Error invalidating tokens:', error);
+    } catch (err) {
+      console.error('Error invalidating tokens:', err);
     }
   }
+
   static async logout(req: Request, res: Response): Promise<void> {
     try {
       const token = req.cookies?.access_token;
@@ -385,16 +323,19 @@ export default class LoginService {
       res.clearCookie('access_token');
       res.clearCookie('refresh_token');
       res.clearCookie('employee_email');
+      res.clearCookie('role');
+      res.clearCookie('id');
 
       res.status(200).json({ success: true, message: 'Logout successful' });
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch (err) {
+      console.error('Logout error:', err);
       res
         .status(500)
         .json({ success: false, message: 'Internal server error' });
     }
   }
-  static async refreshToken(req: Request, res: Response): Promise<any> {
+
+  static async refreshToken(req: Request, res: Response): Promise<void> {
     try {
       const refreshToken = req.body?.refresh_token;
       if (!refreshToken) {
@@ -405,7 +346,7 @@ export default class LoginService {
       }
 
       const [tokenRows]: any = await pool.query(
-        `SELECT employee_id, status FROM jwt_auth WHERE refresh_token = ?`,
+        `SELECT employee_id, status FROM jwt_auth WHERE refresh_token = ? LIMIT 1`,
         [refreshToken]
       );
 
@@ -434,8 +375,9 @@ export default class LoginService {
       }
 
       const { employee_id } = payload;
+
       const [employeeRows]: any = await pool.query(
-        `SELECT email FROM employee_credentials WHERE employee_id = ?`,
+        `SELECT email FROM employee_credentials WHERE employee_id = ? LIMIT 1`,
         [employee_id]
       );
 
@@ -444,26 +386,31 @@ export default class LoginService {
         return;
       }
 
-      await LoginService.cookieSetter(employee_id, employeeRows[0].email, res);
-      return {
+      const { access_token, refresh_token, role } =
+        await LoginService.cookieSetter(
+          employee_id,
+          employeeRows[0].email,
+          res
+        );
+
+      res.json({
         success: true,
         message: 'Token refreshed successfully',
-        employee_id: employee_id,
-      };
-    } catch (error) {
-      console.error('Refresh token error:', error);
+        employee_id,
+        access_token,
+        refresh_token,
+        role,
+      });
+    } catch (err) {
+      console.error('Refresh token error:', err);
       res
         .status(500)
         .json({ success: false, message: 'Internal server error' });
     }
   }
-  private static async jwtAuth(employee_id: number): Promise<{
-    access_token: string;
-    refresh_token: string;
-  }> {
-    if (!config.JWT_TOKEN) {
-      throw new Error('JWT secret is not configured');
-    }
+
+  private static async jwtAuth(employee_id: number): Promise<JwtPair> {
+    if (!config.JWT_TOKEN) throw new Error('JWT secret is not configured');
     const access_token = jwt.sign({ employee_id }, config.JWT_TOKEN, {
       expiresIn: '1d',
     });
@@ -472,11 +419,8 @@ export default class LoginService {
     });
     return { access_token, refresh_token };
   }
-  private static async otpUtil(email: string): Promise<{
-    status: number;
-    success: boolean;
-    message: string;
-  }> {
+
+  private static async otpUtil(email: string): Promise<SimpleResult> {
     try {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const conn = await pool.getConnection();
@@ -499,7 +443,7 @@ export default class LoginService {
         email,
         'Password Reset OTP',
         `Your OTP is ${otp}`,
-        `<p>Your OTP for password reset is <b>${otp}</b>. It will expire in 5 minutes.</p>
+        `<p>Your OTP for password reset is <b>${otp}</b>. It will expire in ${OTP_EXPIRY_MINUTES} minutes.</p>
          <a href="https://localhost:4200/login">Click here to reset your password</a>`
       );
 
@@ -509,7 +453,68 @@ export default class LoginService {
       return { status: 500, success: false, message: 'Internal server error' };
     }
   }
-static async resetTokens(employee_id: number): Promise<{
+
+  private static async cookieSetter(
+    employee_id: number,
+    email: string,
+    res: Response
+  ): Promise<{ access_token: string; refresh_token: string; role?: string }> {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      const [delResult]: any = await conn.query(
+        `DELETE FROM jwt_auth WHERE employee_id = ? AND status IN ('active', 'revoked')`,
+        [employee_id]
+      );
+
+      const { access_token, refresh_token } = await LoginService.jwtAuth(
+        employee_id
+      );
+
+      await conn.query(
+        `INSERT INTO jwt_auth (employee_id, access_token, refresh_token, status) VALUES (?, ?, ?, 'active')`,
+        [employee_id, access_token, refresh_token]
+      );
+
+      const roleResult = await LoginService.getEmployeeRoles(employee_id);
+
+      const role =
+        roleResult.status === 'success' && roleResult.data?.[0]?.role_name
+          ? roleResult.data[0].role_name
+          : undefined;
+
+      if (role) {
+        res.cookie('role', role, {
+          ...COOKIE_OPTS_INSECURE,
+          maxAge: ACCESS_TOKEN_AGE_MS,
+        });
+      }
+
+      res.cookie('access_token', access_token, {
+        ...COOKIE_OPTS_INSECURE,
+        maxAge: ACCESS_TOKEN_AGE_MS,
+      });
+      res.cookie('refresh_token', refresh_token, {
+        ...COOKIE_OPTS_INSECURE,
+        maxAge: REFRESH_TOKEN_AGE_MS,
+      });
+
+      res.cookie('employee_email', email, COOKIE_OPTS_INSECURE);
+      res.cookie('id', employee_id, COOKIE_OPTS_INSECURE);
+
+      await conn.commit();
+      return { access_token, refresh_token, role };
+    } catch (err) {
+      await conn.rollback();
+      console.error('cookieSetter error:', err);
+      throw err;
+    } finally {
+      conn.release();
+    }
+  }
+
+  static async resetTokens(employee_id: number): Promise<{
     success: boolean;
     deleted?: number;
     message?: string;
@@ -519,132 +524,276 @@ static async resetTokens(employee_id: number): Promise<{
     try {
       await conn.beginTransaction();
       const [activeTokens]: any = await conn.query(
-        `SELECT * FROM jwt_auth WHERE employee_id = ? AND status IN ('active', 'revoked')`,
+        `SELECT COUNT(*) AS cnt FROM jwt_auth WHERE employee_id = ? AND status IN ('active', 'revoked')`,
         [employee_id]
       );
-
-      if (activeTokens.length > 0) {
+      const count = activeTokens?.[0]?.cnt || 0;
+      if (count > 0) {
         await conn.query(
           `DELETE FROM jwt_auth WHERE employee_id = ? AND status IN ('active', 'revoked')`,
           [employee_id]
         );
       }
-
       await conn.commit();
-      return {
-        success: true,
-        deleted: activeTokens.length,
-      };
-    } catch (error) {
+      return { success: true, deleted: count };
+    } catch (err) {
       await conn.rollback();
-      console.error('Error in resetTokens:', error);
+      console.error('Error in resetTokens:', err);
       return {
         success: false,
         message: 'Internal Server Error',
-        error: (error as Error).message,
+        error: (err as Error).message,
       };
     } finally {
       conn.release();
     }
   }
+
   public static async isTokenActive(token: string): Promise<boolean> {
     try {
       const [rows]: any = await pool.query(
-        `SELECT status, createdAt, access_token, refresh_token FROM jwt_auth WHERE access_token = ? OR refresh_token = ?`,
+        `SELECT status, createdAt, access_token, refresh_token FROM jwt_auth WHERE access_token = ? OR refresh_token = ? LIMIT 1`,
         [token, token]
       );
-      if (rows.length === 0) {
-        return false;
-      }
+      if (rows.length === 0) return false;
       const tokenRecord = rows[0];
-      if (tokenRecord.status !== 'active') {
-        return false;
-      }
+      if (tokenRecord.status !== 'active') return false;
+
       const createdAt = new Date(tokenRecord.createdAt);
       const now = new Date();
       const diffMs = now.getTime() - createdAt.getTime();
       const diffHours = diffMs / (1000 * 60 * 60);
       const diffDays = diffHours / 24;
+
       if (tokenRecord.access_token === token) {
-        return diffHours <= 1;
+        return diffHours <= 24;
       }
       if (tokenRecord.refresh_token === token) {
         return diffDays <= 30;
       }
       return false;
-    } catch (error) {
-      console.error('Error checking token status:', error);
+    } catch (err) {
+      console.error('Error checking token status:', err);
       return false;
     }
   }
+
   public static async getEmployeeRoles(employee_id: number) {
     if (!employee_id || isNaN(employee_id)) {
-      return {
-        status: 'error',
-        message: 'Invalid or missing employee_id.',
-      };
+      return { status: 'error', message: 'Invalid or missing employee_id.' };
     }
     let connection;
     try {
       connection = await pool.getConnection();
+
       const [employeeRoles]: any = await connection.query(
         `SELECT r.role_id, r.role_name, r.description
-       FROM employee_roles er
-       JOIN roles r ON er.role_id = r.role_id
-       WHERE er.employee_id = ?`,
+         FROM employee_roles er
+         JOIN roles r ON er.role_id = r.role_id
+         WHERE er.employee_id = ?`,
         [employee_id]
       );
-      if (employeeRoles.length > 0) {
-        return {
-          status: 'success',
-          data: employeeRoles,
-        };
-      }
+      if (employeeRoles.length > 0)
+        return { status: 'success', data: employeeRoles };
+
       const [jobTitleRoles]: any = await connection.query(
         `SELECT r.role_id, r.role_name, r.description
-       FROM employment_details ed
-       JOIN job_titles jt ON ed.job_title = jt.job_title_name
-       JOIN job_title_roles jtr ON jt.job_title_id = jtr.job_title_id
-       JOIN roles r ON jtr.role_id = r.role_id
-       WHERE ed.employee_id = ?`,
+         FROM employment_details ed
+         JOIN job_titles jt ON ed.job_title = jt.job_title_name
+         JOIN job_title_roles jtr ON jt.job_title_id = jtr.job_title_id
+         JOIN roles r ON jtr.role_id = r.role_id
+         WHERE ed.employee_id = ?`,
         [employee_id]
       );
-      if (jobTitleRoles.length > 0) {
-        return {
-          status: 'success',
-          data: jobTitleRoles,
-        };
-      }
+      if (jobTitleRoles.length > 0)
+        return { status: 'success', data: jobTitleRoles };
+
       const [departmentRoles]: any = await connection.query(
         `SELECT r.role_id, r.role_name, r.description
-       FROM employment_details ed
-       JOIN departments d ON ed.department = d.department_name
-       JOIN department_role dr ON d.department_id = dr.department_id
-       JOIN roles r ON dr.role_id = r.role_id
-       WHERE ed.employee_id = ?`,
+         FROM employment_details ed
+         JOIN departments d ON ed.department = d.department_name
+         JOIN department_role dr ON d.department_id = dr.department_id
+         JOIN roles r ON dr.role_id = r.role_id
+         WHERE ed.employee_id = ?`,
         [employee_id]
       );
-      if (departmentRoles.length > 0) {
-        return {
-          status: 'success',
-          data: departmentRoles,
-        };
-      }
-      return {
-        status: 'error',
-        message: 'Contact System Admin',
-      };
-    } catch (error) {
-      console.error('Error fetching employee roles:', error);
+      if (departmentRoles.length > 0)
+        return { status: 'success', data: departmentRoles };
+
+      return { status: 'error', message: 'Contact System Admin' };
+    } catch (err) {
+      console.error('Error fetching employee roles:', err);
       return {
         status: 'error',
         message:
           'An error occurred while retrieving roles. Please try again later.',
       };
     } finally {
-      if (connection) {
-        connection.release();
+      if (connection) connection.release();
+    }
+  }
+
+  static async emailCheckForForgot(req: Request, res: Response): Promise<void> {
+    try {
+      // 1️⃣ Validate email input
+      const { error, value }: any = LoginService.emailSchema.validate(
+        req.body,
+        {
+          abortEarly: false,
+        }
+      );
+
+      if (error) {
+        res
+          .status(422)
+          .json({ success: false, message: error.details[0].message });
+        return;
       }
+
+      const { email } = value;
+
+      // 2️⃣ Check if the email exists in credentials
+      const [credentialRows]: any = await pool.query(
+        `SELECT email FROM employee_credentials WHERE email = ? LIMIT 1`,
+        [email]
+      );
+
+      if (credentialRows.length === 0) {
+        res.status(404).json({ success: false, message: 'Email not found.' });
+        return;
+      }
+
+      // 3️⃣ Expire any active OTPs for this email
+      await pool.query(
+        `UPDATE password_change_otp SET status = 'expired' WHERE email = ? AND status = 'active'`,
+        [email]
+      );
+
+      // 4️⃣ Generate and send new OTP using existing utility
+      const otpResponse = await LoginService.otpUtil(email);
+
+      if (otpResponse.success) {
+        res.status(200).json({
+          success: true,
+          type: 'existing_employee',
+          message:
+            'OTP sent successfully. Please check your email to reset password.',
+        });
+      } else {
+        res.status(otpResponse.status || 500).json(otpResponse);
+      }
+    } catch (err) {
+      console.error('Email check error:', err);
+      res
+        .status(500)
+        .json({ success: false, message: 'Internal server error.' });
+    }
+  }
+
+  static async forgotpassword(req: Request, res: Response): Promise<void> {
+    const conn = await pool.getConnection();
+    try {
+      const { error, value }: any = LoginService.passwordChangeSchema.validate(
+        req.body,
+        { abortEarly: false }
+      );
+      if (error) {
+        res
+          .status(422)
+          .json({ success: false, message: error.details[0].message });
+        return;
+      }
+
+      const { email, otp, newPassword } = value;
+
+      await conn.beginTransaction();
+
+      const [rows]: any = await conn.query(
+        `SELECT sl_no, otp, createdAt FROM password_change_otp WHERE email = ? AND otp = ? AND status = 'active' ORDER BY createdAt DESC LIMIT 1 FOR UPDATE`,
+        [email, otp]
+      );
+
+      if (rows.length === 0) {
+        await conn.rollback();
+        res
+          .status(400)
+          .json({ success: false, message: 'Invalid or already used OTP' });
+        return;
+      }
+
+      const otpRecord = rows[0];
+      const createdAt = new Date(otpRecord.createdAt);
+      const now = new Date();
+      const diffMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
+
+      if (diffMinutes > OTP_EXPIRY_MINUTES) {
+        await conn.query(
+          `UPDATE password_change_otp SET status = 'expired' WHERE sl_no = ?`,
+          [otpRecord.sl_no]
+        );
+        await conn.commit();
+        res.status(410).json({
+          success: false,
+          message: 'OTP expired. Please request a new one.',
+        });
+        return;
+      }
+
+      const [employeeRows]: any = await conn.query(
+        `SELECT employee_id FROM employees WHERE work_email = ? LIMIT 1`,
+        [email]
+      );
+
+      if (employeeRows.length === 0) {
+        await conn.rollback();
+        res
+          .status(400)
+          .json({ success: false, message: 'Employee not found.' });
+        return;
+      }
+
+      const empId = employeeRows[0].employee_id;
+
+      // const [existingCred]: any = await conn.query(
+      //   `SELECT 1 FROM employee_credentials WHERE email = ? LIMIT 1`,
+      //   [email]
+      // );
+
+      // if (existingCred.length > 0) {
+      //   await conn.rollback();
+      //   res.status(409).json({
+      //     success: false,
+      //     message: 'Password already set. Please login instead.',
+      //   });
+      //   return;
+      // }
+
+      const hashedPassword = await PasswordUtil.hashPassword(newPassword);
+
+      await conn.query(
+        'UPDATE `hrms_master_data`.`employee_credentials` SET `password` = ? WHERE `employee_id` = ?',
+        [hashedPassword, empId]
+      );
+
+      await conn.query(
+        `UPDATE password_change_otp SET status = 'used' WHERE sl_no = ?`,
+        [otpRecord.sl_no]
+      );
+
+      await conn.commit();
+      res.json({ success: true, message: 'Password updated successfully' });
+    } catch (err) {
+      console.error('Error in passwordGen:', err);
+      try {
+        await conn.rollback();
+      } catch (rollbackErr) {
+        console.error('Rollback failed:', rollbackErr);
+      }
+      res
+        .status(500)
+        .json({ success: false, message: 'Internal server error' });
+    } finally {
+      conn.release();
     }
   }
 

@@ -1,17 +1,12 @@
 <!-- Filters -->
 <div class="row-space-between">
   <div>
-    <p>Last 30 Days</p>
+    <p>{{ selectedPeriod === '30DAYS' ? 'Last 30 Days' : getMonthName(selectedPeriod) }}</p>
   </div>
   <div class="filters">
     <div class="filter-block">
-      <button class="btn-secondry active">30 DAYS</button>
-      <button class="btn-secondry">AUG</button>
-      <button class="btn-secondry">JUL</button>
-      <button class="btn-secondry">JUN</button>
-      <button class="btn-secondry">MAY</button>
-      <button class="btn-secondry">APR</button>
-      <button class="btn-secondry">MAR</button>
+      <button class="btn-secondry" [class.active]="selectedPeriod === '30DAYS'" (click)="filterByPeriod('30DAYS')">30 DAYS</button>
+      <button *ngFor="let month of monthButtons" class="btn-secondry" [class.active]="selectedPeriod === month" (click)="filterByPeriod(month)">{{ month }}</button>
     </div>
   </div>
 </div>
@@ -29,19 +24,25 @@
   </ion-row>
 
   <!-- Rows -->
-  <ion-row *ngFor="let log of attendanceLogss.slice().reverse()" class="table-row">
-    <ion-col size="2">{{ log.attendance_date }}</ion-col>
-    <ion-col size="3">
+  <ion-row *ngFor="let log of attendanceLogss" [class.weekoff-row]="log.isWeekend" class="table-row">
+    <ion-col size="2" *ngIf="!log.isWeekend">{{ formatDisplayDate(log.attendance_date) }}</ion-col>
+    <ion-col size="2" *ngIf="log.isWeekend">{{ log.displayDate }}<label>W-OFF</label></ion-col>
+    
+    <ion-col size="3" *ngIf="!log.isWeekend">
       <ion-progress-bar [value]="log.progress || 0"></ion-progress-bar>
     </ion-col>
-    <ion-col size="2">{{ log.effective || '-' }}</ion-col>
-    <ion-col size="2">{{ log.gross || '-' }}</ion-col>
-    <ion-col size="2">
-      <ion-icon name="checkmark-outline" color="success"></ion-icon>
+    <ion-col size="10" class="text-center" *ngIf="log.isWeekend">Full day Weekly-off</ion-col>
+    
+    <ion-col size="2" *ngIf="!log.isWeekend">{{ log.effective || '-' }}</ion-col>
+    <ion-col size="2" *ngIf="!log.isWeekend">{{ log.gross || '-' }}</ion-col>
+    <ion-col size="2" *ngIf="!log.isWeekend">
+      <ion-icon *ngIf="log.arrival === 'On Time'" name="checkmark-outline" color="success"></ion-icon>
+      <span *ngIf="log.arrival !== 'On Time' && log.arrival !== '-'">⏰</span>
       {{ log.arrival || '-' }}
     </ion-col>
-    <ion-col size="1">
-      <ion-icon name="alert-circle-outline" color="warning" (click)="openLogDetails(log)"></ion-icon>
+    <ion-col size="1" *ngIf="!log.isWeekend">
+      <ion-icon *ngIf="log.logStatus === 'incomplete'" name="alert-circle-outline" color="warning" (click)="openLogDetails(log)"></ion-icon>
+      <ion-icon *ngIf="log.logStatus === 'complete'" name="checkmark-circle-outline" color="success" (click)="openLogDetails(log)"></ion-icon>
     </ion-col>
   </ion-row>
 
@@ -85,14 +86,5 @@
     </ng-template>
   </ion-popover>
 
-  <!-- Example Week-Off Rows -->
-  <ion-row class="table-row weekoff-row">
-    <ion-col size="2">Sun, 31 Aug<label>W-OFF</label></ion-col>
-    <ion-col size="10" class="text-center">Full day Weekly-off</ion-col>
-  </ion-row>
 
-  <ion-row class="table-row weekoff-row">
-    <ion-col size="2">Sun, 24 Aug<label>W-OFF</label></ion-col>
-    <ion-col size="10" class="text-center">Full day Weekly-off</ion-col>
-  </ion-row>
 </ion-grid>

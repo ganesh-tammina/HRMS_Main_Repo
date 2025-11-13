@@ -23,6 +23,28 @@ export default class EmployeeLoginController {
       });
     }
   }
+  public static async ForgotEmailCheck(req: Request, res: Response) {
+    try {
+      await LoginService.emailCheckForForgot(req, res);
+    } catch (error: any) {
+      console.error('Error in email-check route:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error in email-check route.',
+      });
+    }
+  }
+  public static async forgot(req: Request, res: Response) {
+    try {
+      await LoginService.forgotpassword(req, res);
+    } catch (error: any) {
+      console.error('Error in login route:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error in login route.',
+      });
+    }
+  }
   public static async Login(req: Request, res: Response) {
     try {
       await LoginService.login(req, res);

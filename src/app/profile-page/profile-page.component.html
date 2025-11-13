@@ -6,7 +6,15 @@
     <ion-row>
       <ion-col size="4" class="welcome-block ion-no-padding">
         <ion-card>
-          <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg" width="100" />
+          <div>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)">
+            <ion-button (click)="uploadProfilePic()" [disabled]="!selectedFile || isUploading"
+              class="primary-btn row-right" type="submit">
+              {{ isUploading ? 'Uploading...' : 'Upload Profile Pic' }}
+            </ion-button>
+          </div>
+          <img [attr.alt]="currentemp.FirstName" [src]="uploadedImageUrl || '../../assets/user.svg'" width="100"
+            height="100" />
           <div class="ion-text-center">
             <p class="name">{{currentemp.full_name}}</p>
             <p class="des">{{currentemp.job_title}}</p>
