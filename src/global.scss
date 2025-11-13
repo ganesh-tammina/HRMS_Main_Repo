@@ -267,3 +267,27 @@ ion-popover.select-popover {
 #main-content {
     --background: var(--ion-bg-color); 
 }
+
+/* Hide scrollbar in attendance log popover */
+ion-popover .popover-content {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+ion-popover .popover-content::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+    width: 0 !important;
+    height: 0 !important;
+}
+
+ion-popover ion-content {
+    --overflow: auto;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+ion-popover ion-content::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}

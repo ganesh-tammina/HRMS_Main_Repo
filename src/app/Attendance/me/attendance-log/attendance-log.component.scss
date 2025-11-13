@@ -140,4 +140,104 @@ p.divider {
       }
     }
     
+    .log-header {
+      text-align: center;
+      margin-bottom: 15px;
+      
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 2px 0;
+        font-size: 0.9rem;
+        color: #666;
+      }
+    }
+    
+    .log-section {
+      margin-bottom: 15px;
+      
+      .section-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+      }
+      
+      .location {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+      }
+    }
+    
+    .time-entries-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      
+      .time-pair {
+        display: flex;
+        gap: 15px;
+        
+        .time-entry {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 10px;
+          border-radius: 4px;
+          background: #f5f5f5;
+          
+          .time-stamp {
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin: 0;
+          }
+          
+          &.clock-in {
+            .arrow-in {
+              color: #28a745;
+              transform: rotate(230deg);
+              font-size: 16px;
+            }
+          }
+          
+          &.clock-out {
+            .arrow-out {
+              color: #dc3545;
+              transform: rotate(235deg);
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
   }
+  
+
+  /* Hide scrollbar in popover */
+  ion-popover {
+    ion-content {
+      --overflow: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      
+      &::-webkit-scrollbar {
+        display: none !important; /* Chrome, Safari, Opera */
+        width: 0 !important;
+      }
+    }
+    
+    .popover-content {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      
+      &::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+      }
+    }
+  }
+  

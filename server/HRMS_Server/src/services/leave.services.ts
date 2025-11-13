@@ -19,9 +19,9 @@ export default class LeaveService {
     return rows;
   }
 
-  public static async createLeaveRequest(data: LeaveRequest) {
-    const connection = await pool.getConnection();
 
+public static async createLeaveRequest(data: LeaveRequest) {
+  const connection = await pool.getConnection();
     try {
       await connection.beginTransaction();
 
