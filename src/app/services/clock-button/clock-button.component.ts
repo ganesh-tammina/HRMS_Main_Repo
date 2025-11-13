@@ -43,9 +43,6 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
       <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))">
         Since Last Login :
         <strong>{{ timeSinceLastLogin }}</strong>
-      <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))" style="white-space: nowrap; font-size: 12px; text-align: center; margin: 8px 0;">
-        Since Last Login: <strong>{{ timeSinceLastLogin }}</strong>
-      </div>
     </div>
 
     <div *ngIf="!currentCandidate">
