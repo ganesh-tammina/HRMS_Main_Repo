@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+
 export type UserType = 'admin' | 'employee';
 
 export interface LoggedUser {

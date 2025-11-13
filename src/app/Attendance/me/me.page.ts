@@ -170,12 +170,12 @@ export class MePage implements OnInit {
     let sessionMs = 0;
 
     if (this.record.isClockedIn && this.record.clockInTime) {
-      sessionMs = now.getTime() - new Date(this.record.clockInTime).getTime();
+      sessionMs = Math.max(0, now.getTime() - new Date(this.record.clockInTime).getTime());
       totalMs += sessionMs;
     }
 
     this.timeSinceLastLogin = this.formatHMS(sessionMs);
-    const grossMinutes = Math.floor(totalMs / 60000);
+    const grossMinutes = Math.max(0, Math.floor(totalMs / 60000));
     this.grossHours = this.formatHoursMinutes(grossMinutes);
     const effectiveMinutes = Math.max(grossMinutes - this.breakMinutes, 0);
     this.effectiveHours = this.formatHoursMinutes(effectiveMinutes);

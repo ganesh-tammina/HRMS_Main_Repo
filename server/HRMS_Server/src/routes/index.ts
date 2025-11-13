@@ -120,6 +120,11 @@ router.post(
 );
 router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);
 
+router.post('/v1/forgot-pwd', EmployeeLoginController.ForgotPwd);
+router.post('/v1/add-pwd', EmployeeLoginController.PasswordGeneratorHey);
+router.post('/v1/change-pwd', EmployeeLoginController.ChangePwd);
+router.post('/v1/change-new-pwd', EmployeeLoginController.PasswordGeneratorHey);
+
 router.post(
   '/v1/leave-balance',
 
@@ -130,6 +135,7 @@ router.get(
 
   LeaveController.getLeaveBalances
 );
+
 router.post(
   '/v1/leave-request',
 
@@ -153,6 +159,15 @@ router.post(
   LeaveController.getLeaveRequest
 );
 
+// Admin route
+router.get('/1/admin', (req, res) => {
+  res.status(200).json({
+    id: 1,
+    name: 'Admin User',
+    email: 'admin@company.com',
+    role: 'admin'
+  });
+});
 router.post(
   '/v1/get-leaves-balance',
 
@@ -174,4 +189,18 @@ router.get('/v1/image/:image_name', EmployeeController.serveImage);
 
 router.post('/v1/test-api', EmployeeLoginController.getRole);
 
+router.post(
+  '/v1/cancel-leave',
+  //verifyAccessToken
+  LeaveController.cancelLeaveRequest
+)
+
+router.post(
+  '/v1/leave-action',
+  // verifyAccessToken,
+  LeaveController.takeActionLeaveRequest
+);
+// test apis here 🤡
+router.post('/v1/test-api', EmployeeLoginController.getRole)
+// add test apis here only
 export default router;

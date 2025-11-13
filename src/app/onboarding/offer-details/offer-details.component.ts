@@ -56,6 +56,7 @@ export class OfferDetailsComponent implements OnInit {
     // Get candidate from router state if available
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras?.state?.['candidate'] || {};
+    console.log('candidate', this.candidate);
 
     // Fallback: check query params if candidate info might be passed
     this.route.queryParams.subscribe(params => {

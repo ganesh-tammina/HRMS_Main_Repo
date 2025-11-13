@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
-import { AttendanceService } from './attendance.service';
+
 import { RouteGuardService } from './route-guard/route-service/route-guard.service';
 import { refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
@@ -123,6 +123,7 @@ export interface Employee {
   termination_type: string | null;
   termination_reason: string | null;
   resignation_note: string | null;
+  image: string | null;
 }
 
 // Response structure
@@ -144,16 +145,18 @@ export class CandidateService {
   private adminUrl = 'https://${this.env.apiURL}/1/admin';
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
-  private getapiUrl =  `https://${this.env.apiURL}/candidates`;
+  private getapiUrl = `https://${this.env.apiURL}/candidates`;
   private getEmployees = `${this.api}employee`;
-  private forgotpwd = `${this.api}forgot-pwd`;
-  private newpassword = `${this.api}add-pwd`;
-  private updatepassword = `${this.api}change-new-pwd`;
-  private changeoldEmpwd = `${this.api}change-pwd`;
-  private offerStatusapi = 'https://${this.env.apiURL}/offerstatus/status';
+  private forgotpwd = 'https://30.0.0.78:3562/api/v1/forgot-pwd';
+  private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
+  private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';
+  private changeoldEmpwd = 'https://30.0.0.78:3562/api/v1/change-pwd';
+  private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
-  private imagesUrl = `${this.api}uploads`;
-  private empUrl = this.getEmployees
+  private imagesUrl = `${this.api}employee/profile-pic/upsert`;
+  private empUrl = this.getEmployees;
+  private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
+
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -173,7 +176,6 @@ export class CandidateService {
 
   constructor(
     private http: HttpClient,
-    private attendanceService: AttendanceService,
     private routeGuardService: RouteGuardService
   ) { }
   private getStoredEmployee(): Employee | null {
@@ -200,13 +202,7 @@ export class CandidateService {
       error: (err: any) => console.error('Error loading candidates:', err),
     });
   }
-  uploadImage(file: File): Observable<{ imageUrl: string }> {
-    const formData = new FormData();
-    formData.append('file', file);
 
-    // POST to /upload route
-    return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, formData);
-  }
   getCandidateById(id: string): Observable<any> {
     return this.http.get<any>(`${this.getapiUrl}/${id}`);
   }
@@ -237,6 +233,9 @@ export class CandidateService {
     };
     return this.http.post<any>(this.empUrl, body, { withCredentials: true });
   }
+
+
+
   getAllEmployees(): Observable<EmployeeResponse> {
     return this.http.get<EmployeeResponse>(this.empUrl).pipe();
   }
@@ -412,7 +411,6 @@ export class CandidateService {
             'activeEmployeeId',
             found.employee_id.toString()
           );
-          this.attendanceService.getRecord(found.employee_id);
         }
       })
     );
@@ -434,6 +432,7 @@ export class CandidateService {
   logout() {
     localStorage.clear();
     this.currentCandidateSubject.next(null);
+    this.currentEmployeeSubject.next(null);
   }
 
   searchCandidates(query: string): Candidate[] {
@@ -447,7 +446,7 @@ export class CandidateService {
   setCurrentEmployee(employee: Employee | null): void {
     this.currentEmployeeSubject.next(employee);
 
-    if (employee) {
+    if (employee && employee.employee_id) {
       // Persist to localStorage for session restore
       localStorage.setItem(
         `loggedInEmployee_${employee.employee_id}`,
@@ -457,6 +456,26 @@ export class CandidateService {
     } else {
       localStorage.removeItem('activeEmployeeId');
     }
+  }
+  uploadImage(file: any): Observable<{
+    [x: string]: any; imageUrl: string
+  }> {
+    return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, file);
+  }
+  uploadEmployeeProfilePic(employeeId: number, profilePicUrl: string): Observable<any> {
+    const body = {
+      employee_id: employeeId,
+      profile_pic_url: profilePicUrl
+    };
+
+    console.log('📤 Uploading profile pic:', body);
+
+    return this.http.post<any>(this.empProfileUrl, body).pipe(
+      tap({
+        next: (res) => console.log('✅ Profile picture updated successfully:', res),
+        error: (err) => console.error('❌ Error updating profile picture:', err)
+      })
+    );
   }
 }
 

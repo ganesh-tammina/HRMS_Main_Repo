@@ -67,6 +67,7 @@ export default class AttendanceController {
           req.body.employee_id,
           req.body.date
         );
+        // Arrival time is already calculated in the service method
       } else {
         result = await AttendanceService.getAttendance({
           employee_id: req.body.employee_id,
@@ -188,18 +189,38 @@ export default class AttendanceController {
     if (!reeq.body?.employee_id) {
       return res.status(400).json({ message: 'employee_id is required' });
     }
+    
+    console.log('Checking attendance for employee:', reeq.body.employee_id);
     const resu = await AttendanceService.getTodayAttendance(
       reeq.body.employee_id
     );
+    
     if (resu.length === 0) {
-      res.status(200).json({ message: 'No Attendance Found' });
+      return res.status(200).json({ 
+        message: 'No Attendance Found',
+        clockin: false,
+        clockout: false,
+        attendance_id: null,
+        employee_id: reeq.body.employee_id,
+        attendance_date: new Date().toLocaleDateString(),
+        arrival_time: null,
+        departure_time: null
+      });
     }
+    
+    const attendance = resu[0];
+    
     res.status(200).json({
-      clockin: resu[0].check_in != null ? true : false,
-      clockout: resu[0].check_out != null ? true : false,
-      attendance_id: resu[0].attendance_id,
-      employee_id: resu[0].employee_id,
-      attendance_date: new Date(resu[0].attendance_date).toLocaleDateString(),
+      clockin: attendance.first_check_in != null,
+      clockout: attendance.last_check_out != null,
+      attendance_id: attendance.attendance_id,
+      employee_id: attendance.employee_id,
+      attendance_date: new Date(attendance.attendance_date).toLocaleDateString(),
+      arrival_time: attendance.arrival_time,
+      departure_time: attendance.departure_time,
+      status: attendance.status,
+      late_duration: attendance.late_duration,
+      is_on_time: attendance.status === 'on_time'
     });
   }
 

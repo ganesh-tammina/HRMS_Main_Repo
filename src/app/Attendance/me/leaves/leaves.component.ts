@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
 import { CandidateService } from '../../../services/pre-onboarding.service';
@@ -24,9 +24,10 @@ import { RouteGuardService } from 'src/app/services/route-guard/route-service/ro
 export class LeavesComponent implements OnInit {
 
   currentCandidate: any;
-  IsOpenleavePopup = false;
+  IsOpenleavePopup = false; // for "Apply Leave" form modal
+  isPopupOpen = false;      // for "Cancel/View" popup
+  selectedLeave: any = null;
 
-  // ✅ Default structure to prevent null errors
   leaveData: any = {
     casual_leave_taken: 0,
     casual_leave_allocated: 0,
@@ -48,8 +49,9 @@ export class LeavesComponent implements OnInit {
     private candidateService: CandidateService,
     private leaveService: LeaveService,
     private fb: FormBuilder,
-    private routerGaurd: RouteGuardService
-  ) { }
+    private routerGaurd: RouteGuardService,
+    private toastController: ToastController
+  ) {}
 
   ngOnInit() {
     this.loadLeaveRequests();
@@ -58,7 +60,7 @@ export class LeavesComponent implements OnInit {
     this.leaveForm = this.fb.group({
       leave_type: ['', Validators.required],
       start_date: ['', Validators.required],
-      end_date: ['', Validators.required],
+      end_date: ['', [Validators.required, this.dateValidator.bind(this)]],
       remarks: ['', Validators.required],
       notify: ['']
     });
@@ -82,6 +84,31 @@ export class LeavesComponent implements OnInit {
         this.loadLeaveBalance();
       }
     });
+  }
+
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'top',
+      icon: color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'
+    });
+    toast.present();
+  }
+
+  dateValidator(control: any) {
+    const start = this.leaveForm?.get('start_date')?.value;
+    const end = control.value;
+
+    if (start && end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      if (endDate < startDate) {
+        return { dateError: 'End date cannot be before start date.' };
+      }
+    }
+    return null;
   }
 
   loadLeaveRequests() {
@@ -111,6 +138,7 @@ export class LeavesComponent implements OnInit {
   submitRequest() {
     if (this.leaveForm.invalid || this.total_days <= 0) {
       this.leaveForm.markAllAsTouched();
+      this.presentToast('Please fill all required fields and ensure dates are valid.', 'warning');
       return;
     }
 
@@ -125,6 +153,8 @@ export class LeavesComponent implements OnInit {
       total_days: this.total_days
     };
 
+    console.log('Submitting Leave Request:', leaveRequest);
+
     this.leaveService.requestLeave(leaveRequest).subscribe({
       next: () => {
         this.closeleavePopup();
@@ -132,10 +162,34 @@ export class LeavesComponent implements OnInit {
         this.loadLeaveBalance();
         this.leaveForm.reset();
         this.total_days = 0;
+        this.presentToast('Leave request submitted successfully!', 'success');
       },
-      error: (err) => console.error('Error submitting leave request:', err)
+      error: (err) => { 
+        console.error('Error submitting leave request:', err);
+        const errorMsg = err?.error?.error || 'Failed to submit leave request.';
+        this.presentToast(errorMsg, 'danger');
+      }
     });
   }
+
+  cancelLeave(leaveId: number) {
+    this.leaveService.cancelLeaveRequest(leaveId).subscribe({
+      next: () => {
+        this.loadLeaveRequests();
+        this.loadLeaveBalance();
+        this.presentToast('Leave request cancelled successfully!', 'success');  
+      },  
+      error: (err) => {
+        console.error('Error cancelling leave request:', err);
+        const errorMsg = err?.error?.error || 'Failed to cancel leave request.';
+        this.presentToast(errorMsg, 'danger');
+      }
+    });
+  }
+
+  // -----------------------------
+  // Modal Controls
+  // -----------------------------
 
   openLeaveModal() {
     this.IsOpenleavePopup = true;
@@ -143,5 +197,26 @@ export class LeavesComponent implements OnInit {
 
   closeleavePopup() {
     this.IsOpenleavePopup = false;
+  }
+
+  // -----------------------------
+  // Popup Controls (Cancel/View)
+  // -----------------------------
+
+  openPopup(leave: any) {
+    this.selectedLeave = leave;
+    this.isPopupOpen = true;
+  }
+
+  closePopup() {
+    this.isPopupOpen = false;
+    this.selectedLeave = null;
+  }
+
+  confirmCancel() {
+    if (this.selectedLeave?.id) {
+      this.cancelLeave(this.selectedLeave.id);
+    }
+    this.closePopup();
   }
 }

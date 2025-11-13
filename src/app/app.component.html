@@ -143,8 +143,6 @@
             <!-- Inbox -->
 
             <!-- ///////////////////////////////////////////////// -->
-            <!-- ///////////////////////////////////////////////// -->
-            <!-- ///////////////////////////////////////////////// -->
 
             <!-- Log Out -->
             <ion-menu-toggle auto-hide="false">
@@ -161,6 +159,11 @@
         </ion-content>
       </ion-menu>
     </ng-container>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
+    <!-- Quick refresh overlay -->
+    <div *ngIf="isRefreshing" class="refresh-overlay">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+    
+    <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>

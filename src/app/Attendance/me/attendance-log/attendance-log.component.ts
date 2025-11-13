@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter } from '@ionic/angular';
 import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
 import { AttendanceService, AttendanceRecord, AttendanceEvent } from 'src/app/services/attendance.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 interface AttendanceRequest {
   type: string;
@@ -51,7 +54,7 @@ interface CalendarDay {
   standalone: true,
   imports: [IonicModule, CommonModule]
 })
-export class AttendanceLogComponent implements OnInit {
+export class AttendanceLogComponent implements OnInit, OnDestroy, ViewWillEnter {
   employee?: Candidate;
   record?: AttendanceRecord;
 
@@ -76,6 +79,8 @@ export class AttendanceLogComponent implements OnInit {
   showPopover = false;
   attendanceLogs: any[] = [];
   attendanceLogss: any[] = [];
+  selectedPeriod: string = '30DAYS';
+  monthButtons: string[] = [];
 
   attendanceHistory: any = [];
   private employee_det: any;
@@ -88,47 +93,254 @@ export class AttendanceLogComponent implements OnInit {
     records: AttendanceRequestHistory[];
   }[] = [];
 
+  private routerSubscription?: Subscription;
+  private currentEmployeeId: string | null = null;
+
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
     private abcd: RouteGuardService
   ) {
-    const t = localStorage.getItem('employee_details');
-    if (t) {
-      this.employee_det = JSON.parse(t);
-      console.log(this.employee_det, "Employee details");
-    }
+    this.generateCalendar(this.currentMonth);
+    this.generateMonthButtons();
+  }
 
+
+
+  ngOnInit() {
+    // Load all attendance data immediately
+    this.loadAllAttendanceData();
+    
+    this.employee = this.candidateService.getCurrentCandidate() || undefined;
+    if (!this.employee) return;
+    console.log('Current Employee:', this.employee);
+
+    this.attendanceService.record$.subscribe(record => {
+      if (record && record.employeeId === this.employee?.id) {
+        this.record = record;
+        this.updateTimes();
+        this.loadHistory();
+        this.refreshAttendanceLogs();
+      }
+    });
+
+    // Listen for clock actions and refresh data immediately
+    this.attendanceService.response$.subscribe(response => {
+      if (response && response.data) {
+        console.log('Clock action detected, refreshing attendance logs...');
+        // Immediate refresh for today specifically
+        const today = new Date().toISOString().split('T')[0];
+        this.attendanceService.getallattendace({
+          employee_id: this.abcd.employeeID,
+          date: today
+        }).subscribe(data => {
+          if (data && data.attendance) {
+            this.updateTodayLog(data.attendance, today);
+          }
+        });
+        // Also refresh all data
+        setTimeout(() => {
+          this.loadAllAttendanceData();
+        }, 500);
+      }
+    });
+
+    this.attendanceService.getRecord(this.employee.id);
+    this.generateDays();
+    this.attendanceRecord();
+  }
+
+  private loadAllAttendanceData() {
+    // Wait a bit for employee ID to be available after login
+    setTimeout(() => {
+      const currentEmployeeId = this.abcd.employeeID;
+      if (!currentEmployeeId) {
+        console.log('No employee ID found, retrying...');
+        setTimeout(() => this.loadAllAttendanceData(), 500);
+        return;
+      }
+
+      console.log('Loading ALL attendance data for employee:', currentEmployeeId);
+      this.fetchAttendanceData(currentEmployeeId);
+    }, 100);
+  }
+
+  private fetchAttendanceData(employeeId: string) {
+    const dateRange = this.getDateRange(this.selectedPeriod);
+    const startDate = dateRange.start;
+    const endDate = dateRange.end;
+
+    console.log('📅 Fetching attendance from', startDate, 'to', endDate, 'for employee', employeeId);
+
+    this.attendanceService.getallattendace({
+      employee_id: employeeId,
+      startDate: startDate,
+      endDate: endDate
+    }).subscribe({
+      next: (data) => {
+        console.log('📊 ALL Attendance Records:', data);
+        
+        if (!data || !data.attendance || data.attendance.length === 0) {
+          console.log('⚠️ No attendance data found');
+          this.attendanceLogss = [];
+          return;
+        }
+
+        const normalized = data.attendance.map((item: any) => ({
+          ...item,
+          attendance_date: new Date(item.attendance_date).toISOString().split('T')[0]
+        }));
+
+        const groupedByDate: any = {};
+        normalized.forEach((record: any) => {
+          const date = record.attendance_date;
+
+          if (!groupedByDate[date]) {
+            groupedByDate[date] = {
+              attendance_date: date,
+              records: []
+            };
+          }
+
+          groupedByDate[date].records.push({
+            check_in: record.check_in,
+            check_out: record.check_out
+          });
+        });
+
+        const attendanceData = Object.values(groupedByDate).map((log: any) => {
+          let totalMinutes = 0;
+          let arrivalTime = '';
+
+          // Calculate arrival time based on first clock-in
+          const allCheckIns = log.records
+            .map((rec: any) => rec.check_in)
+            .filter((time: any) => time !== null && time !== undefined)
+            .sort();
+          
+          if (allCheckIns.length > 0) {
+            const firstClockIn = allCheckIns[0];
+            const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+            const standardTime = new Date('1970-01-01T09:30:00');
+            
+            if (clockInTime <= standardTime) {
+              arrivalTime = 'On Time';
+            } else {
+              const diffMs = clockInTime.getTime() - standardTime.getTime();
+              const hours = Math.floor(diffMs / (1000 * 60 * 60));
+              const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+              arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+            }
+          } else {
+            arrivalTime = '-';
+          }
+          
+          log.records.forEach((rec: any) => {
+            if (rec.check_in && rec.check_out) {
+              const inTime = new Date(`1970-01-01T${rec.check_in}`);
+              const outTime = new Date(`1970-01-01T${rec.check_out}`);
+              const diffMinutes = (outTime.getTime() - inTime.getTime()) / 60000;
+              totalMinutes += diffMinutes;
+            }
+          });
+
+          const grossHours = this.formatHoursMinutes(Math.floor(totalMinutes));
+          const effectiveMinutes = Math.max(totalMinutes - this.breakMinutes, 0);
+          const effectiveHours = this.formatHoursMinutes(Math.floor(effectiveMinutes));
+
+          // Determine log status based on last action
+          const hasOpenSession = log.records.some((rec: any) => rec.check_in && !rec.check_out);
+          const logStatus = hasOpenSession ? 'incomplete' : 'complete';
+
+          return {
+            ...log,
+            gross: grossHours,
+            effective: effectiveHours,
+            arrival: arrivalTime || '-',
+            progress: Math.min(totalMinutes / 480, 1),
+            isWeekend: false,
+            logStatus: logStatus
+          };
+        });
+
+        // Always ensure today's date is included with real-time data
+        const today = new Date().toISOString().split('T')[0];
+        const todayIndex = this.attendanceLogss.findIndex(log => log.attendance_date === today);
+        
+        if (todayIndex === -1) {
+          // Add today's entry if it doesn't exist
+          this.attendanceLogss.unshift({
+            attendance_date: today,
+            records: [],
+            gross: '0h 0m',
+            effective: '0h 0m',
+            arrival: '-',
+            progress: 0
+          });
+        } else {
+          // Update today's arrival time if it has records but shows '-'
+          const todayLog = this.attendanceLogss[todayIndex];
+          if (todayLog.records.length > 0 && todayLog.arrival === '-') {
+            const clockInTimes = todayLog.records
+              .filter((rec: any) => rec.check_in)
+              .map((rec: any) => rec.check_in)
+              .sort();
+            
+            if (clockInTimes.length > 0) {
+              const firstClockIn = clockInTimes[0];
+              const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+              const standardTime = new Date('1970-01-01T09:30:00');
+              
+              if (clockInTime <= standardTime) {
+                todayLog.arrival = 'On Time';
+              } else {
+                const diffMs = clockInTime.getTime() - standardTime.getTime();
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+                todayLog.arrival = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+              }
+            }
+          }
+        }
+        
+        // Sort by date (newest first)
+        this.attendanceLogss.sort((a, b) => new Date(b.attendance_date).getTime() - new Date(a.attendance_date).getTime());
+        
+        console.log('📅 Successfully loaded', this.attendanceLogss.length, 'attendance log entries');
+        console.log('📊 Attendance logs:', this.attendanceLogss);
+      },
+      error: (err) => {
+        console.error('❌ Error loading attendance data:', err);
+        this.attendanceLogss = [];
+      }
+    });
+  }
+
+  refreshAttendanceLogs() {
     const currentDate = new Date();
     const pastDate = new Date();
-    pastDate.setDate(currentDate.getDate() - 30);
+    pastDate.setDate(currentDate.getDate() - 30); // Exactly last 30 days
 
     const startDate = pastDate.toISOString().split('T')[0];
     const endDate = currentDate.toISOString().split('T')[0];
 
-    console.log('Start Date (30 days ago):', startDate);
-    console.log('End Date (today):', endDate);
-
-    // Fetch attendance data
     this.attendanceService.getallattendace({
       employee_id: this.abcd.employeeID,
       startDate: startDate,
       endDate: endDate
     }).subscribe((data) => {
-      console.log('All Attendance Records:', data);
+      console.log('Refreshed Attendance Records:', data);
 
-      // Step 1: Normalize date format
       const normalized = data.attendance.map((item: any) => ({
         ...item,
         attendance_date: new Date(item.attendance_date).toISOString().split('T')[0]
       }));
 
-      // Step 2: Group all check-ins/check-outs per date
       const groupedByDate: any = {};
       normalized.forEach((record: any) => {
-        const dateObj = new Date(record.attendance_date);
-        dateObj.setDate(dateObj.getDate() + 1); // ➕ Add 1 day for display alignment
-        const date = dateObj.toISOString().split('T')[0];
+        const date = record.attendance_date;
 
         if (!groupedByDate[date]) {
           groupedByDate[date] = {
@@ -143,15 +355,35 @@ export class AttendanceLogComponent implements OnInit {
         });
       });
 
-      // Step 3: Calculate gross/effective hours for each day
       this.attendanceLogss = Object.values(groupedByDate).map((log: any) => {
         let totalMinutes = 0;
         let arrivalTime = '';
 
-        log.records.forEach((rec: any, index: number) => {
-          if (rec.check_in && index === 0) {
-            arrivalTime = rec.check_in; // first check-in of the day
+        // Calculate arrival time based on first clock-in
+        const clockInTimes = log.records
+          .filter((rec: any) => rec.check_in)
+          .map((rec: any) => rec.check_in)
+          .sort();
+        
+        if (clockInTimes.length > 0) {
+          const firstClockIn = clockInTimes[0];
+          const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+          const standardTime = new Date('1970-01-01T09:30:00');
+          
+          if (clockInTime <= standardTime) {
+            arrivalTime = 'On Time';
+          } else {
+            const diffMs = clockInTime.getTime() - standardTime.getTime();
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+            arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
           }
+        } else {
+          arrivalTime = '-';
+        }
+        
+        log.records.forEach((rec: any) => {
           if (rec.check_in && rec.check_out) {
             const inTime = new Date(`1970-01-01T${rec.check_in}`);
             const outTime = new Date(`1970-01-01T${rec.check_out}`);
@@ -169,33 +401,67 @@ export class AttendanceLogComponent implements OnInit {
           gross: grossHours,
           effective: effectiveHours,
           arrival: arrivalTime || '-',
-          progress: Math.min(totalMinutes / 480, 1) // 480 = 8h shift
+          progress: Math.min(totalMinutes / 480, 1)
         };
       });
 
-      console.log(this.attendanceLogss, "Grouped Attendance with gross/effective hours");
-    });
-
-    this.generateCalendar(this.currentMonth);
-  }
-
-  ngOnInit() {
-    this.employee = this.candidateService.getCurrentCandidate() || undefined;
-    if (!this.employee) return;
-    console.log('Current Employee:', this.employee);
-
-    this.attendanceService.record$.subscribe(record => {
-      if (record && record.employeeId === this.employee?.id) {
-        this.record = record;
-        this.updateTimes();
-        this.loadHistory();
+      // Always ensure today's date is included with real-time data
+      const today = new Date().toISOString().split('T')[0];
+      const todayIndex = this.attendanceLogss.findIndex(log => log.attendance_date === today);
+      
+      if (todayIndex === -1) {
+        this.attendanceLogss.unshift({
+          attendance_date: today,
+          records: [],
+          gross: '0h 0m',
+          effective: '0h 0m',
+          arrival: '-',
+          progress: 0
+        });
+      } else {
+        // Update today's arrival time if it has records
+        const todayLog = this.attendanceLogss[todayIndex];
+        if (todayLog.records.length > 0) {
+          const clockInTimes = todayLog.records
+            .filter((rec: any) => rec.check_in)
+            .map((rec: any) => rec.check_in)
+            .sort();
+          
+          if (clockInTimes.length > 0) {
+            const firstClockIn = clockInTimes[0];
+            const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+            const standardTime = new Date('1970-01-01T09:30:00');
+            
+            if (clockInTime <= standardTime) {
+              todayLog.arrival = 'On Time';
+            } else {
+              const diffMs = clockInTime.getTime() - standardTime.getTime();
+              const hours = Math.floor(diffMs / (1000 * 60 * 60));
+              const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+              todayLog.arrival = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+            }
+          }
+        }
       }
+      
+      // Sort by date (newest first)
+      this.attendanceLogss.sort((a, b) => new Date(b.attendance_date).getTime() - new Date(a.attendance_date).getTime());
+      
+      console.log('Updated attendance logs:', this.attendanceLogss);
     });
-
-    this.attendanceService.getRecord(this.employee.id);
-    this.generateDays();
-    this.attendanceRecord();
   }
+
+  ngOnDestroy() {
+    this.routerSubscription?.unsubscribe();
+  }
+
+  ionViewWillEnter() {
+    console.log('Attendance log view entered, refreshing data...');
+    this.loadAllAttendanceData();
+  }
+
+
 
   attendanceRecord() {
     if (!this.employee) return;
@@ -242,7 +508,6 @@ export class AttendanceLogComponent implements OnInit {
   setTab(tab: string) {
     this.activeTab = tab;
   }
-
   generateDays() {
     const today = new Date();
     const dayOfWeek = today.getDay();
@@ -256,8 +521,60 @@ export class AttendanceLogComponent implements OnInit {
   }
 
   openLogDetails(log: AttendanceLog) {
-    this.selectedLog = log;
-    this.showPopover = true;
+    // Always fetch fresh data for the specific date when log icon is clicked
+    const logDate = (log as any).attendance_date;
+    
+    this.attendanceService.getallattendace({
+      employee_id: this.abcd.employeeID,
+      date: logDate
+    }).subscribe({
+      next: (data) => {
+        if (data && data.attendance && data.attendance.length > 0) {
+          const updatedRecords = data.attendance.map((item: any) => ({
+            check_in: item.check_in,
+            check_out: item.check_out,
+            arrival_time: item.arrival_time
+          }));
+          
+          // Calculate fresh arrival time
+          let arrivalTime = '-';
+          const clockInTimes = updatedRecords
+            .filter((rec: any) => rec.check_in)
+            .map((rec: any) => rec.check_in)
+            .sort();
+          
+          if (clockInTimes.length > 0) {
+            const firstClockIn = clockInTimes[0];
+            const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+            const standardTime = new Date('1970-01-01T09:30:00');
+            
+            if (clockInTime <= standardTime) {
+              arrivalTime = 'On Time';
+            } else {
+              const diffMs = clockInTime.getTime() - standardTime.getTime();
+              const hours = Math.floor(diffMs / (1000 * 60 * 60));
+              const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+              arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+            }
+          }
+          
+          const updatedLog = {
+            ...log,
+            records: updatedRecords,
+            arrival: arrivalTime
+          };
+          this.selectedLog = updatedLog;
+        } else {
+          this.selectedLog = log;
+        }
+        this.showPopover = true;
+      },
+      error: () => {
+        this.selectedLog = log;
+        this.showPopover = true;
+      }
+    });
   }
 
   closePopover() {
@@ -316,4 +633,261 @@ export class AttendanceLogComponent implements OnInit {
     const seconds = totalSeconds % 60;
     return `${hours}h ${minutes}m ${seconds}s`;
   }
+
+  addWeekendRows(attendanceData: any[]): any[] {
+    const result = [...attendanceData];
+    const dateRange = this.getDateRange(this.selectedPeriod);
+    const startDate = new Date(dateRange.start);
+    const endDate = new Date(dateRange.end);
+
+    // Generate all dates in the selected range
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      allDates.push(new Date(d));
+    }
+
+    // Add weekend rows for missing Saturday/Sunday
+    allDates.forEach(date => {
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+      const dateStr = date.toISOString().split('T')[0];
+      
+      if ((dayOfWeek === 0 || dayOfWeek === 6)) { // Weekend
+        const existingEntry = result.find(entry => entry.attendance_date === dateStr);
+        if (!existingEntry) {
+          const dayName = dayOfWeek === 0 ? 'Sun' : 'Sat';
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const displayDate = `${dayName}, ${date.getDate()} ${monthNames[date.getMonth()]}`;
+          
+          result.push({
+            attendance_date: dateStr,
+            displayDate: displayDate,
+            records: [],
+            gross: '-',
+            effective: '-',
+            arrival: '-',
+            progress: 0,
+            isWeekend: true
+          });
+        }
+      }
+    });
+
+    return result;
+  }
+
+  filterByPeriod(period: string) {
+    this.selectedPeriod = period;
+    this.loadAllAttendanceData();
+  }
+
+  getMonthName(period: string): string {
+    const monthNames: { [key: string]: string } = {
+      'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
+      'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
+      'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
+    };
+    return monthNames[period] || period;
+  }
+
+  getDateRange(period: string): { start: string, end: string } {
+    const currentDate = new Date();
+    
+    if (period === '30DAYS') {
+      const pastDate = new Date();
+      pastDate.setDate(currentDate.getDate() - 30);
+      return {
+        start: pastDate.toISOString().split('T')[0],
+        end: currentDate.toISOString().split('T')[0]
+      };
+    }
+    
+    // Handle month filters
+    const monthMap: { [key: string]: number } = {
+      'JAN': 0, 'FEB': 1, 'MAR': 2, 'APR': 3, 'MAY': 4, 'JUN': 5,
+      'JUL': 6, 'AUG': 7, 'SEP': 8, 'OCT': 9, 'NOV': 10, 'DEC': 11
+    };
+    
+    const targetMonth = monthMap[period];
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    
+    // If target month is in the future, use previous year
+    const year = targetMonth > currentMonth ? currentYear - 1 : currentYear;
+    
+    const startDate = new Date(year, targetMonth, 1);
+    const endDate = new Date(year, targetMonth + 1, 0); // Last day of month
+    
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: endDate.toISOString().split('T')[0]
+    };
+  }
+
+  formatDisplayDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`;
+  }
+
+  generateMonthButtons() {
+    const currentMonth = new Date().getMonth();
+    const monthAbbr = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    
+    this.monthButtons = [];
+    for (let i = 0; i < 6; i++) {
+      let monthIndex = currentMonth - 1 - i;
+      if (monthIndex < 0) monthIndex += 12;
+      this.monthButtons.push(monthAbbr[monthIndex]);
+    }
+  }
+  private refreshTodayAttendance() {
+    const today = new Date().toISOString().split('T')[0];
+    const currentEmployeeId = this.abcd.employeeID;
+    
+    if (!currentEmployeeId) return;
+    
+    console.log('🔄 Refreshing today\'s attendance data immediately...');
+    
+    this.attendanceService.getallattendace({
+      employee_id: currentEmployeeId,
+      date: today
+    }).subscribe({
+      next: (data) => {
+        console.log('📅 Today\'s fresh data:', data);
+        
+        if (data && data.attendance && data.attendance.length > 0) {
+          const todayRecords = data.attendance.map((item: any) => ({
+            check_in: item.check_in,
+            check_out: item.check_out
+          }));
+          
+          // Calculate today's stats
+          let totalMinutes = 0;
+          let arrivalTime = '-';
+          
+          const clockInTimes = todayRecords
+            .filter((rec: any) => rec.check_in)
+            .map((rec: any) => rec.check_in)
+            .sort();
+          
+          if (clockInTimes.length > 0) {
+            const firstClockIn = clockInTimes[0];
+            const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+            const standardTime = new Date('1970-01-01T09:30:00');
+            
+            if (clockInTime <= standardTime) {
+              arrivalTime = 'On Time';
+            } else {
+              const diffMs = clockInTime.getTime() - standardTime.getTime();
+              const hours = Math.floor(diffMs / (1000 * 60 * 60));
+              const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+              arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+            }
+          }
+          
+          // Calculate work time
+          todayRecords.forEach((rec: any) => {
+            if (rec.check_in && rec.check_out) {
+              const inTime = new Date(`1970-01-01T${rec.check_in}`);
+              const outTime = new Date(`1970-01-01T${rec.check_out}`);
+              const diffMinutes = (outTime.getTime() - inTime.getTime()) / 60000;
+              totalMinutes += diffMinutes;
+            }
+          });
+          
+          const grossHours = this.formatHoursMinutes(Math.floor(totalMinutes));
+          const effectiveMinutes = Math.max(totalMinutes - this.breakMinutes, 0);
+          const effectiveHours = this.formatHoursMinutes(Math.floor(effectiveMinutes));
+          
+          // Update today's entry in the logs
+          const todayIndex = this.attendanceLogss.findIndex(log => log.attendance_date === today);
+          
+          const todayLog = {
+            attendance_date: today,
+            records: todayRecords,
+            gross: grossHours,
+            effective: effectiveHours,
+            arrival: arrivalTime,
+            progress: Math.min(totalMinutes / 480, 1)
+          };
+          
+          if (todayIndex >= 0) {
+            this.attendanceLogss[todayIndex] = todayLog;
+          } else {
+            this.attendanceLogss.unshift(todayLog);
+          }
+          
+          console.log('✅ Today\'s attendance updated:', todayLog);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error refreshing today\'s attendance:', err);
+      }
+    });
+  }
+
+  private updateTodayLog(attendanceData: any[], date: string) {
+    const todayRecords = attendanceData.map((item: any) => ({
+      check_in: item.check_in,
+      check_out: item.check_out
+    }));
+    
+    let totalMinutes = 0;
+    let arrivalTime = '-';
+    
+    const clockInTimes = todayRecords
+      .filter((rec: any) => rec.check_in)
+      .map((rec: any) => rec.check_in)
+      .sort();
+    
+    if (clockInTimes.length > 0) {
+      const firstClockIn = clockInTimes[0];
+      const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+      const standardTime = new Date('1970-01-01T09:30:00');
+      
+      if (clockInTime <= standardTime) {
+        arrivalTime = 'On Time';
+      } else {
+        const diffMs = clockInTime.getTime() - standardTime.getTime();
+        const hours = Math.floor(diffMs / (1000 * 60 * 60));
+        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+        arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+      }
+    }
+    
+    todayRecords.forEach((rec: any) => {
+      if (rec.check_in && rec.check_out) {
+        const inTime = new Date(`1970-01-01T${rec.check_in}`);
+        const outTime = new Date(`1970-01-01T${rec.check_out}`);
+        const diffMinutes = (outTime.getTime() - inTime.getTime()) / 60000;
+        totalMinutes += diffMinutes;
+      }
+    });
+    
+    const grossHours = this.formatHoursMinutes(Math.floor(totalMinutes));
+    const effectiveMinutes = Math.max(totalMinutes - this.breakMinutes, 0);
+    const effectiveHours = this.formatHoursMinutes(Math.floor(effectiveMinutes));
+    
+    const todayIndex = this.attendanceLogss.findIndex(log => log.attendance_date === date);
+    const todayLog = {
+      attendance_date: date,
+      records: todayRecords,
+      gross: grossHours,
+      effective: effectiveHours,
+      arrival: arrivalTime,
+      progress: Math.min(totalMinutes / 480, 1)
+    };
+    
+    if (todayIndex >= 0) {
+      this.attendanceLogss[todayIndex] = todayLog;
+    } else {
+      this.attendanceLogss.unshift(todayLog);
+    }
+    
+    console.log('✅ Today\'s log updated immediately:', todayLog);
+  }
+
 }

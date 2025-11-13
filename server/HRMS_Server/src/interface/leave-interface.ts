@@ -14,7 +14,7 @@ export interface LeaveBalance {
 export interface LeaveRequest {
   employee_id: number;
   full_name: string;
-  leave_type: 'CASUAL' | 'MARRIAGE' | 'COMP_OFF' | 'MEDICAL' | 'PAID';
+  leave_type: 'CASUAL' | 'MARRIAGE' | 'COMP_OFF' | 'MEDICAL' | 'UNPAID';
   start_date: string;
   end_date: string;
   total_days: number;
