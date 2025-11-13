@@ -96,7 +96,7 @@ export default class LoginService {
       }
 
       await pool.query(
-        `UPDATE password_change_otp SET status = 'expired' WHERE email = ? AND status = 'active'`,
+        `UPDATE password_change_otp SET status = 'expired' WHERE LOWER(email) = LOWER(?) AND status = 'active'`,
         [email]
       );
 
@@ -432,7 +432,7 @@ export default class LoginService {
         );
         await conn.query(
           `INSERT INTO password_change_otp (email, otp, status) VALUES (?, ?, 'active')`,
-          [email, otp]
+          [email.toLowerCase(), otp]
         );
         await conn.commit();
       } finally {
@@ -789,6 +789,165 @@ export default class LoginService {
       } catch (rollbackErr) {
         console.error('Rollback failed:', rollbackErr);
       }
+      res
+        .status(500)
+        .json({ success: false, message: 'Internal server error' });
+    } finally {
+      conn.release();
+    }
+  }
+
+  // New method for forgot password - send OTP to employees
+  static async forgotPwd(req: Request, res: Response): Promise<void> {
+    try {
+      const { error, value }: any = LoginService.emailSchema.validate(
+        req.body,
+        {
+          abortEarly: false,
+        }
+      );
+
+      if (error) {
+        res.status(422).json({
+          success: false,
+          message: error.details[0].message,
+        });
+        return;
+      }
+
+      const { email } = value;
+
+      // Check if employee exists in employee_credentials (existing users)
+      const [credentialRows]: any = await pool.query(
+        `SELECT employee_id FROM employee_credentials WHERE LOWER(email) = LOWER(?)`,
+        [email]
+      );
+
+      if (credentialRows.length === 0) {
+        res.status(400).json({
+          success: false,
+          message: 'No account found with this email address.',
+        });
+        return;
+      }
+
+      // Expire any existing active OTPs for this email
+      await pool.query(
+        `UPDATE password_change_otp SET status = 'expired' WHERE LOWER(email) = LOWER(?) AND status = 'active'`,
+        [email]
+      );
+
+      // Send OTP
+      const otpResponse = await LoginService.otpUtil(email);
+
+      if (otpResponse.success) {
+        res.status(200).json({
+          success: true,
+          message: 'OTP sent successfully to your email.',
+        });
+      } else {
+        res.status(otpResponse.status).json(otpResponse);
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error.',
+      });
+    }
+  }
+
+  // New method for changing password of existing employees
+  static async changePwd(req: Request, res: Response): Promise<void> {
+    const conn = await pool.getConnection();
+    try {
+      const { error, value }: any = LoginService.passwordChangeSchema.validate(
+        req.body,
+        {
+          abortEarly: false,
+        }
+      );
+
+      if (error) {
+        res
+          .status(422)
+          .json({ success: false, message: error.details[0].message });
+        return;
+      }
+
+      const { email, otp, newPassword } = value;
+
+      await conn.beginTransaction();
+
+      // Verify OTP
+      const [rows]: any = await conn.query(
+        `SELECT * FROM password_change_otp WHERE email = ? AND otp = ? AND status = 'active' ORDER BY createdAt DESC LIMIT 1 FOR UPDATE`,
+        [email, otp]
+      );
+
+      if (rows.length === 0) {
+        await conn.rollback();
+        res
+          .status(400)
+          .json({ success: false, message: 'Invalid or already used OTP' });
+        return;
+      }
+
+      const otpRecord = rows[0];
+      const createdAt = new Date(otpRecord.createdAt);
+      const now = new Date();
+      const diffMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
+
+      if (diffMinutes > 5) {
+        await conn.query(
+          `UPDATE password_change_otp SET status = 'expired' WHERE sl_no = ?`,
+          [otpRecord.sl_no]
+        );
+        await conn.commit();
+        res.status(410).json({
+          success: false,
+          message: 'OTP expired. Please request a new one.',
+        });
+        return;
+      }
+
+      // Check if employee exists
+      const [employeeRows]: any = await conn.query(
+        `SELECT employee_id FROM employee_credentials WHERE email = ?`,
+        [email]
+      );
+
+      if (employeeRows.length === 0) {
+        await conn.rollback();
+        res
+          .status(400)
+          .json({ success: false, message: 'Employee not found.' });
+        return;
+      }
+
+      const empId = employeeRows[0].employee_id;
+      const hashedPassword = await PasswordUtil.hashPassword(newPassword);
+
+      // Update password
+      await conn.query(
+        `UPDATE employee_credentials SET password = ? WHERE email = ?`,
+        [hashedPassword, email]
+      );
+
+      // Mark OTP as used
+      await conn.query(
+        `UPDATE password_change_otp SET status = 'used' WHERE sl_no = ?`,
+        [otpRecord.sl_no]
+      );
+
+      await conn.commit();
+      res.json({
+        success: true,
+        message: 'Password changed successfully',
+      });
+    } catch (err) {
+      console.error('Error in changePwd:', err);
+      await conn.rollback();
       res
         .status(500)
         .json({ success: false, message: 'Internal server error' });
