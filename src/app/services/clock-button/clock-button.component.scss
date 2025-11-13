@@ -12,6 +12,9 @@
   .btn-clockin {
     --background: #1870B9;
   }
+  .me-clock-out{
+    text-transform: capitalize;
+  }
   .clear {
     min-height: auto;
    @include body-text();

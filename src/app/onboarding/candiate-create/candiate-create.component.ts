@@ -25,7 +25,7 @@ export class CandiateCreateComponent implements OnInit {
     this.candidateForm = this.fb.group({
       FirstName: ['', Validators.required],
       LastName: ['', Validators.required],
-      PhoneNumber: ['', Validators.required],
+      PhoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(10)]],
       Email: ['', [Validators.required, Validators.email]],
       Gender: ['', Validators.required],
       JobTitle: ['', Validators.required],

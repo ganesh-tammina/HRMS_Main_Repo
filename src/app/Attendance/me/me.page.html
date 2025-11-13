@@ -82,7 +82,7 @@
 
                 <ion-col size="6">
                   <!-- Pass record changes to parent component -->
-                  <app-clock-button [record]="record" (statusChanged)="onClockStatusChanged($event)">
+                  <app-clock-button [record]="record" class="clear" (statusChanged)="onClockStatusChanged($event)">
                   </app-clock-button>
                   <!-- 
                   <div class="info m-5 ion-text-center" *ngIf="record?.isClockedIn">
