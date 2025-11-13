@@ -54,6 +54,41 @@
               }
             }
           }
+
+          .step.completed {
+  color: var(--ion-color-primary);
+
+  .circle {
+    background: var(--ion-color-primary);
+    border: 1px solid var(--ion-color-primary);
+    color: #fff;
+  }
+
+  p {
+    --color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    font-weight: 500; // optional
+  }
+}
+
+/* 2) CONNECTOR AFTER COMPLETED STEP: turn primary */
+.step.completed + .line {
+  background-color: var(--ion-color-primary);
+}
+
+/* (optional but helpful) ensure completed beats inactive when both apply */
+.step.inactive.completed,
+.step.completed.inactive {
+  color: var(--ion-color-primary);
+
+  .circle {
+    background: var(--ion-color-primary);
+    border-color: var(--ion-color-primary);
+    color: #fff;
+  }
+
+  p { color: var(--ion-color-primary); }
+}
            
   .circle {
     display: flex;

@@ -10,6 +10,7 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     }
   }
+  
   public static async createLeaveRequest(req: Request, res: Response) {
     try {
       const result = await LeaveService.createLeaveRequest(req.body);
@@ -18,6 +19,7 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     }
   }
+    
   public static async getLeaveBalances(_req: Request, res: Response) {
     console.log('getLeaveBalances called');
     try {

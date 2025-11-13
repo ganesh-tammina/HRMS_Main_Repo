@@ -104,8 +104,7 @@ public static async createLeaveRequest(data: LeaveRequest) {
   } finally {
     connection.release();
   }
-}
-
+} 
 
   public static async getLeaveBalances() {
     const [rows] = await pool.query('SELECT * FROM leave_balance');
@@ -300,5 +299,4 @@ public static async cancelLeaveRequest(leaveId: number) {
     connection.release();
   }
 }
-
 }

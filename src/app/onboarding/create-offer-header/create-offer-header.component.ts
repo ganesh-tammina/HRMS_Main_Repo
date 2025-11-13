@@ -30,17 +30,38 @@ export class CreateOfferHeaderComponent implements OnInit {
   currentUrl: any;    //get current page
   showCreateoffer: boolean= false;
 
-  constructor(private router: Router, private email: EmailService, private candidateService: CandidateService, private route: ActivatedRoute) {
+  private readonly stepsOrder: string[] = [
+    'CreateOffer',
+    'salaryStaructure',
+    'OfferDetailsComponent',
+    'preview_send'
+  ];
+
+  /* === NEW: completed steps for template/scss === */
+  completedSteps: string[] = [];
+
+  constructor(private router: Router, 
+    private email: EmailService, 
+    private candidateService: CandidateService, 
+    private route: ActivatedRoute) {
     // track active tab by URL
     this.router.events
       .pipe(filter((event: any) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         const segments = event.urlAfterRedirects.split('/');
-        this.activeTab = segments[segments.length - 1];
+        this.activeTab = segments[1];
         this.isPreviewSend = this.activeTab === 'preview_send'
         //        if (event instanceof NavigationEnd) {
         //   this.currentRoute = event.url;
         // }
+
+        const idx = this.stepsOrder.indexOf(this.activeTab);
+        this.completedSteps = idx > 0 ? this.stepsOrder.slice(0, idx) : [];
+
+        if (this.isPreviewSend && this.showCreateoffer && !this.completedSteps.includes('preview_send')) {
+          this.completedSteps = [...this.completedSteps, 'preview_send'];
+        }
+
       });
   }
 
@@ -64,6 +85,19 @@ export class CreateOfferHeaderComponent implements OnInit {
     // get id & firstName from parent route
     this.candidateId = this.route.snapshot.paramMap.get('id');
     this.firstName = this.route.snapshot.paramMap.get('FirstName');
+
+    const initialSegments = this.currentUrl?.split('/') || [];
+    const initialActive = initialSegments[1] || '';
+    const initialIdx = this.stepsOrder.indexOf(initialActive);
+    if (initialIdx >= 0) {
+      this.activeTab = initialActive;
+      this.isPreviewSend = initialActive === 'preview_send';
+      this.completedSteps = initialIdx > 0 ? this.stepsOrder.slice(0, initialIdx) : [];
+      this.showCreateoffer = this.isPreviewSend || this.currentUrl.includes('/preview_send/');
+      if (this.isPreviewSend && this.showCreateoffer && !this.completedSteps.includes('preview_send')) {
+        this.completedSteps = [...this.completedSteps, 'preview_send'];
+      }
+    }
   }
 
   onContinue() {

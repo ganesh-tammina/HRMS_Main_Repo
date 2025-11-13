@@ -130,6 +130,7 @@ router.get(
 
   LeaveController.getLeaveBalances
 );
+
 router.post(
   '/v1/leave-request',
 

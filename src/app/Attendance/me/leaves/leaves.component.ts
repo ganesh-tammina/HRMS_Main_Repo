@@ -153,6 +153,8 @@ export class LeavesComponent implements OnInit {
       total_days: this.total_days
     };
 
+    console.log('Submitting Leave Request:', leaveRequest);
+
     this.leaveService.requestLeave(leaveRequest).subscribe({
       next: () => {
         this.closeleavePopup();
