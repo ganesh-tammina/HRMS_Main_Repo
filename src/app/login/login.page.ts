@@ -142,15 +142,30 @@ export class LoginPage implements OnInit{
 
         this.candidateService.getEmpDet().subscribe({
           next: (response: any) => {
-            this.allEmployees = response.data || [];
-            this.one = response.data[0];
-            console.log('login page', this.one);
-            this.candidateService.setCurrentEmployee(this.one);
+            if (response && response.data && response.data.length > 0) {
+              this.allEmployees = response.data;
+              this.one = response.data[0];
+              console.log('login page', this.one);
+              this.candidateService.setCurrentEmployee(this.one);
+            } else {
+              console.warn('No employee data found in response');
+              this.allEmployees = [];
+            }
           },
           error: (err) => {
-            console.error('Error fetching all employees:', err);
+            console.error('Error fetching employee details:', err);
+            this.allEmployees = [];
+            // Show user-friendly error if needed
+            if (err.status === 401) {
+              this.alertViewer('Error', 'Session expired. Please login again.', 'OK');
+            } else if (err.status === 0) {
+              this.alertViewer('Error', 'Network error. Please check your connection.', 'OK');
+            }
           },
         });
+        
+        // Set flag to show login success popup on dashboard
+        localStorage.setItem('showLoginSuccess', 'true');
         this._route_service.redirectBasedOnRole(val.role);
       },
       error: (err) => {
@@ -190,13 +205,21 @@ export class LoginPage implements OnInit{
             }
           },
           error: (err) => {
-            // Override server email validation message
-            if (err.error.message && err.error.message.includes('must be a valid email')) {
-              this.er = 'Please enter a valid email address.';
-            } else {
-              this.er = err.error.message;
-            }
             this.loader = false;
+            // Handle different error scenarios
+            if (err.error && err.error.message) {
+              if (err.error.message.includes('must be a valid email')) {
+                this.er = 'Please enter a valid email address.';
+              } else {
+                this.er = err.error.message;
+              }
+            } else if (err.status === 0) {
+              this.er = 'Network error. Please check your connection.';
+            } else if (err.status === 500) {
+              this.er = 'Server error. Please try again later.';
+            } else {
+              this.er = 'An unexpected error occurred. Please try again.';
+            }
           },
           complete: () => {
             console.log(this.empType);
