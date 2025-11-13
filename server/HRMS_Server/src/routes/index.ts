@@ -180,6 +180,12 @@ router.post(
   //verifyAccessToken
   LeaveController.cancelLeaveRequest
 )
+
+router.post(
+  '/v1/leave-action',
+  // verifyAccessToken,
+  LeaveController.takeActionLeaveRequest
+);
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole)
 // add test apis here only

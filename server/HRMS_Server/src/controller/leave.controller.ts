@@ -72,4 +72,32 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     } 
   }
+
+public static async takeActionLeaveRequest(req: Request, res: Response) {
+    try {
+      const { leave_req_id, action_by_emp_id, action } = req.body;
+
+      if (!leave_req_id || !action_by_emp_id || !action) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields: leave_req_id, action_by_emp_id, or action.',
+        });
+      }
+
+      const result = await LeaveService.takeActionLeaveRequest(
+        leave_req_id,
+        action_by_emp_id,
+        action
+      );
+
+      res.status(200).json(result);
+    } catch (error: any) {
+      console.error('Error in LeaveController.takeActionLeaveRequest:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to take leave action.',
+      });
+    }
+  }
+
 }
