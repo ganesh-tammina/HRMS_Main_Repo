@@ -212,7 +212,7 @@ export class PreonboardingComponent implements OnInit {
 
   //Filtered by Search
   SearchCandidates(event: any) {
-    const val = event.target.value.toLowerCase();
+    const val = event.target.value.toLowerCase().trim();
     if (val === '') {
       this.candidates = this.filterCandidates;
     } else {

@@ -112,14 +112,14 @@
                 <!-- <div class="avatar">{{candidate?.personalDetails?.initials}}</div> -->
                 <ion-img src="../../../assets/user.svg" width="120"></ion-img>
                 <div class="text-center">
-                  <h6>{{candidate.FirstName}}</h6>
-                  <p>Applied for {{candidate.JobTitle}}</p>
+                  <h6>{{candidate?.FirstName}}</h6>
+                  <p>Applied for {{candidate?.JobTitle}}</p>
                 </div>
               </div>
     
               <div class="candidate-info">
-                <p><strong>Email ID:</strong> {{candidate.Email}}</p>
-                <p><strong>Phone Number:</strong> {{candidate.PhoneNumber}}</p>
+                <p><strong>Email ID:</strong> {{candidate?.Email}}</p>
+                <p><strong>Phone Number:</strong> {{candidate?.PhoneNumber}}</p>
                 <p><strong>Joining Date:</strong> {{candidate?.offerDetails?.DOJ}}</p>
                 <p><strong>Source:</strong> Direct Offer</p>
               </div>
