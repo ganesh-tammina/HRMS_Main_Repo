@@ -10,7 +10,7 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     }
   }
-  
+
   public static async createLeaveRequest(req: Request, res: Response) {
     try {
       const result = await LeaveService.createLeaveRequest(req.body);
@@ -19,7 +19,7 @@ export default class LeaveController {
       res.status(500).json({ error: err.message });
     }
   }
-    
+
   public static async getLeaveBalances(_req: Request, res: Response) {
     console.log('getLeaveBalances called');
     try {
@@ -57,7 +57,9 @@ export default class LeaveController {
   }
   public static async getLeaveRequest(req: Request, res: Response) {
     try {
-      const result = await LeaveService.getLeaveRequestById(req.body.employeeId);
+      const result = await LeaveService.getLeaveRequestById(
+        req.body.employeeId
+      );
       res.status(200).json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -70,17 +72,18 @@ export default class LeaveController {
       res.status(200).json(result);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
-    } 
+    }
   }
 
-public static async takeActionLeaveRequest(req: Request, res: Response) {
+  public static async takeActionLeaveRequest(req: Request, res: Response) {
     try {
       const { leave_req_id, action_by_emp_id, action } = req.body;
 
       if (!leave_req_id || !action_by_emp_id || !action) {
         return res.status(400).json({
           success: false,
-          message: 'Missing required fields: leave_req_id, action_by_emp_id, or action.',
+          message:
+            'Missing required fields: leave_req_id, action_by_emp_id, or action.',
         });
       }
 
@@ -99,5 +102,32 @@ public static async takeActionLeaveRequest(req: Request, res: Response) {
       });
     }
   }
+  public static async getmydescendentsleaveRequests(
+    req: Request,
+    res: Response
+  ) {
+    try {
+      const { employee_id, action } = req.body;
 
+      if (!employee_id || !action) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields: employee_id, action.',
+        });
+      }
+
+      const result = await LeaveService.getleavesofmydescendents(
+        employee_id,
+        action
+      );
+
+      res.status(200).json(result);
+    } catch (error: any) {
+      console.error('Error in LeaveController.getmydescendentsleaveRequests:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to take leave action.',
+      });
+    }
+  }
 }

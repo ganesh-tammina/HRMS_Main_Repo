@@ -165,7 +165,7 @@ router.get('/1/admin', (req, res) => {
     id: 1,
     name: 'Admin User',
     email: 'admin@company.com',
-    role: 'admin'
+    role: 'admin',
   });
 });
 router.post(
@@ -193,14 +193,18 @@ router.post(
   '/v1/cancel-leave',
   //verifyAccessToken
   LeaveController.cancelLeaveRequest
-)
+);
 
 router.post(
   '/v1/leave-action',
   // verifyAccessToken,
   LeaveController.takeActionLeaveRequest
 );
+router.post(
+  '/v1/manager/leave-requests',
+  LeaveController.getmydescendentsleaveRequests
+);
 // test apis here 🤡
-router.post('/v1/test-api', EmployeeLoginController.getRole)
+router.post('/v1/test-api', EmployeeLoginController.getRole);
 // add test apis here only
 export default router;
