@@ -150,7 +150,7 @@ export class CandidateService {
   private forgotpwd = `${this.api}forgot-password-email`;
   private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
   private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';
-  private changeoldEmpwd = `${this.api}forgot-passwor`;
+  private changeoldEmpwd = `${this.api}forgot-password`;
   private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
