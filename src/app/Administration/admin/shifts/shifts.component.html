@@ -1,0 +1,32 @@
+<div class="shift-container">
+  <h2>Create Shift</h2>
+
+  <form [formGroup]="shiftForm" (ngSubmit)="submitShift()">
+
+    <div class="form-group">
+      <label>Shift Name</label>
+      <input type="text" formControlName="shiftName" placeholder="Enter shift name" />
+      <small *ngIf="shiftForm.get('shiftName')?.touched && shiftForm.get('shiftName')?.invalid">
+        Shift name is required
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Check-In Time</label>
+      <input type="time" formControlName="checkIn" />
+      <small *ngIf="shiftForm.get('checkIn')?.touched && shiftForm.get('checkIn')?.invalid">
+        Check-in time is required
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Check-Out Time</label>
+      <input type="time" formControlName="checkOut" />
+      <small *ngIf="shiftForm.get('checkOut')?.touched && shiftForm.get('checkOut')?.invalid">
+        Check-out time is required
+      </small>
+    </div>
+
+    <button type="submit" class="btn">Save Shift</button>
+  </form>
+</div>

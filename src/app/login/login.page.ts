@@ -274,6 +274,7 @@ export class LoginPage implements OnInit, OnDestroy {
     }
 
     const body = {
+      email: this.loginForm.controls['email'].value,
       otp: this.newEmployees.controls['otp'].value,
       newPassword: this.newEmployees.controls['confirmPass'].value,
     };

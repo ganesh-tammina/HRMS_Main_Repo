@@ -6,13 +6,14 @@ import { LeaveModalComponent } from './leave-modal/leave-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { environment } from 'src/environments/environment';
+import { ShiftsComponent } from './shifts/shifts.component';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent],
+  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent, ShiftsComponent],
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
@@ -35,7 +36,7 @@ export class AdminComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private candidateService: CandidateService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.isLoading = true;
