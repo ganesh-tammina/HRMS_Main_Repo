@@ -33,7 +33,6 @@ export default class AttendanceService {
   }
   public static async clockIn(data: TT) {
     try {
-
       const query = `
         INSERT INTO attendance (employee_id, attendance_date, check_in)
         VALUES (?, CURDATE(), ?)
@@ -251,7 +250,7 @@ export default class AttendanceService {
        GROUP BY employee_id, attendance_date`,
       [asdfads]
     );
-    
+
     console.log('Today attendance result:', adfasd);
     return adfasd;
   }
@@ -278,7 +277,7 @@ export default class AttendanceService {
        GROUP BY employee_id, attendance_date`,
       [emp_id, asdfads]
     );
-    
+
     return adfasd;
   }
   public static async qeiwoi(
@@ -303,7 +302,10 @@ export default class AttendanceService {
     return { check_in: adfasd[0].check_in, check_out: adfasd[0].check_out };
   }
 
-  public static async verifyAttendanceHistory(employeeId: number, days: number = 7) {
+  public static async verifyAttendanceHistory(
+    employeeId: number,
+    days: number = 7
+  ) {
     const [result]: any = await pool.query(
       `SELECT attendance_date, check_in, check_out, 
        DATE_FORMAT(attendance_date, '%Y-%m-%d') as formatted_date,
@@ -314,32 +316,73 @@ export default class AttendanceService {
        ORDER BY attendance_date DESC`,
       [employeeId, days]
     );
-
-    console.log(`\n📅 ATTENDANCE VERIFICATION FOR EMPLOYEE ${employeeId} (Last ${days} days):`);
-    console.log('=' .repeat(80));
-    
     if (result.length === 0) {
-      console.log('❌ No attendance records found for this employee');
       return { success: false, message: 'No attendance data found' };
     }
-
-    result.forEach((record: any, index: number) => {
-      const date = record.formatted_date;
-      const dayName = record.day_name;
-      const checkIn = record.check_in || 'Not clocked in';
-      const checkOut = record.check_out || 'Not clocked out';
-      
-      console.log(`${index + 1}. ${date} (${dayName})`);
-      console.log(`   ⏰ Check In:  ${checkIn}`);
-      console.log(`   ⏰ Check Out: ${checkOut}`);
-      console.log('   ' + '-'.repeat(50));
-    });
 
     return {
       success: true,
       totalRecords: result.length,
       attendanceData: result,
-      message: `Found ${result.length} attendance records`
+      message: `Found ${result.length} attendance records`,
     };
   }
+
+ public static async createShiftPolicyService(data: any) {
+  const { shift_name, check_in, check_out } = data;
+
+  const sql = `
+    INSERT INTO shift_policy (shift_name, check_in, check_out)
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      check_in = VALUES(check_in),
+      check_out = VALUES(check_out)
+  `;
+
+  const params = [shift_name, check_in, check_out];
+
+  const [result]: any = await pool.query(sql, params);
+
+  const isUpdate = result.affectedRows === 2;
+
+  return {
+    success: true,
+    isUpdate,
+    shift_id: result.insertId || undefined, 
+  };
+}
+
+public static async getEmployeesUnderManagerService(manager_id: number) {
+  const mgrSql = `
+    SELECT employee_number
+    FROM employees
+    WHERE employee_id = ?
+  `;
+
+  const [mgrRows]: any = await pool.query(mgrSql, [manager_id]);
+
+  if (mgrRows.length === 0) {
+    return [];
+  }
+
+  const managerEmployeeNumber = mgrRows[0].employee_number;
+  const sql = `
+    SELECT 
+      e_emp.employee_id,
+      e_emp.employee_number,
+      e_emp.full_name,
+      e_emp.work_email,
+      ed_emp.job_title
+    FROM employment_details ed_emp
+    JOIN employees e_emp 
+      ON ed_emp.employee_id = e_emp.employee_id
+    WHERE ed_emp.reporting_manager_employee_number = ?
+  `;
+
+  const [rows]: any = await pool.query(sql, [managerEmployeeNumber]);
+
+  return rows;
+}
+
+
 }

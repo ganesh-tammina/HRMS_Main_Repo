@@ -52,5 +52,14 @@ AttendanceRouter.post(
   AttendanceController.llakdjlfjas
 );
 
-AttendanceRouter.post('/v1/attendance', kjhkhk, AttendanceController.kasdja)
+AttendanceRouter.post('/v1/attendance', kjhkhk, AttendanceController.kasdja);
+AttendanceRouter.post(
+  '/v1/shift-policy',
+  AttendanceController.createShiftPolicy
+);
+AttendanceRouter.get(
+  '/v1/employees/under-manager/:manager_id',
+  AttendanceController.getEmployeesUnderManager
+);
+
 export default AttendanceRouter;
