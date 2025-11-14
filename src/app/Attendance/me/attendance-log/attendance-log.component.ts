@@ -213,7 +213,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
           if (clockInTimes.length > 0) {
             const firstClockIn = clockInTimes[0];
             const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
-            const cutoffTime = new Date('1970-01-01T10:00:00'); // 10:00 AM cutoff
+            const cutoffTime = new Date('1970-01-01T09:30:00'); // 9:30 AM cutoff
             
             if (clockInTime <= cutoffTime) {
               arrivalTime = 'On Time';

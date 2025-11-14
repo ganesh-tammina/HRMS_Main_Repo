@@ -23,7 +23,7 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
       </ion-button>
       <ion-button fill="clear" class="clear" *ngIf="(!isClockedIn && (currentUrl=='/Me'))" (click)="clockIn()">
       <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16">
-      web Clock_In
+      Web Clock-In
     </ion-button>
       <ion-button
         class="btn-clockout"
