@@ -144,6 +144,8 @@ export interface Shifts {
   providedIn: 'root',
 })
 export class CandidateService {
+
+  private currentLoggedEmployeeId: number | null = null;
   private env = environment;
   private api = `https://${this.env.apiURL}/api/v1/`;
 
@@ -163,6 +165,7 @@ export class CandidateService {
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
   private shiftsUrl = "https://localhost:3562/api/v1/shift-policy";
+  // private reportingTeamUrl = "https://localhost:3562/api/v1/employees/under-manager/102";
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -183,7 +186,9 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) { }
+  ) {
+
+  }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -239,6 +244,20 @@ export class CandidateService {
     return this.http.post<any>(this.empUrl, body, { withCredentials: true });
   }
 
+
+  setLoggedEmployeeId(id: number) {
+    this.currentLoggedEmployeeId = id;
+  }
+
+  getLoggedEmployeeId(): number | null {
+    return this.currentLoggedEmployeeId;
+  }
+
+  getReportingTeam(employeeId: number): Observable<any> {
+    return this.http.get(
+      `https://localhost:3562/api/v1/employees/under-manager/${employeeId}`
+    );
+  }
 
   /*************  ✨ Windsurf Command ⭐  *************/
   /**

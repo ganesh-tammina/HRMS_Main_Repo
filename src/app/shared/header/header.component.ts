@@ -34,6 +34,7 @@ export class HeaderComponent implements OnInit {
   @Input() employee: any;
   fullName: any;
   currentemp: any;
+  employee_id: any;
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   constructor(
@@ -46,6 +47,9 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.candidateService.Employee$.subscribe((employees) => {
+      console.log("👀 Employee$ value:", employees);
+    });
 
     // this.currentEmployee$ = this.candidateService.currentEmployee$;
 
@@ -67,7 +71,13 @@ export class HeaderComponent implements OnInit {
           if (this.allEmployees.length > 0) {
             this.one = this.allEmployees[0];
             this.fullName = this.one[0].full_name;
+            this.employee_id = this.one[0].employee_id;
+            localStorage.setItem('employee_id', this.employee_id);
+             this.candidateService.setLoggedEmployeeId(this.employee_id);
             console.log(this.fullName);
+
+            console.log(this.employee_id);
+
           }
         },
         error: (err) => {
