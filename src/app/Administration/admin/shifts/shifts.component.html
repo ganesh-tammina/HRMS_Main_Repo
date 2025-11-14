@@ -5,24 +5,24 @@
 
     <div class="form-group">
       <label>Shift Name</label>
-      <input type="text" formControlName="shiftName" placeholder="Enter shift name" />
-      <small *ngIf="shiftForm.get('shiftName')?.touched && shiftForm.get('shiftName')?.invalid">
+      <input type="text" formControlName="shift_name" placeholder="Enter shift name" />
+      <small *ngIf="shiftForm.get('shift_name')?.touched && shiftForm.get('shift_name')?.invalid">
         Shift name is required
       </small>
     </div>
 
     <div class="form-group">
       <label>Check-In Time</label>
-      <input type="time" formControlName="checkIn" />
-      <small *ngIf="shiftForm.get('checkIn')?.touched && shiftForm.get('checkIn')?.invalid">
+      <input type="time" formControlName="check_in" />
+      <small *ngIf="shiftForm.get('check_in')?.touched && shiftForm.get('check_in')?.invalid">
         Check-in time is required
       </small>
     </div>
 
     <div class="form-group">
       <label>Check-Out Time</label>
-      <input type="time" formControlName="checkOut" />
-      <small *ngIf="shiftForm.get('checkOut')?.touched && shiftForm.get('checkOut')?.invalid">
+      <input type="time" formControlName="check_out" />
+      <small *ngIf="shiftForm.get('check_out')?.touched && shiftForm.get('check_out')?.invalid">
         Check-out time is required
       </small>
     </div>

@@ -134,6 +134,12 @@ export interface EmployeeResponse {
   data: Employee[][];
 }
 
+export interface Shifts {
+  shift_name: string,
+  check_in: string,
+  check_out: string
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -156,6 +162,7 @@ export class CandidateService {
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
+  private shiftsUrl = "https://localhost:3562/api/v1/shift-policy";
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -230,6 +237,20 @@ export class CandidateService {
       refresh_token: this.routeGuardService.refreshToken,
     };
     return this.http.post<any>(this.empUrl, body, { withCredentials: true });
+  }
+
+
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Returns an observable of shifts from the server.
+   * The observable emits a Shifts object which contains an array of shifts.
+   * The shifts are retrieved from the server based on the token and refresh token stored in local storage.
+   * The API call is a POST request to the shifts URL.
+   * @returns {Observable<Shifts>} an observable of shifts.
+   */
+  /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
+  getShifts(shifts: Shifts): Observable<Shifts> {
+    return this.http.post<Shifts>(this.shiftsUrl, shifts);
   }
 
   getAllEmployees(): Observable<EmployeeResponse> {
