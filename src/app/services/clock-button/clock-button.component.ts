@@ -23,19 +23,26 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
       </ion-button>
       <ion-button fill="clear" class="clear" *ngIf="(!isClockedIn && (currentUrl=='/Me'))" (click)="clockIn()">
       <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16">
-      web Clock_In
+      Web Clock-In
     </ion-button>
       <ion-button
         class="btn-clockout"
-        *ngIf="isClockedIn"
+        *ngIf="(isClockedIn && (currentUrl!=='/Me'))"
         (click)="clockOut()"
       >
       Web Clock-Out
       </ion-button>
 
-      <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))" style="white-space: nowrap; font-size: 12px; text-align: center; margin: 8px 0;">
-        Since Last Login: <strong>{{ timeSinceLastLogin }}</strong>
-      </div>
+      <ion-button
+        class="btn-clockout me-clock-out"
+        *ngIf="(isClockedIn && (currentUrl=='/Me'))"
+        (click)="clockOut()"
+      >
+      Web Clock-Out
+      </ion-button>
+      <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))">
+        Since Last Login :
+        <strong>{{ timeSinceLastLogin }}</strong>
     </div>
 
     <div *ngIf="!currentCandidate">

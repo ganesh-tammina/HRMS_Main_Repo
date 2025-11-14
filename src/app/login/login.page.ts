@@ -63,7 +63,7 @@ export class LoginPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private _loginSer: _LoginService,
     private _route_service: RouteGuardService
-  ) {}
+  ) { }
 
   /* ---------------------------
    * Lifecycle
@@ -274,6 +274,7 @@ export class LoginPage implements OnInit, OnDestroy {
     }
 
     const body = {
+      email: this.loginForm.controls['email'].value,
       otp: this.newEmployees.controls['otp'].value,
       newPassword: this.newEmployees.controls['confirmPass'].value,
     };

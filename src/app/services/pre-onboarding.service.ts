@@ -176,7 +176,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {}
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
