@@ -147,16 +147,15 @@ export class CandidateService {
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `https://${this.env.apiURL}/candidates`;
   private getEmployees = `${this.api}employee`;
-  private forgotpwd = 'https://30.0.0.78:3562/api/v1/forgot-pwd';
+  private forgotpwd = `${this.api}forgot-password-email`;
   private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
   private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';
-  private changeoldEmpwd = 'https://30.0.0.78:3562/api/v1/change-pwd';
+  private changeoldEmpwd = `${this.api}forgot-passwor`;
   private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
   private holidaysUrl = `${this.api}holidays/public_holidays`;
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
-
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -177,7 +176,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) { }
+  ) {}
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -225,7 +224,6 @@ export class CandidateService {
     return this.http.get<any>(this.imagesUrl);
   }
 
-
   getEmpDet(): Observable<EmployeeResponse> {
     const body = {
       access_token: this.routeGuardService.token,
@@ -233,8 +231,6 @@ export class CandidateService {
     };
     return this.http.post<any>(this.empUrl, body, { withCredentials: true });
   }
-
-
 
   getAllEmployees(): Observable<EmployeeResponse> {
     return this.http.get<EmployeeResponse>(this.empUrl).pipe();
@@ -390,7 +386,10 @@ export class CandidateService {
   }
   createRejectedEmployee(Emp: any): Observable<any> {
     return this.http
-      .post<any>('https://${environment.apiURL}/employees/rejectedemployees', Emp)
+      .post<any>(
+        'https://${environment.apiURL}/employees/rejectedemployees',
+        Emp
+      )
       .pipe(
         tap((newCandidate) => {
           console.log(newCandidate);
@@ -458,24 +457,29 @@ export class CandidateService {
     }
   }
   uploadImage(file: any): Observable<{
-    [x: string]: any; imageUrl: string
+    [x: string]: any;
+    imageUrl: string;
   }> {
     return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, file);
   }
-  uploadEmployeeProfilePic(employeeId: number, profilePicUrl: string): Observable<any> {
+  uploadEmployeeProfilePic(
+    employeeId: number,
+    profilePicUrl: string
+  ): Observable<any> {
     const body = {
       employee_id: employeeId,
-      profile_pic_url: profilePicUrl
+      profile_pic_url: profilePicUrl,
     };
 
     console.log('📤 Uploading profile pic:', body);
 
     return this.http.post<any>(this.empProfileUrl, body).pipe(
       tap({
-        next: (res) => console.log('✅ Profile picture updated successfully:', res),
-        error: (err) => console.error('❌ Error updating profile picture:', err)
+        next: (res) =>
+          console.log('✅ Profile picture updated successfully:', res),
+        error: (err) =>
+          console.error('❌ Error updating profile picture:', err),
       })
     );
   }
 }
-
