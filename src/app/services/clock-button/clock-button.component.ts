@@ -23,20 +23,26 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
       </ion-button>
       <ion-button fill="clear" class="clear" *ngIf="(!isClockedIn && (currentUrl=='/Me'))" (click)="clockIn()">
       <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16">
-      web Clock_In
+      Web Clock-In
     </ion-button>
       <ion-button
         class="btn-clockout"
-        *ngIf="isClockedIn"
+        *ngIf="(isClockedIn && (currentUrl!=='/Me'))"
         (click)="clockOut()"
       >
       Web Clock-Out
       </ion-button>
 
+      <ion-button
+        class="btn-clockout me-clock-out"
+        *ngIf="(isClockedIn && (currentUrl=='/Me'))"
+        (click)="clockOut()"
+      >
+      Web Clock-Out
+      </ion-button>
       <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))">
         Since Last Login :
         <strong>{{ timeSinceLastLogin }}</strong>
-      </div>
     </div>
 
     <div *ngIf="!currentCandidate">
@@ -127,6 +133,25 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     if (!this.currentCandidate) return;
 
     const empId = this.currentCandidate.data[0][0].employee_id;
+    const now = new Date();
+    
+    // Start timer immediately
+    this.record = {
+      employeeId: empId,
+      clockInTime: now.toISOString(),
+      isClockedIn: true,
+      accumulatedMs: 0,
+      history: [{
+        type: 'CLOCK_IN',
+        time: now.toISOString(),
+        displayTime: now.toLocaleTimeString()
+      }],
+      dailyAccumulatedMs: {}
+    };
+    this.attendanceService.saveRecord(this.record);
+    this.statusChanged.emit(this.record);
+    this.initializeTimer(); // Start timer immediately
+    
     const clockInData = {
       LogType: 'IN',
       EmpID: empId
@@ -137,23 +162,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     this.attendanceService.clockInServer(clockInData).subscribe({
       next: (response) => {
         console.log('✅ Clock-in response:', response);
-        if (response.status) {
-          const now = new Date();
-          this.record = {
-            employeeId: empId,
-            clockInTime: now.toISOString(),
-            isClockedIn: true,
-            accumulatedMs: 0,
-            history: [{
-              type: 'CLOCK_IN',
-              time: now.toISOString(),
-              displayTime: now.toLocaleTimeString()
-            }],
-            dailyAccumulatedMs: {}
-          };
-          this.attendanceService.saveRecord(this.record);
-          this.statusChanged.emit(this.record);
-          // Refresh status after successful operation
+        if (!response.status) {
+          // If server fails, revert the local state
           this.checkAttendanceStatus(empId);
         }
       },
@@ -225,12 +235,12 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
     const now = new Date().getTime();
     const clockInTime = new Date(this.record.clockInTime).getTime();
-    const diff = now - clockInTime;
+    const diff = Math.max(0, now - clockInTime); // Ensure non-negative
 
     const totalSeconds = Math.floor(diff / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+    const hours = Math.max(0, Math.floor(totalSeconds / 3600));
+    const minutes = Math.max(0, Math.floor((totalSeconds % 3600) / 60));
+    const seconds = Math.max(0, totalSeconds % 60);
 
     this.timeSinceLastLogin = `${hours}h ${minutes}m ${seconds}s`;
   }

@@ -33,7 +33,6 @@ export default class AttendanceService {
   }
   public static async clockIn(data: TT) {
     try {
-
       const query = `
         INSERT INTO attendance (employee_id, attendance_date, check_in)
         VALUES (?, CURDATE(), ?)
@@ -92,15 +91,40 @@ export default class AttendanceService {
 
   public static async getAttendance(data: any) {
     try {
-      let query = `select * from attendance where employee_id = ?`;
+      let query = `
+        SELECT a1.attendance_id, a1.employee_id, a1.attendance_date, a1.check_in, a1.check_out,
+        (
+          SELECT MIN(a2.check_in) 
+          FROM attendance a2 
+          WHERE a2.employee_id = a1.employee_id 
+          AND a2.attendance_date = a1.attendance_date
+        ) as first_check_in_of_day,
+        CASE 
+          WHEN (
+            SELECT MIN(a2.check_in) 
+            FROM attendance a2 
+            WHERE a2.employee_id = a1.employee_id 
+            AND a2.attendance_date = a1.attendance_date
+          ) <= '09:30:00' THEN 'On Time'
+          ELSE CONCAT(
+            DATE_FORMAT(
+              TIMEDIFF(
+                (SELECT MIN(a2.check_in) FROM attendance a2 WHERE a2.employee_id = a1.employee_id AND a2.attendance_date = a1.attendance_date),
+                '09:30:00'
+              ), '%H:%i:%s'
+            ), ' late'
+          )
+        END as arrival_time
+        FROM attendance a1 WHERE a1.employee_id = ?`;
       const params: any[] = [data.employee_id];
       if (data.startDate && data.endDate) {
-        query += ` and attendance_date between ? and ?`;
+        query += ` AND a1.attendance_date BETWEEN ? AND ?`;
         params.push(data.startDate, data.endDate);
       } else if (data.date) {
-        query += ` and attendance_date = ?`;
+        query += ` AND a1.attendance_date = ?`;
         params.push(data.date);
       }
+      query += ` ORDER BY a1.attendance_date DESC, a1.check_in ASC`;
 
       const [result] = await pool.query(query, params);
       return result;
@@ -203,17 +227,57 @@ export default class AttendanceService {
     };
   }
   public static async getTodayAttendance(asdfads: number) {
+    console.log('Getting today attendance for employee:', asdfads);
     const [adfasd]: any = await pool.query(
-      `SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = CURDATE()`,
+      `SELECT attendance_id, employee_id, attendance_date,
+       MIN(check_in) as first_check_in,
+       MAX(check_out) as last_check_out,
+       DATE_FORMAT(MAX(check_out), '%H:%i:%s') as departure_time,
+       CASE 
+         WHEN MIN(check_in) <= '09:30:00' THEN 'On Time'
+         ELSE CONCAT(DATE_FORMAT(TIMEDIFF(MIN(check_in), '09:30:00'), '%H:%i:%s'), ' late')
+       END as arrival_time,
+       CASE 
+         WHEN MIN(check_in) <= '09:30:00' THEN 'on_time'
+         ELSE 'late'
+       END as status,
+       CASE 
+         WHEN MIN(check_in) > '09:30:00' THEN DATE_FORMAT(TIMEDIFF(MIN(check_in), '09:30:00'), '%H:%i:%s')
+         ELSE NULL
+       END as late_duration
+       FROM attendance 
+       WHERE employee_id = ? AND attendance_date = CURDATE()
+       GROUP BY employee_id, attendance_date`,
       [asdfads]
     );
+
+    console.log('Today attendance result:', adfasd);
     return adfasd;
   }
   public static async getTodayAttendanceExtra(emp_id: string, asdfads: string) {
     const [adfasd]: any = await pool.query(
-      `SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = ?`,
+      `SELECT attendance_id, employee_id, attendance_date,
+       MIN(check_in) as first_check_in,
+       MAX(check_out) as last_check_out,
+       DATE_FORMAT(MAX(check_out), '%H:%i:%s') as departure_time,
+       CASE 
+         WHEN MIN(check_in) <= '09:30:00' THEN 'On Time'
+         ELSE CONCAT(DATE_FORMAT(TIMEDIFF(MIN(check_in), '09:30:00'), '%H:%i:%s'), ' late')
+       END as arrival_time,
+       CASE 
+         WHEN MIN(check_in) <= '09:30:00' THEN 'on_time'
+         ELSE 'late'
+       END as status,
+       CASE 
+         WHEN MIN(check_in) > '09:30:00' THEN DATE_FORMAT(TIMEDIFF(MIN(check_in), '09:30:00'), '%H:%i:%s')
+         ELSE NULL
+       END as late_duration
+       FROM attendance 
+       WHERE employee_id = ? AND attendance_date = ?
+       GROUP BY employee_id, attendance_date`,
       [emp_id, asdfads]
     );
+
     return adfasd;
   }
   public static async qeiwoi(
@@ -237,4 +301,88 @@ export default class AttendanceService {
     );
     return { check_in: adfasd[0].check_in, check_out: adfasd[0].check_out };
   }
+
+  public static async verifyAttendanceHistory(
+    employeeId: number,
+    days: number = 7
+  ) {
+    const [result]: any = await pool.query(
+      `SELECT attendance_date, check_in, check_out, 
+       DATE_FORMAT(attendance_date, '%Y-%m-%d') as formatted_date,
+       DAYNAME(attendance_date) as day_name
+       FROM attendance 
+       WHERE employee_id = ? 
+       AND attendance_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+       ORDER BY attendance_date DESC`,
+      [employeeId, days]
+    );
+    if (result.length === 0) {
+      return { success: false, message: 'No attendance data found' };
+    }
+
+    return {
+      success: true,
+      totalRecords: result.length,
+      attendanceData: result,
+      message: `Found ${result.length} attendance records`,
+    };
+  }
+
+ public static async createShiftPolicyService(data: any) {
+  const { shift_name, check_in, check_out } = data;
+
+  const sql = `
+    INSERT INTO shift_policy (shift_name, check_in, check_out)
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      check_in = VALUES(check_in),
+      check_out = VALUES(check_out)
+  `;
+
+  const params = [shift_name, check_in, check_out];
+
+  const [result]: any = await pool.query(sql, params);
+
+  const isUpdate = result.affectedRows === 2;
+
+  return {
+    success: true,
+    isUpdate,
+    shift_id: result.insertId || undefined, 
+  };
+}
+
+public static async getEmployeesUnderManagerService(manager_id: number) {
+  const mgrSql = `
+    SELECT employee_number
+    FROM employees
+    WHERE employee_id = ?
+  `;
+
+  const [mgrRows]: any = await pool.query(mgrSql, [manager_id]);
+
+  if (mgrRows.length === 0) {
+    return [];
+  }
+
+  const managerEmployeeNumber = mgrRows[0].employee_number;
+  const sql = `
+    SELECT 
+      e_emp.employee_id,
+      e_emp.employee_number,
+      e_emp.full_name,
+      e_emp.work_email,
+      ed_emp.job_title
+    FROM employment_details ed_emp
+    JOIN employees e_emp 
+      ON ed_emp.employee_id = e_emp.employee_id
+    WHERE ed_emp.reporting_manager_employee_number = ?
+  `;
+
+  const [rows]: any = await pool.query(sql, [managerEmployeeNumber]);
+
+  return rows;
+}
+
+
 }

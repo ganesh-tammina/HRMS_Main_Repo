@@ -12,6 +12,9 @@
   .btn-clockin {
     --background: #1870B9;
   }
+  .me-clock-out{
+    text-transform: capitalize;
+  }
   .clear {
     min-height: auto;
    @include body-text();
@@ -30,4 +33,11 @@
     img {
       margin-right: 8px;
     }
+  }
+  
+  .ms-2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }

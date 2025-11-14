@@ -23,27 +23,30 @@
                         <ion-icon name="folder-open-outline" class="folder-icon"></ion-icon>
                         <p> <strong>Upload a file</strong></p>
                         <p>Attach the file below</p>
-                        <div class="drag-drop-area" >
+                        <div class="drag-drop-area">
                           <ion-icon name="arrow-down-circle-outline" class="upload-icon"></ion-icon>
                           <p>Drag file(s) here to upload.</p>
                           <p>Alternatively, you can select a file by
                             <label for="file-upload-input" class="select-file-link">
                               clicking here
-                              <input type="file" #EmployeeInput id="file-upload-input" (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />                        
+                              <input type="file" #EmployeeInput id="file-upload-input"
+                                (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />
                             </label>
                           </p>
                         </div>
                       </div>
-                
+
                       <div class="modal-actions">
-                        <ion-button fill="outline" color="medium" (click)="modal.dismiss(null, 'cancel')">Cancel</ion-button>
-                        <ion-button class="primary-btn" (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">Upload File</ion-button>
+                        <ion-button fill="outline" color="medium"
+                          (click)="modal.dismiss(null, 'cancel')">Cancel</ion-button>
+                        <ion-button class="primary-btn" (click)="EmployeesUpload()"
+                          [disabled]="!EmployeeselectedFile">Upload File</ion-button>
                       </div>
                     </ion-content>
                   </ng-template>
                 </ion-modal>
-                
-              
+
+
 
 
 
@@ -318,5 +321,8 @@
   </ion-grid>
   <div *ngIf="showModal">
     <app-leave-modal (saveLeaves)="handleSave($event)" (closeModal)="handleClose()"></app-leave-modal>
+  </div>
+  <div>
+    <app-shifts></app-shifts>
   </div>
 </ion-content>

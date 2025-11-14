@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
   currentTime: string = '';
   allEmployees: any[] = [];
   currentUrl: any;    //get current page
+  isRefreshing = false;
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(
@@ -63,6 +64,9 @@ export class AppComponent implements OnInit {
         this.iscandiateofferPage =
           event.urlAfterRedirects.includes('/candidate_status');
         console.log("this.iscandiateofferPage", this.iscandiateofferPage)
+
+        // Quick refresh effect for main navigation pages after login
+        this.handlePageRefresh(event.urlAfterRedirects);
 
         const userData = localStorage.getItem('loggedInUser');
         if (userData) {
@@ -104,5 +108,21 @@ export class AppComponent implements OnInit {
     localStorage.clear();
     sessionStorage.clear();
     this.router.navigate(['/login'])
+  }
+
+  private handlePageRefresh(url: string) {
+    // Check if user is logged in and navigating to main pages
+    const isLoggedIn = this.routeGaurdService.token && this.routeGaurdService.refreshToken;
+    const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
+    const isMainPage = mainPages.some(page => url.includes(page));
+    
+    if (isLoggedIn && isMainPage && !this.isRefreshing) {
+      this.isRefreshing = true;
+      
+      // Quick refresh effect - show loading for milliseconds
+      setTimeout(() => {
+        this.isRefreshing = false;
+      }, 100); // 100ms refresh effect
+    }
   }
 }
