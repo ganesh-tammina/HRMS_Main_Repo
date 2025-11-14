@@ -62,19 +62,30 @@
             <ion-input [value]="currentemp.current_address_line1" *ngIf="isAdress"></ion-input>
 
             <h6 *ngIf="!isAdress">
-              {{currentemp.current_city}} {{currentemp.current_state}} {{currentemp.current_country}}
-              {{currentemp.current_zip}}
+              {{currentemp.current_city}}, {{currentemp.current_state}}
             </h6>
 
+            <h6 *ngIf="!isAdress">
+              {{currentemp.current_country}},
+              {{currentemp.current_zip}}
+            </h6>
           </div>
 
         </ion-col>
         <ion-col>
           <div>
             <p>Permanent Address</p>
-            <h6 *ngIf="!isAdress">{{currentemp.permanent_address_line1}}</h6>
+            <h6 *ngIf="!isAdress">
+              {{currentemp.permanent_address_line1}}</h6>
             <ion-input [value]="currentemp.permanent_address_line1" *ngIf="isAdress"></ion-input>
 
+            <h6 *ngIf="!isAdress">
+              {{currentemp.permanent_city}} ,{{currentemp.permanent_state}}
+            </h6>
+            <h6 *ngIf="!isAdress">
+              {{currentemp.permanent_country}},
+              {{currentemp.permanent_zip}}
+            </h6>
           </div>
 
         </ion-col>

@@ -97,7 +97,14 @@
         <ion-col size="6" size-lg="5" size-md="6">
           <div class="search-wrap">
             <ion-icon name="search-outline"></ion-icon>
-            <input placeholder="Search" (keyup)="SearchCandidates($event)"/>
+            <input #searchInput placeholder="Search" (keyup)="SearchCandidates($event)"/>
+          </div>
+        </ion-col>
+        <ion-col>
+          <div class="clear">
+            <ion-button class="primary-btn" (click)="clearSearch(searchInput)">
+              Clear
+            </ion-button>
           </div>
         </ion-col>
       </ion-row>
