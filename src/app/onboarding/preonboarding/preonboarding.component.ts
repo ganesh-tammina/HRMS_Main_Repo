@@ -213,6 +213,7 @@ export class PreonboardingComponent implements OnInit {
   //Filtered by Search
   SearchCandidates(event: any) {
     const val = event.target.value.toLowerCase().trim();
+    this.searchText = val;
     if (val === '') {
       this.candidates = this.filterCandidates;
     } else {
@@ -226,5 +227,12 @@ export class PreonboardingComponent implements OnInit {
       );
     }
   }
+
+  clearSearch(searchInput?: HTMLInputElement) {
+  if (searchInput) searchInput.value = '';
+  this.searchText = '';
+  // restore full list
+  this.candidates = Array.isArray(this.filterCandidates) ? [...this.filterCandidates] : [];
+ }
 
 }
