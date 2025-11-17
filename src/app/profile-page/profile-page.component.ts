@@ -13,6 +13,7 @@ import { AssetsTabComponent } from './assets-tab/assets-tab.component';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
 import { ReportingTEamComponent } from './reporting-team/reporting-team.component';
+import { LeaveRequestsComponent } from '../leave-requests/leave-requests.component';
 
 @Component({
   selector: 'app-profile-page',
@@ -30,7 +31,8 @@ import { ReportingTEamComponent } from './reporting-team/reporting-team.componen
     DocumentTabComponent,
     AssetsTabComponent,
     HeaderComponent,
-    ReportingTEamComponent
+    ReportingTEamComponent,
+    LeaveRequestsComponent
   ]
 })
 export class ProfilePageComponent implements OnInit {
