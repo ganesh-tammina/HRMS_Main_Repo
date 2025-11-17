@@ -169,8 +169,8 @@ export class CandidateService {
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
-  private shiftsUrl = "https://localhost:3562/api/v1/shift-policy";
-  private leaverequesrUrl = "https://localhost:3562/api/v1/manager/leave-requests";
+  private shiftsUrl = `${this.api}shift-policy`;
+  private leaverequesrUrl = `${this.api}manager/leave-requests`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
