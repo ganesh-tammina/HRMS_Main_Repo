@@ -98,6 +98,10 @@
                 <ion-icon name="bag-handle"></ion-icon>
                 <p>JOB</p>
               </ion-tab-button>
+              <ion-tab-button class="row-center" tab="time">
+                <ion-icon name="time"></ion-icon>
+                <p>Time</p>
+              </ion-tab-button>
               <ion-tab-button class="row-center" tab="documents">
                 <ion-icon name="document-attach"></ion-icon>
                 <p>Documents</p>
@@ -120,6 +124,10 @@
               <!-- job us tab -->
               <app-job-tab [currentemp]="currentemp"></app-job-tab>
             </ion-tab>
+            <ion-tab tab="time">
+              <!-- Time(attendnce and leaves) tab -->
+              <app-leave-requests></app-leave-requests>
+            </ion-tab>
             <ion-tab tab="documents">
               <!-- documents us tab -->
               <!-- <app-document-tab [currentemp]="currentemp"></app-document-tab> -->
@@ -137,16 +145,7 @@
     </ion-row>
 
   </ion-grid>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6">
-        <app-reporting-team></app-reporting-team>
-      </ion-col>
-      <ion-col size="6">
-        <app-leave-requests></app-leave-requests>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+ 
 
   <div>
   </div>

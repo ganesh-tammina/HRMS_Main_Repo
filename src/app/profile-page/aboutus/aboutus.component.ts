@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { ReportingTEamComponent } from '../reporting-team/reporting-team.component';
 
 @Component({
   selector: 'app-aboutus',
@@ -16,6 +17,7 @@ import { IonicModule } from '@ionic/angular';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    ReportingTEamComponent
   ]
 })
 export class AboutusComponent implements OnInit {
