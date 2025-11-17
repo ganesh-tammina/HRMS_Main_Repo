@@ -87,13 +87,45 @@ export class MePage implements OnInit {
       }
     });
 
+    // Listen for clock actions and refresh data immediately
+    this.attendanceService.response$.subscribe(response => {
+      if (response) {
+        console.log('Clock action detected in main page:', response.action);
+        
+        if (response.optimistic) {
+          // Immediate optimistic update for instant UI feedback
+          console.log('Applying optimistic update in main page...');
+          this.updateTimes();
+          this.loadHistory();
+        }
+        
+        if (response.confirmed || response.data) {
+          // Server confirmed response
+          console.log('Server response confirmed, updating main page...');
+          setTimeout(() => {
+            this.updateTimes();
+            this.loadHistory();
+          }, 100);
+        }
+        
+        if (response.error) {
+          console.log('Clock action failed in main page');
+          this.updateTimes();
+          this.loadHistory();
+        }
+      }
+    });
+
     // Initialize attendance record for the employee
     this.attendanceService.getRecord(this.employee.id);
 
     // Timer for updating current time & attendance calculations
     setInterval(() => {
       this.updateTimes();
-      this.loadHistory();
+      // Only reload history every 5 seconds to reduce overhead
+      if (new Date().getSeconds() % 5 === 0) {
+        this.loadHistory();
+      }
     }, 1000);
 
     // Existing attendance requests & logs initialization

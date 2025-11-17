@@ -126,11 +126,33 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
     // Listen for clock actions and refresh log immediately
     this.attendanceService.response$.subscribe(response => {
-      if (response && response.data) {
-        console.log('Clock action detected, refreshing attendance logs...');
-        setTimeout(() => {
+      if (response) {
+        console.log('Clock action detected:', response.action);
+        
+        if (response.optimistic) {
+          // Immediate optimistic update
+          console.log('Applying optimistic update...');
+          this.updateTimes();
+          this.loadHistory();
+        }
+        
+        if (response.confirmed || response.data) {
+          // Confirmed server response - refresh all data immediately
+          console.log('Server confirmed, refreshing all data...');
           this.loadAllAttendanceData();
-        }, 1000);
+          this.updateTimes();
+          this.loadHistory();
+          // Additional refresh after short delay
+          setTimeout(() => {
+            this.loadAllAttendanceData();
+          }, 100);
+        }
+        
+        if (response.error) {
+          console.log('Clock action failed, reverting...');
+          this.updateTimes();
+          this.loadHistory();
+        }
       }
     });
 
@@ -140,18 +162,15 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   }
 
   private loadAllAttendanceData() {
-    // Wait a bit for employee ID to be available after login
-    setTimeout(() => {
-      const currentEmployeeId = this.abcd.employeeID;
-      if (!currentEmployeeId) {
-        console.log('No employee ID found, retrying...');
-        setTimeout(() => this.loadAllAttendanceData(), 500);
-        return;
-      }
+    const currentEmployeeId = this.abcd.employeeID || this.employee?.id;
+    if (!currentEmployeeId) {
+      console.log('No employee ID found, retrying...');
+      setTimeout(() => this.loadAllAttendanceData(), 300);
+      return;
+    }
 
-      console.log('Loading ALL attendance data for employee:', currentEmployeeId);
-      this.fetchAttendanceData(currentEmployeeId);
-    }, 100);
+    console.log('Loading ALL attendance data for employee:', currentEmployeeId);
+    this.fetchAttendanceData(String(currentEmployeeId));
   }
 
   private fetchAttendanceData(employeeId: string) {
@@ -407,35 +426,40 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   }
 
   openLogDetails(log: AttendanceLog) {
-    // Fetch fresh data for the specific date when log icon is clicked
-    const logDate = (log as any).attendance_date;
+    // Refresh attendance data in background first
+    this.loadAllAttendanceData();
     
-    this.attendanceService.getallattendace({
-      employee_id: this.abcd.employeeID,
-      date: logDate
-    }).subscribe({
-      next: (data) => {
-        if (data && data.attendance && data.attendance.length > 0) {
-          const updatedRecords = data.attendance.map((item: any) => ({
-            check_in: item.check_in,
-            check_out: item.check_out
-          }));
-          
-          const updatedLog = {
-            ...log,
-            records: updatedRecords
-          };
-          this.selectedLog = updatedLog;
-        } else {
+    // Then fetch specific date data after brief delay
+    setTimeout(() => {
+      const logDate = (log as any).attendance_date;
+      
+      this.attendanceService.getallattendace({
+        employee_id: this.abcd.employeeID,
+        date: logDate
+      }).subscribe({
+        next: (data) => {
+          if (data && data.attendance && data.attendance.length > 0) {
+            const updatedRecords = data.attendance.map((item: any) => ({
+              check_in: item.check_in,
+              check_out: item.check_out
+            }));
+            
+            const updatedLog = {
+              ...log,
+              records: updatedRecords
+            };
+            this.selectedLog = updatedLog;
+          } else {
+            this.selectedLog = log;
+          }
+          this.showPopover = true;
+        },
+        error: () => {
           this.selectedLog = log;
+          this.showPopover = true;
         }
-        this.showPopover = true;
-      },
-      error: () => {
-        this.selectedLog = log;
-        this.showPopover = true;
-      }
-    });
+      });
+    }, 300);
   }
 
   closePopover() {
