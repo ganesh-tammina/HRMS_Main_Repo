@@ -3,13 +3,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-leave-requests',
   templateUrl: './leave-requests.component.html',
   styleUrls: ['./leave-requests.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, IonicModule],
 })
 export class LeaveRequestsComponent implements OnInit {
   actions: string = 'Pending';
