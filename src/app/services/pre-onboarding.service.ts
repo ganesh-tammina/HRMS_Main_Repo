@@ -262,7 +262,7 @@ export class CandidateService {
   }
   getReportingTeam(employeeId: number): Observable<any> {
     return this.http.get(
-      `https://localhost:3562/api/v1/employees/under-manager/${employeeId}`
+      `${this.api}employees/under-manager/${employeeId}`
     );
   }
 
