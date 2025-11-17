@@ -41,30 +41,48 @@
         </ion-col>
 
         <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
-          <!-- Timings -->
-          <ion-card class="timings-card">
-            <ion-card-header>
-              <ion-card-title>Timings</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ion-grid class="days-grid ion-no-padding mb-30">
-                <ion-row>
-                  <ion-col *ngFor="let day of days" class="ion-text-center">
-                    <div class="day-container" [ngClass]="{'highlight-today': isToday(day)}">
-                      <p class="day-of-week">{{ day | date:'E' }}</p>
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
+  <!-- Timings -->
+  <ion-card class="timings-card">
+    <ion-card-header>
+      <ion-card-title>Timings</ion-card-title>
+    </ion-card-header>
 
-              <p>Today (9:30 AM - 6:30 PM)</p>
+    <ion-card-content>
+      <ion-grid class="days-grid ion-no-padding mb-30">
+        <ion-row>
+          <ion-col
+            *ngFor="let day of days; trackBy: trackByDate"
+            class="ion-text-center"
+            [attr.aria-label]="'Day ' + (day | date:'EEEE')"
+            title="{{ day | date:'fullDate' }}"
+          >
+            <div class="day-container" [ngClass]="{'highlight-today': isToday(day)}">
+              <p class="day-of-week">{{ day | date:'E' }}</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
-              <ion-progress-bar value="0.85"></ion-progress-bar>
+      <!-- display check-in time safely and formatted -->
+      <p>
+        Today
+        <strong *ngIf="shiftData?.data?.check_in; else noShift">
+          {{ formatShiftTime(shiftData.data.check_in) }} - {{ formatShiftTime(shiftData?.data?.check_out)}}
+        </strong>
+        <ng-template #noShift>
+          <em>No shift configured</em>
+        </ng-template>
+      </p>
 
-              <small>Duration: 9h 0m | Break: 60m</small>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+      <!-- progress binds to a numeric value between 0 and 1 -->
+      <ion-progress-bar [value]="progressValue"></ion-progress-bar>
+
+      <small>
+        Duration: {{ shiftDuration || '9h 0m' }} | Break: {{ breakMinutes || 60 }}m
+      </small>
+    </ion-card-content>
+  </ion-card>
+</ion-col>
 
         <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
           <ion-card class="actions">

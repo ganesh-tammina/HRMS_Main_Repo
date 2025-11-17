@@ -169,7 +169,7 @@ export class CandidateService {
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
-  private shiftsUrl = `${this.api}shift-policy`;
+  private shiftsUrl = `${this.api}`;
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
@@ -257,9 +257,9 @@ export class CandidateService {
   getLoggedEmployeeId(): number | null {
     return this.currentLoggedEmployeeId;
   }
-  getShifts(shifts: Shifts): Observable<Shifts> {
+  /*getShifts(shifts: Shifts): Observable<Shifts> {
     return this.http.post<Shifts>(this.shiftsUrl, shifts);
-  }
+  }*/
   getReportingTeam(employeeId: number): Observable<any> {
     return this.http.get(
       `${this.api}employees/under-manager/${employeeId}`
@@ -284,7 +284,17 @@ export class CandidateService {
    * @returns {Observable<Shifts>} an observable of shifts.
    */
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
+  getShifts(shifts: Shifts): Observable<Shifts> {
+    return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
+      withCredentials: true
+    });
+  }
 
+  getShiftByName(shift_policy_name: string): Observable<any> {
+    return this.http.post<any>(`${this.shiftsUrl}get-shift-policy`, { shift_policy_name }, {
+      withCredentials: true
+    });
+  }
 
   getAllEmployees(): Observable<EmployeeResponse> {
     return this.http.get<EmployeeResponse>(this.empUrl).pipe();
