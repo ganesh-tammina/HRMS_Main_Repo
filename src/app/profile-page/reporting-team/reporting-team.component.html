@@ -1,9 +1,9 @@
-<div class="team-card">
+<div class="team-card" *ngIf="team">
   <div class="team-header">
-    Reporting Team <span class="team-count">(21)</span>
+    Reporting Team <span class="team-count">({{value}})</span>
   </div>
 
-  <div class="team-grid" *ngIf="team">
+  <div class="team-grid">
 
     <!-- Member -->
     <div class="member" *ngFor="let member of team">
