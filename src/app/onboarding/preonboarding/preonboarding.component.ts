@@ -158,59 +158,40 @@ export class PreonboardingComponent implements OnInit {
     this.candidates = this.candidates.filter((c) => c.id !== candidate.id);
   }
 
-  //Filtered by businessunit 
-  filterBusiness(event: any) {
-    console.log("business--->", event.detail.value);
-    this.selectedBusiness = event.detail.value;
-    if (this.selectedBusiness === '') {
-      this.candidates = this.filterCandidates;
-    } else {
-      this.candidates = this.filterCandidates.filter(
-        c => c.BusinessUnit === this.selectedBusiness
-      );
-    }
-  }
 
-  //Filtered by Job title
-  filterJobTitle(event: any) {
-    this.selectedJobTitle = event.detail.value;
-    if (this.selectedJobTitle === '') {
-      this.candidates = this.filterCandidates;
-    } else {
-      this.candidates = this.filterCandidates.filter(
-        c => c.JobTitle === this.selectedJobTitle
-      );
+
+  onFilterChange(type: string, event: any) {
+    const value = event.detail.value;
+  
+    // Update the selected values dynamically
+    if (type === 'businessunit') {
+      this.selectedBusiness = value;
+    }else if (type === 'jobtitle') {
+      this.selectedJobTitle = value;
+    }else if (type === 'department') {
+      this.selectedDept = value;
+    }else if (type === 'location') {
+      this.selectedLocation = value;
+    }else if (type === 'text') {
+      this.searchText = event.detail.value.toLowerCase();
     }
+    this.applyFilters();
   }
 
 
-  //Filtered by Department
-  filterDept(event: any) {
-    this.selectedDept = event.detail.value;
-    if (this.selectedDept === '') {
-      this.candidates = this.filterCandidates;
-    } else {
-      this.candidates = this.filterCandidates.filter(
-        c => c.Department === this.selectedDept
-      );
-    }
+  applyFilters(){
+    // Filter candidates based on all selected filters
+    this.candidates = this.filterCandidates.filter(c => {
+      const businessMatch = this.selectedBusiness ? c.BusinessUnit === this.selectedBusiness : true;
+      const jobMatch = this.selectedJobTitle ? c.JobTitle === this.selectedJobTitle : true;
+      const deptMatch  = this.selectedDept ? c.Department === this.selectedDept : true;
+      const locationMatch  = this.selectedLocation ? c.JobLocation === this.selectedLocation : true;   
+      return businessMatch && jobMatch && deptMatch && locationMatch;
+    });
   }
 
-  //Filtered by location
-  filterLocation(event: any) {
-    console.log("locations--->", this.candidates);
-    this.selectedLocation = event.detail.value;
-    if (this.selectedLocation === '') {
-      this.candidates = this.filterCandidates;
-    } else {
-      this.candidates = this.filterCandidates.filter(
-        c => c.JobLocation === this.selectedLocation
-      );
 
-    }
-  }
-
-  //Filtered by Search
+  // Filtered by Search
   SearchCandidates(event: any) {
     const val = event.target.value.toLowerCase().trim();
     this.searchText = val;
