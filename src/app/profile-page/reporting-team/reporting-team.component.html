@@ -1,0 +1,27 @@
+<div class="team-card" *ngIf="team">
+  <div class="team-header">
+    Reporting Team <span class="team-count">({{value}})</span>
+  </div>
+
+  <div class="team-grid">
+
+    <!-- Member -->
+    <div class="member" *ngFor="let member of team">
+      <img src="https://i.pravatar.cc/150?img=12" class="avatar" />
+      <div class="info">
+        <div class="name">{{ member.full_name }}</div>
+        <div class="role">{{member.job_title}}</div>
+      </div>
+      <button class="menu-btn">⋯</button>
+    </div>
+
+    <!-- Member -->
+
+
+    <!-- Member -->
+
+
+
+
+  </div>
+</div>

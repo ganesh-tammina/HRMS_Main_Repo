@@ -26,7 +26,7 @@
         <ion-col class="row-left">
           <div class="filter-chip" lines="none">
             <ion-label>Business Unit</ion-label>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down" (ionChange)="filterBusiness($event)"
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" (ionChange)="onFilterChange('businessunit', $event)"
               expandedIcon="chevron-up" placeholder="ALL" interface="popover">
               <ion-select-option value="" >
                   All
@@ -39,7 +39,7 @@
           <div class="filter-chip">
             <ion-label>Job Title</ion-label>
             <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="filterJobTitle($event)">
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('jobtitle', $event)">
               <ion-select-option value="" >
                   All
                 </ion-select-option>
@@ -52,7 +52,7 @@
           <div class="filter-chip">
             <span>Department</span>
             <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="filterDept($event)">
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('department', $event)">
               <ion-select-option value="" >
                   All
                 </ion-select-option>
@@ -64,7 +64,7 @@
           <div class="filter-chip">
             <span>Location</span>
             <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="filterLocation($event)">
+              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('location', $event)">
               <ion-select-option value="" >
                   All
                 </ion-select-option>
@@ -72,27 +72,10 @@
                   {{location}}
                 </ion-select-option>
             </ion-select>
-          </div>
-          <div class="filter-chip">
-            <span>Stage</span>
-            <ion-select class="custom-dropdown" formcontrol="Stage" toggleIcon="chevron-down" expandedIcon="chevron-up"
-              placeholder="ALL" interface="popover">
-              <ion-select-option>Visakhapatnam</ion-select-option>
-              <ion-select-option>Hyderabad</ion-select-option>
-              <ion-select-option>Night shift Visakhapatnam</ion-select-option>
-            </ion-select>
-          </div>
-          <div class="filter-chip">
-            <span>Offer Type</span>
-            <ion-select class="custom-dropdown" formcontrol="Offer Type" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
-              <ion-select-option>Permanent</ion-select-option>
-              <ion-select-option>Part Time</ion-select-option>
-              <ion-select-option>Contract</ion-select-option>
-            </ion-select>
-          </div>
+          </div>        
         </ion-col>
       </ion-row>
+
       <ion-row class="mb-15">
         <ion-col size="6" size-lg="5" size-md="6">
           <div class="search-wrap">
