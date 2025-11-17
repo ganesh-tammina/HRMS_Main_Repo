@@ -32,12 +32,13 @@
         <label>Status</label>
         <select formControlName="status">
           <option value="">-- Select --</option>
-          <option value="Accepted">Accept Leave</option>
-          <option value="Rejected">Reject Leave</option>
+          <option value="APPROVED">Accept Leave</option>
+          <option value="REJECTED">Reject Leave</option>
+          <option value="CANCELLED">Cancel Leave</option>
         </select>
 
         <label>Manager Comment</label>
-        <textarea rows="3" formControlName="manager_comment"></textarea>
+        <!-- <textarea rows="3" formControlName="manager_comment"></textarea> -->
 
         <button type="submit" class="submit-btn">Submit</button>
         <button type="button" class="cancel-btn" (click)="closeForm()">Cancel</button>

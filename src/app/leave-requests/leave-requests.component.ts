@@ -86,20 +86,21 @@ export class LeaveRequestsComponent implements OnInit {
       return;
     }
 
-    const payload = {
-      requestId: this.selectedRequest.id,
-      status: this.actionForm.value.status,
-      managerComment: this.actionForm.value.manager_comment
-    };
 
-    // this.candidateService.getLeaveRequests(payload).subscribe(
-    //   (res:any) => {
-    //     alert("Leave request " + payload.status);
-    //     this.selectedRequest = null;
-    //     this.loadRequests();
-    //   },
-    //   (err:any) => alert("Error updating status")
-    // );
+    const payload = {
+      action_by_emp_id: this.employee_id,
+      action: this.actionForm.value.status.toUpperCase(),
+      leave_req_id: this.selectedRequest.id,
+    };
+    this.candidateService.getLeaveAction(payload).subscribe(
+
+      (res: any) => {
+        alert("Leave request " + payload);
+        this.selectedRequest = null;
+        this.loadRequests();
+      },
+      (err: any) => alert("Error updating status")
+    );
   }
 
   closeForm() {

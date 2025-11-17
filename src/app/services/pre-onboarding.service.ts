@@ -171,6 +171,7 @@ export class CandidateService {
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
   private shiftsUrl = `${this.api}`;
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
+  private leaveactionUrl = `${this.env.devTest}/api/v1/leave-action`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -273,6 +274,10 @@ export class CandidateService {
 
   getLeaveRequests(payload: any) {
     return this.http.post(`${this.leaverequesrUrl}`, payload);
+  }
+
+  getLeaveAction(payload: any) {
+    return this.http.post(`${this.leaveactionUrl}`, payload);
   }
 
   /*************  ✨ Windsurf Command ⭐  *************/
