@@ -267,8 +267,12 @@ export class CandidateService {
   }
 
 
-  getLeaveRequests(leaveRequest: leaveRequests): Observable<leaveRequests> {
-    return this.http.post<leaveRequests>(this.leaverequesrUrl,leaveRequest);
+  // getLeaveRequests(leaveRequest: leaveRequests): Observable<leaveRequests> {
+  //   return this.http.post<leaveRequests>(this.leaverequesrUrl, leaveRequest);
+  // }
+
+  getLeaveRequests(payload: any) {
+    return this.http.post(`${this.leaverequesrUrl}`, payload);
   }
 
   /*************  ✨ Windsurf Command ⭐  *************/
