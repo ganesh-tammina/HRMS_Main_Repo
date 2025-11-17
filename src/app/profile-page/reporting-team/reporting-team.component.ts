@@ -2,13 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @Component({
   selector: 'app-reporting-team',
   templateUrl: './reporting-team.component.html',
   styleUrls: ['./reporting-team.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, NgxPaginationModule]
 })
 export class ReportingTEamComponent implements OnInit {
   @Input() currentemp: any;
@@ -16,6 +17,7 @@ export class ReportingTEamComponent implements OnInit {
   allEmployees: any[] = [];
   employee_id: any;
   team: any;
+  value: any;
   constructor(private candidateService: CandidateService, private routeGuardService: RouteGuardService) { }
 
 
@@ -49,10 +51,13 @@ export class ReportingTEamComponent implements OnInit {
     this.candidateService.getReportingTeam(id).subscribe({
       next: (res) => {
         this.team = res.data;
+        this.value = this.team.length;
+        console.log("Team Length:", this.value);
         console.log("Reporting Team:", this.team);
       },
       error: (err) => console.log("Error:", err),
     });
   }
 
+  p: number = 1;
 }

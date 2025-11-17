@@ -1,78 +1,38 @@
+ @import '../../../global.scss';
  .team-card {
-        background: #fff;
-        padding: 22px 28px;
-        border-radius: 10px;
-        border: 1px solid #e5e7eb;
-        width: 760px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
     .team-header {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        @include card-sub-title();
+        color: $side-bar-color;
+        margin-top: 12px;
+        margin-bottom: 5px;
     }
-
     .team-count {
-        font-size: 14px;
-        color: #6b7280;
+        @include normal-text-unbold();
+        color: $Subtle-Text;
     }
-
-    .team-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px 0px;
-    }
-
     .member {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 6px 4px;
-        border-radius: 6px;
-        transition: background 0.2s;
+        list-style: none;
+        padding: 0;
+        li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 4px;
+        }
     }
-
-    .member:hover {
-        background: #f9fafb;
-    }
-
     .avatar {
-        width: 42px;
-        height: 42px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         object-fit: cover;
     }
-
-    .info {
-        flex-grow: 1;
-    }
-
     .name {
-        font-size: 15px;
-        font-weight: 600;
-        color: #111827;
+       @include normal-text(); 
     }
 
     .role {
-        font-size: 13px;
+        @include body-text();
         color: #6b7280;
         margin-top: 2px;
     }
-
-    .menu-btn {
-        border: none;
-        background: #f3f4f6;
-        border-radius: 6px;
-        padding: 2px 6px;
-        cursor: pointer;
-        font-size: 16px;
-        color: #6b7280;
-    }
-
-    .menu-btn:hover {
-        background: #e5e7eb;
     }

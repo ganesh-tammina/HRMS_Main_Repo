@@ -384,5 +384,20 @@ public static async getEmployeesUnderManagerService(manager_id: number) {
   return rows;
 }
 
+public static async getShiftPolicyService(shift_policy_name: string) {
+  const sql = `
+    SELECT shift_name, check_in, check_out
+    FROM shift_policy
+    WHERE shift_name = ?
+  `;
+
+  const [rows]: any = await pool.query(sql, [shift_policy_name]);
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return rows[0];
+}
 
 }

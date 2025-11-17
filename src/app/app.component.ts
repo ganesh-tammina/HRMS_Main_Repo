@@ -20,6 +20,7 @@ import { NavController } from '@ionic/angular';
     HeaderComponent,
     CommonModule,
     IonicModule,
+    
   ],
 })
 export class AppComponent implements OnInit {
