@@ -162,7 +162,7 @@ export class CandidateService {
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
-  private shiftsUrl = "https://localhost:3562/api/v1/shift-policy";
+  private shiftsUrl = "https://localhost:3562/api/v1/";
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -250,7 +250,15 @@ export class CandidateService {
    */
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
   getShifts(shifts: Shifts): Observable<Shifts> {
-    return this.http.post<Shifts>(this.shiftsUrl, shifts);
+    return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
+      withCredentials: true
+    });
+  }
+
+  getShiftByName(shift_policy_name: string): Observable<any> {
+    return this.http.post<any>(`${this.shiftsUrl}get-shift-policy`, { shift_policy_name }, {
+      withCredentials: true
+    });
   }
 
   getAllEmployees(): Observable<EmployeeResponse> {

@@ -30,9 +30,7 @@ export class ShiftsComponent implements OnInit {
     }
 
     this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
-
       alert('Shift Saved Successfully!');
-
       console.log(res);
     });
 
