@@ -33,6 +33,9 @@ export class MePage implements OnInit {
   record?: AttendanceRecord;
   shiftData?: any;
 
+  shift_check_in = "";
+  shift_check_out = "";
+
   shiftDuration = '9h 0m'; 
   breakMinutes = 60;
   effectiveHours = '0h 0m';
@@ -241,7 +244,8 @@ export class MePage implements OnInit {
                 this.candidateService.getShiftByName(currentEmployee.shift_policy_name).subscribe({
                   next: (shiftData) => {                   
                     this.shiftData = shiftData;
-                    console.log('Shift details:', shiftData);
+                    this.shift_check_in = shiftData.data.check_in;
+                    this.shift_check_out = shiftData.data.check_out;
                   },
                   error: (error) => {
                     console.error('Error getting shift details:', error);

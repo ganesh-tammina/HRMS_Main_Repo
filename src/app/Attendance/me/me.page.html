@@ -67,7 +67,7 @@
       <p>
         Today
         <strong *ngIf="shiftData?.data?.check_in; else noShift">
-          {{ formatShiftTime(shiftData.data.check_in) }} - {{ formatShiftTime(shiftData?.data?.check_out)}}
+          {{ formatShiftTime(shift_check_in) }} - {{ formatShiftTime(shift_check_out)}}
         </strong>
         <ng-template #noShift>
           <em>No shift configured</em>
