@@ -13,7 +13,7 @@ export class LeaveRequestsComponent implements OnInit {
   constructor(private candidateService: CandidateService) { }
 
   ngOnInit() {
-    this.candidateService.getLeaveRequests('').subscribe((data) => console.log(data));
+    // this.candidateService.getLeaveRequests('').subscribe((data) => console.log(data));
    }
 
 }
