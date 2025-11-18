@@ -32,7 +32,7 @@ export class MePage implements OnInit {
   employee?: Candidate;
   record?: AttendanceRecord;
   shiftData?: any;
-
+  week_off_days = [] ;
   shift_check_in = "";
   shift_check_out = "";
 
@@ -283,6 +283,31 @@ export class MePage implements OnInit {
                     console.error('Error getting shift details:', error);
                   }
                 });
+              }
+
+              if(currentEmployee.weekly_off_policy_name){
+                this.candidateService.getAllWeeklyOffPolicies().subscribe({
+                  next: (weekoffData) => {
+                    console.log("weekOffs: ", weekoffData);
+
+                    const policies = Array.isArray(weekoffData) ? weekoffData : [];
+
+                    console.log("policies: ", policies);
+
+                     const matchedPolicy = policies.find(
+                        (p) => 
+                          p?.week_off_policy_name?.toLowerCase() == currentEmployee.weekly_off_policy_name?.toLowerCase()
+                      );
+
+                    console.log("Filtered Policy:", matchedPolicy);
+
+                    this.week_off_days = matchedPolicy?.week_off_days?.split(",")
+                    console.log("week_off_days: ", this.week_off_days);
+                  },
+                  error: (error) => {
+                    console.error('Error getting shift details:', error);
+                  }
+                })
               }
             }
           }

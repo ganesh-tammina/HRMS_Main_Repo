@@ -312,6 +312,12 @@ export class CandidateService {
     });
   }
 
+  getAllWeeklyOffPolicies(): Observable<any> {
+    return this.http.get<any>(`${this.weekoffsUrl}`, {
+      withCredentials: true
+    });
+  }
+
   getShiftByName(shift_policy_name: string): Observable<any> {
     return this.http.post<any>(`${this.shiftsUrl}get-shift-policy`, { shift_policy_name }, {
       withCredentials: true
