@@ -128,6 +128,36 @@
     margin-top: 10px;
     margin-bottom: 10px;
   }
+
+.weekdays-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  
+  span {
+    flex: 1;
+    text-align: center;
+    padding: 4px 5px;
+    border-radius: 30%;
+    font-size: 12px;
+    font-weight: 400;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+    
+    &.work-day {
+      background: #3498DB;
+      color: white;
+      border: 1px solid #2980b9;
+    }
+    
+    &.week-off {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+      color: white;
+      border: 1px solid #dc3545;
+      box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+    }
+  }
+}
   
 /* Individual cards */
 .card-pannel {
