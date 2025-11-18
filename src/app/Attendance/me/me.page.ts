@@ -67,6 +67,7 @@ export class MePage implements OnInit {
     private attendanceService: AttendanceService
   ) {
     this.generateCalendar(this.currentMonth);
+    this.generateDays();
   }
 
   ngOnInit() {
@@ -101,7 +102,7 @@ export class MePage implements OnInit {
 
     // Existing attendance requests & logs initialization
     this.initRequestsAndLogs();
-    this.generateDays();
+   
   }
 
 
