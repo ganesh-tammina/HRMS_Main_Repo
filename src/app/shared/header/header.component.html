@@ -38,6 +38,9 @@
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
             <ion-button id="popover-dropdown" fill="clear">
               <img class="pl-5" [src]="'https://30.0.0.78:3562' + imageUrls" alt="imageUrls" width="46" alt="Profile" />
+              <img class="pl-5" *ngIf="!imageUrls" src="../../assets/user.svg" alt="imageUrls" width="46"
+                alt="Profile" />
+
             </ion-button>
             <ion-popover class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
               <ng-template>
