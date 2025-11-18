@@ -33,6 +33,9 @@ export class MePage implements OnInit {
   record?: AttendanceRecord;
   shiftData?: any;
 
+  shift_check_in = "";
+  shift_check_out = "";
+
   shiftDuration = '9h 0m'; 
   breakMinutes = 60;
   effectiveHours = '0h 0m';
@@ -90,13 +93,45 @@ export class MePage implements OnInit {
       }
     });
 
+    // Listen for clock actions and refresh data immediately
+    this.attendanceService.response$.subscribe(response => {
+      if (response) {
+        console.log('Clock action detected in main page:', response.action);
+        
+        if (response.optimistic) {
+          // Immediate optimistic update for instant UI feedback
+          console.log('Applying optimistic update in main page...');
+          this.updateTimes();
+          this.loadHistory();
+        }
+        
+        if (response.confirmed || response.data) {
+          // Server confirmed response
+          console.log('Server response confirmed, updating main page...');
+          setTimeout(() => {
+            this.updateTimes();
+            this.loadHistory();
+          }, 100);
+        }
+        
+        if (response.error) {
+          console.log('Clock action failed in main page');
+          this.updateTimes();
+          this.loadHistory();
+        }
+      }
+    });
+
     // Initialize attendance record for the employee
     this.attendanceService.getRecord(this.employee.id);
 
     // Timer for updating current time & attendance calculations
     setInterval(() => {
       this.updateTimes();
-      this.loadHistory();
+      // Only reload history every 5 seconds to reduce overhead
+      if (new Date().getSeconds() % 5 === 0) {
+        this.loadHistory();
+      }
     }, 1000);
 
     // Existing attendance requests & logs initialization
@@ -241,7 +276,8 @@ export class MePage implements OnInit {
                 this.candidateService.getShiftByName(currentEmployee.shift_policy_name).subscribe({
                   next: (shiftData) => {                   
                     this.shiftData = shiftData;
-                    console.log('Shift details:', shiftData);
+                    this.shift_check_in = shiftData.data.check_in;
+                    this.shift_check_out = shiftData.data.check_out;
                   },
                   error: (error) => {
                     console.error('Error getting shift details:', error);
