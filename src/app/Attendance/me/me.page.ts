@@ -16,7 +16,6 @@ interface AttendanceRequestHistory { date: string; request: string; requestedOn:
 interface AttendanceLog { date: string; progress: number; effective: string; gross: string; arrival: string; details: { shift: string; shiftTime: string; location: string; logs: { in: string; out: string }[]; webClockIn?: { in: string; out: string } } }
 interface CalendarDay { day: number | ''; timing: string; isOff: boolean; date?: Date }
 
-
 @Component({
   selector: 'app-me',
   templateUrl: './me.page.html',
@@ -29,6 +28,7 @@ interface CalendarDay { day: number | ''; timing: string; isOff: boolean; date?:
   ]
 })
 export class MePage implements OnInit {
+
   employee?: Candidate;
   record?: AttendanceRecord;
   shiftData?: any;
@@ -36,7 +36,7 @@ export class MePage implements OnInit {
   shift_check_in = "";
   shift_check_out = "";
 
-  shiftDuration = '9h 0m'; 
+  shiftDuration = '9h 0m';
   breakMinutes = 60;
   effectiveHours = '0h 0m';
   grossHours = '0h 0m';
@@ -64,7 +64,7 @@ export class MePage implements OnInit {
     dateRange: string;
     records: AttendanceRequestHistory[];
   }[] = [];
-  
+
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService
@@ -72,19 +72,37 @@ export class MePage implements OnInit {
     this.generateCalendar(this.currentMonth);
   }
 
+  // ---------------------------------------------------------
+  // 🔥 FIX: load data EVERY TIME page is opened
+  // ---------------------------------------------------------
+  ionViewWillEnter() {
+    console.log("Me Page - ionViewWillEnter");
+
+    setTimeout(() => {
+      this.initializePage();
+    }, 50);
+  }
+
+  // ---------------------------------------------------------
+  // RUN ONLY ONE-TIME LOGIC HERE
+  // ---------------------------------------------------------
   ngOnInit() {
     setInterval(() => {
       this.currentTime = new Date().toLocaleTimeString('en-US', {
         hour12: true,
       });
     }, 500);
+  }
 
+  // ---------------------------------------------------------
+  // 🔥 FULL INITIALIZATION (was inside ngOnInit before)
+  // ---------------------------------------------------------
+  initializePage() {
     this.loadCandidateById();
 
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
 
-    // Subscribe to attendance record updates
     this.attendanceService.record$.subscribe(record => {
       if (record && record.employeeId === this.employee?.id) {
         this.record = record;
@@ -93,62 +111,52 @@ export class MePage implements OnInit {
       }
     });
 
-    // Listen for clock actions and refresh data immediately
     this.attendanceService.response$.subscribe(response => {
       if (response) {
         console.log('Clock action detected in main page:', response.action);
-        
+
         if (response.optimistic) {
-          // Immediate optimistic update for instant UI feedback
-          console.log('Applying optimistic update in main page...');
           this.updateTimes();
           this.loadHistory();
         }
-        
+
         if (response.confirmed || response.data) {
-          // Server confirmed response
-          console.log('Server response confirmed, updating main page...');
           setTimeout(() => {
             this.updateTimes();
             this.loadHistory();
           }, 100);
         }
-        
+
         if (response.error) {
-          console.log('Clock action failed in main page');
           this.updateTimes();
           this.loadHistory();
         }
       }
     });
 
-    // Initialize attendance record for the employee
     this.attendanceService.getRecord(this.employee.id);
 
-    // Timer for updating current time & attendance calculations
     setInterval(() => {
       this.updateTimes();
-      // Only reload history every 5 seconds to reduce overhead
       if (new Date().getSeconds() % 5 === 0) {
         this.loadHistory();
       }
     }, 1000);
 
-    // Existing attendance requests & logs initialization
     this.initRequestsAndLogs();
     this.generateDays();
   }
 
+  // ------------------------------------------
+  // Methods below are unchanged
+  // ------------------------------------------
 
-
-  // New method: triggered from ClockButtonComponent
   onClockStatusChanged(record: AttendanceRecord) {
     this.record = record;
     this.updateTimes();
     this.loadHistory();
   }
 
-  // === Existing Methods (unchanged) ===
   setTab(tab: string) { this.activeTab = tab; }
 
   prevMonth() {
@@ -168,7 +176,9 @@ export class MePage implements OnInit {
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
 
-    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) this.calendarDays.push({ day: '', timing: '', isOff: false });
+    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++)
+      this.calendarDays.push({ day: '', timing: '', isOff: false });
+
     for (let day = 1; day <= lastDate; day++) {
       let timing = '9:30 AM - 6:30 PM';
       let isOff = false;
@@ -183,6 +193,7 @@ export class MePage implements OnInit {
     const dayOfWeek = today.getDay();
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
     const firstDayOfWeek = new Date(today.setDate(diff));
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(firstDayOfWeek);
       date.setDate(firstDayOfWeek.getDate() + i);
@@ -199,6 +210,7 @@ export class MePage implements OnInit {
 
   updateTimes() {
     if (!this.record) return;
+
     const now = new Date();
     this.currentTime = now.toLocaleTimeString('en-US', { hour12: true });
     this.currentDate = now.toDateString();
@@ -234,16 +246,69 @@ export class MePage implements OnInit {
     this.loadHistory();
   }
 
-  formatHoursMinutes(totalMinutes: number) { const hours = Math.floor(totalMinutes / 60); const minutes = totalMinutes % 60; return `${hours}h ${minutes}m`; }
-  formatHMS(milliseconds: number) { const totalSeconds = Math.floor(milliseconds / 1000); const hours = Math.floor(totalSeconds / 3600); const minutes = Math.floor((totalSeconds % 3600) / 60); const seconds = totalSeconds % 60; return `${hours}h ${minutes}m ${seconds}s`; }
+  formatHoursMinutes(totalMinutes: number) {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}h ${minutes}m`;
+  }
 
-  // Initialize attendance requests & logs (existing data)
+  formatHMS(milliseconds: number) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
+
   private initRequestsAndLogs() {
     this.attendanceRequestsHistory = [
-      { type: 'Work From Home / On Duty Requests', dateRange: '19 Aug 2025 - 02 Oct 2025', records: [{ date: '26 Aug 2025', request: 'Work From Home - 1 Day', requestedOn: '26 Aug 2025 12:30 PM by XYZ', note: 'working from home on this day.', reason: 'Personal', status: 'Approved', lastAction: 'ABC on 26 Aug' }] },
-      { type: 'Regularization Requests', dateRange: '19 Aug 2025 - 02 Oct 2025', records: [] },
-      { type: 'Remote Clock In Requests', dateRange: '19 Aug 2025 - 02 Oct 2025', records: [{ date: '19 Aug 2025', request: 'Remote Clock In', requestedOn: '19 Aug 2025 by Employee', note: 'I am working on some high-priority tasks.', status: 'Approved', lastAction: 'ABC on 19 Aug' }, { date: '22 Aug 2025', request: 'Remote Clock In', requestedOn: '22 Aug 2025 by Employee', note: 'Working on some issues.', status: 'Approved', lastAction: 'ABC on 22 Aug' }] },
-      { type: 'Partial Day Requests', dateRange: '19 Aug 2025 - 02 Oct 2025', records: [] }
+      {
+        type: 'Work From Home / On Duty Requests',
+        dateRange: '19 Aug 2025 - 02 Oct 2025',
+        records: [
+          {
+            date: '26 Aug 2025',
+            request: 'Work From Home - 1 Day',
+            requestedOn: '26 Aug 2025 12:30 PM by XYZ',
+            note: 'working from home on this day.',
+            reason: 'Personal',
+            status: 'Approved',
+            lastAction: 'ABC on 26 Aug'
+          }
+        ]
+      },
+      {
+        type: 'Regularization Requests',
+        dateRange: '19 Aug 2025 - 02 Oct 2025',
+        records: []
+      },
+      {
+        type: 'Remote Clock In Requests',
+        dateRange: '19 Aug 2025 - 02 Oct 2025',
+        records: [
+          {
+            date: '19 Aug 2025',
+            request: 'Remote Clock In',
+            requestedOn: '19 Aug 2025 by Employee',
+            note: 'I am working on some high-priority tasks.',
+            status: 'Approved',
+            lastAction: 'ABC on 19 Aug'
+          },
+          {
+            date: '22 Aug 2025',
+            request: 'Remote Clock In',
+            requestedOn: '22 Aug 2025 by Employee',
+            note: 'Working on some issues.',
+            status: 'Approved',
+            lastAction: 'ABC on 22 Aug'
+          }
+        ]
+      },
+      {
+        type: 'Partial Day Requests',
+        dateRange: '19 Aug 2025 - 02 Oct 2025',
+        records: []
+      }
     ];
 
     this.attendanceRequests = [
@@ -254,27 +319,71 @@ export class MePage implements OnInit {
     ];
 
     this.attendanceLogs = [
-      { date: 'Mon, 01 Sept', progress: 0.7, effective: '6h 44m', gross: '8h 42m', arrival: 'On Time', details: { shift: 'Day shift 1 (01 Sept)', shiftTime: '9:30 - 18:30', location: '4th Floor SVS Towers', logs: [{ in: '09:16:48', out: '12:01:14' }, { in: '12:13:29', out: '13:25:47' }], webClockIn: { in: '09:19:14', out: 'MISSING' } } },
-      { date: 'Tue, 02 Sept', progress: 0.5, effective: '3h 56m', gross: '4h 9m', arrival: 'On Time', details: { shift: 'Day shift 1 (02 Sept)', shiftTime: '9:30 - 18:30', location: '4th Floor SVS Towers', logs: [{ in: '09:10:00', out: '14:30:00' }] } },
-      { date: 'Wed, 03 Sept', progress: 0.75, effective: '6h 38m', gross: '8h 46m', arrival: 'On Time', details: { shift: 'Day shift 1 (03 Sept)', shiftTime: '9:30 - 18:30', location: 'HQ', logs: [{ in: '09:20:00', out: '18:15:00' }] } }
+      {
+        date: 'Mon, 01 Sept',
+        progress: 0.7,
+        effective: '6h 44m',
+        gross: '8h 42m',
+        arrival: 'On Time',
+        details: {
+          shift: 'Day shift 1 (01 Sept)',
+          shiftTime: '9:30 - 18:30',
+          location: '4th Floor SVS Towers',
+          logs: [
+            { in: '09:16:48', out: '12:01:14' },
+            { in: '12:13:29', out: '13:25:47' }
+          ],
+          webClockIn: { in: '09:19:14', out: 'MISSING' }
+        }
+      },
+      {
+        date: 'Tue, 02 Sept',
+        progress: 0.5,
+        effective: '3h 56m',
+        gross: '4h 9m',
+        arrival: 'On Time',
+        details: {
+          shift: 'Day shift 1 (02 Sept)',
+          shiftTime: '9:30 - 18:30',
+          location: '4th Floor SVS Towers',
+          logs: [
+            { in: '09:10:00', out: '14:30:00' }
+          ]
+        }
+      },
+      {
+        date: 'Wed, 03 Sept',
+        progress: 0.75,
+        effective: '6h 38m',
+        gross: '8h 46m',
+        arrival: 'On Time',
+        details: {
+          shift: 'Day shift 1 (03 Sept)',
+          shiftTime: '9:30 - 18:30',
+          location: 'HQ',
+          logs: [
+            { in: '09:20:00', out: '18:15:00' }
+          ]
+        }
+      }
     ];
   }
 
   loadCandidateById() {
     const employeeId = localStorage.getItem("employee_id");
     if (employeeId) {
-      // Get employee details using getEmpDet
       this.candidateService.getEmpDet().subscribe({
         next: (response) => {
           if (response.data && response.data[0]) {
             const employees = response.data[0];
             const currentEmployee = employees.find((emp: any) => emp.employee_id == employeeId);
+
             if (currentEmployee) {
               console.log('Found employee details:', currentEmployee);
-              // Get shift details
+
               if (currentEmployee.shift_policy_name) {
                 this.candidateService.getShiftByName(currentEmployee.shift_policy_name).subscribe({
-                  next: (shiftData) => {                   
+                  next: (shiftData) => {
                     this.shiftData = shiftData;
                     this.shift_check_in = shiftData.data.check_in;
                     this.shift_check_out = shiftData.data.check_out;
@@ -294,30 +403,36 @@ export class MePage implements OnInit {
     }
   }
 
-
   trackByDate(index: number, d: Date) {
-  return d?.toDateString() || index;
-}
+    return d?.toDateString() || index;
+  }
 
-formatShiftTime(val: string | null): string {
-  if (!val) return '';
-  try {
-    if (/\d{2}:\d{2}(:\d{2})?/.test(val) && !/[T\-]/.test(val)) {
-      // time-only: return in h:mm a format
-      const [hh, mm] = val.split(':');
-      const date = new Date();
-      date.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
-      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    } else {
-      const d = new Date(val);
-      if (!isNaN(d.getTime())) {
-        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  formatShiftTime(val: string | null): string {
+    if (!val) return '';
+
+    try {
+      if (/\d{2}:\d{2}(:\d{2})?/.test(val) && !/[T\-]/.test(val)) {
+        const [hh, mm] = val.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+        return date.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+      } else {
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) {
+          return d.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+        }
+        return String(val);
       }
-      // fallback: return raw
+    } catch {
       return String(val);
     }
-  } catch {
-    return String(val);
   }
-}
 }
