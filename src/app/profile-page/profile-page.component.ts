@@ -68,6 +68,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       interval(1000)
         .pipe(take(8), takeUntil(this.destroy$))
         .subscribe({
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Called when the retry loop completes. If the employeeID has become available,
+ * sets the currentEmployeeId and calls refreshEmployee() to fetch the employee data.
+ */
+/*******  56e40ed0-fb04-42da-bc49-20abb100f482  *******/
           next: () => {
             if (this.routeGuardService.employeeID) {
               console.log('ℹ️ employeeID became available during retry loop:', this.routeGuardService.employeeID);
