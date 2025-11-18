@@ -68,12 +68,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       interval(1000)
         .pipe(take(8), takeUntil(this.destroy$))
         .subscribe({
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Called when the retry loop completes. If the employeeID has become available,
- * sets the currentEmployeeId and calls refreshEmployee() to fetch the employee data.
- */
-/*******  56e40ed0-fb04-42da-bc49-20abb100f482  *******/
+          /*************  ✨ Windsurf Command ⭐  *************/
+          /**
+           * Called when the retry loop completes. If the employeeID has become available,
+           * sets the currentEmployeeId and calls refreshEmployee() to fetch the employee data.
+           */
+          /*******  56e40ed0-fb04-42da-bc49-20abb100f482  *******/
           next: () => {
             if (this.routeGuardService.employeeID) {
               console.log('ℹ️ employeeID became available during retry loop:', this.routeGuardService.employeeID);
@@ -133,11 +133,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
             // If backend provides profile image path, create a full URL & cache-bust
             if (this.currentemp.profile_image) {
-              const ipBase ='https://30.0.0.78:3562';
+              const ipBase = 'https://30.0.0.78:3562';
               const prefix = /^https?:\/\//i.test(this.currentemp.profile_image) ? '' : ipBase;
               const fullImageUrl = `${prefix}${this.currentemp.profile_image}`;
               const cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
               this.uploadedImageUrl = cacheBusted;
+              localStorage.setItem('uploadedImageUrl', cacheBusted);
               try {
                 localStorage.setItem('uploadedImageUrl', cacheBusted);
                 console.log('💾 Image URL saved to localStorage (from refresh):', cacheBusted);
@@ -160,14 +161,14 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     const file = $event.target.files && $event.target.files[0];
     if (file) {
       this.selectedFile = file;
-      
+
       // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
         this.previewImageUrl = e.target?.result as string;
       };
       reader.readAsDataURL(file);
-      
+
       console.log('📸 Selected file:', this.selectedFile);
     }
   }
@@ -221,7 +222,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
               this.uploadedImageUrl = cacheBusted;
               try {
                 localStorage.setItem('uploadedImageUrl', cacheBusted);
-              } catch {}
+              } catch { }
             }
           } else {
             console.log('ℹ️ Upload response did not contain `.image` or `.employee` field; response:', res);

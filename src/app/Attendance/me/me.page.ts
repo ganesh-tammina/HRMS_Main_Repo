@@ -125,7 +125,7 @@ export class MePage implements OnInit {
           console.log('Server response confirmed, updating main page immediately...');
           this.updateTimes();
           this.loadHistory();
-          
+
           // Handle force refresh for immediate backend sync
           if (response.forceRefresh) {
             console.log('Force refresh in main page, updating all data...');
@@ -135,7 +135,7 @@ export class MePage implements OnInit {
             }, 100);
           }
         }
-        
+
         if (response.action === 'refresh') {
           // Refresh action - update immediately
           console.log('Refresh detected in main page...');
