@@ -524,7 +524,7 @@ export class CandidateService {
     localStorage.clear();
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
-    this.profileImageSubject.next('');
+    this.profileImageSubject.next(null);
     this.routeGuardService.logout();
   }
 
@@ -579,5 +579,14 @@ export class CandidateService {
 
   notifyProfileImageUpdate(imageUrl: string): void {
     this.profileImageSubject.next(imageUrl);
+  }
+
+  getProfileImageUrl(): string | null {
+    return localStorage.getItem('profile_image_url');
+  }
+
+  clearProfileImage(): void {
+    localStorage.removeItem('profile_image_url');
+    this.profileImageSubject.next(null);
   }
 }

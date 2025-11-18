@@ -32,7 +32,7 @@ export class MePage implements OnInit {
   employee?: Candidate;
   record?: AttendanceRecord;
   shiftData?: any;
-  week_off_days = [] ;
+  week_off_days: string[] = [];
   shift_check_in = "";
   shift_check_out = "";
 
@@ -52,6 +52,7 @@ export class MePage implements OnInit {
   activeTab = 'log';
   currentMonth = new Date();
   weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  allWeekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   calendarDays: CalendarDay[] = [];
   attendanceRequests: AttendanceRequest[] = [];
   selectedLog: AttendanceLog | null = null;
@@ -344,5 +345,9 @@ formatShiftTime(val: string | null): string {
   } catch {
     return String(val);
   }
+}
+
+isWeekOff(day: string): boolean {
+  return this.week_off_days?.includes(day) || false;
 }
 }
