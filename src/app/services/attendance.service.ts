@@ -30,10 +30,12 @@ export class AttendanceService {
   record$ = this.recordSubject.asObservable();
   public responseSubject = new BehaviorSubject<any>(null);
   response$ = this.responseSubject.asObservable().pipe(
-    debounceTime(50), // Small debounce to prevent rapid-fire updates
-    distinctUntilChanged((prev, curr) => 
-      prev?.action === curr?.action && prev?.optimistic === curr?.optimistic
-    )
+    debounceTime(10), // Minimal debounce for instant response
+    distinctUntilChanged((prev, curr) => {
+      // Allow all optimistic and confirmed updates to pass through
+      if (curr?.optimistic || curr?.confirmed) return false;
+      return prev?.action === curr?.action && prev?.optimistic === curr?.optimistic;
+    })
   );
   constructor(private http: HttpClient, private routeGuardService: RouteGuardService) { }
   private getKey(employeeId: number): string {
@@ -66,6 +68,7 @@ export class AttendanceService {
       this.saveRecord(record);
     }
 
+    // Emit record immediately (synchronously) to prevent UI delays
     this.recordSubject.next(record);
     return record;
   }
@@ -134,66 +137,69 @@ export class AttendanceService {
   refreshAttendanceStatus(employeeId: number): void {
     const currentDate = new Date().toISOString().split('T')[0];
     
-    // Try multiple times with short intervals for immediate response
-    const attemptRefresh = (attempt: number = 1) => {
-      this.getallattendace({
-        employee_id: employeeId,
-        date: currentDate
-      }).subscribe({
-        next: (data) => {
-          if (data && data.attendance && data.attendance.length > 0) {
-            const records = data.attendance;
-            const record = this.getRecord(employeeId);
-            
-            // Find the most recent record
-            const latestRecord = records[records.length - 1];
-            
-            // Update local record with fresh server data
-            record.isClockedIn = latestRecord.check_in && !latestRecord.check_out;
-            
-            if (record.isClockedIn && latestRecord.check_in) {
-              record.clockInTime = currentDate + 'T' + latestRecord.check_in;
-            } else {
-              record.clockInTime = undefined;
-            }
-            
-            // Update history with all today's records
-            record.history = records.map((r: any) => {
-              const events = [];
-              if (r.check_in) {
-                events.push({
-                  type: 'CLOCK_IN' as const,
-                  time: currentDate + 'T' + r.check_in,
-                  displayTime: new Date(currentDate + 'T' + r.check_in).toLocaleTimeString()
-                });
-              }
-              if (r.check_out) {
-                events.push({
-                  type: 'CLOCK_OUT' as const,
-                  time: currentDate + 'T' + r.check_out,
-                  displayTime: new Date(currentDate + 'T' + r.check_out).toLocaleTimeString()
-                });
-              }
-              return events;
-            }).flat();
-            
-            this.saveRecord(record);
-            console.log('✅ Attendance status refreshed successfully');
-          } else if (attempt < 3) {
-            // Retry if no data found and we haven't tried 3 times yet
-            setTimeout(() => attemptRefresh(attempt + 1), 200);
-          }
-        },
-        error: (err) => {
-          console.error('Error refreshing attendance status:', err);
-          if (attempt < 3) {
-            setTimeout(() => attemptRefresh(attempt + 1), 300);
-          }
-        }
-      });
-    };
+    console.log('🔄 Refreshing attendance status for employee:', employeeId, 'date:', currentDate);
     
-    attemptRefresh();
+    this.getallattendace({
+      employee_id: employeeId,
+      date: currentDate
+    }).subscribe({
+      next: (data) => {
+        console.log('📊 Backend refresh response:', data);
+        
+        if (data && data.attendance && data.attendance.length > 0) {
+          const records = data.attendance;
+          const record = this.getRecord(employeeId);
+          
+          // Sort records by time to get the most recent
+          const sortedRecords = records.sort((a: any, b: any) => {
+            const timeA = a.check_out || a.check_in;
+            const timeB = b.check_out || b.check_in;
+            return timeB.localeCompare(timeA);
+          });
+          
+          const latestRecord = sortedRecords[0];
+          
+          // Update local record with fresh server data
+          record.isClockedIn = latestRecord.check_in && !latestRecord.check_out;
+          
+          if (record.isClockedIn && latestRecord.check_in) {
+            record.clockInTime = currentDate + 'T' + latestRecord.check_in;
+          } else {
+            record.clockInTime = undefined;
+          }
+          
+          // Update history with all today's records (sorted by time)
+          record.history = sortedRecords.map((r: any) => {
+            const events = [];
+            if (r.check_in) {
+              events.push({
+                type: 'CLOCK_IN' as const,
+                time: currentDate + 'T' + r.check_in,
+                displayTime: new Date(currentDate + 'T' + r.check_in).toLocaleTimeString()
+              });
+            }
+            if (r.check_out) {
+              events.push({
+                type: 'CLOCK_OUT' as const,
+                time: currentDate + 'T' + r.check_out,
+                displayTime: new Date(currentDate + 'T' + r.check_out).toLocaleTimeString()
+              });
+            }
+            return events;
+          }).flat().sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime());
+          
+          this.saveRecord(record);
+          // Emit refresh event to update all components
+          this.responseSubject.next({ action: 'refresh', data: records, confirmed: true, timestamp: new Date().toISOString() });
+          console.log('✅ Attendance status refreshed with', records.length, 'records');
+        } else {
+          console.log('⚠️ No attendance records found for today');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error refreshing attendance status:', err);
+      }
+    });
   }
 
   // Utility method to sync local state with server immediately

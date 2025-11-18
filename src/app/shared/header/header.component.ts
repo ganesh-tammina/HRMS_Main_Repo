@@ -38,6 +38,7 @@ export class HeaderComponent implements OnInit {
   uploadedImageUrl: string | null = null;
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
+  imageUrls: any;
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
@@ -89,8 +90,10 @@ export class HeaderComponent implements OnInit {
             this.one = this.allEmployees[0];
             this.fullName = this.one[0].full_name;
             this.employee_id = this.one[0].employee_id;
+            this.imageUrls = this.one[0].image;
+            console.log(this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
-             this.candidateService.setLoggedEmployeeId(this.employee_id);
+            this.candidateService.setLoggedEmployeeId(this.employee_id);
             console.log(this.fullName);
 
             console.log(this.employee_id);

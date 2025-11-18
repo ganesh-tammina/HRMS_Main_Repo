@@ -8,8 +8,10 @@
       <ion-col size="4" class="welcome-block ion-no-padding">
         <ion-card>
           <div class="img-block" id="image-trigger">
-            <img [attr.alt]="currentemp.FirstName" [src]="uploadedImageUrl || '../../assets/user.svg'" width="100"
+            <img [attr.alt]="currentemp.first_name" *ngIf="!currentemp.image" src="../../assets/user.svg" width="100"
               height="100" />
+            <img [attr.alt]="currentemp.first_name" *ngIf="currentemp.image"
+              [src]="'https://30.0.0.78:3562' + currentemp.image" width="100" height="100" />
             <ion-button class="img-button" id="image-trigger">
               <div class="ion-text-center">
                 <ion-icon name="camera"></ion-icon>
@@ -24,9 +26,8 @@
               <div class="ion-padding">
                 <p class="popup-title">Upload profile photo</p>
                 <div class="img-border">
-                  <img [attr.alt]="currentemp.FirstName" 
-                       [src]="previewImageUrl || uploadedImageUrl || '../../assets/user.svg'" 
-                       width="100" height="100" />
+                  <img [attr.alt]="currentemp.FirstName"
+                    [src]="previewImageUrl || uploadedImageUrl || '../../assets/user.svg'" width="100" height="100" />
                   <p *ngIf="previewImageUrl" class="preview-text">Preview</p>
                 </div>
 

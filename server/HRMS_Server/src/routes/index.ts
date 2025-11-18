@@ -120,9 +120,7 @@ router.post(
 );
 router.post('/v1/log-out', verifyAccessToken, EmployeeLoginController.LogOut);
 
-router.post('/v1/forgot-pwd', EmployeeLoginController.ForgotPwd);
 router.post('/v1/add-pwd', EmployeeLoginController.PasswordGeneratorHey);
-router.post('/v1/change-pwd', EmployeeLoginController.ChangePwd);
 router.post('/v1/change-new-pwd', EmployeeLoginController.PasswordGeneratorHey);
 
 router.post(

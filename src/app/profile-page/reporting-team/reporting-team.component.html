@@ -1,4 +1,4 @@
-<div class="team-card ion-padding" *ngIf="team">
+<div class="team-card ion-padding" *ngIf="team && team.length > 0">
   <div class="team-header">
     Reporting Team <span class="team-count">({{value}})</span>
   </div>
@@ -23,10 +23,10 @@
         </div>
         <button class="menu-btn">⋯</button>
       </li>
-  </ul>
-  <div class="has-text-centered">
+    </ul>
+    <div class="has-text-centered">
       <pagination-controls (pageChange)="p = $event"></pagination-controls>
-  </div>
+    </div>
 
     <!-- Member -->
 

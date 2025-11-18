@@ -176,8 +176,8 @@ export class CandidateService {
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
   private shiftsUrl = `${this.api}`;
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
-  private leaveactionUrl = `${this.env.devTest}/api/v1/leave-action`;
-  private weekoffsUrl = "https://localhost:3562/api/weekoff";
+  private leaveactionUrl = `${this.api}leave-action`;
+  private weekoffsUrl = `https://${this.env.apiURL}/api/weekoff`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -515,7 +515,27 @@ export class CandidateService {
   }
 
   logout() {
+    // Preserve attendance data during logout
+    const attendanceKeys: string[] = [];
+    const attendanceData: { [key: string]: string } = {};
+    
+    // Save all attendance-related localStorage items
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('attendance_')) {
+        attendanceKeys.push(key);
+        attendanceData[key] = localStorage.getItem(key) || '';
+      }
+    }
+    
+    // Clear all localStorage
     localStorage.clear();
+    
+    // Restore attendance data
+    attendanceKeys.forEach(key => {
+      localStorage.setItem(key, attendanceData[key]);
+    });
+    
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
     this.profileImageSubject.next('');
