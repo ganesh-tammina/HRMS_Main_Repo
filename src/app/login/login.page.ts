@@ -63,7 +63,7 @@ export class LoginPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private _loginSer: _LoginService,
     private _route_service: RouteGuardService
-  ) { }
+  ) {}
 
   /* ---------------------------
    * Lifecycle
@@ -366,9 +366,18 @@ export class LoginPage implements OnInit, OnDestroy {
       .changeoldEmpPassword(email, otp, newPassword)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: any) => {
-          console.log('✅ Password updated successfully:', res);
+        next: (val: any) => {
+          console.log('Pasword', val);
+          this.alertViewer('Information', val.message, 'OK');
+          this._route_service.storeTokens(
+            val.access_token!,
+            val.refresh_token!,
+            val.employee_id!,
+            val.role!
+          );
+          alert(val.role);
           this.handlePasswordSuccess();
+          this._route_service.redirectBasedOnRole(val.role);
         },
         error: (err: any) => {
           console.error('❌ Password update failed:', err);
@@ -381,7 +390,6 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   private handlePasswordSuccess(): void {
-    alert('Password updated successfully!');
     this.showPasswordUpdateForm = false;
     this.showLoginForm = true;
     this.passwordUpdateForm.reset();

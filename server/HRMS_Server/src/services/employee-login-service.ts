@@ -781,6 +781,17 @@ export default class LoginService {
       );
 
       await conn.commit();
+      const { access_token, refresh_token, role } =
+        await LoginService.cookieSetter(empId, email, res);
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        employee_id: empId,
+        role,
+        access_token,
+        refresh_token,
+      });
       res.json({ success: true, message: 'Password updated successfully' });
     } catch (err) {
       console.error('Error in passwordGen:', err);
