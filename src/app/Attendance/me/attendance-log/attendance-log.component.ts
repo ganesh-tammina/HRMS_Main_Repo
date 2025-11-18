@@ -143,29 +143,18 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
         if (response.confirmed || response.data) {
           // Confirmed server response - refresh all data immediately
           console.log('Server confirmed, refreshing all data...');
-          this.loadAllAttendanceData();
+          setTimeout(() => this.loadAllAttendanceData(), 100);
+          setTimeout(() => this.loadAllAttendanceData(), 500);
+          setTimeout(() => this.loadAllAttendanceData(), 1000);
           this.updateTimes();
           this.loadHistory();
-          
-          // Force refresh if specified
-          if (response.forceRefresh) {
-            console.log('Force refresh triggered, reloading all attendance data...');
-            setTimeout(() => this.loadAllAttendanceData(), 50);
-            setTimeout(() => this.loadAllAttendanceData(), 200);
-          }
-          
-          // Force refresh if specified
-          if (response.forceRefresh) {
-            console.log('Force refresh triggered, reloading all attendance data...');
-            setTimeout(() => this.loadAllAttendanceData(), 50);
-            setTimeout(() => this.loadAllAttendanceData(), 200);
-          }
         }
         
         if (response.action === 'refresh') {
           // Refresh action - update log data immediately
           console.log('Refresh detected, updating log data...');
-          this.loadAllAttendanceData();
+          setTimeout(() => this.loadAllAttendanceData(), 100);
+          setTimeout(() => this.loadAllAttendanceData(), 300);
         }
         
         if (response.error) {
