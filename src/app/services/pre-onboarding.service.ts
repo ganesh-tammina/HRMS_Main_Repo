@@ -189,6 +189,9 @@ export class CandidateService {
   );
   currentEmployee$ = this.currentEmployeeSubject.asObservable();
 
+  private profileImageSubject = new BehaviorSubject<string | null>(null);
+  profileImage$ = this.profileImageSubject.asObservable();
+
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
@@ -501,6 +504,8 @@ export class CandidateService {
     localStorage.clear();
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
+    this.profileImageSubject.next('');
+    this.routeGuardService.logout();
   }
 
   searchCandidates(query: string): Candidate[] {
@@ -550,5 +555,9 @@ export class CandidateService {
           console.error('❌ Error updating profile picture:', err),
       })
     );
+  }
+
+  notifyProfileImageUpdate(imageUrl: string): void {
+    this.profileImageSubject.next(imageUrl);
   }
 }
