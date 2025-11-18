@@ -12,7 +12,7 @@ import { RouteGuardService } from 'src/app/services/route-guard/route-service/ro
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Observable } from 'rxjs';
-
+import { environment } from 'src/environments/environment';
 @Component({
   standalone: true,
   selector: 'app-header',
@@ -39,6 +39,7 @@ export class HeaderComponent implements OnInit {
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
+  profileimg: string = environment.apiURL
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,

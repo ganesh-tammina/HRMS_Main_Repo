@@ -39,7 +39,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   uploadedImageUrl: string | null = null;
   previewImageUrl: string | null = null;
   isUploading: boolean = false;
-
+profileimg: string = environment.apiURL;
   private env = environment;
   private api = `https://${this.env.apiURL}/api/v1/`;
 
