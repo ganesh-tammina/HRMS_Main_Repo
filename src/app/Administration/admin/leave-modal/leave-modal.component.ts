@@ -17,7 +17,7 @@ export class LeaveModalComponent implements OnInit {
   casual_leave_allocated: number = 0;
   marriage_leave_allocated: number = 0;
   comp_offs_allocated: number = 0;
-  sick_leave_allocated: number = 0;
+  medical_leave_allocated: number = 0;
   paid_leave_allocated: number = 0;
   
 
@@ -51,7 +51,7 @@ export class LeaveModalComponent implements OnInit {
       casual_leave_allocated: this.casual_leave_allocated ?? 0,
       marriage_leave_allocated: this.marriage_leave_allocated ?? 0,
       comp_offs_allocated: this.comp_offs_allocated ?? 0,
-      sick_leave_allocated: this.sick_leave_allocated ?? 0,
+      medical_leave_allocated: this.medical_leave_allocated ?? 0,
       paid_leave_allocated: this.paid_leave_allocated ?? 0,
     };
 

@@ -8,12 +8,14 @@ import { environment } from 'src/environments/environment';
 })
 
 export class LeaveService {
-  private apiUrl = "https://${environment.apiURL}/api";
+  private env = environment;
+  private apiUrls = `https://${this.env.apiURL}/api/v1/`;
+
 
     constructor(private http: HttpClient) {}
 
     saveLeaves(leaveData: any): Observable<any> {
-      return this.http.post<any>(`${this.apiUrl}/v1/add-leaves-all`, leaveData, {
+      return this.http.post<any>(`${this.apiUrls}add-leaves-all`, leaveData, {
         withCredentials: true,
       });
     }
