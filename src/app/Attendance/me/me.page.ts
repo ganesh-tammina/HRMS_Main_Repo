@@ -100,12 +100,26 @@ export class MePage implements OnInit {
         }
         
         if (response.confirmed || response.data) {
-          // Server confirmed response
-          console.log('Server response confirmed, updating main page...');
-          setTimeout(() => {
-            this.updateTimes();
-            this.loadHistory();
-          }, 100);
+          // Server confirmed response - immediate update
+          console.log('Server response confirmed, updating main page immediately...');
+          this.updateTimes();
+          this.loadHistory();
+          
+          // Handle force refresh for immediate backend sync
+          if (response.forceRefresh) {
+            console.log('Force refresh in main page, updating all data...');
+            setTimeout(() => {
+              this.updateTimes();
+              this.loadHistory();
+            }, 100);
+          }
+        }
+        
+        if (response.action === 'refresh') {
+          // Refresh action - update immediately
+          console.log('Refresh detected in main page...');
+          this.updateTimes();
+          this.loadHistory();
         }
         
         if (response.error) {

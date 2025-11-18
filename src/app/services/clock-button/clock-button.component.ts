@@ -13,24 +13,30 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
   standalone: true,
   imports: [CommonModule, IonicModule],
   template: `
-    <div *ngIf="currentCandidate" class="ion-text-left">
-    
+    <div class="ion-text-left">
+      <!-- Clock In Button -->
       <ion-button class="btn-clockin"
         *ngIf="(!isClockedIn && (currentUrl!=='/Me'))"
         (click)="clockIn()"
       >
         Web Clock-In
       </ion-button>
-      <ion-button fill="clear" class="clear" *ngIf="(!isClockedIn && (currentUrl=='/Me'))" (click)="clockIn()">
-      <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16">
-      Web Clock-In
-    </ion-button>
+      
+      <ion-button fill="clear" class="clear" 
+        *ngIf="(!isClockedIn && (currentUrl=='/Me'))" 
+        (click)="clockIn()"
+      >
+        <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16">
+        Web Clock-In
+      </ion-button>
+      
+      <!-- Clock Out Button -->
       <ion-button
         class="btn-clockout"
         *ngIf="(isClockedIn && (currentUrl!=='/Me'))"
         (click)="clockOut()"
       >
-      Web Clock-Out
+        Web Clock-Out
       </ion-button>
 
       <ion-button
@@ -38,15 +44,13 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
         *ngIf="(isClockedIn && (currentUrl=='/Me'))"
         (click)="clockOut()"
       >
-      Web Clock-Out
+        Web Clock-Out
       </ion-button>
+      
       <div class="ms-2" *ngIf="(isClockedIn && (currentUrl=='/Me'))">
         Since Last Login :
         <strong>{{ timeSinceLastLogin }}</strong>
-    </div>
-
-    <div *ngIf="!currentCandidate">
-      <p>Please login to clock in/out.</p>
+      </div>
     </div>
   `,
 })
@@ -64,7 +68,31 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
     private routeGaurdService: RouteGuardService
   ) {
-    // Initialize record immediately from service
+    // Always set a default record immediately to ensure button is available
+    this.record = {
+      employeeId: 0,
+      isClockedIn: false,
+      accumulatedMs: 0,
+      history: [],
+      dailyAccumulatedMs: {}
+    };
+    
+    // Set current candidate immediately if available
+    this.currentCandidate = this.candidateService.getCurrentCandidate();
+    
+    // Load actual status if employee ID is available
+    if (this.routeGaurdService.employeeID) {
+      const actualRecord = this.attendanceService.getRecord(Number(this.routeGaurdService.employeeID));
+      if (actualRecord) {
+        this.record = actualRecord;
+        this.statusChanged.emit(this.record);
+        if (this.record.isClockedIn && this.record.clockInTime) {
+          this.initializeTimer();
+        }
+      }
+    }
+    
+    // Initialize record from service
     this.attendanceService.record$.subscribe((record) => {
       if (record) {
         this.record = record;
@@ -78,39 +106,60 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUrl = this.router.url;
-    console.log('Current Page URL:', this.currentUrl);
     
-    // Check if user is logged in
-    if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
-      
+    // Ensure current candidate is always available
+    if (!this.currentCandidate) {
+      this.currentCandidate = this.candidateService.getCurrentCandidate();
+    }
+    
+    // Load status immediately
+    this.loadImmediateStatus();
+    
+    // Load employee data if not already available
+    if (this.routeGaurdService.token && this.routeGaurdService.refreshToken && !this.currentCandidate) {
       this.candidateService.getEmpDet().subscribe({
         next: (user: any) => {
           this.currentCandidate = user || undefined;
-          console.log('Current Candidate in ClockButton:', this.currentCandidate);
-
           if (this.currentCandidate && this.currentCandidate.data && this.currentCandidate.data[0]) {
             const empId = this.currentCandidate.data[0][0].employee_id;
-            
-            // Ensure record exists for this employee
-            this.attendanceService.getRecord(empId);
+            this.record = this.attendanceService.getRecord(empId);
+            this.statusChanged.emit(this.record);
+            if (this.record.isClockedIn && this.record.clockInTime) {
+              this.initializeTimer();
+            }
           }
-
-          // Timer will be initialized after attendance status is loaded
         },
         error: (err) => {
           console.error('Error getting employee details:', err);
-          // Set default state if can't get employee data
-          this.record = {
-            employeeId: 0,
-            isClockedIn: false,
-            accumulatedMs: 0,
-            history: [],
-            dailyAccumulatedMs: {}
-          };
         }
       });
+    }
+  }
+  
+
+
+  private loadImmediateStatus() {
+    let empId: number | null = null;
+    
+    // Get employee ID from multiple sources
+    if (this.routeGaurdService.employeeID) {
+      empId = Number(this.routeGaurdService.employeeID);
+    } else if (this.currentCandidate && this.currentCandidate.data && this.currentCandidate.data[0]) {
+      empId = this.currentCandidate.data[0][0].employee_id;
     } else {
-      console.log('No valid tokens found');
+      const candidate = this.candidateService.getCurrentCandidate();
+      if (candidate && candidate.id) {
+        empId = candidate.id;
+      }
+    }
+    
+    // Load record if employee ID found
+    if (empId) {
+      this.record = this.attendanceService.getRecord(empId);
+      this.statusChanged.emit(this.record);
+      if (this.record.isClockedIn && this.record.clockInTime) {
+        this.initializeTimer();
+      }
     }
   }
 
@@ -132,9 +181,28 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   clockIn() {
-    if (!this.currentCandidate) return;
+    // Validate authentication first
+    if (!this.routeGaurdService.token || !this.routeGaurdService.refreshToken) {
+      alert('Please login first');
+      return;
+    }
+
+    // Ensure we have candidate data
+    if (!this.currentCandidate) {
+      this.currentCandidate = this.candidateService.getCurrentCandidate();
+    }
+    
+    if (!this.currentCandidate || !this.currentCandidate.data || !this.currentCandidate.data[0]) {
+      alert('Employee data not found. Please refresh and try again.');
+      return;
+    }
 
     const empId = this.currentCandidate.data[0][0].employee_id;
+    if (!empId) {
+      alert('Employee ID not found');
+      return;
+    }
+
     const now = new Date();
     
     // Immediately update UI state for instant feedback
@@ -157,24 +225,24 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     this.statusChanged.emit(this.record);
     this.initializeTimer();
     
-    console.log('🕐 Clock-in time set to:', this.record.clockInTime);
+    // Emit immediate optimistic update
+    this.attendanceService.responseSubject.next({ action: 'in', optimistic: true });
     
     const clockInData = {
       LogType: 'IN',
-      EmpID: empId
+      EmpID: empId,
+      access_token: this.routeGaurdService.token,
+      refresh_token: this.routeGaurdService.refreshToken
     };
     
-    console.log('🔄 Sending clock-in data:', clockInData);
+    console.log('Sending clock-in data:', clockInData);
     
-    // Send to server and handle response
+    // Send to server
     this.attendanceService.clockInServer(clockInData).subscribe({
       next: (response) => {
-        console.log('✅ Clock-in response:', response);
-        // Multiple immediate refreshes for instant data sync
-        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 50);
-        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 200);
-        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 500);
-        this.attendanceService.responseSubject.next({ action: 'in', data: response, confirmed: true });
+        console.log('✅ Clock-in successful:', response);
+        // Refresh attendance status
+        this.attendanceService.refreshAttendanceStatus(empId);
       },
       error: (err) => {
         console.error('❌ Clock-in failed:', err);
@@ -190,16 +258,48 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         }
         this.intervalSub?.unsubscribe();
         
-        alert(err.error?.message || 'Clock-in failed');
-        this.attendanceService.responseSubject.next({ action: 'in', error: err });
+        const errorMsg = err.error?.message || err.message || 'Clock-in failed';
+        
+        // If already clocked in, update local state
+        if (errorMsg.includes('Already Clocked In')) {
+          console.log('User already clocked in on server, updating local state...');
+          if (this.record) {
+            this.record.isClockedIn = true;
+            this.record.clockInTime = new Date().toISOString();
+            this.attendanceService.saveRecord(this.record);
+            this.statusChanged.emit(this.record);
+            this.initializeTimer();
+          }
+        } else {
+          alert(errorMsg);
+        }
       }
     });
   }
 
   clockOut() {
-    if (!this.currentCandidate || !this.record) return;
+    // Validate authentication first
+    if (!this.routeGaurdService.token || !this.routeGaurdService.refreshToken) {
+      alert('Please login first');
+      return;
+    }
+
+    // Ensure we have candidate data
+    if (!this.currentCandidate) {
+      this.currentCandidate = this.candidateService.getCurrentCandidate();
+    }
+    
+    if (!this.currentCandidate || !this.currentCandidate.data || !this.currentCandidate.data[0] || !this.record) {
+      alert('Employee data not found. Please refresh and try again.');
+      return;
+    }
 
     const empId = this.currentCandidate.data[0][0].employee_id;
+    if (!empId) {
+      alert('Employee ID not found');
+      return;
+    }
+
     const now = new Date();
     const accumulatedMs = this.calculateAccumulatedMs();
     
@@ -225,22 +325,24 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     this.intervalSub?.unsubscribe();
     this.timeSinceLastLogin = '0h 0m 0s';
     
+    // Emit immediate optimistic update
+    this.attendanceService.responseSubject.next({ action: 'out', optimistic: true });
+    
     const clockOutData = {
       LogType: 'OUT',
-      EmpID: empId
+      EmpID: empId,
+      access_token: this.routeGaurdService.token,
+      refresh_token: this.routeGaurdService.refreshToken
     };
     
-    console.log('🔄 Sending clock-out data:', clockOutData);
+    console.log('Sending clock-out data:', clockOutData);
     
-    // Send to server and handle response
+    // Send to server
     this.attendanceService.clockOutServer(clockOutData).subscribe({
       next: (response) => {
-        console.log('✅ Clock-out response:', response);
-        // Multiple immediate refreshes for instant data sync
-        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 50);
-        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 200);
-        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 500);
-        this.attendanceService.responseSubject.next({ action: 'out', data: response, confirmed: true });
+        console.log('✅ Clock-out successful:', response);
+        // Refresh attendance status
+        this.attendanceService.refreshAttendanceStatus(empId);
       },
       error: (err) => {
         console.error('❌ Clock-out failed:', err);
@@ -257,8 +359,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         }
         this.initializeTimer();
         
-        alert(err.error?.message || 'Clock-out failed');
-        this.attendanceService.responseSubject.next({ action: 'out', error: err });
+        const errorMsg = err.error?.message || err.message || 'Clock-out failed';
+        alert(errorMsg);
       }
     });
   }

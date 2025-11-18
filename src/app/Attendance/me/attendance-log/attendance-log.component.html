@@ -41,8 +41,8 @@
       {{ log.arrival || '-' }}
     </ion-col>
     <ion-col size="1" *ngIf="!log.isWeekend">
-      <ion-icon *ngIf="log.logStatus === 'incomplete'" name="alert-circle-outline" color="warning" (click)="openLogDetails(log)"></ion-icon>
-      <ion-icon *ngIf="log.logStatus === 'complete'" name="checkmark-circle-outline" color="success" (click)="openLogDetails(log)"></ion-icon>
+      <ion-icon *ngIf="log.logStatus === 'incomplete'" name="alert-circle-outline" color="warning" (click)="openLogDetails(log)" style="cursor: pointer;"></ion-icon>
+      <ion-icon *ngIf="log.logStatus === 'complete'" name="checkmark-circle-outline" color="success" (click)="openLogDetails(log)" style="cursor: pointer;"></ion-icon>
     </ion-col>
   </ion-row>
 
