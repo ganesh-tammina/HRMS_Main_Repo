@@ -140,6 +140,16 @@ export interface Shifts {
   check_out: string
 }
 
+export interface leaveRequests {
+  employee_id: number,
+  action: string,
+}
+
+export interface weekOff {
+  week_off_policy_name: string,
+  week_off_days: string,
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -164,8 +174,10 @@ export class CandidateService {
   private imagesUrl = `${this.api}employee/profile-pic/upsert`;
   private empUrl = this.getEmployees;
   private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
-  private shiftsUrl = "https://localhost:3562/api/v1/shift-policy";
-  // private reportingTeamUrl = "https://localhost:3562/api/v1/employees/under-manager/102";
+  private shiftsUrl = `${this.api}`;
+  private leaverequesrUrl = `${this.api}manager/leave-requests`;
+  private leaveactionUrl = `${this.env.devTest}/api/v1/leave-action`;
+  private weekoffsUrl = "https://localhost:3562/api/weekoff";
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -182,6 +194,9 @@ export class CandidateService {
     this.getStoredEmployee()
   );
   currentEmployee$ = this.currentEmployeeSubject.asObservable();
+
+  private profileImageSubject = new BehaviorSubject<string | null>(null);
+  profileImage$ = this.profileImageSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -252,12 +267,29 @@ export class CandidateService {
   getLoggedEmployeeId(): number | null {
     return this.currentLoggedEmployeeId;
   }
-
+  /*getShifts(shifts: Shifts): Observable<Shifts> {
+    return this.http.post<Shifts>(this.shiftsUrl, shifts);
+  }*/
   getReportingTeam(employeeId: number): Observable<any> {
     return this.http.get(
-      `https://localhost:3562/api/v1/employees/under-manager/${employeeId}`
+      `${this.api}employees/under-manager/${employeeId}`
     );
   }
+
+
+  // getLeaveRequests(leaveRequest: leaveRequests): Observable<leaveRequests> {
+  //   return this.http.post<leaveRequests>(this.leaverequesrUrl, leaveRequest);
+  // }
+
+  getLeaveRequests(payload: any) {
+    return this.http.post(`${this.leaverequesrUrl}`, payload);
+  }
+
+  getLeaveAction(payload: any) {
+    return this.http.post(`${this.leaveactionUrl}`, payload);
+  }
+
+
 
   /*************  ✨ Windsurf Command ⭐  *************/
   /**
@@ -269,7 +301,21 @@ export class CandidateService {
    */
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
   getShifts(shifts: Shifts): Observable<Shifts> {
-    return this.http.post<Shifts>(this.shiftsUrl, shifts);
+    return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
+      withCredentials: true
+    });
+  }
+
+  getWeekOffPolicies(weekoff: weekOff): Observable<weekOff> {
+    return this.http.post<weekOff>(this.weekoffsUrl, weekoff, {
+      withCredentials: true
+    });
+  }
+
+  getShiftByName(shift_policy_name: string): Observable<any> {
+    return this.http.post<any>(`${this.shiftsUrl}get-shift-policy`, { shift_policy_name }, {
+      withCredentials: true
+    });
   }
 
   getAllEmployees(): Observable<EmployeeResponse> {
@@ -472,6 +518,8 @@ export class CandidateService {
     localStorage.clear();
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
+    this.profileImageSubject.next('');
+    this.routeGuardService.logout();
   }
 
   searchCandidates(query: string): Candidate[] {
@@ -521,5 +569,9 @@ export class CandidateService {
           console.error('❌ Error updating profile picture:', err),
       })
     );
+  }
+
+  notifyProfileImageUpdate(imageUrl: string): void {
+    this.profileImageSubject.next(imageUrl);
   }
 }

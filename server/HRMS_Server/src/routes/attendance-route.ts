@@ -62,4 +62,8 @@ AttendanceRouter.get(
   AttendanceController.getEmployeesUnderManager
 );
 
+AttendanceRouter.post(
+  '/v1/get-shift-policy',
+  AttendanceController.getShiftPolicy
+)
 export default AttendanceRouter;

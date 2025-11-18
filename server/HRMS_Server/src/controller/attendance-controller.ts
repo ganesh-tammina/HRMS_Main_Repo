@@ -419,4 +419,32 @@ export default class AttendanceController {
   }
 }
 
+public static async getShiftPolicy(req: Request, res: Response) {
+  try {
+    const { shift_policy_name } = req.body;
+
+    if (!shift_policy_name) {
+      return res.status(400).json({
+        success: false,
+        message: "shift policy is required",
+      });
+    }
+
+    const result = await AttendanceService.getShiftPolicyService(String(shift_policy_name));
+
+    res.status(200).json({
+      success: true,
+      message: "Shift policy fetched successfully",
+      data: result,
+    });
+  } catch (err) {
+    console.error("Error fetching shift policy:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error, unable to fetch shift policy",
+    });
+  }
+}
+
 }

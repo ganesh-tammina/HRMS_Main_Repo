@@ -1,0 +1,49 @@
+<div class="page-container">
+
+  <h2>Employee Leave Requests</h2>
+
+  <div *ngFor="let req of leaveRequests" class="request-card">
+    <div class="row">
+      <div>
+        <h3>{{ req.full_name}}</h3>
+        <span>{{ req.job_title}}</span>
+      </div>
+
+      <span class="badge">{{ req.leave_type }}</span>
+    </div>
+
+    <p><strong>From:</strong> {{ req.start_date }}</p>
+    <p><strong>To:</strong> {{ req.end_date }}</p>
+    <p><strong>Reason:</strong> {{ req.remarks }}</p>
+    <p><strong>Status:</strong> {{ req.status }}</p>
+
+
+    <button class="approve-btn" (click)="openActionForm(req)">Take Action</button>
+  </div>
+
+  <!-- Action Form Popup -->
+  <div class="overlay" *ngIf="selectedRequest">
+    <div class="form-card">
+
+      <h3>Approve or Reject</h3>
+
+      <form [formGroup]="actionForm" (ngSubmit)="submitDecision()">
+
+        <label>Status</label>
+        <select formControlName="status">
+          <option value="">-- Select --</option>
+          <option value="APPROVED">Accept Leave</option>
+          <option value="REJECTED">Reject Leave</option>
+          <option value="CANCELLED">Cancel Leave</option>
+        </select>
+
+        <label>Manager Comment</label>
+        <!-- <textarea rows="3" formControlName="manager_comment"></textarea> -->
+
+        <button type="submit" class="submit-btn">Submit</button>
+        <button type="button" class="cancel-btn" (click)="closeForm()">Cancel</button>
+      </form>
+
+    </div>
+  </div>
+</div>

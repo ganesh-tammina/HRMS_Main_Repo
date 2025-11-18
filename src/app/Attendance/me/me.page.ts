@@ -31,7 +31,12 @@ interface CalendarDay { day: number | ''; timing: string; isOff: boolean; date?:
 export class MePage implements OnInit {
   employee?: Candidate;
   record?: AttendanceRecord;
+  shiftData?: any;
 
+  shift_check_in = "";
+  shift_check_out = "";
+
+  shiftDuration = '9h 0m'; 
   breakMinutes = 60;
   effectiveHours = '0h 0m';
   grossHours = '0h 0m';
@@ -74,6 +79,7 @@ export class MePage implements OnInit {
       });
     }, 500);
 
+    this.loadCandidateById();
 
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
@@ -267,4 +273,65 @@ export class MePage implements OnInit {
       { date: 'Wed, 03 Sept', progress: 0.75, effective: '6h 38m', gross: '8h 46m', arrival: 'On Time', details: { shift: 'Day shift 1 (03 Sept)', shiftTime: '9:30 - 18:30', location: 'HQ', logs: [{ in: '09:20:00', out: '18:15:00' }] } }
     ];
   }
+
+  loadCandidateById() {
+    const employeeId = localStorage.getItem("employee_id");
+    if (employeeId) {
+      // Get employee details using getEmpDet
+      this.candidateService.getEmpDet().subscribe({
+        next: (response) => {
+          if (response.data && response.data[0]) {
+            const employees = response.data[0];
+            const currentEmployee = employees.find((emp: any) => emp.employee_id == employeeId);
+            if (currentEmployee) {
+              console.log('Found employee details:', currentEmployee);
+              // Get shift details
+              if (currentEmployee.shift_policy_name) {
+                this.candidateService.getShiftByName(currentEmployee.shift_policy_name).subscribe({
+                  next: (shiftData) => {                   
+                    this.shiftData = shiftData;
+                    this.shift_check_in = shiftData.data.check_in;
+                    this.shift_check_out = shiftData.data.check_out;
+                  },
+                  error: (error) => {
+                    console.error('Error getting shift details:', error);
+                  }
+                });
+              }
+            }
+          }
+        },
+        error: (error) => {
+          console.error('Error getting employee details:', error);
+        }
+      });
+    }
+  }
+
+
+  trackByDate(index: number, d: Date) {
+  return d?.toDateString() || index;
+}
+
+formatShiftTime(val: string | null): string {
+  if (!val) return '';
+  try {
+    if (/\d{2}:\d{2}(:\d{2})?/.test(val) && !/[T\-]/.test(val)) {
+      // time-only: return in h:mm a format
+      const [hh, mm] = val.split(':');
+      const date = new Date();
+      date.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    } else {
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      }
+      // fallback: return raw
+      return String(val);
+    }
+  } catch {
+    return String(val);
+  }
+}
 }

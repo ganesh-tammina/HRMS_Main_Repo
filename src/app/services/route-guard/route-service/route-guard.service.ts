@@ -35,6 +35,7 @@ export class RouteGuardService {
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.EMPLOYEE_ID_KEY);
     localStorage.removeItem('login_time'); // Clear login time on logout
+    localStorage.removeItem('uploadedImageUrl'); // Clear profile image
     
     // Clear all attendance records for all users
     Object.keys(localStorage).forEach(key => {
