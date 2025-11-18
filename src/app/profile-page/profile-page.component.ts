@@ -37,6 +37,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   currentemp: any = []; // Single employee object (kept original type/shape)
   selectedFile: File | null = null;
   uploadedImageUrl: string | null = null;
+  previewImageUrl: string | null = null;
   isUploading: boolean = false;
 
   private env = environment;
@@ -53,8 +54,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   private currentEmployeeId: string | null = null;
 
   ngOnInit() {
-    // Clear cached data on init
-    this.clearCachedData();
+    // Load existing image from localStorage
+    this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
 
     // Initial fetch if employeeID exists
     if (this.routeGuardService.employeeID) {
@@ -91,6 +92,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
           console.log('🔄 Employee changed from', this.currentEmployeeId, 'to', currentId);
           this.currentEmployeeId = currentId;
           this.clearCachedData();
+          this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
           this.refreshEmployee();
         }
       });
@@ -152,6 +154,14 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     const file = $event.target.files && $event.target.files[0];
     if (file) {
       this.selectedFile = file;
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImageUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+      
       console.log('📸 Selected file:', this.selectedFile);
     }
   }
@@ -180,12 +190,13 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res: any) => {
           console.log('✅ Upload response:', res);
+          let cacheBusted = '';
 
           // If backend returns image path
           if (res && res.image) {
             const ipBase = 'https://30.0.0.78:3562';
             const fullImageUrl = `${ipBase}${res.image}`;
-            const cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+            cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
             this.uploadedImageUrl = cacheBusted;
 
             try {
@@ -200,7 +211,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             if (res.employee.profile_image) {
               const prefix = /^https?:\/\//i.test(res.employee.profile_image) ? '' : ('https://30.0.0.78:3562');
               const fullImageUrl = `${prefix}${res.employee.profile_image}`;
-              const cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+              cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
               this.uploadedImageUrl = cacheBusted;
               try {
                 localStorage.setItem('uploadedImageUrl', cacheBusted);
@@ -213,14 +224,20 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
           // Refresh employee details from server to keep everything in sync
           this.refreshEmployee();
 
+          // Notify header to update profile image if we have a valid URL
+          if (cacheBusted) {
+            this.candidateService.notifyProfileImageUpdate(cacheBusted);
+          }
+
           // Close the popover overlay (top-most)
           this.popoverController.dismiss().catch(err => {
             // ignore errors if no popover is open
             console.debug('Popover dismiss error (ignored):', err);
           });
 
-          // Clear selection and uploading flag
+          // Clear selection, preview, and uploading flag
           this.selectedFile = null;
+          this.previewImageUrl = null;
           this.isUploading = false;
         },
         error: (err: any) => {

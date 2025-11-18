@@ -7,13 +7,14 @@ import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { environment } from 'src/environments/environment';
 import { ShiftsComponent } from './shifts/shifts.component';
+import { WeekoffsComponent } from '../weekoffs/weekoffs.component';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent, ShiftsComponent],
+  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent, ShiftsComponent, WeekoffsComponent],
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
