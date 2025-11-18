@@ -95,6 +95,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   private routerSubscription?: Subscription;
   private currentEmployeeId: string | null = null;
+  private refreshInterval: any;
 
   constructor(
     private candidateService: CandidateService,
@@ -110,6 +111,9 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Load all attendance data immediately
     this.loadAllAttendanceData();
+    
+    // Force immediate refresh for latest data
+    setTimeout(() => this.loadAllAttendanceData(), 10);
     
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
@@ -142,10 +146,26 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
           this.loadAllAttendanceData();
           this.updateTimes();
           this.loadHistory();
-          // Additional refresh after short delay
-          setTimeout(() => {
-            this.loadAllAttendanceData();
-          }, 100);
+          
+          // Force refresh if specified
+          if (response.forceRefresh) {
+            console.log('Force refresh triggered, reloading all attendance data...');
+            setTimeout(() => this.loadAllAttendanceData(), 50);
+            setTimeout(() => this.loadAllAttendanceData(), 200);
+          }
+          
+          // Force refresh if specified
+          if (response.forceRefresh) {
+            console.log('Force refresh triggered, reloading all attendance data...');
+            setTimeout(() => this.loadAllAttendanceData(), 50);
+            setTimeout(() => this.loadAllAttendanceData(), 200);
+          }
+        }
+        
+        if (response.action === 'refresh') {
+          // Refresh action - update log data immediately
+          console.log('Refresh detected, updating log data...');
+          this.loadAllAttendanceData();
         }
         
         if (response.error) {
@@ -363,6 +383,9 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.routerSubscription?.unsubscribe();
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
 
@@ -426,13 +449,10 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   }
 
   openLogDetails(log: AttendanceLog) {
-    // Refresh attendance data in background first
-    this.loadAllAttendanceData();
+    const logDate = (log as any).attendance_date;
     
-    // Then fetch specific date data after brief delay
-    setTimeout(() => {
-      const logDate = (log as any).attendance_date;
-      
+    // Function to fetch latest data
+    const fetchLogData = () => {
       this.attendanceService.getallattendace({
         employee_id: this.abcd.employeeID,
         date: logDate
@@ -452,19 +472,41 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
           } else {
             this.selectedLog = log;
           }
-          this.showPopover = true;
+          if (!this.showPopover) {
+            this.showPopover = true;
+          }
         },
-        error: () => {
-          this.selectedLog = log;
-          this.showPopover = true;
+        error: (err) => {
+          console.error('Error fetching log data:', err);
+          if (!this.selectedLog) {
+            this.selectedLog = log;
+            this.showPopover = true;
+          }
         }
       });
-    }, 300);
+    };
+    
+    // Initial fetch
+    fetchLogData();
+    
+    // Set up auto-refresh every 3 seconds while popover is open
+    this.refreshInterval = setInterval(() => {
+      if (this.showPopover) {
+        fetchLogData();
+      } else {
+        clearInterval(this.refreshInterval);
+      }
+    }, 3000);
   }
 
   closePopover() {
     this.showPopover = false;
     this.selectedLog = null;
+    
+    // Clear any ongoing refresh intervals
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   updateTimes() {
@@ -611,6 +653,10 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   ionViewWillEnter() {
     console.log('Attendance log view entered, refreshing data...');
     this.loadAllAttendanceData();
+    
+    // Multiple instant refreshes for immediate data sync
+    setTimeout(() => this.loadAllAttendanceData(), 5);
+    setTimeout(() => this.loadAllAttendanceData(), 25);
   }
 
   formatDisplayDate(dateStr: string): string {
