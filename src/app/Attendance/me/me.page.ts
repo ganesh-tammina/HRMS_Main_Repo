@@ -78,8 +78,17 @@ export class MePage implements OnInit {
   ionViewWillEnter() {
     console.log("Me Page - ionViewWillEnter");
 
+    // Ensure proper initialization with slight delay for component setup
     setTimeout(() => {
       this.initializePage();
+      
+      // Force refresh attendance status from server after page load
+      const employeeId = localStorage.getItem("employee_id");
+      if (employeeId && this.attendanceService) {
+        setTimeout(() => {
+          this.attendanceService.refreshAttendanceStatus(Number(employeeId));
+        }, 200);
+      }
     }, 50);
   }
 

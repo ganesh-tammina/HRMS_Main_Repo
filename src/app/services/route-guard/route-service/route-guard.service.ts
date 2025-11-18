@@ -37,12 +37,8 @@ export class RouteGuardService {
     localStorage.removeItem('login_time'); // Clear login time on logout
     localStorage.removeItem('uploadedImageUrl'); // Clear profile image
     
-    // Clear all attendance records for all users
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('attendance_')) {
-        localStorage.removeItem(key);
-      }
-    });
+    // Don't clear attendance records - let them persist for proper state management
+    // The system will sync with server on next login
     
     this.router.navigate(['/']);
   }
