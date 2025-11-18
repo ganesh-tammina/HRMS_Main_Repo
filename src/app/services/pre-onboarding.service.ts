@@ -145,6 +145,11 @@ export interface leaveRequests {
   action: string,
 }
 
+export interface weekOff {
+  week_off_policy_name: string,
+  week_off_days: string,
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -172,6 +177,7 @@ export class CandidateService {
   private shiftsUrl = `${this.api}`;
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
   private leaveactionUrl = `${this.env.devTest}/api/v1/leave-action`;
+  private weekoffsUrl = "https://localhost:3562/api/weekoff";
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -283,6 +289,8 @@ export class CandidateService {
     return this.http.post(`${this.leaveactionUrl}`, payload);
   }
 
+
+
   /*************  ✨ Windsurf Command ⭐  *************/
   /**
    * Returns an observable of shifts from the server.
@@ -294,6 +302,12 @@ export class CandidateService {
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
   getShifts(shifts: Shifts): Observable<Shifts> {
     return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
+      withCredentials: true
+    });
+  }
+
+  getWeekOffPolicies(weekoff: weekOff): Observable<weekOff> {
+    return this.http.post<weekOff>(this.weekoffsUrl, weekoff, {
       withCredentials: true
     });
   }
