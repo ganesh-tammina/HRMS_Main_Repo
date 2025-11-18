@@ -10,13 +10,14 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import candidateRoutes from './services/candidate-service'; // path to your route file
 import offerDetails from './services/offerDetails';
-import salaryStructureRoutes from './services/salary-structure'
+import salaryStructureRoutes from './services/salary-structure';
 import AttendanceRouter from './routes/attendance-route';
 import mailRoutes from './routes/mail-route';
 import rolecrud from './routes/role-crud-routes';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import weekOffRoutes from './routes/weekoff.routes';
 import LoginService from './services/employee-login-service';
 
 dotenv.config();
@@ -41,7 +42,9 @@ class Server {
       const clientIp =
         req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
       console.log(
-        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${req.method} ${req.originalUrl} - from ${clientIp}`
+        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${
+          req.method
+        } ${req.originalUrl} - from ${clientIp}`
       );
       next();
     });
@@ -90,11 +93,10 @@ class Server {
     this.app.use('/', mailRoutes);
     this.app.use('/', salaryStructureRoutes);
     this.app.use('/candidates', candidateRoutes);
-
+    this.app.use('/api/weekoff', weekOffRoutes);
     // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }
-
 
   public start(): void {
     const sslOptions = {

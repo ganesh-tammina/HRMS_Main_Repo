@@ -35,6 +35,7 @@ export class HeaderComponent implements OnInit {
   fullName: any;
   currentemp: any;
   employee_id: any;
+  uploadedImageUrl: string | null = null;
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   constructor(
@@ -50,6 +51,22 @@ export class HeaderComponent implements OnInit {
     this.candidateService.Employee$.subscribe((employees) => {
       console.log("👀 Employee$ value:", employees);
     });
+
+    // Load profile image from localStorage
+    this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
+
+    // Listen for profile image updates
+    this.candidateService.profileImage$.subscribe((imageUrl) => {
+      if (imageUrl) {
+        this.uploadedImageUrl = imageUrl;
+        console.log('🖼️ Header: Profile image updated to:', imageUrl);
+      } else if (imageUrl === '') {
+        // Handle logout case
+        this.uploadedImageUrl = null;
+        console.log('🖼️ Header: Profile image cleared on logout');
+      }
+    });
+    console.log('🖼️ Loaded image URL from localStorage:', this.uploadedImageUrl);
 
     // this.currentEmployee$ = this.candidateService.currentEmployee$;
 
@@ -95,7 +112,6 @@ export class HeaderComponent implements OnInit {
   // Logout method
   logout() {
     this.candidateService.logout();
-
   }
 
   viewProfile() {
@@ -121,6 +137,19 @@ export class HeaderComponent implements OnInit {
     );
 
     console.log(this.results);
+  }
+
+  // Get profile image URL with fallback
+  getProfileImageUrl(): string {
+    // Always check localStorage for latest image
+    const latestImage = localStorage.getItem('uploadedImageUrl');
+    if (latestImage) {
+      this.uploadedImageUrl = latestImage;
+      return latestImage;
+    }
+    // If localStorage is empty, clear component cache and return default
+    this.uploadedImageUrl = null;
+    return '../../../assets/user.svg';
   }
 
   // Open modal to show employee list

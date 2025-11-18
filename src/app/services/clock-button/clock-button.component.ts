@@ -64,9 +64,16 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
     private routeGaurdService: RouteGuardService
   ) {
-
-
-
+    // Initialize record immediately from service
+    this.attendanceService.record$.subscribe((record) => {
+      if (record) {
+        this.record = record;
+        this.statusChanged.emit(record);
+        if (record.isClockedIn && record.clockInTime) {
+          this.initializeTimer();
+        }
+      }
+    });
   }
 
   ngOnInit() {
@@ -84,16 +91,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
           if (this.currentCandidate && this.currentCandidate.data && this.currentCandidate.data[0]) {
             const empId = this.currentCandidate.data[0][0].employee_id;
             
-            // Always check server for current attendance status on page load
-            this.checkAttendanceStatus(empId);
-            
-            // Subscribe to attendance updates
-            this.attendanceService.record$.subscribe((record) => {
-              if (record && record.employeeId === empId) {
-                this.record = record;
-                this.statusChanged.emit(record);
-              }
-            });
+            // Ensure record exists for this employee
+            this.attendanceService.getRecord(empId);
           }
 
           // Timer will be initialized after attendance status is loaded
@@ -116,6 +115,9 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   private initializeTimer() {
+    // Stop any existing timer first
+    this.intervalSub?.unsubscribe();
+    
     // Set initial time immediately
     this.updateTimeSinceLogin();
     
@@ -135,22 +137,27 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     const empId = this.currentCandidate.data[0][0].employee_id;
     const now = new Date();
     
-    // Start timer immediately
+    // Immediately update UI state for instant feedback
+    const existingRecord = this.attendanceService.getRecord(empId);
     this.record = {
       employeeId: empId,
       clockInTime: now.toISOString(),
       isClockedIn: true,
-      accumulatedMs: 0,
-      history: [{
+      accumulatedMs: existingRecord?.accumulatedMs || 0,
+      history: [...(existingRecord?.history || []), {
         type: 'CLOCK_IN',
         time: now.toISOString(),
         displayTime: now.toLocaleTimeString()
       }],
-      dailyAccumulatedMs: {}
+      dailyAccumulatedMs: existingRecord?.dailyAccumulatedMs || {}
     };
+    
+    // Save and emit immediately for instant UI update
     this.attendanceService.saveRecord(this.record);
     this.statusChanged.emit(this.record);
-    this.initializeTimer(); // Start timer immediately
+    this.initializeTimer();
+    
+    console.log('🕐 Clock-in time set to:', this.record.clockInTime);
     
     const clockInData = {
       LogType: 'IN',
@@ -159,20 +166,32 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     
     console.log('🔄 Sending clock-in data:', clockInData);
     
+    // Send to server and handle response
     this.attendanceService.clockInServer(clockInData).subscribe({
       next: (response) => {
         console.log('✅ Clock-in response:', response);
-        if (!response.status) {
-          // If server fails, revert the local state
-          this.checkAttendanceStatus(empId);
-        }
+        // Multiple immediate refreshes for instant data sync
+        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 50);
+        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 200);
+        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 500);
+        this.attendanceService.responseSubject.next({ action: 'in', data: response, confirmed: true });
       },
       error: (err) => {
-        console.error('❌ Clock-in failed - Full error:', err);
-        console.error('❌ Error response body:', err.error);
+        console.error('❌ Clock-in failed:', err);
+        // Revert optimistic update on error
+        if (this.record) {
+          this.record = {
+            ...this.record,
+            isClockedIn: false,
+            clockInTime: undefined
+          };
+          this.attendanceService.saveRecord(this.record);
+          this.statusChanged.emit(this.record);
+        }
+        this.intervalSub?.unsubscribe();
+        
         alert(err.error?.message || 'Clock-in failed');
-        // Refresh status after error to sync with server
-        this.checkAttendanceStatus(empId);
+        this.attendanceService.responseSubject.next({ action: 'in', error: err });
       }
     });
   }
@@ -181,6 +200,31 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     if (!this.currentCandidate || !this.record) return;
 
     const empId = this.currentCandidate.data[0][0].employee_id;
+    const now = new Date();
+    const accumulatedMs = this.calculateAccumulatedMs();
+    
+    // Immediately update UI state for instant feedback
+    this.record = {
+      employeeId: empId,
+      isClockedIn: false,
+      clockInTime: undefined,
+      accumulatedMs: (this.record?.accumulatedMs || 0) + accumulatedMs,
+      history: [...(this.record?.history || []), {
+        type: 'CLOCK_OUT',
+        time: now.toISOString(),
+        displayTime: now.toLocaleTimeString()
+      }],
+      dailyAccumulatedMs: this.record?.dailyAccumulatedMs || {}
+    };
+    
+    // Save and emit immediately for instant UI update
+    this.attendanceService.saveRecord(this.record);
+    this.statusChanged.emit(this.record);
+    
+    // Stop timer immediately
+    this.intervalSub?.unsubscribe();
+    this.timeSinceLastLogin = '0h 0m 0s';
+    
     const clockOutData = {
       LogType: 'OUT',
       EmpID: empId
@@ -188,37 +232,33 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     
     console.log('🔄 Sending clock-out data:', clockOutData);
     
+    // Send to server and handle response
     this.attendanceService.clockOutServer(clockOutData).subscribe({
       next: (response) => {
         console.log('✅ Clock-out response:', response);
-        if (response.status && this.record) {
-          const now = new Date();
-          const accumulatedMs = this.calculateAccumulatedMs();
-          
-          this.record = {
-            employeeId: empId,
-            isClockedIn: false,
-            accumulatedMs: this.record.accumulatedMs + accumulatedMs,
-            history: [...this.record.history, {
-              type: 'CLOCK_OUT',
-              time: now.toISOString(),
-              displayTime: now.toLocaleTimeString()
-            }],
-            dailyAccumulatedMs: this.record.dailyAccumulatedMs || {}
-          };
-          
-          this.attendanceService.saveRecord(this.record);
-          this.statusChanged.emit(this.record);
-          // Refresh status after successful operation
-          this.checkAttendanceStatus(empId);
-        }
+        // Multiple immediate refreshes for instant data sync
+        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 50);
+        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 200);
+        setTimeout(() => this.attendanceService.refreshAttendanceStatus(empId), 500);
+        this.attendanceService.responseSubject.next({ action: 'out', data: response, confirmed: true });
       },
       error: (err) => {
-        console.error('❌ Clock-out failed - Full error:', err);
-        console.error('❌ Error response body:', err.error);
+        console.error('❌ Clock-out failed:', err);
+        // Revert optimistic update on error
+        if (this.record) {
+          this.record = {
+            ...this.record,
+            employeeId: empId,
+            isClockedIn: true,
+            clockInTime: this.record.clockInTime || now.toISOString()
+          };
+          this.attendanceService.saveRecord(this.record);
+          this.statusChanged.emit(this.record);
+        }
+        this.initializeTimer();
+        
         alert(err.error?.message || 'Clock-out failed');
-        // Refresh status after error to sync with server
-        this.checkAttendanceStatus(empId);
+        this.attendanceService.responseSubject.next({ action: 'out', error: err });
       }
     });
   }
@@ -235,12 +275,12 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
     const now = new Date().getTime();
     const clockInTime = new Date(this.record.clockInTime).getTime();
-    const diff = Math.max(0, now - clockInTime); // Ensure non-negative
+    const diff = Math.max(0, now - clockInTime);
 
     const totalSeconds = Math.floor(diff / 1000);
-    const hours = Math.max(0, Math.floor(totalSeconds / 3600));
-    const minutes = Math.max(0, Math.floor((totalSeconds % 3600) / 60));
-    const seconds = Math.max(0, totalSeconds % 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
     this.timeSinceLastLogin = `${hours}h ${minutes}m ${seconds}s`;
   }
@@ -255,65 +295,14 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   private checkAttendanceStatus(empId: number) {
     console.log('🔍 Checking attendance status for employee:', empId);
     
-    // Use the actual attendance data to determine status
-    const attendanceData = {
-      employee_id: empId,
-      date: new Date().toISOString().split('T')[0]
-    };
-    
-    this.attendanceService.getallattendace(attendanceData).subscribe({
-      next: (response: any) => {
-        console.log('✅ Attendance data response:', response);
-        
-        const attendanceRecords = response.attendance || [];
-        console.log('📅 Today attendance records:', attendanceRecords);
-        
-        // Check if there's an open session (clocked in but not clocked out)
-        const hasOpenSession = attendanceRecords.some((record: any) => 
-          record.check_in && !record.check_out
-        );
-        
-        console.log('🎯 Has open session:', hasOpenSession);
-        
-        // Find the actual clock-in time from today's records
-        let actualClockInTime: string | undefined;
-        if (hasOpenSession) {
-          const openRecord = attendanceRecords.find((record: any) => 
-            record.check_in && !record.check_out
-          );
-          if (openRecord) {
-            // Convert server time format to ISO string
-            const today = new Date().toISOString().split('T')[0];
-            actualClockInTime = `${today}T${openRecord.check_in}`;
-          }
-        }
-        
-        this.record = {
-          employeeId: empId,
-          isClockedIn: hasOpenSession,
-          clockInTime: actualClockInTime,
-          accumulatedMs: 0,
-          history: [],
-          dailyAccumulatedMs: {}
-        };
-        
-        this.attendanceService.saveRecord(this.record);
-        this.statusChanged.emit(this.record);
-        
-        // Initialize timer after record is set
+    // Use localStorage as primary source, server as backup
+    this.record = this.attendanceService.getRecord(empId);
+    if (this.record) {
+      this.statusChanged.emit(this.record);
+      if (this.record.isClockedIn && this.record.clockInTime) {
         this.initializeTimer();
-      },
-      error: (err) => {
-        console.error('❌ Error getting attendance data:', err);
-        // Fallback to localStorage
-        this.record = this.attendanceService.getRecord(empId);
-        if (this.record) {
-          this.statusChanged.emit(this.record);
-          // Initialize timer after fallback record is set
-          this.initializeTimer();
-        }
       }
-    });
+    }
   }
 
   private checkIfClockedIn(attendanceData: any[]): boolean {
