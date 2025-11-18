@@ -3,6 +3,6 @@ export const environment = {
 <<<<<<< HEAD
   apiURL:"30.0.0.119"
 =======
-  apiURL:"30.0.0.221"
+  apiURL:"30.0.0.119"
 >>>>>>> 48e0e5bfecbf3c2252f6a66990359d177ca18682
 };

@@ -451,34 +451,52 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   openLogDetails(log: AttendanceLog) {
     const logDate = (log as any).attendance_date;
     
-    // Instant data fetch (no delay)
-    this.attendanceService.getallattendace({
-      employee_id: this.abcd.employeeID,
-      date: logDate
-    }).subscribe({
-      next: (data) => {
-        if (data && data.attendance && data.attendance.length > 0) {
-          const updatedRecords = data.attendance.map((item: any) => ({
-            check_in: item.check_in,
-            check_out: item.check_out
-          }));
-          
-          const updatedLog = {
-            ...log,
-            records: updatedRecords
-          };
-          this.selectedLog = updatedLog;
-        } else {
-          this.selectedLog = log;
+    // Function to fetch latest data
+    const fetchLogData = () => {
+      this.attendanceService.getallattendace({
+        employee_id: this.abcd.employeeID,
+        date: logDate
+      }).subscribe({
+        next: (data) => {
+          if (data && data.attendance && data.attendance.length > 0) {
+            const updatedRecords = data.attendance.map((item: any) => ({
+              check_in: item.check_in,
+              check_out: item.check_out
+            }));
+            
+            const updatedLog = {
+              ...log,
+              records: updatedRecords
+            };
+            this.selectedLog = updatedLog;
+          } else {
+            this.selectedLog = log;
+          }
+          if (!this.showPopover) {
+            this.showPopover = true;
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching log data:', err);
+          if (!this.selectedLog) {
+            this.selectedLog = log;
+            this.showPopover = true;
+          }
         }
-        this.showPopover = true;
-      },
-      error: (err) => {
-        console.error('Error fetching log data:', err);
-        this.selectedLog = log;
-        this.showPopover = true;
+      });
+    };
+    
+    // Initial fetch
+    fetchLogData();
+    
+    // Set up auto-refresh every 3 seconds while popover is open
+    this.refreshInterval = setInterval(() => {
+      if (this.showPopover) {
+        fetchLogData();
+      } else {
+        clearInterval(this.refreshInterval);
       }
-    });
+    }, 3000);
   }
 
   closePopover() {

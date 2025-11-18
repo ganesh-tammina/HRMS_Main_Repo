@@ -122,17 +122,16 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
           this.currentCandidate = user || undefined;
           if (this.currentCandidate && this.currentCandidate.data && this.currentCandidate.data[0]) {
             const empId = this.currentCandidate.data[0][0].employee_id;
-            this.record = this.attendanceService.getRecord(empId);
-            this.statusChanged.emit(this.record);
-            if (this.record.isClockedIn && this.record.clockInTime) {
-              this.initializeTimer();
-            }
+            this.checkServerAttendanceStatus(empId);
           }
         },
         error: (err) => {
           console.error('Error getting employee details:', err);
         }
       });
+    } else if (this.currentCandidate && this.currentCandidate.data && this.currentCandidate.data[0]) {
+      const empId = this.currentCandidate.data[0][0].employee_id;
+      this.checkServerAttendanceStatus(empId);
     }
   }
   
@@ -155,11 +154,15 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     
     // Load record if employee ID found
     if (empId) {
+      // First load from local storage for immediate UI update
       this.record = this.attendanceService.getRecord(empId);
       this.statusChanged.emit(this.record);
       if (this.record.isClockedIn && this.record.clockInTime) {
         this.initializeTimer();
       }
+      
+      // Then verify with server for accuracy
+      this.checkServerAttendanceStatus(empId);
     }
   }
 
@@ -230,7 +233,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     
     const clockInData = {
       LogType: 'IN',
-      EmpID: empId,
+      EmpID: Number(empId),
       access_token: this.routeGaurdService.token,
       refresh_token: this.routeGaurdService.refreshToken
     };
@@ -330,7 +333,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     
     const clockOutData = {
       LogType: 'OUT',
-      EmpID: empId,
+      EmpID: Number(empId),
       access_token: this.routeGaurdService.token,
       refresh_token: this.routeGaurdService.refreshToken
     };
@@ -392,6 +395,68 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     const clockIn = new Date(this.record.clockInTime).getTime();
     const now = new Date().getTime();
     return now - clockIn;
+  }
+
+  private checkServerAttendanceStatus(empId: number) {
+    console.log('🔍 Checking server attendance status for employee:', empId);
+    
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    this.attendanceService.getallattendace({
+      employee_id: empId,
+      date: currentDate
+    }).subscribe({
+      next: (data) => {
+        console.log('📊 Server attendance data:', data);
+        
+        let isClockedIn = false;
+        let lastClockInTime: string | undefined;
+        
+        if (data && data.attendance && data.attendance.length > 0) {
+          // Sort by time to get the latest entry
+          const sortedRecords = data.attendance.sort((a: any, b: any) => {
+            const timeA = a.check_out || a.check_in;
+            const timeB = b.check_out || b.check_in;
+            return timeB.localeCompare(timeA);
+          });
+          
+          const latestRecord = sortedRecords[0];
+          isClockedIn = latestRecord.check_in && !latestRecord.check_out;
+          
+          if (isClockedIn && latestRecord.check_in) {
+            lastClockInTime = currentDate + 'T' + latestRecord.check_in;
+          }
+        }
+        
+        // Update local record with server data
+        this.record = {
+          employeeId: empId,
+          isClockedIn: isClockedIn,
+          clockInTime: lastClockInTime,
+          accumulatedMs: 0,
+          history: [],
+          dailyAccumulatedMs: {}
+        };
+        
+        this.attendanceService.saveRecord(this.record);
+        this.statusChanged.emit(this.record);
+        
+        if (isClockedIn && lastClockInTime) {
+          this.initializeTimer();
+        }
+        
+        console.log('✅ Updated clock status from server:', { isClockedIn, lastClockInTime });
+      },
+      error: (err) => {
+        console.error('❌ Error checking server status:', err);
+        // Fallback to local storage
+        this.record = this.attendanceService.getRecord(empId);
+        this.statusChanged.emit(this.record);
+        if (this.record.isClockedIn && this.record.clockInTime) {
+          this.initializeTimer();
+        }
+      }
+    });
   }
 
   private checkAttendanceStatus(empId: number) {
