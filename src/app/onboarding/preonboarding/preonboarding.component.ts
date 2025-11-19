@@ -180,40 +180,39 @@ export class PreonboardingComponent implements OnInit {
 
 
   applyFilters(){
-    // Filter candidates based on all selected filters
+    // Filter candidates based on all selected filters including search text
     this.candidates = this.filterCandidates.filter(c => {
       const businessMatch = this.selectedBusiness ? c.BusinessUnit === this.selectedBusiness : true;
       const jobMatch = this.selectedJobTitle ? c.JobTitle === this.selectedJobTitle : true;
       const deptMatch  = this.selectedDept ? c.Department === this.selectedDept : true;
-      const locationMatch  = this.selectedLocation ? c.JobLocation === this.selectedLocation : true;   
-      return businessMatch && jobMatch && deptMatch && locationMatch;
+      const locationMatch  = this.selectedLocation ? c.JobLocation === this.selectedLocation : true;
+      
+      // Search text match across multiple fields
+      const searchMatch = this.searchText ? (
+        c.JobTitle.toLowerCase().includes(this.searchText) ||
+        c.Department.toLowerCase().includes(this.searchText) ||
+        c.JobLocation.toLowerCase().includes(this.searchText) ||
+        c.BusinessUnit.toLowerCase().includes(this.searchText) ||
+        c.status.toLowerCase().includes(this.searchText) ||
+        c.FirstName.toLowerCase().includes(this.searchText)
+      ) : true;
+      
+      return businessMatch && jobMatch && deptMatch && locationMatch && searchMatch;
     });
   }
 
 
-  // Filtered by Search
+  // Filtered by Search - now works with existing filters
   SearchCandidates(event: any) {
     const val = event.target.value.toLowerCase().trim();
     this.searchText = val;
-    if (val === '') {
-      this.candidates = this.filterCandidates;
-    } else {
-      this.candidates = this.filterCandidates.filter(c =>
-        c.JobTitle.toLowerCase().includes(val) ||
-        c.Department.toLowerCase().includes(val) ||
-        c.JobLocation.toLowerCase().includes(val) ||
-        c.BusinessUnit.toLowerCase().includes(val) ||
-        c.status.toLowerCase().includes(val) ||
-        c.FirstName.toLowerCase().includes(val)
-      );
-    }
+    this.applyFilters();
   }
 
   clearSearch(searchInput?: HTMLInputElement) {
-  if (searchInput) searchInput.value = '';
-  this.searchText = '';
-  // restore full list
-  this.candidates = Array.isArray(this.filterCandidates) ? [...this.filterCandidates] : [];
- }
+    if (searchInput) searchInput.value = '';
+    this.searchText = '';
+    this.applyFilters(); // Apply filters without search text
+  }
 
 }
