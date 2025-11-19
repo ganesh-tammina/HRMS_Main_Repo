@@ -8,6 +8,7 @@ import { Candidate, CandidateService } from './services/pre-onboarding.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { HeaderComponent } from './shared/header/header.component';
 import { RouteGuardService } from './services/route-guard/route-service/route-guard.service';
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -19,6 +20,7 @@ import { RouteGuardService } from './services/route-guard/route-service/route-gu
     HeaderComponent,
     CommonModule,
     IonicModule,
+    
   ],
 })
 export class AppComponent implements OnInit {
@@ -31,15 +33,20 @@ export class AppComponent implements OnInit {
   CurrentuserType: string = ''
   userType: string | null = null;
   one: any;
+  isAdmin: boolean = false
   full_name: string = '';
   currentTime: string = '';
   allEmployees: any[] = [];
+  currentUrl: any;    //get current page
+  isRefreshing = false;
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(
     private router: Router,
     private candidateService: CandidateService,
-    private routeGaurdService: RouteGuardService
+    private routeGaurdService: RouteGuardService,
+    private navCtrl: NavController   // ✅ add this
+
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
     // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
@@ -48,11 +55,19 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         // Hide menu on login page
         this.showMenu = !event.urlAfterRedirects.includes('/login');
+        console.log("this.showMenu", this.showMenu)
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
+        console.log("this.isLoginPage", this.isLoginPage)
         this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
-        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter')
+        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
+        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter');
+        console.log("this.iscandiateofferLetterPage", this.iscandiateofferLetterPage)
         this.iscandiateofferPage =
           event.urlAfterRedirects.includes('/candidate_status');
+        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
+
+        // Quick refresh effect for main navigation pages after login
+        this.handlePageRefresh(event.urlAfterRedirects);
 
         const userData = localStorage.getItem('loggedInUser');
         if (userData) {
@@ -70,20 +85,13 @@ export class AppComponent implements OnInit {
     this.showCategories = !this.showCategories;
   }
   ngOnInit(): void {
-    if (this.routeGaurdService.token && this.routeGaurdService.refreshToken) {
-      this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
-          this.one = response.data[0];
-          console.log(this.one);
-        },
-        error: (err) => {
-          console.error('Error fetching all employees:', err);
-        },
-      });
-    } else {
-      this.router.navigate(['/login']);
+    this.currentUrl = this.router.url;
+
+    if (this.routeGaurdService.userRole) {
+      this.routeGaurdService.userRole === 'admin' ? this.isAdmin = true : this.isAdmin = false;
     }
+   
+
   }
   // preonboard() {
   //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -92,15 +100,30 @@ export class AppComponent implements OnInit {
   //   window.location.href = '/pre_onboarding';
   // }
   preonboard() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/pre-onboarding-cards']);
-    });
-    window.location.href = '/pre-onboarding-cards';
+    //});
   }
 
   logout() {
-    // this.candidateService.logout();
-    this.candidateService.logout();
-    this.router.navigate(['/login']);
+    localStorage.clear();
+    sessionStorage.clear();
+    this.router.navigate(['/login'])
+  }
+
+  private handlePageRefresh(url: string) {
+    // Check if user is logged in and navigating to main pages
+    const isLoggedIn = this.routeGaurdService.token && this.routeGaurdService.refreshToken;
+    const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
+    const isMainPage = mainPages.some(page => url.includes(page));
+    
+    if (isLoggedIn && isMainPage && !this.isRefreshing) {
+      this.isRefreshing = true;
+      
+      // Quick refresh effect - show loading for milliseconds
+      setTimeout(() => {
+        this.isRefreshing = false;
+      }, 100); // 100ms refresh effect
+    }
   }
 }

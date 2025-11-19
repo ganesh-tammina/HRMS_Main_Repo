@@ -5,8 +5,8 @@ import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-bank-details',
-  templateUrl: './bank-details.page.html',
-  styleUrls: ['./bank-details.page.scss']
+  templateUrl: './bank-form.component.html',
+  styleUrls: ['./bank-form.component.scss']
 })
 export class BankDetailsPage implements OnInit {
   bankForm!: FormGroup;
@@ -35,7 +35,7 @@ export class BankDetailsPage implements OnInit {
     const candidateId = localStorage.getItem('candidateId');
     const data = { ...this.bankForm.value, candidateId };
 
-    await this.http.post('http://30.0.0.78:3000/bank-details', data).toPromise();
+    await this.http.post('https://localhost:3000/bank-details', data).toPromise();
 
     const alert = await this.alertCtrl.create({
       header: 'Success',

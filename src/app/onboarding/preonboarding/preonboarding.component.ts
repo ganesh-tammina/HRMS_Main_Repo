@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { StartOnboardingComponent } from '../start-onboarding/start-onboarding.component';
 import { HireEmployeesService } from 'src/app/services/hire-employees.service';
+import { CandidateDetailsService } from 'src/app/services/candidate-details-service.service';
 
 @Component({
   selector: 'app-preonboarding',
@@ -19,13 +20,26 @@ import { HireEmployeesService } from 'src/app/services/hire-employees.service';
     OnboardingMainheaderComponent,
     CommonModule,
     IonicModule,
-    HeaderComponent
-  ]
+    HeaderComponent,
+  ],
 })
 export class PreonboardingComponent implements OnInit {
-
   // 👇 All candidates loaded from service
   candidates: any[] = [];
+
+
+  filterCandidates: any[] = [];
+  BusinessunitList: string[] = [];
+  selectedBusiness: string = '';
+  JobTitleList: string[] = [];
+  selectedJobTitle: string = '';
+  DeptList: string[] = [];
+  selectedDept: string = '';
+  LocationList: string[] = [];
+  selectedLocation: string = '';
+  searchText: string = '';
+
+
   hiddenCandidates: number[] = [];
   @Input() currentStage: number = 1;
 
@@ -34,16 +48,38 @@ export class PreonboardingComponent implements OnInit {
     private http: HttpClient,
     private modalCtrl: ModalController,
     private candidateService: CandidateService,
-    private hireEmployeeService: HireEmployeesService
+    private hireEmployeeService: HireEmployeesService,
+    private CandidatedetailsService: CandidateDetailsService
   ) { }
 
   ngOnInit() {
     // Subscribe to candidates from service
-    this.candidateService.candidates$.subscribe(data => {
-      this.candidates = data;
+    // this.candidateService.candidates$.subscribe(data => {
+    //   this.candidates = data;
+    //   console.log('Candidates:', this.candidates);
+    // });
+    this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
+      this.candidates = data.candidates;
+      this.filterCandidates = data.candidates;
+      // job title list
+      this.JobTitleList = this.candidates.map(c => c.JobTitle)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      // Business unit List
+      this.BusinessunitList = this.candidates.map(c => c.BusinessUnit)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      //Department List
+      this.DeptList = this.candidates.map(c => c.Department)
+        .filter((value, index, self) => self.indexOf(value) === index);
+      // Location List
+      this.LocationList = this.candidates.map(c => c.JobLocation)
+        .filter((value, index, self) => self.indexOf(value) === index);
+
       console.log('Candidates:', this.candidates);
+      console.log('Jobtitle:', this.BusinessunitList);
     });
-    this.hiddenCandidates = JSON.parse(sessionStorage.getItem('hiddenCandidates') || '[]');
+    this.hiddenCandidates = JSON.parse(
+      sessionStorage.getItem('hiddenCandidates') || '[]'
+    );
   }
 
   // Navigate to candidate create (non-modal)
@@ -57,8 +93,8 @@ export class PreonboardingComponent implements OnInit {
       component: StartOnboardingComponent,
       cssClass: 'start-preboarding-modal',
       componentProps: {
-        candidate: candidate,        // ✅ selected candidate’s ID
-      }
+        candidate: candidate, // ✅ selected candidate’s ID
+      },
     });
 
     await modal.present();
@@ -67,7 +103,7 @@ export class PreonboardingComponent implements OnInit {
   // Open form in modal
   async openCandidateForm() {
     const modal = await this.modalCtrl.create({
-      component: CandiateCreateComponent
+      component: CandiateCreateComponent,
     });
 
     await modal.present();
@@ -82,49 +118,101 @@ export class PreonboardingComponent implements OnInit {
   }
 
   employee(candidate: any) {
-
-
     const settingData = {
-      "id": candidate.id,
-      "firstName": candidate.personalDetails.FirstName,
-      "lastName": candidate.personalDetails.LastName,
-      "email": candidate.personalDetails.email,
-      "MiddleName": candidate.personalDetails.gender,
-      "PhoneNumber": candidate.personalDetails.PhoneNumber,
-      "gender": candidate.personalDetails.gender,
-      "initials": candidate.personalDetails.initials,
-      "JobTitle": candidate.jobDetailsForm.JobTitle,
-      "Department": candidate.jobDetailsForm.Department,
-      "JobLocation": candidate.jobDetailsForm.JobLocation,
-      "WorkType": candidate.jobDetailsForm.WorkType,
-      "BusinessUnit": candidate.jobDetailsForm.BussinessUnit
-    }
-    this.candidateService.createEmployee(settingData).subscribe()
+      id: candidate.id,
+      firstName: candidate.personalDetails.FirstName,
+      lastName: candidate.personalDetails.LastName,
+      email: candidate.personalDetails.email,
+      MiddleName: candidate.personalDetails.gender,
+      PhoneNumber: candidate.personalDetails.PhoneNumber,
+      gender: candidate.personalDetails.gender,
+      initials: candidate.personalDetails.initials,
+      JobTitle: candidate.jobDetailsForm.JobTitle,
+      Department: candidate.jobDetailsForm.Department,
+      JobLocation: candidate.jobDetailsForm.JobLocation,
+      WorkType: candidate.jobDetailsForm.WorkType,
+      BusinessUnit: candidate.jobDetailsForm.BussinessUnit,
+    };
+    this.candidateService.createEmployee(settingData).subscribe();
   }
   Rejectedemployee(candidate: any) {
-
-
     const settingData = {
-      "id": candidate.id,
-      "firstName": candidate.personalDetails.FirstName,
-      "lastName": candidate.personalDetails.LastName,
-      "email": candidate.personalDetails.email,
-      "MiddleName": candidate.personalDetails.gender,
-      "PhoneNumber": candidate.personalDetails.PhoneNumber,
-      "gender": candidate.personalDetails.gender,
-      "initials": candidate.personalDetails.initials,
-      "JobTitle": candidate.jobDetailsForm.JobTitle,
-      "Department": candidate.jobDetailsForm.Department,
-      "JobLocation": candidate.jobDetailsForm.JobLocation,
-      "WorkType": candidate.jobDetailsForm.WorkType,
-      "BusinessUnit": candidate.jobDetailsForm.BussinessUnit
-    }
-    this.candidateService.createRejectedEmployee(settingData).subscribe()
+      id: candidate.id,
+      firstName: candidate.personalDetails.FirstName,
+      lastName: candidate.personalDetails.LastName,
+      email: candidate.personalDetails.email,
+      MiddleName: candidate.personalDetails.gender,
+      PhoneNumber: candidate.personalDetails.PhoneNumber,
+      gender: candidate.personalDetails.gender,
+      initials: candidate.personalDetails.initials,
+      JobTitle: candidate.jobDetailsForm.JobTitle,
+      Department: candidate.jobDetailsForm.Department,
+      JobLocation: candidate.jobDetailsForm.JobLocation,
+      WorkType: candidate.jobDetailsForm.WorkType,
+      BusinessUnit: candidate.jobDetailsForm.BussinessUnit,
+    };
+    this.candidateService.createRejectedEmployee(settingData).subscribe();
   }
   employeehire(candidate: any) {
     this.hireEmployeeService.setCandidate(candidate);
-    this.candidates = this.candidates.filter(c => c.id !== candidate.id);
+    this.candidates = this.candidates.filter((c) => c.id !== candidate.id);
   }
+
+
+
+  onFilterChange(type: string, event: any) {
+    const value = event.detail.value;
+  
+    // Update the selected values dynamically
+    if (type === 'businessunit') {
+      this.selectedBusiness = value;
+    }else if (type === 'jobtitle') {
+      this.selectedJobTitle = value;
+    }else if (type === 'department') {
+      this.selectedDept = value;
+    }else if (type === 'location') {
+      this.selectedLocation = value;
+    }else if (type === 'text') {
+      this.searchText = event.detail.value.toLowerCase();
+    }
+    this.applyFilters();
+  }
+
+
+  applyFilters(){
+    // Filter candidates based on all selected filters including search text
+    this.candidates = this.filterCandidates.filter(c => {
+      const businessMatch = this.selectedBusiness ? c.BusinessUnit === this.selectedBusiness : true;
+      const jobMatch = this.selectedJobTitle ? c.JobTitle === this.selectedJobTitle : true;
+      const deptMatch  = this.selectedDept ? c.Department === this.selectedDept : true;
+      const locationMatch  = this.selectedLocation ? c.JobLocation === this.selectedLocation : true;
+      
+      // Search text match across multiple fields
+      const searchMatch = this.searchText ? (
+        c.JobTitle.toLowerCase().includes(this.searchText) ||
+        c.Department.toLowerCase().includes(this.searchText) ||
+        c.JobLocation.toLowerCase().includes(this.searchText) ||
+        c.BusinessUnit.toLowerCase().includes(this.searchText) ||
+        c.status.toLowerCase().includes(this.searchText) ||
+        c.FirstName.toLowerCase().includes(this.searchText)
+      ) : true;
+      
+      return businessMatch && jobMatch && deptMatch && locationMatch && searchMatch;
+    });
+  }
+
+
+  // Filtered by Search - now works with existing filters
+  SearchCandidates(event: any) {
+    const val = event.target.value.toLowerCase().trim();
+    this.searchText = val;
+    this.applyFilters();
+  }
+
+  clearSearch(searchInput?: HTMLInputElement) {
+    if (searchInput) searchInput.value = '';
+    this.searchText = '';
+    this.applyFilters(); // Apply filters without search text
+  }
+
 }
-
-

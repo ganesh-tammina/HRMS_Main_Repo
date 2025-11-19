@@ -4,7 +4,7 @@ import { RouteGuardService } from '../route-service/route-guard.service';
 
 @Injectable({ providedIn: 'root' })
 export class roleHandlerGuard implements CanActivate {
-  constructor(private auth: RouteGuardService, private router: Router) {}
+  constructor(private auth: RouteGuardService, private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const expectedRole = route.data['role'];

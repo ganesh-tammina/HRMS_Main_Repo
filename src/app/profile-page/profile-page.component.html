@@ -1,127 +1,137 @@
 <ion-header [translucent]="true">
-    <!-- <app-header></app-header> -->
-  </ion-header>
-  <ion-content [fullscreen]="true" class="profile-block">
-  
-    <ion-grid class="ion-margin ion-margin-horizontal">
-      <ion-row>
-        <ion-col size="6" class="welcome-block ion-no-padding row-space-between">
-          <div class="d-flex ion-align-items-start">
-              <img class="pl-5" [attr.alt]="currentCandidate.personalDetails.FirstName" src="../../assets/user.svg" width="100" />
-            <div class="pl-5">
-                <p class="name">{{currentCandidate.personalDetails.FirstName}} <span>WFH</span></p>
-                <p class="des">{{currentCandidate.jobDetailsForm?.JobTitle}}</p>
-            </div>            
-            
-          </div>
-          <img  class="bg2"  src="../../assets/bg-welcome1.svg" />
-        </ion-col>
-      </ion-row>
-      <ion-row class="main-block">
-        
-      </ion-row>
-  
-    </ion-grid>   
-       <div class="row-left">
-          <div class="row-left pl-30" *ngIf="currentCandidate">
-              <ion-icon name="mail-outline"></ion-icon>
-              <p class="pl-5">{{currentCandidate.employeeCredentials?.companyEmail}}</p>
-            </div>          
-     
-            <div class="row-left pl-30">
-                <ion-icon name="phone-portrait-outline"></ion-icon>
-                <p class="pl-5">{{currentCandidate.personalDetails?.PhoneNumber}}</p>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="profile-block">
+
+  <ion-grid class="ion-margin ion-margin-horizontal" *ngFor="let currentemp of currentemp">
+    <ion-row>
+      <ion-col size="4" class="welcome-block ion-no-padding">
+        <ion-card>
+          <div class="img-block" id="image-trigger">
+            <img [attr.alt]="currentemp.first_name" *ngIf="!currentemp.image" src="../../assets/user.svg" width="100"
+              height="100" />
+            <img [attr.alt]="currentemp.first_name" *ngIf="currentemp.image"
+              [src]="'https://'+ profileimg + currentemp.image" width="100" height="100" />
+            <ion-button class="img-button" id="image-trigger">
+              <div class="ion-text-center">
+                <ion-icon name="camera"></ion-icon>
+                <p class="text">upload image</p>
               </div>
+            </ion-button>
+          </div>
 
-          <div class="row-left pl-30">
-              <ion-icon name="location-outline"></ion-icon>
-              <p class="pl-5">{{currentCandidate.jobDetailsForm?.JobLocation}}</p>
+          <!-- modal popup for image uploader -->
+          <ion-popover trigger="image-trigger" class="image-popup" triggerAction="click">
+            <ng-template>
+              <div class="ion-padding">
+                <p class="popup-title">Upload profile photo</p>
+                <div class="img-border">
+                  <img [attr.alt]="currentemp.FirstName"
+                    [src]="previewImageUrl || uploadedImageUrl || '../../assets/user.svg'" width="100" height="100" />
+                  <p *ngIf="previewImageUrl" class="preview-text">Preview</p>
+                </div>
+
+                <label class="file-attach">
+                  <input type="file" accept="image/*" (change)="onFileSelected($event)">
+                  <p>Choose file</p>
+                </label>
+
+                <ion-button (click)="uploadProfilePic()" [disabled]="!selectedFile || isUploading"
+                  class="primary-btn row-right" type="submit">
+                  {{ isUploading ? 'Uploading...' : 'Upload Profile Pic' }}
+                </ion-button>
+              </div>
+            </ng-template>
+          </ion-popover>
+
+          <div class="ion-text-center">
+            <p class="name">{{currentemp.full_name}}</p>
+            <p class="des">{{currentemp.job_title}}</p>
+          </div>
+
+          <div class="info-block">
+            <div class="row-left">
+              <ion-icon name="mail"></ion-icon>
+              <p class="pl-5">{{currentemp.work_email}}</p>
             </div>
-      
-       
-           
-        
-       </div>  
-       <ion-grid class="report-block">
-         <ion-row>
-           <ion-col aria-setsize="2">
-              Business Unit
-            </ion-col>
-           <ion-col  aria-setsize="2">
-              Department
-            </ion-col>
-            <ion-col  aria-setsize="2">
-                Reporting Manager
-              </ion-col>
-         </ion-row>
-         <ion-row>
-            <ion-col aria-setsize="2">
-                {{currentCandidate.jobDetailsForm?.JobLocation}}
-             </ion-col>
-            <ion-col  aria-setsize="2">
-                {{currentCandidate.jobDetailsForm?.Department}}
-             </ion-col>
-             <ion-col  aria-setsize="2">
-                {{currentCandidate.jobDetailsForm?.Department}}
-               </ion-col>
-          </ion-row>
-       </ion-grid>
 
-       <!-- Tabs started -->
+            <div class="row-left">
+              <ion-icon name="location"></ion-icon>
+              <p class="pl-5">{{currentemp.location}}</p>
+            </div>
+          </div>
 
-       <ion-tabs class="custom-underline-tabs">
-          <ion-tab-bar slot="top">
-              <ion-tab-button tab="home">
-                <ion-icon name="play-circle"></ion-icon>
-                ABOUT 
+          <div class="report-block">
+            <div>
+              <p>Business Unit</p>
+              <h6>{{currentemp.business_unit}}</h6>
+            </div>
+            <div>
+              <p>Department</p>
+              <h6>{{currentemp.department}}</h6>
+            </div>
+            <div>
+              <p>Reporting Manager</p>
+              <h6 class="row-left"> <img [attr.alt]="currentemp.FirstName" src="../../assets/user.svg"
+                  width="18" />{{currentemp.reporting_to}}</h6>
+            </div>
+          </div>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="8">
+        <!-- Tabs started -->
+        <ion-card>
+          <ion-tabs class="custom-underline-tabs">
+            <ion-tab-bar slot="top">
+              <ion-tab-button class="row-center" tab="about">
+                <ion-icon name="home"></ion-icon>
+                <p>ABOUT</p>
               </ion-tab-button>
-              <ion-tab-button tab="radio">
-                <ion-icon name="radio"></ion-icon>
-                PROFILE
+              <ion-tab-button class="row-center" tab="profile">
+                <ion-icon name="person-circle"></ion-icon>
+                <p>PROFILE</p>
               </ion-tab-button>
-              <ion-tab-button tab="library">
+              <ion-tab-button class="row-center" tab="job">
+                <ion-icon name="bag-handle"></ion-icon>
+                <p>JOB</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="time">
+                <ion-icon name="time"></ion-icon>
+                <p>Time</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="documents">
+                <ion-icon name="document-attach"></ion-icon>
+                <p>Documents</p>
+              </ion-tab-button>
+              <ion-tab-button class="row-center" tab="assets">
                 <ion-icon name="library"></ion-icon>
-                JOB
+                <p> Assets</p>
               </ion-tab-button>
-              <ion-tab-button tab="search">
-                <ion-icon name="search"></ion-icon>
-                Documents
-              </ion-tab-button>
-              <ion-tab-button tab="search">
-                  <ion-icon name="search"></ion-icon>
-                  Assets
-                </ion-tab-button>
             </ion-tab-bar>
 
-          <ion-tab tab="home">
-            <div id="home-page">
-         
-              <ion-content>
-                <div class="example-content">About us</div>
-              </ion-content>
-            </div>
-          </ion-tab>
-          <ion-tab tab="radio">
-            <div id="radio-page">
-              <ion-content>
-                <div class="example-content">Profile</div>
-              </ion-content>
-            </div>
-          </ion-tab>
-          <ion-tab tab="library">
-            <div id="library-page">
-              <ion-content>
-                <div class="example-content">Library content</div>
-              </ion-content>
-            </div>
-          </ion-tab>
-          <ion-tab tab="search">
-            <div id="search-page">
-              <ion-content>
-                <div class="example-content">Search content</div>
-              </ion-content>
-            </div>
-          </ion-tab>       
-         
-        </ion-tabs>
-  </ion-content>
+            <ion-tab tab="about">
+              <app-aboutus [currentemp]="currentemp"></app-aboutus>
+            </ion-tab>
+            <ion-tab tab="profile">
+              <app-profile [currentemp]="currentemp"></app-profile>
+            </ion-tab>
+            <ion-tab tab="job">
+              <app-job-tab [currentemp]="currentemp"></app-job-tab>
+            </ion-tab>
+            <ion-tab tab="time">
+              <app-leave-requests></app-leave-requests>
+            </ion-tab>
+            <ion-tab tab="documents">
+              <!-- <app-document-tab [currentemp]="currentemp"></app-document-tab> -->
+            </ion-tab>
+            <ion-tab tab="assets">
+              <!-- <app-assets-tab [currentemp]="currentemp"></app-assets-tab> -->
+            </ion-tab>
+          </ion-tabs>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

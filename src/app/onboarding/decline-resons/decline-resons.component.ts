@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 @Component({
@@ -5,14 +6,10 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './decline-resons.component.html',
   styleUrls: ['./decline-resons.component.scss'],
   standalone: true,
-  imports: [
-    IonicModule
-  ],
+  imports: [IonicModule, CommonModule],
 })
 export class DeclineResonsComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() { }
-
+  ngOnInit() {}
 }

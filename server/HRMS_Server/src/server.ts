@@ -8,19 +8,17 @@ import index from './routes/index';
 import { notFound } from './middlewares/notFound.middleware';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
-
 import candidateRoutes from './services/candidate-service'; // path to your route file
 import offerDetails from './services/offerDetails';
-
-
-
-
+import salaryStructureRoutes from './services/salary-structure';
 import AttendanceRouter from './routes/attendance-route';
 import mailRoutes from './routes/mail-route';
 import rolecrud from './routes/role-crud-routes';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import weekOffRoutes from './routes/weekoff.routes';
+import LoginService from './services/employee-login-service';
 
 dotenv.config();
 
@@ -44,7 +42,9 @@ class Server {
       const clientIp =
         req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
       console.log(
-        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${req.method} ${req.originalUrl} - from ${clientIp}`
+        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${
+          req.method
+        } ${req.originalUrl} - from ${clientIp}`
       );
       next();
     });
@@ -67,20 +67,41 @@ class Server {
   }
 
   private routes(): void {
+    // ✅ Health check
+    this.app.get('/health', (req, res) => {
+      res.status(200).json({
+        status: true,
+        message: '✅ HRMS Server is healthy and running',
+        time: new Date().toISOString(),
+      });
+    });
+
+    // ✅ API root route
+    this.app.get('/api', (req, res) => {
+      res.status(200).json({
+        status: true,
+        message: '✅ HRMS API is running successfully!',
+        time: new Date().toISOString(),
+      });
+    });
+
+    // ✅ Attach route modules
     this.app.use('/api', index);
     this.app.use('/api', AttendanceRouter);
     this.app.use('/api', rolecrud);
-    this.app.use('/', candidateRoutes);
-    this.app.get('/api', async (req, res) => {
-      res.json('Server is running');
-    });
+    this.app.use('/', offerDetails);
+    this.app.use('/', mailRoutes);
+    this.app.use('/', salaryStructureRoutes);
+    this.app.use('/candidates', candidateRoutes);
+    this.app.use('/api/v1/weekoff', weekOffRoutes);
+    // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }
 
   public start(): void {
     const sslOptions = {
-      key: fs.readFileSync(path.join(__dirname, '../../../ssl/myserver.key')),
-      cert: fs.readFileSync(path.join(__dirname, '../../../ssl/myserver.crt')),
+      key: fs.readFileSync(path.join(__dirname, '../../../ssl/privkey.pem')),
+      cert: fs.readFileSync(path.join(__dirname, '../../../ssl/fullchain.pem')),
     };
     const httpsServer = https.createServer(sslOptions, this.app);
 

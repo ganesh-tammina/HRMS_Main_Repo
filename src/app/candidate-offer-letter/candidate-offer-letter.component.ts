@@ -6,19 +6,25 @@ import { CandidateService } from '../services/pre-onboarding.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-candidate-offer-letter',
   templateUrl: './candidate-offer-letter.component.html',
   styleUrls: ['./candidate-offer-letter.component.scss'],
   standalone: true,
-  imports: [HeaderComponent, CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
 export class CandidateOfferLetterComponent implements OnInit {
   candidate: any = {};
   acceptDisabled = false;
   rejectDisabled = false;
   onboardingForms!: FormGroup;
+     one: any;
+  full_name: string = '';
+  currentTime: string = '';
+  allEmployees: any[] = [];
+  fullName:any
 
   constructor(
     private candidateService: CandidateService,
@@ -45,27 +51,48 @@ export class CandidateOfferLetterComponent implements OnInit {
     }
 
     // Fetch candidate by route param (if not passed through navigation)
-    this.route.paramMap.subscribe((params) => {
+  this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
-        console.log('🔍 Candidate ID from route:', id);
-        this.loadCandidateById(id);
+        this.candidateService.getCandidateById(id).subscribe({
+          next: (res: any) => {
+            this.candidate = res.candidate;
+            console.log('✅ Candidate fetched from backend:', this.candidate);
+          },
+          error: (err) => {
+            console.error('❌ Error fetching candidate:', err);
+          }
+        });
       }
     });
+
+        this.candidateService.getEmpDet().subscribe({
+        next: (response: any) => {
+          this.allEmployees = response.data || [];
+          if (this.allEmployees.length > 0) {
+            this.one = this.allEmployees[0];
+            this.fullName = this.one[0].full_name;
+            console.log(this.one);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching all employees:', err);
+        },
+      });
   }
 
   // 🔹 Load candidate details by ID from backend
-  loadCandidateById(id: string) {
-    this.candidateService.getCandidateById(id).subscribe({
-      next: (res: any) => {
-        this.candidate = res?.candidate || res;
-        console.log('✅ Candidate fetched from backend:', this.candidate);
-      },
-      error: (err) => {
-        console.error('❌ Error fetching candidate:', err);
-      },
-    });
-  }
+  // loadCandidateById(id: string) {
+  //   this.candidateService.getCandidateById(id).subscribe({
+  //     next: (res: any) => {
+  //       this.candidate = res?.candidate || res;
+  //       console.log('✅ Candidate fetched from backend:', this.candidate.candidate_id);
+  //     },
+  //     error: (err) => {
+  //       console.error('❌ Error fetching candidate:', err);
+  //     },
+  //   });
+  // }
 
   // 🔹 Accept candidate offer and navigate to OfferDetails
   async acceptCandidate(candidateId: number) {
@@ -73,7 +100,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.acceptDisabled = true;
 
     try {
-      const url = `http://30.0.0.78:3562/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.Candidate_ID}/status`;
       const response = await this.http.put(url, { status: 'accepted' }).toPromise();
       console.log('✅ Accept response:', response);
 
@@ -101,7 +128,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     this.rejectDisabled = true;
 
     try {
-      const url = `http://30.0.0.78:3562/candidates/${this.candidate.candidate_id}/status`;
+      const url = `https://${environment.apiURL}/candidates/${this.candidate.Candidate_ID}/status`;
       const response = await this.http.put(url, { status: 'rejected' }).toPromise();
       console.log('✅ Reject response:', response);
 

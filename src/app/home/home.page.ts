@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../shared/header/header.component';
 import moment from 'moment';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
 
@@ -15,6 +15,8 @@ import { ClockButtonComponent } from '../services/clock-button/clock-button.comp
   imports: [CommonModule, FormsModule, IonicModule, ClockButtonComponent],
 })
 export class HomePage implements OnInit {
+  private static readonly REFRESH_DELAY_MS = 10; // Virtually instant refresh delay
+  
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
   currentEmployee: any;
   one: any;
@@ -26,7 +28,8 @@ export class HomePage implements OnInit {
 
   constructor(
     private candidateService: CandidateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertController: AlertController
   ) {
     const loggedInUserStr = localStorage.getItem('loggedInUser');
     if (!loggedInUserStr) {
@@ -44,7 +47,12 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-
+    // Check if we should show login success popup
+    const showLoginSuccess = localStorage.getItem('showLoginSuccess');
+    if (showLoginSuccess === 'true') {
+      localStorage.removeItem('showLoginSuccess');
+      this.showLoginSuccessAlert();
+    }
 
     const today = moment();
     this.days = Array.from({ length: 7 }, (_, i) => {
@@ -59,5 +67,25 @@ export class HomePage implements OnInit {
         hour12: true,
       });
     }, 1000);
+  }
+
+  async showLoginSuccessAlert() {
+    const alert = await this.alertController.create({
+      header: 'Information',
+      message: 'Login Successful',
+      buttons: [
+        {
+          text: 'OK',
+          handler: () => {
+            // Instant seamless refresh without clearing localStorage
+            setTimeout(() => {
+              window.location.reload();
+            }, HomePage.REFRESH_DELAY_MS);
+          }
+        }
+      ],
+      backdropDismiss: false
+    });
+    await alert.present();
   }
 }

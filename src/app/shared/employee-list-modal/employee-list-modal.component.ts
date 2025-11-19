@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
+import { CandidateService, Candidate, CandidateSearchResult } from 'src/app/services/pre-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // import { EmployeeListModalComponent } from '../employee-list-modal/employee-list-modal.component';
@@ -23,7 +23,7 @@ export class EmployeeListModalComponent  implements OnInit {
   // currentCandidate: Candidate | null = null;
    // Search functionality
     searchQuery: string = '';
-    searchResults: Candidate[] = [];
+  searchResults: CandidateSearchResult[] = [];
     results:any
 
   constructor(
@@ -36,22 +36,31 @@ export class EmployeeListModalComponent  implements OnInit {
  
   }
     // Search employees by name
-  onSearch() {
+ onSearch() {
     if (!this.searchQuery || this.searchQuery.trim().length < 3) {
       this.searchResults = [];
       this.results = [];
       return;
     }
 
-    this.searchResults = this.candidateService.searchCandidates(this.searchQuery);
-    this.results = this.searchResults.map(
-      emp => `${emp.personalDetails.FirstName} ${emp.personalDetails.LastName}`
-    );
-    console.log("heloo", this.results);
+    this.candidateService.searchCandidates(this.searchQuery).subscribe({
+      next: (results) => {
+        this.searchResults = results;
+        this.results = this.searchResults.map(
+          (emp) =>
+            `${emp.first_name} ${emp.last_name}`
+        );
+      },
+    });
+    // this.results = JSON.stringify(this.searchResults)
+    // console.log(this.results)
+
+    console.log(this.results);
   }
 
+
   // Open modal to show employee list
-  async openEmployeeProfile(employee: Candidate) {
+  async openEmployeeProfile(employee: any) {
     const modal = await this.modalCtrl.create({
       component: EmployeeProfileModalComponent,
       componentProps: { employee }

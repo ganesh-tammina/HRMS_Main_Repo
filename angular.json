@@ -71,10 +71,10 @@
         "serve": {
           "options": {
             "ssl": true,
-            "sslKey": "ssl/myserver.key",
-            "sslCert": "ssl/myserver.crt",
+            "sslKey": "ssl/privkey.pem",
+            "sslCert": "ssl/fullchain.pem",
             "port": 4200,
-            "host": "localhost"
+            "host": "30.0.0.78"
           },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
@@ -85,7 +85,7 @@
               "buildTarget": "app:build:development"
             },
             "ci": {
-              "progress": false
+              "buildTarget": "app:build:ci"
             }
           },
           "defaultConfiguration": "development"

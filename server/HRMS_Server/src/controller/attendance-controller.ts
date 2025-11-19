@@ -5,6 +5,16 @@ import { get } from 'http';
 import { diff } from 'util';
 
 export default class AttendanceController {
+  public static async checkStatus(req: Request, res: Response) {
+    if (!req.params.employeeId) {
+      res
+        .status(400)
+        .json({ success: false, error: 'employeeId parameter is required' });
+      return;
+    }
+    const employeeId = parseInt(req.params.employeeId);
+    return res.json(await AttendanceService.getAttendance_Check(employeeId));
+  }
   public static async handleClockIn(req: Request, res: Response) {
     const { employee_id, check_in }: TT = req.body;
     if (!employee_id) {
@@ -63,10 +73,10 @@ export default class AttendanceController {
           endDate: req.body.endDate,
         });
       } else if (req.body.date) {
-        result = await AttendanceService.getTodayAttendanceExtra(
-          req.body.employee_id,
-          req.body.date
-        );
+        result = await AttendanceService.getAttendance({
+          employee_id: req.body.employee_id,
+          date: req.body.date,
+        });
       } else {
         result = await AttendanceService.getAttendance({
           employee_id: req.body.employee_id,
@@ -188,24 +198,50 @@ export default class AttendanceController {
     if (!reeq.body?.employee_id) {
       return res.status(400).json({ message: 'employee_id is required' });
     }
+
+    console.log('Checking attendance for employee:', reeq.body.employee_id);
     const resu = await AttendanceService.getTodayAttendance(
       reeq.body.employee_id
     );
+
     if (resu.length === 0) {
-      res.status(200).json({ message: 'No Attendance Found' });
+      return res.status(200).json({
+        message: 'No Attendance Found',
+        clockin: false,
+        clockout: false,
+        attendance_id: null,
+        employee_id: reeq.body.employee_id,
+        attendance_date: new Date().toLocaleDateString(),
+        arrival_time: null,
+        departure_time: null,
+      });
     }
+
+    const attendance = resu[0];
+
     res.status(200).json({
-      clockin: resu[0].check_in != null ? true : false,
-      clockout: resu[0].check_out != null ? true : false,
-      attendance_id: resu[0].attendance_id,
-      employee_id: resu[0].employee_id,
-      attendance_date: new Date(resu[0].attendance_date).toLocaleDateString(),
+      clockin: attendance.first_check_in != null,
+      clockout: attendance.last_check_out != null,
+      attendance_id: attendance.attendance_id,
+      employee_id: attendance.employee_id,
+      attendance_date: new Date(
+        attendance.attendance_date
+      ).toLocaleDateString(),
+      arrival_time: attendance.arrival_time,
+      departure_time: attendance.departure_time,
+      status: attendance.status,
+      late_duration: attendance.late_duration,
+      is_on_time: attendance.status === 'on_time',
     });
   }
 
   public static async kasdja(req: Request, res: Response) {
+    console.log('d');
+
     try {
       const { LogType, EmpID } = req.body;
+      console.log('emp', LogType, EmpID);
+
       const currentTime = String(new Date().toTimeString().split(' ')[0]);
       const currentDate = String(new Date().toISOString().split('T')[0]);
 
@@ -228,9 +264,11 @@ export default class AttendanceController {
         });
       }
       if (LogType === 'IN') {
-        const hasOpenSession = todayRecords.some(
-          (rec: any) => rec.check_in && !rec.check_out
-        );
+        console.log(todayRecords);
+
+        const hasOpenSession = todayRecords
+          ? todayRecords.some((rec: any) => rec.check_in && !rec.check_out)
+          : false;
 
         if (hasOpenSession) {
           return res.status(400).json({
@@ -331,5 +369,98 @@ export default class AttendanceController {
     const seconds = Math.floor(diffMs / 1000);
     const pad = (n: number) => n.toString().padStart(2, '0');
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
+
+  public static async createShiftPolicy(req: Request, res: Response) {
+    try {
+      const { shift_name, check_in, check_out } = req.body;
+
+      if (!shift_name || !check_in || !check_out) {
+        return res.status(400).json({
+          success: false,
+          message: 'Required fields: shift_name, check_in, check_out',
+        });
+      }
+
+      const result = await AttendanceService.createShiftPolicyService({
+        shift_name,
+        check_in,
+        check_out,
+      });
+
+      res.status(result.isUpdate ? 200 : 201).json({
+        success: true,
+        message: result.isUpdate
+          ? 'Shift policy updated successfully'
+          : 'Shift policy created successfully',
+        data: result,
+      });
+    } catch (err) {
+      console.error('Error creating/updating shift policy:', err);
+      res.status(500).json({
+        success: false,
+        message: 'Server error, unable to create/update shift policy',
+      });
+    }
+  }
+
+  public static async getEmployeesUnderManager(req: Request, res: Response) {
+    try {
+      const { manager_id } = req.params;
+
+      if (!manager_id) {
+        return res.status(400).json({
+          success: false,
+          message: 'manager_id parameter is required',
+        });
+      }
+
+      const result = await AttendanceService.getEmployeesUnderManagerService(
+        Number(manager_id)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Employees fetched successfully',
+        data: result,
+      });
+    } catch (err) {
+      console.error('Error fetching employees under manager:', err);
+
+      res.status(500).json({
+        success: false,
+        message: 'Server error, unable to fetch employee list',
+      });
+    }
+  }
+
+  public static async getShiftPolicy(req: Request, res: Response) {
+    try {
+      const { shift_policy_name } = req.body;
+
+      if (!shift_policy_name) {
+        return res.status(400).json({
+          success: false,
+          message: 'shift policy is required',
+        });
+      }
+
+      const result = await AttendanceService.getShiftPolicyService(
+        String(shift_policy_name)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Shift policy fetched successfully',
+        data: result,
+      });
+    } catch (err) {
+      console.error('Error fetching shift policy:', err);
+
+      res.status(500).json({
+        success: false,
+        message: 'Server error, unable to fetch shift policy',
+      });
+    }
   }
 }

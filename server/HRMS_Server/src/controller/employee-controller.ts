@@ -179,4 +179,76 @@ export default class EmployeeController {
     );
     return res.status(result.statusCode).json(result);
   }
+  public static async uploadAndUpsert(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    try {
+      const { employee_id } = req.body;
+      const file = req.file;
+
+      if (!employee_id || !file) {
+        res.status(400).json({
+          success: false,
+          message: 'Missing employee_id or image file',
+        });
+        return;
+      }
+
+      // Construct dynamic link for the uploaded file
+      const imageLink = `/api/v1/image/${file.filename}`;
+
+      const success = await Employeeservices.upsertProfilePic(
+        employee_id,
+        imageLink
+      );
+
+      if (success) {
+        res.status(200).json({
+          success: true,
+          message: 'Profile picture uploaded successfully',
+          image: imageLink,
+        });
+      } else {
+        res
+          .status(500)
+          .json({ success: false, message: 'Database operation failed' });
+      }
+    } catch (error) {
+      console.error('Error in uploadAndUpsert:', error);
+      res
+        .status(500)
+        .json({ success: false, message: 'Internal Server Error' });
+    }
+  }
+  public static async serveImage(req: Request, res: Response): Promise<void> {
+    const imageName = req.params.image_name;
+    res.sendFile(`${process.cwd()}/uploads/${imageName}`);
+  }
+
+  static async search(req: Request, res: Response) {
+    try {
+      const { q } = req.query;
+
+      if (!q || typeof q !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: "Query parameter 'q' is required",
+        });
+      }
+
+      const employees = await Employeeservices.searchEmployees(q);
+
+      return res.status(200).json({
+        success: true,
+        data: employees,
+      });
+    } catch (error) {
+      console.error('Error searching employees:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+      });
+    }
+  }
 }

@@ -31,7 +31,7 @@ export class RadialTimeGraphComponent implements OnInit {
     const dash = (angle / 360) * circumference;
     return `${dash} ${circumference}`;
   }
-  
+
   get currentTime(): string {
     const now = new Date();
     return now.toLocaleTimeString();

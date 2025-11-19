@@ -1,28 +1,11 @@
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-title>Add New Employeee</ion-title>
-    <ion-sub-title>Add New Employeee</ion-sub-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="close()">Close</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header> -->
-
-<!-- <ion-header>
-    <ion-toolbar>
-      <ion-title>Add New Employee</ion-title>
-    </ion-toolbar>
-  </ion-header> -->
-
 <ion-content class="ion-padding custom-popup">
   <div class="row-space-between">
     <div class="modal-header">
-      <h1>Add New Employee</h1>
+      <h1>Add New Candidate</h1>
       <p>Fill in the employee details to add them to the system</p>
     </div>
     <ion-button fill="clear" (click)="close()"><ion-icon name="close-outline"></ion-icon></ion-button>
   </div>
-
 
   <div class="section-header ion-padding-start ion-padding-vertical">
     <ion-icon name="person"></ion-icon>
@@ -30,95 +13,161 @@
   </div>
 
   <form [formGroup]="candidateForm" (ngSubmit)="submitForm()">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="floating">First Name</ion-label>
+            <ion-input formControlName="FirstName"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['FirstName'].touched && f['FirstName'].hasError('required')">
+            First name is required.
+          </ion-note>
+        </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">First Name</ion-label>
-      <ion-input formControlName="FirstName"></ion-input>
-    </ion-item>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="floating">Last Name</ion-label>
+            <ion-input formControlName="LastName"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['LastName'].touched && f['LastName'].hasError('required')">
+            Last name is required.
+          </ion-note>
+        </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">Last Name</ion-label>
-      <ion-input formControlName="LastName"></ion-input>
-    </ion-item>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="floating">Phone Number</ion-label>
+            <!-- keep ion-input, format on blur, preview below -->
+            <ion-input
+              type="tel"
+              formControlName="PhoneNumber"
+              (ionBlur)="onPhoneBlur()"
+              placeholder="+91 98765 43210">
+            </ion-input>
+          </ion-item>
+          <!-- phone validation messages -->
+          <ion-note color="danger" *ngIf="f['PhoneNumber'].touched && f['PhoneNumber'].hasError('required')">
+            Phone number is required.
+          </ion-note>
+          <ion-note color="danger" *ngIf="f['PhoneNumber'].touched && f['PhoneNumber'].hasError('invalidPhone')">
+            Enter a valid phone number.
+          </ion-note>
+        </ion-col>
+      </ion-row>
 
-    <ion-item>
-      <ion-label position="floating">Phone Number</ion-label>
-      <ion-input type="tel" formControlName="PhoneNumber"></ion-input>
-    </ion-item>
+      <ion-row>
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="floating">Email</ion-label>
+            <ion-input type="email" formControlName="Email"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['Email'].touched && f['Email'].hasError('required')">
+            Email is required.
+          </ion-note>
+          <ion-note color="danger" *ngIf="f['Email'].touched && (f['Email'].hasError('email') || f['Email'].hasError('pattern'))">
+            Enter a valid email address.
+          </ion-note>
+        </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input type="email" formControlName="Email"></ion-input>
-    </ion-item>
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Gender</ion-label>
+            <ion-select formControlName="Gender" class="custom-dropdown" toggleIcon="chevron-down"
+              expandedIcon="chevron-up" interface="popover" placeholder="Select Gender">
+              <ion-select-option value="Male">Male</ion-select-option>
+              <ion-select-option value="Female">Female</ion-select-option>
+              <ion-select-option value="Other">Other</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['Gender'].touched && f['Gender'].hasError('required')">
+            Gender is required.
+          </ion-note>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-    <ion-item>
-      <ion-label>Gender</ion-label>
-      <div>
-        <ion-select formControlName="Gender">
-          <ion-select-option value="Male">Male</ion-select-option>
-          <ion-select-option value="Female">Female</ion-select-option>
-          <ion-select-option value="Other">Other</ion-select-option>
-        </ion-select>
-      </div>
-    </ion-item>
-    <div class="section-header ion-padding-start ion-padding-vertical">
-      <ion-icon name="person"></ion-icon>
-      Personal Information
-    </div>
-    <ion-item>
-      <ion-label position="stacked">Job Title</ion-label>
-      <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
-      formControlName="JobTitle" interface="popover">
-         <ion-select-option value="UI/UX Designer">UI/UX Designer</ion-select-option>
-         <ion-select-option value="UI Developer">UI Developer</ion-select-option>
-         <ion-select-option value="Software Engineer">Software Engineer</ion-select-option>
-     </ion-select> 
-    </ion-item>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="stacked">Job Title</ion-label>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+              formControlName="JobTitle" interface="popover" placeholder="Select Job Title">
+              <ion-select-option value="UI/UX Designer">UI/UX Designer</ion-select-option>
+              <ion-select-option value="UI Developer">UI Developer</ion-select-option>
+              <ion-select-option value="Software Engineer">Software Engineer</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['JobTitle'].touched && f['JobTitle'].hasError('required')">
+            Job title is required.
+          </ion-note>
+        </ion-col>
 
-    <ion-item>
-      <ion-label position="stacked">Department</ion-label>
-        <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
-        formControlName="Department"  interface="popover">
-          <ion-select-option value="Finance">Finance</ion-select-option>
-          <ion-select-option value="Human Resources">Human Resources</ion-select-option>
-          <ion-select-option value="IT Development">IT Development</ion-select-option>
-          <ion-select-option value="Marketing">Marketing</ion-select-option>
-        </ion-select>
-    </ion-item>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="stacked">Department</ion-label>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+              formControlName="Department" interface="popover" placeholder="Select Department">
+              <ion-select-option value="Finance">Finance</ion-select-option>
+              <ion-select-option value="Human Resources">Human Resources</ion-select-option>
+              <ion-select-option value="IT Development">IT Development</ion-select-option>
+              <ion-select-option value="Marketing">Marketing</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['Department'].touched && f['Department'].hasError('required')">
+            Department is required.
+          </ion-note>
+        </ion-col>
 
-    <ion-item>
-      <ion-label position="stacked">Job Location</ion-label>
-          <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
-          formControlName="JobLocation" interface="popover">
-            <ion-select-option value="Site 2 - Visakhapatnam - Day Shift">Site 2 - Visakhapatnam - Day
-              Shift</ion-select-option>
-            <ion-select-option value="Site 1 - Hyderabad - Night Shift">Site 1 - Hyderabad - Night
-              Shift</ion-select-option>
-            <ion-select-option value="Site 3 - Visakhapatnam - Day Shift">Site 3 - Visakhapatnam - Day
-              Shift</ion-select-option>
-          </ion-select>
-    </ion-item>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="stacked">Job Location</ion-label>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+              formControlName="JobLocation" interface="popover" placeholder="Select Job Location">
+              <ion-select-option value="Site 2 - Visakhapatnam - Day Shift">Site 2 - Visakhapatnam - Day Shift</ion-select-option>
+              <ion-select-option value="Site 1 - Hyderabad - Night Shift">Site 1 - Hyderabad - Night Shift</ion-select-option>
+              <ion-select-option value="Site 3 - Visakhapatnam - Day Shift">Site 3 - Visakhapatnam - Day Shift</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['JobLocation'].touched && f['JobLocation'].hasError('required')">
+            Job location is required.
+          </ion-note>
+        </ion-col>
+      </ion-row>
 
-    <ion-item>
-      <ion-label position="stacked">Worker Type</ion-label>
-      <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
-      formControlName="WorkType" interface="popover">
-        <ion-select-option value="Perminent">Permanent</ion-select-option>
-        <ion-select-option value="Contract">Contract</ion-select-option>
-      </ion-select>
-    </ion-item>
+      <ion-row>
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="stacked">Worker Type</ion-label>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up"
+              formControlName="WorkType" interface="popover" placeholder="Select Work Type">
+              <ion-select-option value="Permanent">Permanent</ion-select-option>
+              <ion-select-option value="Contract">Contract</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['WorkType'].touched && f['WorkType'].hasError('required')">
+            Work type is required.
+          </ion-note>
+        </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">Business Unit</ion-label>
-      <ion-select formControlName="BusinessUnit">
-        <ion-select-option value="STSS-1">STSS-1</ion-select-option>
-        <ion-select-option value="STSS-2">STSS-1</ion-select-option>
-      </ion-select>
-    </ion-item>
+        <ion-col size="6">
+          <ion-item>
+            <ion-label position="floating">Business Unit</ion-label>
+            <ion-select formControlName="BusinessUnit" placeholder="Select Business Unit">
+              <ion-select-option value="STSS-1">STSS-1</ion-select-option>
+              <ion-select-option value="STSS-2">STSS-2</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="f['BusinessUnit'].touched && f['BusinessUnit'].hasError('required')">
+            Business unit is required.
+          </ion-note>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-    <ion-button expand="block" type="submit" [disabled]="candidateForm.invalid">
-      Submit
+    <ion-button expand="block" class="primary-btn" type="submit" [disabled]="candidateForm.invalid || submitting">
+      {{ submitting ? 'Saving...' : 'Submit' }}
     </ion-button>
   </form>
-
 </ion-content>

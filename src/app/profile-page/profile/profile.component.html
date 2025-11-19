@@ -1,0 +1,117 @@
+<!-- Personal Details -->
+<div class="ion-padding profile-page">
+  <p class="header-text">Primary Details<ion-icon name="create" (click)="isEditForm()"></ion-icon></p>
+
+  <form>
+    <ion-grid *ngIf="currentemp">
+      <ion-row>
+        <ion-col>
+          <div>
+            <p>First Name</p>
+            <h6 *ngIf="!Isedit">{{currentemp.first_name}}</h6>
+            <ion-input [value]="currentemp.first_name" *ngIf="Isedit"></ion-input>
+          </div>
+          <div>
+            <p>Gender</p>
+            <h6 *ngIf="!Isedit">{{currentemp.gender}}</h6>
+            <ion-input [value]="currentemp.gender" *ngIf="Isedit"></ion-input>
+          </div>
+          <div>
+            <p>Marital Status</p>
+            <h6 *ngIf="!Isedit">{{currentemp.marital_status}}</h6>
+            <ion-input [value]="currentemp.marital_status" *ngIf="Isedit"></ion-input>
+          </div>
+
+        </ion-col>
+        <ion-col>
+          <div>
+            <p>Last Name</p>
+            <h6 *ngIf="!Isedit">{{currentemp.last_name}}</h6>
+            <ion-input [value]="currentemp.last_name" *ngIf="Isedit"></ion-input>
+          </div>
+
+          <div>
+            <p>Blood Group</p>
+            <h6 *ngIf="!Isedit">{{currentemp.blood_group}}</h6>
+            <ion-input [value]="currentemp.blood_group" *ngIf="Isedit"></ion-input>
+          </div>
+          <div>
+            <p>Physically Handicapped</p>
+            <h6 *ngIf="!Isedit">{{currentemp.physically_handicapped}}</h6>
+            <ion-input [value]="currentemp.physically_handicapped" *ngIf="Isedit"></ion-input>
+          </div>
+          <ion-button class="primary-btn row-right" type="submit" *ngIf="Isedit">
+            Submit
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</div>
+
+<!-- Address Details -->
+<div class="ion-padding profile-page">
+  <p class="header-text">Addresses<ion-icon name="create" (click)="isEditAddress()"></ion-icon></p>
+  <form>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <div>
+            <p>Current Address</p>
+            <h6 *ngIf="!isAdress">{{currentemp.current_address_line1}}</h6>
+            <ion-input [value]="currentemp.current_address_line1" *ngIf="isAdress"></ion-input>
+
+            <h6 *ngIf="!isAdress">
+              {{currentemp.current_city}}, {{currentemp.current_state}}
+            </h6>
+
+            <h6 *ngIf="!isAdress">
+              {{currentemp.current_country}},
+              {{currentemp.current_zip}}
+            </h6>
+          </div>
+
+        </ion-col>
+        <ion-col>
+          <div>
+            <p>Permanent Address</p>
+            <h6 *ngIf="!isAdress">
+              {{currentemp.permanent_address_line1}}</h6>
+            <ion-input [value]="currentemp.permanent_address_line1" *ngIf="isAdress"></ion-input>
+
+            <h6 *ngIf="!isAdress">
+              {{currentemp.permanent_city}} ,{{currentemp.permanent_state}}
+            </h6>
+            <h6 *ngIf="!isAdress">
+              {{currentemp.permanent_country}},
+              {{currentemp.permanent_zip}}
+            </h6>
+          </div>
+
+        </ion-col>
+      </ion-row>
+      <div *ngIf="isAdress">
+        <ion-row>
+          <ion-col>
+            <p>City</p>
+            <ion-input [value]="currentemp.current_city"></ion-input>
+
+            <p>State</p>
+            <ion-input [value]="currentemp.current_state"></ion-input>
+          </ion-col>
+          <ion-col>
+            <p>Country</p>
+            <ion-input [value]="currentemp.current_country"></ion-input>
+
+            <p>Pincode</p>
+            <ion-input [value]="currentemp.current_zip"></ion-input>
+            <ion-button class="primary-btn row-right" type="submit">
+              Submit
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+      </div>
+    </ion-grid>
+  </form>
+</div>

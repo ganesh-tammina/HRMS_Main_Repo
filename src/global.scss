@@ -37,6 +37,9 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 @import 'theme/variables.scss';
+
+
+
 html.md {
 --ion-default-font: 'Open Sans';
 }
@@ -85,6 +88,12 @@ ion-list-header, ion-item{
 
 .d-flex {
   display: flex;
+}
+.d-block {
+    display: block !important;
+}
+.d-none {
+    display: none !important;
 }
 
 
@@ -182,7 +191,7 @@ ion-modal {
         @include scroll-style();
     }
     &.start-preboarding-modal {
-        --height: calc(100vh - 235px);
+        --height: calc(100vh - 200px);
     }
 }
 .custom-popup {
@@ -261,4 +270,28 @@ ion-popover.select-popover {
 }
 #main-content {
     --background: var(--ion-bg-color); 
+}
+
+/* Hide scrollbar in attendance log popover */
+ion-popover .popover-content {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+ion-popover .popover-content::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+    width: 0 !important;
+    height: 0 !important;
+}
+
+ion-popover ion-content {
+    --overflow: auto;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+ion-popover ion-content::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }

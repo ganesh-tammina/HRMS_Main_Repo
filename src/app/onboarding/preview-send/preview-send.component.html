@@ -1,54 +1,48 @@
 <ion-header translucent="true">
-  <!-- <app-header></app-header> -->
-  <app-create-offer-header (createOfferClick)="createOffer()"></app-create-offer-header>
-</ion-header>
+    <!-- <app-header></app-header> -->
+    <app-create-offer-header (createOfferClick)="createOffer()"></app-create-offer-header>
+  </ion-header>
+  
+  <ion-content [fullscreen]="true" class="offer-container ion-padding">
+      <ion-button fill="clear" class="back-btn"><ion-icon name="chevron-back-outline"></ion-icon>Back</ion-button>
+      <h1 class="ion-padding ">Offer Details</h1>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="8">
+            <!-- Left: Preview -->
+            <ion-card class="template-preview">
+                <div class="offer-header">
+                    <p>Offer Letter Preview</p>
+                  </div>
+                <h2 class="company-logo"><ion-img src="../../../assets/tammina-blue-logo.svg"></ion-img></h2>
+                <div class="template-text" [innerHTML]="previewText"></div>
+              </ion-card>     
+          </ion-col>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <div class="offer-container">
-
-    <!-- Left: Preview -->
-    <div class="template-preview card">
-      <h2 class="company-logo">Tech Tamminas</h2>
-      <div class="template-text" [innerHTML]="previewText"></div>
-    </div>
-
-    <!-- Right: Options -->
-    <div class="controls card">
-      <ion-list>
-        <ion-radio-group [value]="selectedOption" (ionChange)="onOptionChange($event)">
-          <ion-item>
-            <ion-label>Offer letter template</ion-label>
-            <ion-radio slot="start" value="template"></ion-radio>
-          </ion-item>
-          <ion-item>
-            <ion-label>Upload custom offer letter</ion-label>
-            <ion-radio slot="start" value="custom"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </ion-list>
-
-      <!-- Template Dropdown -->
-      <div *ngIf="selectedOption === 'template'" class="dropdown-section">
-        <ion-label>Select offer letter template</ion-label>
-        <ion-select [value]="selectedTemplate" (ionChange)="onTemplateChange($event)" interface="popover">
-          <ion-select-option value="SVS">SVS Towers</ion-select-option>
-          <ion-select-option value="TechTammina">Tech Tammina</ion-select-option>
-        </ion-select>
-      </div>
-
-      <!-- Upload -->
-      <div *ngIf="selectedOption === 'custom'" class="upload-section">
-        <ion-label>Upload Offer Letter</ion-label>
-        <input type="file" (change)="onFileUpload($event)" />
-        <p *ngIf="uploadedFileName">Uploaded: {{ uploadedFileName }}</p>
-      </div>
-
-      <!-- Workflow -->
-      <div class="workflow">
-        <ion-label>Offer letter Workflow</ion-label>
-        <p>Workflow is not required</p>
-      </div>
-    </div>
-
-  </div>
+  
+          <ion-col size="4" class="employee-card">
+              <ion-card >
+                  <h6>Employee Details</h6>
+                <ion-card-content>
+                 
+                  <div class="candidate-header">
+                    <!-- <div class="avatar">{{candidate?.personalDetails?.initials}}</div> -->
+                    <ion-img src="../../../assets/user.svg" width="120"></ion-img>
+                    <div class="text-center">
+                      <h6>{{candidate.FirstName}}</h6>
+                      <p>Applied for {{candidate?.JobTitle}}</p>
+                    </div>
+                  </div>
+        
+                  <div class="candidate-info">
+                    <p><strong>Email ID:</strong> {{candidate?.Email}}</p>
+                    <p><strong>Phone Number:</strong> {{candidate?.PhoneNumber}}</p>
+                    <p><strong>Joining Date:</strong> {{candidate?.offerDetails?.DOJ}}</p>
+                    <p><strong>Source:</strong> Direct Offer</p>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+</ion-row>
+</ion-grid>
 </ion-content>

@@ -5,13 +5,16 @@ import { IonicModule, IonModal } from '@ionic/angular';
 import { LeaveModalComponent } from './leave-modal/leave-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { environment } from 'src/environments/environment';
+import { ShiftsComponent } from './shifts/shifts.component';
+import { WeekoffsComponent } from '../weekoffs/weekoffs.component';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent]
+  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent, ShiftsComponent, WeekoffsComponent],
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
@@ -31,8 +34,10 @@ export class AdminComponent implements OnInit {
   selectedFiles: FileList | null = null;
 
   isLoading: boolean = true;
-  constructor(private http: HttpClient,
-    private candidateService: CandidateService) { }
+  constructor(
+    private http: HttpClient,
+    private candidateService: CandidateService
+  ) { }
 
   async ngOnInit() {
     this.isLoading = true;
@@ -44,7 +49,6 @@ export class AdminComponent implements OnInit {
       this.holidays = res.data;
       console.log(res);
     });
-
 
     this.candidateService.getEmployeeById('').subscribe((data: any) => {
       // Assuming data.candidates is the full array of candidates
@@ -88,8 +92,6 @@ export class AdminComponent implements OnInit {
     this.changePage(this.currentPage - 1);
   }
 
-
-
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
   }
@@ -101,41 +103,54 @@ export class AdminComponent implements OnInit {
   EmployeesUpload() {
     if (!this.EmployeeselectedFile) return;
     const formData = new FormData();
-    formData.append("file", this.EmployeeselectedFile);
-    this.http.post("http://30.0.0.78:3562/existingemployees", formData).subscribe({
-      next: (res) => {
-        console.log(res);
-        alert("Upload successful!");
-
-      },
-      error: (err) => {
-        console.error(err);
-        alert("Upload failed!");
-      }
-    });
-    this.http.post("http://30.0.0.78:3562/existingemployees", formData)
-      .subscribe((res: any) => console.log(res), (err: any) => console.error(err));
+    formData.append('file', this.EmployeeselectedFile);
+    this.http
+      .post(`https://${environment.apiURL}/existingemployees`, formData)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          alert('Upload successful!');
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Upload failed!');
+        },
+      });
+    this.http
+      .post(`https://${environment.apiURL}/existingemployees`, formData)
+      .subscribe(
+        (res: any) => console.log(res),
+        (err: any) => console.error(err)
+      );
   }
 
   Upload() {
     if (!this.selectedFile) return;
 
     const formData = new FormData();
-    formData.append("file", this.selectedFile);
+    formData.append('file', this.selectedFile);
 
-    this.http.post("http://30.0.0.78:3562/holidays/public_holidays", formData).subscribe({
-      next: (res) => {
-        console.log(res);
-        alert("Upload successful!");
-
-      },
-      error: (err) => {
-        console.error(err);
-        alert("Upload failed!");
-      }
-    });
-    this.http.post("http://30.0.0.78:3562/upload-holidays", formData)
-      .subscribe((res: any) => console.log(res), (err: any) => console.error(err));
+    this.http
+      .post(
+        `https://${environment.apiURL}/holidays/public_holidays`,
+        formData
+      )
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          alert('Upload successful!');
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Upload failed!');
+        },
+      });
+    this.http
+      .post(`https://${environment.apiURL}/upload-holidays`, formData)
+      .subscribe(
+        (res: any) => console.log(res),
+        (err: any) => console.error(err)
+      );
   }
   openModal() {
     this.showModal = true;
@@ -155,6 +170,4 @@ export class AdminComponent implements OnInit {
     this.leaveData = null;
     localStorage.removeItem('leaveData');
   }
-
-
 }

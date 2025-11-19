@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertController } from '@ionic/angular';
 import {
@@ -10,12 +10,11 @@ import {
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
-import {
-  AuthService,
-  LoggedUser,
-} from '../Administration/services/auth-service.service';
+import { AuthService } from '../Administration/services/auth-service.service';
 import { _LoginService } from '../services/login-services.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { Subject } from 'rxjs';
+import { takeUntil, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -24,10 +23,12 @@ import { RouteGuardService } from '../services/route-guard/route-service/route-g
   standalone: true,
   imports: [CommonModule, IonicModule, ReactiveFormsModule],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   passwordUpdateForm!: FormGroup;
   forgotForm!: FormGroup;
+  newEmployees!: FormGroup;
+  existingEmpl!: FormGroup;
 
   showLoginForm = true;
   showPasswordUpdateForm = false;
@@ -37,54 +38,74 @@ export class LoginPage implements OnInit {
   forgotError = '';
   forgotSuccess = '';
   sending = false;
-  adminData: any | null = null;
+  loader = false;
 
-  // changes done by bipul
-  empType: string = '';
-  new: boolean = false;
-  old: boolean = false;
-  er!: string;
-  loader: boolean = false;
-  newEmployees!: FormGroup;
-  existingEmpl!: FormGroup;
-  // changes done by bipul
+  empType = '';
+  new = false;
+  old = false;
+
+  adminData: any | null = null;
+  allEmployees: any[] = [];
+  one: any;
+
+  private destroy$ = new Subject<void>();
+
+  private readonly OTP_PATTERN = /^[0-9]{6}$/;
+  private readonly PASSWORD_PATTERN = /^[A-Za-z0-9!@#$%^&*()_+]+$/;
+  private readonly NEW_PASS_MIN = 8;
+  private readonly EXISTING_PASS_MIN = 8;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private candidateService: CandidateService,
+    private candidateservices: CandidateService,
     private authService: AuthService,
     private alertController: AlertController,
     private _loginSer: _LoginService,
     private _route_service: RouteGuardService
   ) {}
 
-  ngOnInit() {
+  /* ---------------------------
+   * Lifecycle
+   * --------------------------- */
+  ngOnInit(): void {
+    this.initForms();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /* ---------------------------
+   * Form initialization
+   * --------------------------- */
+  private initForms(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
+
     this.newEmployees = this.fb.group(
       {
-        otp: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
+        otp: ['', [Validators.required, Validators.pattern(this.OTP_PATTERN)]],
         newPass: [
           '',
           [
             Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(/^[A-Za-z0-9!@#$%^&*()_+]+$/),
+            Validators.minLength(this.NEW_PASS_MIN),
+            Validators.pattern(this.PASSWORD_PATTERN),
           ],
         ],
         confirmPass: [
           '',
           [
             Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(/^[A-Za-z0-9!@#$%^&*()_+]+$/),
+            Validators.minLength(this.NEW_PASS_MIN),
+            Validators.pattern(this.PASSWORD_PATTERN),
           ],
         ],
       },
-      {
-        validators: this.passwordMatchValidator,
-      }
+      { validators: this.passwordMatchValidator }
     );
 
     this.existingEmpl = this.fb.group({
@@ -92,11 +113,12 @@ export class LoginPage implements OnInit {
         '',
         [
           Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^[A-Za-z0-9!@#$%^&*()_+]+$/),
+          Validators.minLength(this.EXISTING_PASS_MIN),
+          Validators.pattern(this.PASSWORD_PATTERN),
         ],
       ],
     });
+
     this.passwordUpdateForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       otp: ['', [Validators.required, Validators.minLength(4)]],
@@ -106,112 +128,190 @@ export class LoginPage implements OnInit {
     this.forgotForm = this.fb.group({
       forgotEmail: ['', [Validators.required, Validators.email]],
     });
-
-    this.candidateService.getAdminById('1').subscribe((data) => {
-      this.adminData = data;
-    });
   }
 
-  passwordMatchValidator(formGroup: FormGroup) {
+  /* ---------------------------
+   * Validators & helpers
+   * --------------------------- */
+  passwordMatchValidator = (formGroup: FormGroup) => {
     const pass = formGroup.get('newPass')?.value;
     const confirm = formGroup.get('confirmPass')?.value;
     return pass === confirm ? null : { passwordMismatch: true };
+  };
+
+  get emailControl() {
+    return this.loginForm.get('email');
   }
-  onLogin() {
+  get existingPasswordControl() {
+    return this.existingEmpl.get('password');
+  }
+
+  /* ---------------------------
+   * Login flow
+   * --------------------------- */
+  onLogin(): void {
+    if (this.loginForm.invalid || this.existingEmpl.invalid) {
+      this.loginForm.markAllAsTouched();
+      this.existingEmpl.markAllAsTouched();
+      return;
+    }
+
     const body = {
-      password: this.existingEmpl.controls['password'].value,
+      email: this.emailControl?.value,
+      password: this.existingPasswordControl?.value,
     };
 
-    this._loginSer.loginForAll(body).subscribe({
-      next: async (val) => {
-        console.log('Login val', val);
-        this.alertViewer('Information', val.message, 'OK');
-        this._route_service.storeTokens(
-          val.access_token!,
-          val.refresh_token!,
-          val.employee_id!,
-          val.role!
-        );
+    this._loginSer
+      .loginForAll(body)
+      .pipe(
+        finalize(() => this.newEmployees.reset()),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (val: any) => {
+          this.alertViewer('Information', val.message, 'OK');
+          this._route_service.storeTokens(
+            val.access_token!,
+            val.refresh_token!,
+            val.employee_id!,
+            val.role!
+          );
 
-        this._route_service.redirectBasedOnRole(val.role);
-      },
-      error: (err) => {
-        if (err.error.message) {
-          this.alertViewer('Error', err.error.message, 'Try Again');
-        } else {
-          console.log(err);
-          this.alertViewer('Error', err.error, 'Cancel');
-        }
-      },
-      complete: () => {
-        this.newEmployees.reset();
-      },
-    });
+          const loginTime = new Date().toISOString();
+          localStorage.setItem('login_time', loginTime);
+
+          this.candidateservices
+            .getEmpDet()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (response: any) => {
+                this.allEmployees = response?.data ?? [];
+                this.one = this.allEmployees.length
+                  ? this.allEmployees[0]
+                  : null;
+                if (this.one) {
+                  this.candidateservices.setCurrentEmployee(this.one);
+                }
+              },
+              error: (err) => {
+                console.error('Error fetching all employees:', err);
+              },
+            });
+
+          this._route_service.redirectBasedOnRole(val.role);
+        },
+        error: (err: any) => {
+          const msg = err?.error?.message ?? err?.error ?? 'Login failed';
+          if (err?.error?.message) {
+            this.alertViewer('Error', msg, 'Try Again');
+          } else {
+            console.error(err);
+            this.alertViewer('Error', String(msg), 'Cancel');
+          }
+        },
+      });
   }
-  async checkEmail() {
-    if (this.loginForm.valid) {
-      this.loader = true;
-      this._loginSer
-        .checkEmail({
-          email: this.loginForm.controls['email'].value,
-        })
-        .subscribe({
-          next: (val) => {
-            this.empType = val.type;
-            this.loader = false;
-            if (val.type === 'new_employee') {
-              this.new = true;
-              this.showLoginForm = false;
-              this.alertViewer('Information', val.message, 'OK');
-            } else {
-              this.old = true;
-              this.showLoginForm = false;
-            }
-          },
-          error: (err) => {
-            this.er = err.error.message;
-          },
-          complete: () => {
-            this.loginForm.reset();
-            console.log(this.empType);
-          },
-        });
-    } else {
-      this.er = 'Invalid Email';
+
+  async checkEmail(): Promise<void> {
+    this.er = '';
+    this.empType = '';
+    this.new = false;
+    this.old = false;
+
+    if (!this.loginForm.valid) {
+      if (this.emailControl?.hasError('required')) {
+        this.er = 'Email is required.';
+      } else if (this.emailControl?.hasError('email')) {
+        this.er = 'Please enter a valid email address.';
+      } else {
+        this.er = 'Please enter a valid email address.';
+      }
+      return;
     }
+
+    this.loader = true;
+    const payload = { email: this.emailControl?.value };
+
+    this._loginSer
+      .checkEmail(payload)
+      .pipe(
+        finalize(() => (this.loader = false)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (val: any) => {
+          this.er = '';
+          this.empType = val.type;
+          if (val.type === 'new_employee') {
+            this.new = true;
+            this.showLoginForm = false;
+            this.newEmployees.reset();
+            this.alertViewer('Information', val.message, 'OK');
+          } else {
+            this.old = true;
+            this.showLoginForm = false;
+            this.existingEmpl.reset();
+          }
+        },
+        error: (err: any) => {
+          const serverMsg = err?.error?.message;
+          if (serverMsg && serverMsg.includes('must be a valid email')) {
+            this.er = 'Please enter a valid email address.';
+          } else {
+            this.er = serverMsg ?? 'Failed to validate email.';
+          }
+        },
+      });
   }
-  async passwordGen() {
-    if (this.newEmployees.valid) {
-      const body = {
-        otp: this.newEmployees.controls['otp'].value,
-        newPassword: this.newEmployees.controls['confirmPass'].value,
-      };
-      this._loginSer.employeePasswordGeneration(body).subscribe({
-        next: (val) => {
+
+  /* ---------------------------
+   * New employee password generation
+   * --------------------------- */
+  passwordGen(): void {
+    if (this.newEmployees.invalid) {
+      this.newEmployees.markAllAsTouched();
+      return;
+    }
+
+    const body = {
+      email: this.loginForm.controls['email'].value,
+      otp: this.newEmployees.controls['otp'].value,
+      newPassword: this.newEmployees.controls['confirmPass'].value,
+    };
+
+    this._loginSer
+      .employeePasswordGeneration(body)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (val: any) => {
           this.alertViewer('Information', val.message, 'OK');
           this.router.navigate(['/Home']);
         },
-        error: (err) => {
-          this.alertViewer('Error', err.error.message, 'Try Again');
+        error: (err: any) => {
+          const msg = err?.error?.message ?? 'Failed to generate password.';
+          this.alertViewer('Error', msg, 'Try Again');
         },
         complete: () => {
           this.newEmployees.reset();
         },
       });
-    }
   }
-  openForgotModal() {
+
+  /* ---------------------------
+   * Forgot password flow
+   * --------------------------- */
+  openForgotModal(): void {
     this.showForgotModal = true;
     this.forgotForm.reset();
     this.forgotError = '';
     this.forgotSuccess = '';
   }
 
-  closeForgotModal() {
+  closeForgotModal(): void {
     this.showForgotModal = false;
   }
 
-  submitForgot() {
+  submitForgot(): void {
     if (this.forgotForm.invalid) {
       this.forgotForm.markAllAsTouched();
       return;
@@ -222,45 +322,39 @@ export class LoginPage implements OnInit {
     this.forgotError = '';
     this.forgotSuccess = '';
 
-    // ✅ First check if email already exists (old user)
-    this.candidateService.getotp(email).subscribe({
-      next: (res) => {
-        console.log('✅ Old email OTP sent:', res);
-        this.forgotSuccess = `OTP sent to ${email}.`;
-        this.handleOtpSuccess(email);
-      },
-      error: (err) => {
-        console.warn('⚠️ getotp failed, trying newpasswordCreation...', err);
-
-        // If getotp fails → assume new email → call newpasswordCreation
-        this.candidateService.newpasswordCreation(email).subscribe({
-          next: (res) => {
-            console.log('✅ New email OTP sent:', res);
-            this.forgotSuccess = `OTP sent to ${email}.`;
-            this.handleOtpSuccess(email);
-          },
-          error: (err2) => {
-            console.error('❌ Both OTP methods failed:', err2);
-            this.sending = false;
-            this.forgotError = 'Failed to send OTP. Try again later.';
-          },
-        });
-      },
-    });
+    this.candidateservices
+      .getotp(email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          console.log('✅ OTP sent successfully:', res);
+          this.forgotSuccess = `OTP sent to ${email}.`;
+          this.handleOtpSuccess(email);
+        },
+        error: (err: any) => {
+          console.error('❌ Failed to send OTP:', err);
+          this.sending = false;
+          this.forgotError =
+            err?.error?.message || 'Failed to send OTP. Try again later.';
+        },
+      });
   }
 
-  private handleOtpSuccess(email: string) {
+  private handleOtpSuccess(email: string): void {
     setTimeout(() => {
       this.sending = false;
       this.closeForgotModal();
-      // 🔥 Switch to password update form
+
       this.showLoginForm = false;
       this.showPasswordUpdateForm = true;
       this.passwordUpdateForm.patchValue({ email });
-    }, 2000);
+    }, 1000);
   }
 
-  onPasswordUpdate() {
+  /* ---------------------------
+   * Password update for existing users
+   * --------------------------- */
+  onPasswordUpdate(): void {
     if (this.passwordUpdateForm.invalid) {
       this.passwordUpdateForm.markAllAsTouched();
       return;
@@ -268,48 +362,55 @@ export class LoginPage implements OnInit {
 
     const { email, otp, newPassword } = this.passwordUpdateForm.value;
 
-    // ✅ First try new-user flow
-    this.candidateService
-      .verifyAndResetPassword(email, otp, newPassword)
+    this.candidateservices
+      .changeoldEmpPassword(email, otp, newPassword)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
-          this.handlePasswordSuccess();
-        },
-        error: (err) => {
-          console.warn(
-            '⚠️ verifyAndResetPassword failed, trying changeoldEmpPassword...',
-            err
+        next: (val: any) => {
+          console.log('Pasword', val);
+          this.alertViewer('Information', val.message, 'OK');
+          this._route_service.storeTokens(
+            val.access_token!,
+            val.refresh_token!,
+            val.employee_id!,
+            val.role!
           );
-
-          // 🔄 fallback → old user flow
-          this.candidateService
-            .changeoldEmpPassword(email, otp, newPassword)
-            .subscribe({
-              next: () => {
-                this.handlePasswordSuccess();
-              },
-              error: (err2) => {
-                console.error('❌ Both password update methods failed:', err2);
-                alert('Failed to update password. Check OTP and try again.');
-              },
-            });
+          alert(val.role);
+          this.handlePasswordSuccess();
+          this._route_service.redirectBasedOnRole(val.role);
+        },
+        error: (err: any) => {
+          console.error('❌ Password update failed:', err);
+          const msg =
+            err?.error?.message ??
+            'Failed to update password. Check OTP and try again.';
+          alert(msg);
         },
       });
   }
 
-  private handlePasswordSuccess() {
-    alert('Password updated successfully!');
+  private handlePasswordSuccess(): void {
     this.showPasswordUpdateForm = false;
     this.showLoginForm = true;
     this.passwordUpdateForm.reset();
   }
 
-  async alertViewer(header: string, message: string, buttons: string) {
+  /* ---------------------------
+   * Alerts
+   * --------------------------- */
+  async alertViewer(
+    header: string,
+    message: string,
+    buttons: string | string[]
+  ) {
+    const btns = Array.isArray(buttons) ? buttons : [buttons];
     const alert = await this.alertController.create({
-      header: header,
-      message: message,
-      buttons: [buttons],
+      header,
+      message,
+      buttons: btns,
     });
-    alert.present();
+    await alert.present();
   }
+
+  er = '';
 }

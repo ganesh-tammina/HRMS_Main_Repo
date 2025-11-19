@@ -2,7 +2,6 @@
   <ion-toolbar class="navbar-toolbar">
     <ion-grid [fixed]="true">
       <ion-row class="ion-align-items-center ion-justify-content-between">
-
         <!-- Left: Company Name -->
         <ion-col size="10" class="row-left">
           <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo" />
@@ -10,8 +9,8 @@
           <ion-searchbar placeholder="Search employee by name" [(ngModel)]="searchQuery" (ionInput)="onSearch()"
             showCancelButton="never">
           </ion-searchbar>
-          <ion-button *ngIf="(searchResults.length > 0)" (click)="openEmployeeListModal()">
-            {{ results.join(', ') }}
+          <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal()">
+            {{ results.join(", ") }}
           </ion-button>
           <!-- <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal()">
               Show {{ results.FirstName }} Employee(s)
@@ -28,46 +27,44 @@
                 </ng-template>
               </ion-popover> -->
 
-          <div style="margin-left: auto;" class="candidate-name">
-            {{ one[0].full_name}}
+          <div style="margin-left: auto" class="candidate-name">
+            {{ fullName || 'Loading...' }}
           </div>
         </ion-col>
 
-
         <!-- Right: Notifications + Candidate Info -->
         <ion-col size="2" class="ion-text-end">
-          <div class="row-right" *ngIf="one">
-              <p class="name-style pr-15"></p>
+          <div class="row-right">
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
-            <ion-button id="popover-dropdown" fill="clear"> 
-              <img class="pl-5"  src="../../assets/user.svg" width="46" />
+            <ion-button id="popover-dropdown" fill="clear">
+              <img class="pl-5"   [src]="'https://'+ profileimg + imageUrls"  alt="imageUrls"
+                width="46" alt="Profile" />
+              <img class="pl-5" *ngIf="!imageUrls" src="../../assets/user.svg" alt="imageUrls" width="46"
+                alt="Profile">
             </ion-button>
-         <ion-popover  class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
-           <ng-template>
-             <ion-content >
-               <ion-list>
-                 <ion-item  (click)="viewProfile()" lines="none" detail="false"><ion-icon name="person-outline"></ion-icon> View Profile</ion-item>
-                 <ion-item><ion-icon name="key-outline"></ion-icon> Change Password</ion-item>
-                 <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
-                 routerLinkActive="selected"><ion-icon name="log-out-outline"></ion-icon> Logout</ion-item>
-               </ion-list>
-             </ion-content>
-           </ng-template>
-         </ion-popover>
-
-
+            <ion-popover class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
+              <ng-template>
+                <ion-content>
+                  <ion-list>
+                    <ion-item (click)="viewProfile()" lines="none" detail="false">
+                      <ion-icon name="person-outline"></ion-icon> View Profile
+                    </ion-item>
+                    <ion-item lines="none" detail="false">
+                      <ion-icon name="key-outline"></ion-icon> Change Password
+                    </ion-item>
+                    <ion-item (click)="logout()" lines="none" detail="false">
+                      <ion-icon name="log-out-outline"></ion-icon> Logout
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
 
             <ion-buttons slot="start">
               <ion-menu-button></ion-menu-button>
             </ion-buttons>
-
-
-
-            <!-- <ion-button fill="clear" (click)="logout()">Logout</ion-button> -->
-
           </div>
         </ion-col>
-
       </ion-row>
     </ion-grid>
   </ion-toolbar>

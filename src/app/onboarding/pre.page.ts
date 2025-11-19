@@ -16,6 +16,7 @@ import { OnboardingMainheaderComponent } from './onboarding-mainheader/onboardin
 import { CandidateService } from '../services/pre-onboarding.service';
 import { CandiateCreateComponent } from './candiate-create/candiate-create.component';
 import { ModalController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-pre',
   templateUrl: './pre.page.html',
@@ -23,9 +24,9 @@ import { ModalController } from '@ionic/angular';
   standalone: true,
   imports: [
     CandiatePortalComponent, OnboardingMainheaderComponent,
-    IonContent, HeaderComponent, IonIcon, IonLabel, IonToggle, DeclineResonsComponent,
-    IonInput, IonCheckbox, IonButton, IonSelectOption, IonModal, IonSelect, IonLabel, IonItem,
-    IonHeader, IonTitle, IonToolbar, HttpClientModule, IonButtons,
+    IonContent, IonIcon, IonLabel, IonToggle, DeclineResonsComponent,
+    IonButton, IonLabel, IonItem,
+    IonHeader, HttpClientModule,
     CommonModule, FormsModule, ReactiveFormsModule, OfferTemplateComponent,
     IonCardTitle, IonCardHeader, IonCard, IonCardContent, IonList
   ],
@@ -155,7 +156,7 @@ export class PostPage implements OnInit {
       }
     };
 
-    this.http.post('http://30.0.0.78:3000/employees', employeeData).subscribe({
+    this.http.post(`https://${environment.apiURL}:3000/employees`, employeeData).subscribe({
       next: () => {
         this.closeSalaryModal();
         this.selectedCard = 'offer';
@@ -174,7 +175,7 @@ export class PostPage implements OnInit {
   previewOfferLetter() {
     if (!this.canPreviewOffer()) return;
 
-    this.http.get<any[]>('http://30.0.0.78:3000/employees?_sort=id&_order=desc&_limit=1')
+    this.http.get<any[]>('https://localhost:3000/employees?_sort=id&_order=desc&_limit=1')
       .subscribe(latest => {
         if (latest.length > 0) {
           const candidate = latest[0];
@@ -239,7 +240,7 @@ export class PostPage implements OnInit {
       }
     };
 
-    this.http.patch(`http://30.0.0.78:3000/employees/${this.offerLetter.originalId}`, updateData)
+    this.http.patch(`https://localhost:3000/employees/${this.offerLetter.originalId}`, updateData)
       .subscribe({
         next: () => {
           alert('Offer status updated successfully!');

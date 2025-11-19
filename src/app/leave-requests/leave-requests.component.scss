@@ -1,0 +1,167 @@
+@import '../../global.scss';
+.page-container {
+  max-width: 700px;
+  margin: 20px auto;
+  font-family: 'Inter', sans-serif;
+}
+
+.request-card {
+    .team-header {
+      @include card-sub-title();
+      color: $side-bar-color;
+      margin-top: 12px;
+      margin-bottom: 5px;
+  }
+  .table {    
+    border: 0.5px solid $border-color;
+    padding: 0;
+    .table-header {
+      @include text-bold();
+      height: 44px;
+      align-items: center;
+      background: #EBEDEF;
+      ion-col {
+        border: 0.5px solid $border-color;
+        height: 44px;
+        display: flex;
+        align-items: center;
+      }
+    }
+    .table-list-row {
+      @include body-text();
+      height: 48px;
+      align-items: center;
+      border: 0.5px solid $border-color;
+      &:nth-child(odd) {
+        background: $bg-color;
+      }
+      ion-col {
+        border-right: 0.5px solid $border-color;
+        height: 52px;
+        display: flex;
+        align-items: center;
+      }
+    }
+p {
+  margin: 0;
+}
+  }
+  }
+
+
+
+/* Popup Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-card {
+  background: white;
+  padding: 25px;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.cancel-btn {
+  width: 100%;
+  background: #d1d5db;
+  color: black;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+
+.tooltip {
+  position: relative;
+  display: block;
+  width: 100%;
+  p {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 78%;
+    max-width: 100%;
+    display: block;
+    }
+  
+}
+
+.tooltiptext {
+  visibility: hidden;
+  background-color: #b2ccf7;
+  color: #333333;
+  padding: 6px 10px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+.yellow-status {
+  color: #9A3412;
+    background: #FFEDD5;
+    border: 1px solid #9A3412;
+    padding: 3px;
+    border-radius: 12px;
+}
+.red-status {
+  color: #D33434;
+    background: #FFD3D3;
+    border: 1px solid #D33434;
+    padding: 3px;
+    border-radius: 12px;
+}
+.green-status {
+  color: #2E9D74;
+    background: #E7F8F2;
+    border: 1px solid #2E9D74 ;
+    padding: 3px;
+    border-radius: 12px;
+}
+.approve-btn {
+  color: #2563eb;
+  --background: transperent;
+  ion-icon {
+    font-size: 24px;
+  }
+}
