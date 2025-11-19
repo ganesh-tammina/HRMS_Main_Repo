@@ -23,7 +23,6 @@ import { environment } from 'src/environments/environment';
 })
 export class HeaderComponent implements OnInit {
   currentCandidate: Candidate | null = null;
-
   // Search functionality
   searchQuery: string = '';
   searchResults: CandidateSearchResult[] = [];
@@ -40,7 +39,9 @@ export class HeaderComponent implements OnInit {
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
-  profileimg: string = environment.apiURL
+
+profileimg: string = environment.apiURL;
+ 
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
@@ -94,7 +95,7 @@ export class HeaderComponent implements OnInit {
             this.fullName = this.one[0].full_name;
             this.employee_id = this.one[0].employee_id;
             this.imageUrls = this.one[0].image;
-            console.log(this.imageUrls);
+            console.log('profile',this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
             this.candidateService.setLoggedEmployeeId(this.employee_id);
             console.log(this.fullName);

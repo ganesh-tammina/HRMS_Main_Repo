@@ -6,36 +6,45 @@ import { kjhkhk } from '../middlewares/attendance.middleware';
 
 const AttendanceRouter = Router();
 
-AttendanceRouter.post(
-  '/v1/clockin',
-  verifyAccessToken,
-  AttendanceController.handleClockIn
-);
-AttendanceRouter.post(
-  '/v1/clockout',
-  verifyAccessToken,
-  AttendanceController.handleClockOut
-);
+/** For Clock IN and Clock Out Use only this route do not make any change in here */
+AttendanceRouter.post('/v1/attendance', kjhkhk, AttendanceController.kasdja);
+// Clock in and Clock Out ☝
+
+
 AttendanceRouter.post(
   '/v1/get-attendance',
   // verifyAccessToken,
   AttendanceController.getAttendance
 );
-AttendanceRouter.post(
-  '/v1/upsert-record',
-  verifyAccessToken,
-  AttendanceController.upsertAttendanceRecord
-);
-AttendanceRouter.post(
-  '/v1/add-event',
-  verifyAccessToken,
-  AttendanceController.addAttendanceEvent
-);
-AttendanceRouter.post(
-  '/v1/upsert-daily',
-  verifyAccessToken,
-  AttendanceController.upsertDailyAccumulation
-);
+
+
+AttendanceRouter.get('/v1/check-status/:employeeId', AttendanceController.checkStatus);
+// AttendanceRouter.post(
+//   '/v1/clockin',
+//   // verifyAccessToken,
+//   AttendanceController.handleClockIn
+// );
+// AttendanceRouter.post(
+//   '/v1/clockout',
+//   verifyAccessToken,
+//   AttendanceController.handleClockOut
+// );
+
+// AttendanceRouter.post(
+//   '/v1/upsert-record',
+//   verifyAccessToken,
+//   AttendanceController.upsertAttendanceRecord
+// );
+// AttendanceRouter.post(
+//   '/v1/add-event',
+//   verifyAccessToken,
+//   AttendanceController.addAttendanceEvent
+// );
+// AttendanceRouter.post(
+//   '/v1/upsert-daily',
+//   verifyAccessToken,
+//   AttendanceController.upsertDailyAccumulation
+// );
 AttendanceRouter.get(
   '/v1/get-attendance/:employeeId',
   verifyAccessToken,
@@ -52,7 +61,7 @@ AttendanceRouter.post(
   AttendanceController.llakdjlfjas
 );
 
-AttendanceRouter.post('/v1/attendance', kjhkhk, AttendanceController.kasdja);
+
 AttendanceRouter.post(
   '/v1/shift-policy',
   AttendanceController.createShiftPolicy

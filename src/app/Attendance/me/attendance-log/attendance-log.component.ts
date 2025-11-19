@@ -215,7 +215,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
       'for employee',
       employeeId
     );
-    this.attendanceService.getWeekOff(employeeId).subscribe({});
+    // this.attendanceService.getWeekOff(employeeId).subscribe({});
     this.attendanceService
       .getallattendace({
         employee_id: employeeId,
@@ -223,10 +223,12 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
         endDate: endDate,
       })
       .subscribe({
-        next: (data) => {
+        next: (att) => {
+          const res = att.attendance;
+          const data = res.data;
           console.log('📊 ALL Attendance Records:', data);
 
-          if (!data || !data.attendance || data.attendance.length === 0) {
+          if (!data) {
             console.log('⚠️ No attendance data found');
             this.attendanceLogss = this.addWeekendRows([]);
             this.attendanceLogss.sort(
@@ -234,10 +236,11 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
                 new Date(b.attendance_date).getTime() -
                 new Date(a.attendance_date).getTime()
             );
+            console.log('bipul:', this.attendanceLogss);
             return;
           }
 
-          const normalized = data.attendance.map((item: any) => ({
+          const normalized = data.map((item: any) => ({
             ...item,
             attendance_date: new Date(item.attendance_date)
               .toISOString()
@@ -373,7 +376,11 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
         startDate: startDate,
         endDate: endDate,
       })
-      .subscribe((data) => {
+      .subscribe((att) => {
+        console.log('basfasfasdfasdfasfasdfasdfasds', att);
+
+        const res = att.attendance;
+        const data = res.data[0];
         console.log('Refreshed Attendance Records:', data);
 
         const normalized = data.attendance.map((item: any) => ({
@@ -427,6 +434,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
           const effectiveHours = this.formatHoursMinutes(
             Math.floor(effectiveMinutes)
           );
+          console.log('Updated attendance logs:', this.attendanceLogss);
 
           return {
             ...log,
@@ -436,8 +444,6 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
             progress: Math.min(totalMinutes / 480, 1),
           };
         });
-
-        console.log('Updated attendance logs:', this.attendanceLogss);
       });
   }
 
@@ -523,7 +529,11 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
           date: logDate,
         })
         .subscribe({
-          next: (data) => {
+          next: (att) => {
+            const res = att.attendance;
+            console.log('basfasfasdfasdfasfasdfasdfasds', res);
+
+            const data = res[0];
             if (data && data.attendance && data.attendance.length > 0) {
               const updatedRecords = data.attendance.map((item: any) => ({
                 check_in: item.check_in,

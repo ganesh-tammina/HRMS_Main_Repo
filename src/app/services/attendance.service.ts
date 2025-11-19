@@ -163,7 +163,11 @@ export class AttendanceService {
       employee_id: employeeId,
       date: currentDate,
     }).subscribe({
-      next: (data) => {
+      next: (att) => {
+        console.log('basfasfasdfasdfasfasdfasdfasds', att);
+
+        const res = att.attendance;
+        const data = res.data[0];
         console.log('📊 Backend refresh response:', data);
 
         if (data && data.attendance && data.attendance.length > 0) {
@@ -304,6 +308,12 @@ export class AttendanceService {
         default:
           return true;
       }
+    });
+  }
+
+  checkLoginOrLoggedOut(empId: any): Observable<any> {
+    return this.http.get(this.baseURL + '/check-status/' + empId, {
+      withCredentials: true,
     });
   }
 }

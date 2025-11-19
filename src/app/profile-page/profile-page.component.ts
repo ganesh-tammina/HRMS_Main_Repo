@@ -13,6 +13,8 @@ import { RouteGuardService } from '../services/route-guard/route-service/route-g
 import { environment } from 'src/environments/environment';
 import { LeaveRequestsComponent } from '../leave-requests/leave-requests.component';
 import { Subject, takeUntil, interval, take } from 'rxjs';
+import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-profile-page',
@@ -30,8 +32,8 @@ import { Subject, takeUntil, interval, take } from 'rxjs';
     DocumentTabComponent,
     AssetsTabComponent,
     HeaderComponent,
-    LeaveRequestsComponent
-  ]
+    LeaveRequestsComponent,
+  ],
 })
 export class ProfilePageComponent implements OnInit, OnDestroy {
   currentemp: any = []; // Single employee object (kept original type/shape)
@@ -39,7 +41,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   uploadedImageUrl: string | null = null;
   previewImageUrl: string | null = null;
   isUploading: boolean = false;
-profileimg: string = environment.apiURL;
+  profileimg: string = environment.apiURL;
   private env = environment;
   private api = `https://${this.env.apiURL}/api/v1/`;
 
@@ -48,8 +50,10 @@ profileimg: string = environment.apiURL;
   constructor(
     private candidateService: CandidateService,
     private routeGuardService: RouteGuardService,
-    private popoverController: PopoverController
-  ) { }
+    private popoverController: PopoverController,
+    private router: Router,
+        private navCtrl: NavController
+  ) {}
 
   private currentEmployeeId: string | null = null;
 
@@ -62,7 +66,9 @@ profileimg: string = environment.apiURL;
       this.currentEmployeeId = this.routeGuardService.employeeID;
       this.refreshEmployee();
     } else {
-      console.warn('⚠️ No employeeID found in routeGuardService on init — will retry for a short period');
+      console.warn(
+        '⚠️ No employeeID found in routeGuardService on init — will retry for a short period'
+      );
 
       // Retry loop up to 8 seconds to see if employeeID becomes available
       interval(1000)
@@ -76,16 +82,21 @@ profileimg: string = environment.apiURL;
           /*******  56e40ed0-fb04-42da-bc49-20abb100f482  *******/
           next: () => {
             if (this.routeGuardService.employeeID) {
-              console.log('ℹ️ employeeID became available during retry loop:', this.routeGuardService.employeeID);
+              console.log(
+                'ℹ️ employeeID became available during retry loop:',
+                this.routeGuardService.employeeID
+              );
               this.currentEmployeeId = this.routeGuardService.employeeID;
               this.refreshEmployee();
             }
           },
           complete: () => {
             if (!this.routeGuardService.employeeID) {
-              console.warn('⚠️ employeeID still not available after retries. Call refreshEmployee() when it is set.');
+              console.warn(
+                '⚠️ employeeID still not available after retries. Call refreshEmployee() when it is set.'
+              );
             }
-          }
+          },
         });
     }
 
@@ -95,7 +106,12 @@ profileimg: string = environment.apiURL;
       .subscribe(() => {
         const currentId = this.routeGuardService.employeeID;
         if (currentId && currentId !== this.currentEmployeeId) {
-          console.log('🔄 Employee changed from', this.currentEmployeeId, 'to', currentId);
+          console.log(
+            '🔄 Employee changed from',
+            this.currentEmployeeId,
+            'to',
+            currentId
+          );
           this.currentEmployeeId = currentId;
           this.clearCachedData();
           this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
@@ -123,7 +139,8 @@ profileimg: string = environment.apiURL;
       return;
     }
 
-    this.candidateService.getEmpDet()
+    this.candidateService
+      .getEmpDet()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -134,16 +151,26 @@ profileimg: string = environment.apiURL;
             // If backend provides profile image path, create a full URL & cache-bust
             if (this.currentemp.profile_image) {
               const ipBase = 'https://30.0.0.78:3562';
-              const prefix = /^https?:\/\//i.test(this.currentemp.profile_image) ? '' : ipBase;
+              const prefix = /^https?:\/\//i.test(this.currentemp.profile_image)
+                ? ''
+                : ipBase;
               const fullImageUrl = `${prefix}${this.currentemp.profile_image}`;
-              const cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+              const cacheBusted = `${fullImageUrl}${
+                fullImageUrl.includes('?') ? '&' : '?'
+              }t=${Date.now()}`;
               this.uploadedImageUrl = cacheBusted;
               localStorage.setItem('uploadedImageUrl', cacheBusted);
               try {
                 localStorage.setItem('uploadedImageUrl', cacheBusted);
-                console.log('💾 Image URL saved to localStorage (from refresh):', cacheBusted);
+                console.log(
+                  '💾 Image URL saved to localStorage (from refresh):',
+                  cacheBusted
+                );
               } catch (err) {
-                console.warn('⚠️ Could not save uploadedImageUrl to localStorage:', err);
+                console.warn(
+                  '⚠️ Could not save uploadedImageUrl to localStorage:',
+                  err
+                );
               }
             }
           } else {
@@ -153,7 +180,7 @@ profileimg: string = environment.apiURL;
         },
         error: (err) => {
           console.error('❌ Error fetching employee details:', err);
-        }
+        },
       });
   }
 
@@ -181,7 +208,9 @@ profileimg: string = environment.apiURL;
 
     const empId = this.routeGuardService.employeeID;
     if (!empId) {
-      console.warn('⚠️ No employeeID found in routeGuardService; cannot upload');
+      console.warn(
+        '⚠️ No employeeID found in routeGuardService; cannot upload'
+      );
       return;
     }
 
@@ -192,18 +221,23 @@ profileimg: string = environment.apiURL;
 
     console.log('Uploading image for empId ->', empId);
 
-    this.candidateService.uploadImage(formData)
+    this.candidateService
+      .uploadImage(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: any) => {
           console.log('✅ Upload response:', res);
           let cacheBusted = '';
+            window.location.reload();
+            this.navCtrl.navigateForward('/profile-page');
 
           // If backend returns image path
           if (res && res.image) {
             const ipBase = 'https://30.0.0.78:3562';
             const fullImageUrl = `${ipBase}${res.image}`;
-            cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+            cacheBusted = `${fullImageUrl}${
+              fullImageUrl.includes('?') ? '&' : '?'
+            }t=${Date.now()}`;
             this.uploadedImageUrl = cacheBusted;
 
             try {
@@ -216,16 +250,23 @@ profileimg: string = environment.apiURL;
             // If backend returns updated employee object
             this.currentemp = res.employee;
             if (res.employee.profile_image) {
-              const prefix = /^https?:\/\//i.test(res.employee.profile_image) ? '' : ('https://30.0.0.78:3562');
+              const prefix = /^https?:\/\//i.test(res.employee.profile_image)
+                ? ''
+                : 'https://30.0.0.78:3562';
               const fullImageUrl = `${prefix}${res.employee.profile_image}`;
-              cacheBusted = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+              cacheBusted = `${fullImageUrl}${
+                fullImageUrl.includes('?') ? '&' : '?'
+              }t=${Date.now()}`;
               this.uploadedImageUrl = cacheBusted;
               try {
                 localStorage.setItem('uploadedImageUrl', cacheBusted);
-              } catch { }
+              } catch {}
             }
           } else {
-            console.log('ℹ️ Upload response did not contain `.image` or `.employee` field; response:', res);
+            console.log(
+              'ℹ️ Upload response did not contain `.image` or `.employee` field; response:',
+              res
+            );
           }
 
           // Refresh employee details from server to keep everything in sync
@@ -237,7 +278,7 @@ profileimg: string = environment.apiURL;
           }
 
           // Close the popover overlay (top-most)
-          this.popoverController.dismiss().catch(err => {
+          this.popoverController.dismiss().catch((err) => {
             // ignore errors if no popover is open
             console.debug('Popover dismiss error (ignored):', err);
           });
@@ -254,7 +295,7 @@ profileimg: string = environment.apiURL;
           // this.popoverController.dismiss().catch(() => {});
 
           this.isUploading = false;
-        }
+        },
       });
   }
 
