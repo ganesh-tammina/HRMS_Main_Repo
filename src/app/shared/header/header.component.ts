@@ -40,8 +40,8 @@ export class HeaderComponent implements OnInit {
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
 
-profileimg: string = environment.apiURL;
- 
+  profileimg: string = environment.apiURL;
+
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
@@ -94,8 +94,12 @@ profileimg: string = environment.apiURL;
             this.one = this.allEmployees[0];
             this.fullName = this.one[0].full_name;
             this.employee_id = this.one[0].employee_id;
-            this.imageUrls = this.one[0].image;
-            console.log('profile',this.imageUrls);
+            if (this.one[0].image) {
+              this.imageUrls = `https://${this.profileimg}${this.one[0].image}`;
+            } else {
+              this.imageUrls = '../../../assets/user.svg';
+            }
+            console.log('profile', this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
             this.candidateService.setLoggedEmployeeId(this.employee_id);
             console.log(this.fullName);

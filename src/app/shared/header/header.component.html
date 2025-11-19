@@ -6,10 +6,17 @@
         <ion-col size="10" class="row-left">
           <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo" />
 
-          <ion-searchbar placeholder="Search employee by name" [(ngModel)]="searchQuery" (ionInput)="onSearch()"
-            showCancelButton="never">
+          <ion-searchbar
+            placeholder="Search employee by name"
+            [(ngModel)]="searchQuery"
+            (ionInput)="onSearch()"
+            showCancelButton="never"
+          >
           </ion-searchbar>
-          <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal()">
+          <ion-button
+            *ngIf="searchResults.length > 0"
+            (click)="openEmployeeListModal()"
+          >
             {{ results.join(", ") }}
           </ion-button>
           <!-- <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal()">
@@ -28,7 +35,7 @@
               </ion-popover> -->
 
           <div style="margin-left: auto" class="candidate-name">
-            {{ fullName || 'Loading...' }}
+            {{ fullName || "Loading..." }}
           </div>
         </ion-col>
 
@@ -37,16 +44,21 @@
           <div class="row-right">
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
             <ion-button id="popover-dropdown" fill="clear">
-              <img class="pl-5"   [src]="'https://'+ profileimg + imageUrls"  alt="imageUrls"
-                width="46" alt="Profile" />
-              <img class="pl-5" *ngIf="!imageUrls" src="../../assets/user.svg" alt="imageUrls" width="46"
-                alt="Profile">
+              <img class="pl-5" [src]="imageUrls" width="46" alt="Profile" />
             </ion-button>
-            <ion-popover class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
+            <ion-popover
+              class="profile-dropdown"
+              trigger="popover-dropdown"
+              [dismissOnSelect]="true"
+            >
               <ng-template>
                 <ion-content>
                   <ion-list>
-                    <ion-item (click)="viewProfile()" lines="none" detail="false">
+                    <ion-item
+                      (click)="viewProfile()"
+                      lines="none"
+                      detail="false"
+                    >
                       <ion-icon name="person-outline"></ion-icon> View Profile
                     </ion-item>
                     <ion-item lines="none" detail="false">
