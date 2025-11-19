@@ -202,6 +202,9 @@ router.post(
   '/v1/manager/leave-requests',
   LeaveController.getmydescendentsleaveRequests
 );
+
+router.get("/v1/search", EmployeeController.search);
+
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole);
 // add test apis here only

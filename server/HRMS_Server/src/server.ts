@@ -93,7 +93,7 @@ class Server {
     this.app.use('/', mailRoutes);
     this.app.use('/', salaryStructureRoutes);
     this.app.use('/candidates', candidateRoutes);
-    this.app.use('/api/weekoff', weekOffRoutes);
+    this.app.use('/api/v1/weekoff', weekOffRoutes);
     // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }

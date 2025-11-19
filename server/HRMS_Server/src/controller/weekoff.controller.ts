@@ -59,4 +59,15 @@ export default class WeekOffPolicyController {
       res.status(500).json({ message: "Error deleting policy" });
     }
   }
+
+    public static async getByPolicyByEmpId(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.emp_id);
+      const result = await WeekOffPolicyService.getPolicyOfEmp(id);
+      res.json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error fetching policy" });
+    }
+  }
 }

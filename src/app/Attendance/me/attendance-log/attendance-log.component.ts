@@ -1,8 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ViewWillEnter } from '@ionic/angular';
-import { CandidateService, Candidate } from 'src/app/services/pre-onboarding.service';
-import { AttendanceService, AttendanceRecord, AttendanceEvent } from 'src/app/services/attendance.service';
+import {
+  CandidateService,
+  Candidate,
+} from 'src/app/services/pre-onboarding.service';
+import {
+  AttendanceService,
+  AttendanceRecord,
+  AttendanceEvent,
+} from 'src/app/services/attendance.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -52,7 +59,7 @@ interface CalendarDay {
   templateUrl: './attendance-log.component.html',
   styleUrls: ['./attendance-log.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [IonicModule, CommonModule],
 })
 export class AttendanceLogComponent implements OnInit, OnDestroy {
   employee?: Candidate;
@@ -106,20 +113,18 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     this.generateMonthButtons();
   }
 
-
-
   ngOnInit() {
     // Load all attendance data immediately
     this.loadAllAttendanceData();
-    
+
     // Force immediate refresh for latest data
     setTimeout(() => this.loadAllAttendanceData(), 10);
-    
+
     this.employee = this.candidateService.getCurrentCandidate() || undefined;
     if (!this.employee) return;
     console.log('Current Employee:', this.employee);
 
-    this.attendanceService.record$.subscribe(record => {
+    this.attendanceService.record$.subscribe((record) => {
       if (record && record.employeeId === this.employee?.id) {
         this.record = record;
         this.updateTimes();
@@ -129,45 +134,49 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     });
 
     // Listen for clock actions and refresh log immediately
-    this.attendanceService.response$.subscribe(response => {
+    this.attendanceService.response$.subscribe((response) => {
       if (response) {
         console.log('Clock action detected:', response.action);
-        
+
         if (response.optimistic) {
           // Immediate optimistic update
           console.log('Applying optimistic update...');
           this.updateTimes();
           this.loadHistory();
         }
-        
+
         if (response.confirmed || response.data) {
           // Confirmed server response - refresh all data immediately
           console.log('Server confirmed, refreshing all data...');
           this.loadAllAttendanceData();
           this.updateTimes();
           this.loadHistory();
-          
+
           // Force refresh if specified
           if (response.forceRefresh) {
-            console.log('Force refresh triggered, reloading all attendance data...');
+            console.log(
+              'Force refresh triggered, reloading all attendance data...'
+            );
             setTimeout(() => this.loadAllAttendanceData(), 50);
             setTimeout(() => this.loadAllAttendanceData(), 200);
           }
-          
+
           // Force refresh if specified
           if (response.forceRefresh) {
-            console.log('Force refresh triggered, reloading all attendance data...');
+            console.log(
+              'Force refresh triggered, reloading all attendance data...'
+            );
             setTimeout(() => this.loadAllAttendanceData(), 50);
             setTimeout(() => this.loadAllAttendanceData(), 200);
           }
         }
-        
+
         if (response.action === 'refresh') {
           // Refresh action - update log data immediately
           console.log('Refresh detected, updating log data...');
           this.loadAllAttendanceData();
         }
-        
+
         if (response.error) {
           console.log('Clock action failed, reverting...');
           this.updateTimes();
@@ -198,26 +207,180 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     const startDate = dateRange.start;
     const endDate = dateRange.end;
 
-    console.log('📅 Fetching attendance from', startDate, 'to', endDate, 'for employee', employeeId);
+    console.log(
+      '📅 Fetching attendance from',
+      startDate,
+      'to',
+      endDate,
+      'for employee',
+      employeeId
+    );
+    this.attendanceService.getWeekOff(employeeId).subscribe({});
+    this.attendanceService
+      .getallattendace({
+        employee_id: employeeId,
+        startDate: startDate,
+        endDate: endDate,
+      })
+      .subscribe({
+        next: (data) => {
+          console.log('📊 ALL Attendance Records:', data);
 
-    this.attendanceService.getallattendace({
-      employee_id: employeeId,
-      startDate: startDate,
-      endDate: endDate
-    }).subscribe({
-      next: (data) => {
-        console.log('📊 ALL Attendance Records:', data);
-        
-        if (!data || !data.attendance || data.attendance.length === 0) {
-          console.log('⚠️ No attendance data found');
-          this.attendanceLogss = this.addWeekendRows([]);
-          this.attendanceLogss.sort((a, b) => new Date(b.attendance_date).getTime() - new Date(a.attendance_date).getTime());
-          return;
-        }
+          if (!data || !data.attendance || data.attendance.length === 0) {
+            console.log('⚠️ No attendance data found');
+            this.attendanceLogss = this.addWeekendRows([]);
+            this.attendanceLogss.sort(
+              (a, b) =>
+                new Date(b.attendance_date).getTime() -
+                new Date(a.attendance_date).getTime()
+            );
+            return;
+          }
+
+          const normalized = data.attendance.map((item: any) => ({
+            ...item,
+            attendance_date: new Date(item.attendance_date)
+              .toISOString()
+              .split('T')[0],
+          }));
+
+          const groupedByDate: any = {};
+          normalized.forEach((record: any) => {
+            const dateObj = new Date(record.attendance_date);
+            dateObj.setDate(dateObj.getDate() + 1);
+            const date = dateObj.toISOString().split('T')[0];
+
+            if (!groupedByDate[date]) {
+              groupedByDate[date] = {
+                attendance_date: date,
+                records: [],
+              };
+            }
+
+            groupedByDate[date].records.push({
+              check_in: record.check_in,
+              check_out: record.check_out,
+            });
+          });
+
+          const attendanceData = Object.values(groupedByDate).map(
+            (log: any) => {
+              let totalMinutes = 0;
+              let arrivalTime = '';
+
+              // Calculate arrival time based on first clock-in
+              const clockInTimes = log.records
+                .filter((rec: any) => rec.check_in)
+                .map((rec: any) => rec.check_in)
+                .sort();
+
+              if (clockInTimes.length > 0) {
+                const firstClockIn = clockInTimes[0];
+                const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
+                const cutoffTime = new Date('1970-01-01T09:30:00'); // 9:30 AM cutoff
+
+                if (clockInTime <= cutoffTime) {
+                  arrivalTime = 'On Time';
+                } else {
+                  const diffMs = clockInTime.getTime() - cutoffTime.getTime();
+                  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                  const minutes = Math.floor(
+                    (diffMs % (1000 * 60 * 60)) / (1000 * 60)
+                  );
+                  const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+                  arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes
+                    .toString()
+                    .padStart(2, '0')}:${seconds
+                    .toString()
+                    .padStart(2, '0')} late`;
+                }
+              } else {
+                arrivalTime = '-';
+              }
+
+              log.records.forEach((rec: any) => {
+                if (rec.check_in && rec.check_out) {
+                  const inTime = new Date(`1970-01-01T${rec.check_in}`);
+                  const outTime = new Date(`1970-01-01T${rec.check_out}`);
+                  const diffMinutes =
+                    (outTime.getTime() - inTime.getTime()) / 60000;
+                  totalMinutes += diffMinutes;
+                }
+              });
+
+              const grossHours = this.formatHoursMinutes(
+                Math.floor(totalMinutes)
+              );
+              const effectiveMinutes = Math.max(
+                totalMinutes - this.breakMinutes,
+                0
+              );
+              const effectiveHours = this.formatHoursMinutes(
+                Math.floor(effectiveMinutes)
+              );
+
+              // Determine log status based on last action
+              const hasOpenSession = log.records.some(
+                (rec: any) => rec.check_in && !rec.check_out
+              );
+              const logStatus = hasOpenSession ? 'incomplete' : 'complete';
+
+              return {
+                ...log,
+                gross: grossHours,
+                effective: effectiveHours,
+                arrival: arrivalTime || '-',
+                progress: Math.min(totalMinutes / 480, 1),
+                isWeekend: false,
+                logStatus: logStatus,
+              };
+            }
+          );
+
+          // Add weekend rows and sort by date (newest first)
+          this.attendanceLogss = this.addWeekendRows(attendanceData);
+          this.attendanceLogss.sort(
+            (a, b) =>
+              new Date(b.attendance_date).getTime() -
+              new Date(a.attendance_date).getTime()
+          );
+
+          console.log(
+            '📅 Successfully loaded',
+            this.attendanceLogss.length,
+            'attendance log entries'
+          );
+          console.log('📊 Attendance logs:', this.attendanceLogss);
+        },
+        error: (err) => {
+          console.error('❌ Error loading attendance data:', err);
+          this.attendanceLogss = [];
+        },
+      });
+  }
+
+  refreshAttendanceLogs() {
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30); // Exactly last 30 days
+
+    const startDate = pastDate.toISOString().split('T')[0];
+    const endDate = currentDate.toISOString().split('T')[0];
+
+    this.attendanceService
+      .getallattendace({
+        employee_id: this.abcd.employeeID,
+        startDate: startDate,
+        endDate: endDate,
+      })
+      .subscribe((data) => {
+        console.log('Refreshed Attendance Records:', data);
 
         const normalized = data.attendance.map((item: any) => ({
           ...item,
-          attendance_date: new Date(item.attendance_date).toISOString().split('T')[0]
+          attendance_date: new Date(item.attendance_date)
+            .toISOString()
+            .split('T')[0],
         }));
 
         const groupedByDate: any = {};
@@ -229,60 +392,41 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
           if (!groupedByDate[date]) {
             groupedByDate[date] = {
               attendance_date: date,
-              records: []
+              records: [],
             };
           }
 
           groupedByDate[date].records.push({
             check_in: record.check_in,
-            check_out: record.check_out
+            check_out: record.check_out,
           });
         });
 
-        const attendanceData = Object.values(groupedByDate).map((log: any) => {
+        this.attendanceLogss = Object.values(groupedByDate).map((log: any) => {
           let totalMinutes = 0;
           let arrivalTime = '';
 
-          // Calculate arrival time based on first clock-in
-          const clockInTimes = log.records
-            .filter((rec: any) => rec.check_in)
-            .map((rec: any) => rec.check_in)
-            .sort();
-          
-          if (clockInTimes.length > 0) {
-            const firstClockIn = clockInTimes[0];
-            const clockInTime = new Date(`1970-01-01T${firstClockIn}`);
-            const cutoffTime = new Date('1970-01-01T09:30:00'); // 9:30 AM cutoff
-            
-            if (clockInTime <= cutoffTime) {
-              arrivalTime = 'On Time';
-            } else {
-              const diffMs = clockInTime.getTime() - cutoffTime.getTime();
-              const hours = Math.floor(diffMs / (1000 * 60 * 60));
-              const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-              arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} late`;
+          log.records.forEach((rec: any, index: number) => {
+            if (rec.check_in && index === 0) {
+              arrivalTime = rec.check_in;
             }
-          } else {
-            arrivalTime = '-';
-          }
-
-          log.records.forEach((rec: any) => {
             if (rec.check_in && rec.check_out) {
               const inTime = new Date(`1970-01-01T${rec.check_in}`);
               const outTime = new Date(`1970-01-01T${rec.check_out}`);
-              const diffMinutes = (outTime.getTime() - inTime.getTime()) / 60000;
+              const diffMinutes =
+                (outTime.getTime() - inTime.getTime()) / 60000;
               totalMinutes += diffMinutes;
             }
           });
 
           const grossHours = this.formatHoursMinutes(Math.floor(totalMinutes));
-          const effectiveMinutes = Math.max(totalMinutes - this.breakMinutes, 0);
-          const effectiveHours = this.formatHoursMinutes(Math.floor(effectiveMinutes));
-
-          // Determine log status based on last action
-          const hasOpenSession = log.records.some((rec: any) => rec.check_in && !rec.check_out);
-          const logStatus = hasOpenSession ? 'incomplete' : 'complete';
+          const effectiveMinutes = Math.max(
+            totalMinutes - this.breakMinutes,
+            0
+          );
+          const effectiveHours = this.formatHoursMinutes(
+            Math.floor(effectiveMinutes)
+          );
 
           return {
             ...log,
@@ -290,95 +434,11 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
             effective: effectiveHours,
             arrival: arrivalTime || '-',
             progress: Math.min(totalMinutes / 480, 1),
-            isWeekend: false,
-            logStatus: logStatus
           };
         });
 
-        // Add weekend rows and sort by date (newest first)
-        this.attendanceLogss = this.addWeekendRows(attendanceData);
-        this.attendanceLogss.sort((a, b) => new Date(b.attendance_date).getTime() - new Date(a.attendance_date).getTime());
-        
-        console.log('📅 Successfully loaded', this.attendanceLogss.length, 'attendance log entries');
-        console.log('📊 Attendance logs:', this.attendanceLogss);
-      },
-      error: (err) => {
-        console.error('❌ Error loading attendance data:', err);
-        this.attendanceLogss = [];
-      }
-    });
-  }
-
-  refreshAttendanceLogs() {
-    const currentDate = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(currentDate.getDate() - 30); // Exactly last 30 days
-
-    const startDate = pastDate.toISOString().split('T')[0];
-    const endDate = currentDate.toISOString().split('T')[0];
-
-    this.attendanceService.getallattendace({
-      employee_id: this.abcd.employeeID,
-      startDate: startDate,
-      endDate: endDate
-    }).subscribe((data) => {
-      console.log('Refreshed Attendance Records:', data);
-
-      const normalized = data.attendance.map((item: any) => ({
-        ...item,
-        attendance_date: new Date(item.attendance_date).toISOString().split('T')[0]
-      }));
-
-      const groupedByDate: any = {};
-      normalized.forEach((record: any) => {
-        const dateObj = new Date(record.attendance_date);
-        dateObj.setDate(dateObj.getDate() + 1);
-        const date = dateObj.toISOString().split('T')[0];
-
-        if (!groupedByDate[date]) {
-          groupedByDate[date] = {
-            attendance_date: date,
-            records: []
-          };
-        }
-
-        groupedByDate[date].records.push({
-          check_in: record.check_in,
-          check_out: record.check_out
-        });
+        console.log('Updated attendance logs:', this.attendanceLogss);
       });
-
-      this.attendanceLogss = Object.values(groupedByDate).map((log: any) => {
-        let totalMinutes = 0;
-        let arrivalTime = '';
-
-        log.records.forEach((rec: any, index: number) => {
-          if (rec.check_in && index === 0) {
-            arrivalTime = rec.check_in;
-          }
-          if (rec.check_in && rec.check_out) {
-            const inTime = new Date(`1970-01-01T${rec.check_in}`);
-            const outTime = new Date(`1970-01-01T${rec.check_out}`);
-            const diffMinutes = (outTime.getTime() - inTime.getTime()) / 60000;
-            totalMinutes += diffMinutes;
-          }
-        });
-
-        const grossHours = this.formatHoursMinutes(Math.floor(totalMinutes));
-        const effectiveMinutes = Math.max(totalMinutes - this.breakMinutes, 0);
-        const effectiveHours = this.formatHoursMinutes(Math.floor(effectiveMinutes));
-
-        return {
-          ...log,
-          gross: grossHours,
-          effective: effectiveHours,
-          arrival: arrivalTime || '-',
-          progress: Math.min(totalMinutes / 480, 1)
-        };
-      });
-
-      console.log('Updated attendance logs:', this.attendanceLogss);
-    });
   }
 
   ngOnDestroy() {
@@ -387,8 +447,6 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
       clearInterval(this.refreshInterval);
     }
   }
-
-
 
   attendanceRecord() {
     if (!this.employee) return;
@@ -416,19 +474,25 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
         isOff = true;
       }
       this.calendarDays.push({
-        day, timing, isOff,
-        date: new Date(year, month, day)
+        day,
+        timing,
+        isOff,
+        date: new Date(year, month, day),
       });
     }
   }
 
   prevMonth() {
-    this.currentMonth = new Date(this.currentMonth.setMonth(this.currentMonth.getMonth() - 1));
+    this.currentMonth = new Date(
+      this.currentMonth.setMonth(this.currentMonth.getMonth() - 1)
+    );
     this.generateCalendar(this.currentMonth);
   }
 
   nextMonth() {
-    this.currentMonth = new Date(this.currentMonth.setMonth(this.currentMonth.getMonth() + 1));
+    this.currentMonth = new Date(
+      this.currentMonth.setMonth(this.currentMonth.getMonth() + 1)
+    );
     this.generateCalendar(this.currentMonth);
   }
 
@@ -450,45 +514,47 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   openLogDetails(log: AttendanceLog) {
     const logDate = (log as any).attendance_date;
-    
+
     // Function to fetch latest data
     const fetchLogData = () => {
-      this.attendanceService.getallattendace({
-        employee_id: this.abcd.employeeID,
-        date: logDate
-      }).subscribe({
-        next: (data) => {
-          if (data && data.attendance && data.attendance.length > 0) {
-            const updatedRecords = data.attendance.map((item: any) => ({
-              check_in: item.check_in,
-              check_out: item.check_out
-            }));
-            
-            const updatedLog = {
-              ...log,
-              records: updatedRecords
-            };
-            this.selectedLog = updatedLog;
-          } else {
-            this.selectedLog = log;
-          }
-          if (!this.showPopover) {
-            this.showPopover = true;
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching log data:', err);
-          if (!this.selectedLog) {
-            this.selectedLog = log;
-            this.showPopover = true;
-          }
-        }
-      });
+      this.attendanceService
+        .getallattendace({
+          employee_id: this.abcd.employeeID,
+          date: logDate,
+        })
+        .subscribe({
+          next: (data) => {
+            if (data && data.attendance && data.attendance.length > 0) {
+              const updatedRecords = data.attendance.map((item: any) => ({
+                check_in: item.check_in,
+                check_out: item.check_out,
+              }));
+
+              const updatedLog = {
+                ...log,
+                records: updatedRecords,
+              };
+              this.selectedLog = updatedLog;
+            } else {
+              this.selectedLog = log;
+            }
+            if (!this.showPopover) {
+              this.showPopover = true;
+            }
+          },
+          error: (err) => {
+            console.error('Error fetching log data:', err);
+            if (!this.selectedLog) {
+              this.selectedLog = log;
+              this.showPopover = true;
+            }
+          },
+        });
     };
-    
+
     // Initial fetch
     fetchLogData();
-    
+
     // Set up auto-refresh every 3 seconds while popover is open
     this.refreshInterval = setInterval(() => {
       if (this.showPopover) {
@@ -502,7 +568,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   closePopover() {
     this.showPopover = false;
     this.selectedLog = null;
-    
+
     // Clear any ongoing refresh intervals
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
@@ -535,10 +601,15 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   loadHistory() {
     if (!this.record) return;
-    const rawHistory = this.attendanceService.getHistoryByRange(this.record, this.selectedRange);
-    this.history = rawHistory.map(event => ({
+    const rawHistory = this.attendanceService.getHistoryByRange(
+      this.record,
+      this.selectedRange
+    );
+    this.history = rawHistory.map((event) => ({
       ...event,
-      displayTime: new Date(event.time).toLocaleTimeString('en-US', { hour12: true })
+      displayTime: new Date(event.time).toLocaleTimeString('en-US', {
+        hour12: true,
+      }),
     }));
   }
 
@@ -569,22 +640,44 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
     // Generate all dates in the selected range
     const allDates = [];
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    for (
+      let d = new Date(startDate);
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
       allDates.push(new Date(d));
     }
 
     // Add weekend rows for missing Saturday/Sunday
-    allDates.forEach(date => {
+    allDates.forEach((date) => {
       const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
       const dateStr = date.toISOString().split('T')[0];
-      
-      if ((dayOfWeek === 0 || dayOfWeek === 6)) { // Weekend
-        const existingEntry = result.find(entry => entry.attendance_date === dateStr);
+
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        // Weekend
+        const existingEntry = result.find(
+          (entry) => entry.attendance_date === dateStr
+        );
         if (!existingEntry) {
           const dayName = dayOfWeek === 0 ? 'Sun' : 'Sat';
-          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-          const displayDate = `${dayName}, ${date.getDate()} ${monthNames[date.getMonth()]}`;
-          
+          const monthNames = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+          ];
+          const displayDate = `${dayName}, ${date.getDate()} ${
+            monthNames[date.getMonth()]
+          }`;
+
           result.push({
             attendance_date: dateStr,
             displayDate: displayDate,
@@ -593,7 +686,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
             effective: '-',
             arrival: '-',
             progress: 0,
-            isWeekend: true
+            isWeekend: true,
           });
         }
       }
@@ -609,51 +702,70 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   getMonthName(period: string): string {
     const monthNames: { [key: string]: string } = {
-      'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
-      'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
-      'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
+      JAN: 'January',
+      FEB: 'February',
+      MAR: 'March',
+      APR: 'April',
+      MAY: 'May',
+      JUN: 'June',
+      JUL: 'July',
+      AUG: 'August',
+      SEP: 'September',
+      OCT: 'October',
+      NOV: 'November',
+      DEC: 'December',
     };
     return monthNames[period] || period;
   }
 
-  getDateRange(period: string): { start: string, end: string } {
+  getDateRange(period: string): { start: string; end: string } {
     const currentDate = new Date();
-    
+
     if (period === '30DAYS') {
       const pastDate = new Date();
       pastDate.setDate(currentDate.getDate() - 30);
       return {
         start: pastDate.toISOString().split('T')[0],
-        end: currentDate.toISOString().split('T')[0]
+        end: currentDate.toISOString().split('T')[0],
       };
     }
-    
+
     // Handle month filters
     const monthMap: { [key: string]: number } = {
-      'JAN': 0, 'FEB': 1, 'MAR': 2, 'APR': 3, 'MAY': 4, 'JUN': 5,
-      'JUL': 6, 'AUG': 7, 'SEP': 8, 'OCT': 9, 'NOV': 10, 'DEC': 11
+      JAN: 0,
+      FEB: 1,
+      MAR: 2,
+      APR: 3,
+      MAY: 4,
+      JUN: 5,
+      JUL: 6,
+      AUG: 7,
+      SEP: 8,
+      OCT: 9,
+      NOV: 10,
+      DEC: 11,
     };
-    
+
     const targetMonth = monthMap[period];
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    
+
     // If target month is in the future, use previous year
     const year = targetMonth > currentMonth ? currentYear - 1 : currentYear;
-    
+
     const startDate = new Date(year, targetMonth, 1);
     const endDate = new Date(year, targetMonth + 1, 0); // Last day of month
-    
+
     return {
       start: startDate.toISOString().split('T')[0],
-      end: endDate.toISOString().split('T')[0]
+      end: endDate.toISOString().split('T')[0],
     };
   }
 
   ionViewWillEnter() {
     console.log('Attendance log view entered, refreshing data...');
     this.loadAllAttendanceData();
-    
+
     // Multiple instant refreshes for immediate data sync
     setTimeout(() => this.loadAllAttendanceData(), 5);
     setTimeout(() => this.loadAllAttendanceData(), 25);
@@ -662,14 +774,42 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   formatDisplayDate(dateStr: string): string {
     const date = new Date(dateStr);
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`;
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return `${days[date.getDay()]}, ${date.getDate()} ${
+      months[date.getMonth()]
+    }`;
   }
 
   generateMonthButtons() {
     const currentMonth = new Date().getMonth();
-    const monthAbbr = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    
+    const monthAbbr = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
+
     this.monthButtons = [];
     for (let i = 0; i < 6; i++) {
       let monthIndex = currentMonth - 1 - i;

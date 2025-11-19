@@ -256,7 +256,7 @@ export default class AttendanceService {
   }
   public static async getTodayAttendanceExtra(emp_id: string, asdfads: string) {
     const [adfasd]: any = await pool.query(
-      `SELECT attendance_id, employee_id, attendance_date,
+      `SELECT employee_id, attendance_date,
        MIN(check_in) as first_check_in,
        MAX(check_out) as last_check_out,
        DATE_FORMAT(MAX(check_out), '%H:%i:%s') as departure_time,

@@ -48,7 +48,15 @@ export interface Candidate {
   };
   isAvailable?: boolean;
 }
-
+export interface CandidateSearchResult {
+  employee_id: number;
+  employee_number: string | null;
+  first_name: string | null;
+  middle_name: string | null;
+  last_name: string | null;
+  full_name: string | null;
+  work_email: string | null;
+}
 export interface Employee {
   employee_id: number;
   employee_number: string;
@@ -135,26 +143,25 @@ export interface EmployeeResponse {
 }
 
 export interface Shifts {
-  shift_name: string,
-  check_in: string,
-  check_out: string
+  shift_name: string;
+  check_in: string;
+  check_out: string;
 }
 
 export interface leaveRequests {
-  employee_id: number,
-  action: string,
+  employee_id: number;
+  action: string;
 }
 
 export interface weekOff {
-  week_off_policy_name: string,
-  week_off_days: string,
+  week_off_policy_name: string;
+  week_off_days: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class CandidateService {
-
   private currentLoggedEmployeeId: number | null = null;
   private env = environment;
   private api = `https://${this.env.apiURL}/api/v1/`;
@@ -201,9 +208,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {
-
-  }
+  ) {}
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -259,7 +264,6 @@ export class CandidateService {
     return this.http.post<any>(this.empUrl, body, { withCredentials: true });
   }
 
-
   setLoggedEmployeeId(id: number) {
     this.currentLoggedEmployeeId = id;
   }
@@ -271,11 +275,8 @@ export class CandidateService {
     return this.http.post<Shifts>(this.shiftsUrl, shifts);
   }*/
   getReportingTeam(employeeId: number): Observable<any> {
-    return this.http.get(
-      `${this.api}employees/under-manager/${employeeId}`
-    );
+    return this.http.get(`${this.api}employees/under-manager/${employeeId}`);
   }
-
 
   // getLeaveRequests(leaveRequest: leaveRequests): Observable<leaveRequests> {
   //   return this.http.post<leaveRequests>(this.leaverequesrUrl, leaveRequest);
@@ -289,8 +290,6 @@ export class CandidateService {
     return this.http.post(`${this.leaveactionUrl}`, payload);
   }
 
-
-
   /*************  ✨ Windsurf Command ⭐  *************/
   /**
    * Returns an observable of shifts from the server.
@@ -302,13 +301,13 @@ export class CandidateService {
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
   getShifts(shifts: Shifts): Observable<Shifts> {
     return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
-      withCredentials: true
+      withCredentials: true,
     });
   }
 
   getWeekOffPolicies(weekoff: weekOff): Observable<weekOff> {
     return this.http.post<weekOff>(this.weekoffsUrl, weekoff, {
-      withCredentials: true
+      withCredentials: true,
     });
   }
 
@@ -319,9 +318,13 @@ export class CandidateService {
   }
 
   getShiftByName(shift_policy_name: string): Observable<any> {
-    return this.http.post<any>(`${this.shiftsUrl}get-shift-policy`, { shift_policy_name }, {
-      withCredentials: true
-    });
+    return this.http.post<any>(
+      `${this.shiftsUrl}get-shift-policy`,
+      { shift_policy_name },
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   getAllEmployees(): Observable<EmployeeResponse> {
@@ -524,7 +527,7 @@ export class CandidateService {
     // Preserve attendance data during logout
     const attendanceKeys: string[] = [];
     const attendanceData: { [key: string]: string } = {};
-    
+
     // Save all attendance-related localStorage items
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -533,28 +536,24 @@ export class CandidateService {
         attendanceData[key] = localStorage.getItem(key) || '';
       }
     }
-    
+
     // Clear all localStorage
     localStorage.clear();
-    
+
     // Restore attendance data
-    attendanceKeys.forEach(key => {
+    attendanceKeys.forEach((key) => {
       localStorage.setItem(key, attendanceData[key]);
     });
-    
+
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
     this.profileImageSubject.next(null);
     this.routeGuardService.logout();
   }
 
-  searchCandidates(query: string): Candidate[] {
+  searchCandidates(query: string): Observable<CandidateSearchResult[]> {
     const lowerQuery = query.toLowerCase().trim();
-    return this.candidatesSubject.value.filter(
-      (c) =>
-        c.personalDetails.FirstName.toLowerCase().includes(lowerQuery) ||
-        c.personalDetails.LastName.toLowerCase().includes(lowerQuery)
-    );
+    return this.http.get<CandidateSearchResult[]>(`${this.api}search?q=${lowerQuery}`);
   }
   setCurrentEmployee(employee: Employee | null): void {
     this.currentEmployeeSubject.next(employee);

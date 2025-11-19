@@ -1,5 +1,5 @@
-import { pool } from "../config/database";
-import { WeekOffPolicy } from "../interface/weekoff.interface";
+import { pool } from '../config/database';
+import { WeekOffPolicy } from '../interface/weekoff.interface';
 
 export default class WeekOffPolicyService {
   // Create new policy
@@ -45,5 +45,12 @@ export default class WeekOffPolicyService {
       [id]
     );
     return result;
+  }
+  public static async getPolicyOfEmp(employeeId: number) {
+    const [r]: any = await pool.query(
+      'select week_off_days from week_off_policies where week_off_policy_name = (select weekly_off_policy_name from employment_details where employee_id = ?)',
+      [employeeId]
+    );
+    return r[0];
   }
 }

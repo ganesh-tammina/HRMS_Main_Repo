@@ -3,6 +3,7 @@ import {
   CandidateService,
   Candidate,
   Employee,
+  CandidateSearchResult,
 } from 'src/app/services/pre-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -25,7 +26,7 @@ export class HeaderComponent implements OnInit {
 
   // Search functionality
   searchQuery: string = '';
-  searchResults: Candidate[] = [];
+  searchResults: CandidateSearchResult[] = [];
   results: any;
   one: any;
   full_name: string = '';
@@ -45,13 +46,12 @@ export class HeaderComponent implements OnInit {
     private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService,
     private router: Router,
-    private navCtrl: NavController   // ✅ add this
-
-  ) { }
+    private navCtrl: NavController // ✅ add this
+  ) {}
 
   ngOnInit() {
     this.candidateService.Employee$.subscribe((employees) => {
-      console.log("👀 Employee$ value:", employees);
+      console.log('👀 Employee$ value:', employees);
     });
 
     // Load profile image from localStorage
@@ -68,7 +68,10 @@ export class HeaderComponent implements OnInit {
         console.log('🖼️ Header: Profile image cleared on logout');
       }
     });
-    console.log('🖼️ Loaded image URL from localStorage:', this.uploadedImageUrl);
+    console.log(
+      '🖼️ Loaded image URL from localStorage:',
+      this.uploadedImageUrl
+    );
 
     // this.currentEmployee$ = this.candidateService.currentEmployee$;
 
@@ -81,7 +84,6 @@ export class HeaderComponent implements OnInit {
 
     //   console.log('Current Employee:', this.currentemp);
     // });
-
 
     if (this.routeGuardService.employeeID) {
       this.candidateService.getEmpDet().subscribe({
@@ -98,7 +100,6 @@ export class HeaderComponent implements OnInit {
             console.log(this.fullName);
 
             console.log(this.employee_id);
-
           }
         },
         error: (err) => {
@@ -107,9 +108,7 @@ export class HeaderComponent implements OnInit {
       });
       // Subscribe to current candidate observable
 
-
       // Fallback: if page refreshed
-
     }
   }
 
@@ -130,15 +129,16 @@ export class HeaderComponent implements OnInit {
       return;
     }
 
-    this.searchResults = this.candidateService.searchCandidates(
-      this.searchQuery
-    );
+    this.candidateService.searchCandidates(this.searchQuery).subscribe({
+      next: (results) => {
+        this.searchResults = results;
+        this.results = this.searchResults.map(
+          (emp) => `${emp.first_name} ${emp.last_name}`
+        );
+      },
+    });
     // this.results = JSON.stringify(this.searchResults)
     // console.log(this.results)
-    this.results = this.searchResults.map(
-      (emp) =>
-        `${emp.personalDetails.FirstName} ${emp.personalDetails.LastName}`
-    );
 
     console.log(this.results);
   }

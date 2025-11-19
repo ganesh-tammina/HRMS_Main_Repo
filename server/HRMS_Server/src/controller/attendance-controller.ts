@@ -227,8 +227,12 @@ export default class AttendanceController {
   }
 
   public static async kasdja(req: Request, res: Response) {
+    console.log("d");
+    
     try {
       const { LogType, EmpID } = req.body;
+      console.log("emp", LogType);
+      
       const currentTime = String(new Date().toTimeString().split(' ')[0]);
       const currentDate = String(new Date().toISOString().split('T')[0]);
 

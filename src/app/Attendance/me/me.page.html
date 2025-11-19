@@ -78,10 +78,10 @@
       <div style="display: flex; align-items: center; gap: 6px;">
         <p><strong>Week Offs: </strong></p>
         <div class="weekdays-container">
-          <span *ngFor="let day of allWeekDays" 
+          <!-- <span *ngFor="let day of allWeekDays" 
                 [ngClass]="{'week-off': isWeekOff(day), 'work-day': !isWeekOff(day)}">
             {{ day.substring(0, 3) }}
-          </span>
+          </span> -->
         </div>
       </div>
       <!-- progress binds to a numeric value between 0 and 1 -->
