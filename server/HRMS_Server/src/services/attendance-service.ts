@@ -256,10 +256,24 @@ export default class AttendanceService {
   }
   public static async getTodayAttendanceExtra(emp_id: string, asdfads: string) {
     const [adfasd]: any = await pool.query(
-      `SELECT employee_id, attendance_date, check_in, check_out
-       FROM attendance 
+      `SELECT attendance_id, employee_id, attendance_date,
+       MIN(check_in) as first_check_in,
+       MAX(check_out) as last_check_out,
+       DATE_FORMAT(MAX(check_out), '%H:%i:%s') as departure_time,
+       CASE 
+         WHEN MIN(check_in) <= '09:30:00' THEN 'On Time'
+         ELSE CONCAT(DATE_FORMAT(TIMEDIFF(MIN(check_in), '09:30:00'), '%H:%i:%s'), ' late')
+       END as arrival_time,
+       CASE 
+         WHEN MIN(check_in) <= '09:30:00' THEN 'on_time'
+         ELSE 'late'
+       END as status,
+       CASE 
+         WHEN MIN(check_in) > '09:30:00' THEN DATE_FORMAT(TIMEDIFF(MIN(check_in), '09:30:00'), '%H:%i:%s')
+         ELSE NULL
+       END as late_duration
        WHERE employee_id = ? AND attendance_date = ?
-       ORDER BY check_in ASC`,
+       GROUP BY employee_id, attendance_date`,
       [emp_id, asdfads]
     );
 
