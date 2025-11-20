@@ -76,9 +76,13 @@ export class MePage implements OnInit {
   employee?: Candidate;
   record?: AttendanceRecord;
   shiftData?: any;
+  one: any;
+  shift_policy: any;
+  allEmployee: any;
   week_off_days: string[] = [];
   shift_check_in = '';
   shift_check_out = '';
+  allEmployees: any;
 
   shiftDuration = '9h 0m';
   breakMinutes = 60;
@@ -121,7 +125,8 @@ export class MePage implements OnInit {
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
-    private router: RouteGuardService
+    private router: RouteGuardService,
+    private routeGuardService: RouteGuardService,
   ) {
     this.generateCalendar(this.currentMonth);
     this.generateDays();
@@ -142,7 +147,24 @@ export class MePage implements OnInit {
   // RUN ONLY ONE-TIME LOGIC HERE
   // ---------------------------------------------------------
   ngOnInit() {
-   
+    if (this.routeGuardService.employeeID) {
+      this.candidateService.getEmpDet().subscribe({
+        next: (response: any) => {
+          this.allEmployees = response.data || [];
+          if (this.allEmployees.length > 0) {
+            this.one = this.allEmployees[0];
+            this.shift_policy = this.one[0].shift_policy_name;
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching all employees:', err);
+        },
+      });
+      // Subscribe to current candidate observable
+
+      // Fallback: if page refreshed
+    }
+
   }
 
   // ---------------------------------------------------------
