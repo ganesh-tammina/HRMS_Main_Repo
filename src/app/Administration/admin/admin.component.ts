@@ -8,13 +8,21 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { environment } from 'src/environments/environment';
 import { ShiftsComponent } from './shifts/shifts.component';
 import { WeekoffsComponent } from '../weekoffs/weekoffs.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, LeaveModalComponent, ShiftsComponent, WeekoffsComponent],
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    LeaveModalComponent,
+    ShiftsComponent,
+    WeekoffsComponent,
+  ],
 })
 export class AdminComponent implements OnInit {
   selectedFile: File | null = null;
@@ -24,6 +32,7 @@ export class AdminComponent implements OnInit {
   holidays: any;
   candidatelist: any;
   candidates: any;
+  employee_list_length: number = 0;
   public allCandidates: any[] = [];
   public pagedCandidates: any[] = [];
   public pageSize: number = 10;
@@ -36,8 +45,9 @@ export class AdminComponent implements OnInit {
   isLoading: boolean = true;
   constructor(
     private http: HttpClient,
-    private candidateService: CandidateService
-  ) { }
+    private candidateService: CandidateService,
+    private router: Router
+  ) {}
 
   async ngOnInit() {
     this.isLoading = true;
@@ -105,25 +115,40 @@ export class AdminComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', this.EmployeeselectedFile);
     this.http
-      .post(`https://${environment.apiURL}/existingemployees`, formData)
+      .post(`https://${environment.apiURL}/api/v1/parse-excel`, formData)
       .subscribe({
-        next: (res) => {
+        next: (res: any) => {
           console.log(res);
           alert('Upload successful!');
+
+          if (res.success) {
+            this.employee_list_length = res.rowCount;
+            localStorage.setItem('employee_list', JSON.stringify(res.data));
+          }
         },
         error: (err) => {
           console.error(err);
           alert('Upload failed!');
         },
       });
-    this.http
-      .post(`https://${environment.apiURL}/existingemployees`, formData)
-      .subscribe(
-        (res: any) => console.log(res),
-        (err: any) => console.error(err)
-      );
   }
-
+  save_EMployees() {
+    const employeeData = localStorage.getItem('employee_list');
+    if (!employeeData) {
+      alert('No employee data to save. Please upload a file first.');
+      return;
+    }
+    this.http
+      .post(
+        `https://${environment.apiURL}/api/v1/bulk-data-entry`,
+        JSON.parse(employeeData)
+      )
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+        },
+      });
+  }
   Upload() {
     if (!this.selectedFile) return;
 
@@ -131,10 +156,7 @@ export class AdminComponent implements OnInit {
     formData.append('file', this.selectedFile);
 
     this.http
-      .post(
-        `https://${environment.apiURL}/holidays/public_holidays`,
-        formData
-      )
+      .post(`https://${environment.apiURL}/holidays/public_holidays`, formData)
       .subscribe({
         next: (res) => {
           console.log(res);
@@ -169,5 +191,9 @@ export class AdminComponent implements OnInit {
   deleteLeaves() {
     this.leaveData = null;
     localStorage.removeItem('leaveData');
+  }
+
+  dep(){
+    this.router.navigate(['/admin-department']);
   }
 }

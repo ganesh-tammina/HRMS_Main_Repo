@@ -27,6 +27,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { salaryStaructureComponent } from './salary-staructure/salary-staructure.component';
 import { AuthGuard } from './services/route-guard/auth/single-guard.guard';
 import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-handler.guard';
+import { AdminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -34,7 +35,7 @@ export const routes: Routes = [
     path: 'Home',
     component: HomePage,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: 'user' },
+    data: { role: 'HR' },
   },
   {
     path: 'Me',
@@ -79,13 +80,18 @@ export const routes: Routes = [
     component: CandidateOfferLetterComponent,
   },
   {
-    path: 'profile-page', component: ProfilePageComponent,
+    path: 'profile-page',
+    component: ProfilePageComponent,
   },
   {
     path: 'admin',
     component: AdminComponent,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: 'admin' },
+    data: { role: 'HR' },
   },
   { path: 'organisation_info', component: OrganisationInfoComponent },
+  {
+    path: 'admin-department',
+    component: AdminFunctionalityComponent,
+  },
 ];
