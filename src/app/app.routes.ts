@@ -35,19 +35,19 @@ export const routes: Routes = [
     path: 'Home',
     component: HomePage,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: 'HR' },
+    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'Me',
     component: MePage,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: 'user' },
+    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'MyTeam',
     component: MyTeamPage,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: 'user' },
+    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   { path: 'login', component: LoginPage },
   { path: 'settings', component: PostPage },
@@ -77,7 +77,7 @@ export const routes: Routes = [
   { path: 'candidate_status/:id', component: CandidateStatusComponent },
   {
     path: 'candidate-offer-letter/:id',
-    component: CandidateOfferLetterComponent,
+    component: CandidateOfferLetterComponent
   },
   {
     path: 'profile-page',
@@ -87,11 +87,18 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminComponent,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: 'HR' },
+    data: { role: ['HR', 'ADMIN'] },
   },
-  { path: 'organisation_info', component: OrganisationInfoComponent },
+  {
+    path: 'organisation_info',
+    component: OrganisationInfoComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['HR', 'USER', 'ADMIN'] },
+  },
   {
     path: 'admin-department',
     component: AdminFunctionalityComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['HR', 'ADMIN'] },
   },
 ];
