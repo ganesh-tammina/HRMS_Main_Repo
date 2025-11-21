@@ -13,63 +13,36 @@
 
               <ion-card-subtitle>
                 <div class="tooltip-container">
-                  <ion-button id="open-upload-modal" fill="clear"
-                    ><ion-icon name="add-circle-outline"></ion-icon
-                  ></ion-button>
+                  <ion-button id="open-upload-modal" fill="clear"><ion-icon
+                      name="add-circle-outline"></ion-icon></ion-button>
                   <span class="tooltip-text mt-8">Add Employees</span>
                 </div>
-                <ion-modal
-                  class="upload-main-block"
-                  trigger="open-upload-modal"
-                  #modal
-                >
+                <ion-modal class="upload-main-block" trigger="open-upload-modal" #modal>
                   <ng-template>
                     <ion-content class="ion-padding">
                       <div class="upload-block" (click)="EmployeeInput.click()">
-                        <ion-icon
-                          name="folder-open-outline"
-                          class="folder-icon"
-                        ></ion-icon>
+                        <ion-icon name="folder-open-outline" class="folder-icon"></ion-icon>
                         <p><strong>Upload a file</strong></p>
                         <p>Attach the file below</p>
                         <div class="drag-drop-area">
-                          <ion-icon
-                            name="arrow-down-circle-outline"
-                            class="upload-icon"
-                          ></ion-icon>
+                          <ion-icon name="arrow-down-circle-outline" class="upload-icon"></ion-icon>
                           <p>Drag file(s) here to upload.</p>
                           <p>
                             Alternatively, you can select a file by
-                            <label
-                              for="file-upload-input"
-                              class="select-file-link"
-                            >
+                            <label for="file-upload-input" class="select-file-link">
                               clicking here
-                              <input
-                                type="file"
-                                #EmployeeInput
-                                id="file-upload-input"
-                                (change)="EmployeeSelected($event)"
-                                accept=".xlsx,.xls"
-                              />
+                              <input type="file" #EmployeeInput id="file-upload-input"
+                                (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />
                             </label>
                           </p>
                         </div>
                       </div>
 
                       <div class="modal-actions">
-                        <ion-button
-                          fill="outline"
-                          color="medium"
-                          (click)="modal.dismiss(null, 'cancel')"
-                          >Cancel</ion-button
-                        >
-                        <ion-button
-                          class="primary-btn"
-                          (click)="EmployeesUpload()"
-                          [disabled]="!EmployeeselectedFile"
-                          >Upload File</ion-button
-                        >
+                        <ion-button fill="outline" color="medium"
+                          (click)="modal.dismiss(null, 'cancel')">Cancel</ion-button>
+                        <ion-button class="primary-btn" (click)="EmployeesUpload()"
+                          [disabled]="!EmployeeselectedFile">Upload File</ion-button>
                       </div>
                     </ion-content>
                   </ng-template>
@@ -97,11 +70,7 @@
               }
 
               <div class="row-center ion-padding">
-                <ion-button
-                  (click)="prevPage()"
-                  [disabled]="currentPage === 1"
-                  fill="clear"
-                >
+                <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
                   <ion-icon name="chevron-back-outline"></ion-icon>
                 </ion-button>
 
@@ -109,27 +78,17 @@
                   Page {{ currentPage }} of {{ totalPages }}
                 </ion-text>
 
-                <ion-button
-                  (click)="nextPage()"
-                  [disabled]="currentPage === totalPages || totalPages === 0"
-                  fill="clear"
-                >
+                <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0"
+                  fill="clear">
                   <ion-icon name="chevron-forward-outline"></ion-icon>
                 </ion-button>
 
-                <ion-item
-                  lines="none"
-                  style="max-width: 100px; margin-left: 10px"
-                >
-                  <ion-select
-                    [(ngModel)]="pageSize"
-                    placeholder="Size"
-                    (ionChange)="
+                <ion-item lines="none" style="max-width: 100px; margin-left: 10px">
+                  <ion-select [(ngModel)]="pageSize" placeholder="Size" (ionChange)="
                       calculatePagination();
                       updatePagedCandidates();
                       currentPage = 1
-                    "
-                  >
+                    ">
                     <ion-select-option [value]="5">5</ion-select-option>
                     <ion-select-option [value]="10">10</ion-select-option>
                     <ion-select-option [value]="20">20</ion-select-option>
@@ -146,25 +105,15 @@
               <ion-card-title>Holidays</ion-card-title>
               <ion-card-subtitle>
                 <div class="tooltip-container">
-                  <ion-button id="holiday-popup" fill="clear"
-                    ><ion-icon name="add-circle-outline"></ion-icon
-                  ></ion-button>
+                  <ion-button id="holiday-popup" fill="clear"><ion-icon
+                      name="add-circle-outline"></ion-icon></ion-button>
                   <span class="tooltip-text mt-8">Add holidays</span>
                 </div>
-                <ion-popover
-                  trigger="holiday-popup"
-                  class="upload-file"
-                  [dismissOnSelect]="false"
-                >
+                <ion-popover trigger="holiday-popup" class="upload-file" [dismissOnSelect]="false">
                   <ng-template>
                     <ion-content class="ion-padding">
-                      <input
-                        type="file"
-                        #fileInput
-                        (click)="fileInput.click()"
-                        (change)="onFileSelected($event)"
-                        accept=".xlsx,.xls"
-                      />
+                      <input type="file" #fileInput (click)="fileInput.click()" (change)="onFileSelected($event)"
+                        accept=".xlsx,.xls" />
                       <div class="row-center">
                         <button (click)="Upload()" [disabled]="!selectedFile">
                           Upload
@@ -179,17 +128,13 @@
               <ion-list *ngFor="let holiday of holidays">
                 <ion-item>
                   <ion-thumbnail slot="start">
-                    <img
-                      alt="Silhouette of mountains"
-                      src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
-                    />
+                    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
                   </ion-thumbnail>
                   <ion-label>{{ holiday.HolidayName }}</ion-label>
                   <ion-label>{{ holiday.Date }}</ion-label>
                   <ion-label>{{ holiday.Day }}</ion-label>
-                  <ion-button fill="popover-editform" id="popover-editform"
-                    ><ion-icon name="create-outline"></ion-icon
-                  ></ion-button>
+                  <ion-button fill="popover-editform" id="popover-editform"><ion-icon
+                      name="create-outline"></ion-icon></ion-button>
                 </ion-item>
               </ion-list>
             </ion-card-content>
@@ -202,13 +147,7 @@
               <ion-card-title>All dropdowns</ion-card-title>
             </ion-card-header>
             <ion-row>
-              <ion-col
-                size="12"
-                size-sm="12"
-                size-md="6"
-                size-lg="4"
-                size-xl="4"
-              >
+              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
                 <ion-card-content>
                   <title>Department</title>
                   <ion-list>
@@ -217,21 +156,12 @@
                       <ion-icon name="create-outline"></ion-icon>
                     </ion-item>
                   </ion-list>
-                  <ion-button id="addDept-popup" fill="clear"
-                    >Add Department</ion-button
-                  >
-                  <ion-popover
-                    trigger="addDept-popup"
-                    class="upload-file"
-                    [dismissOnSelect]="false"
-                  >
+                  <ion-button id="addDept-popup" fill="clear">Add Department</ion-button>
+                  <ion-popover trigger="addDept-popup" class="upload-file" [dismissOnSelect]="false">
                     <ng-template>
                       <ion-content class="ion-padding">
-                        <ion-input
-                          label="Department"
-                          labelPlacement="floating"
-                          placeholder="Enter Department"
-                        ></ion-input>
+                        <ion-input label="Department" labelPlacement="floating"
+                          placeholder="Enter Department"></ion-input>
                         <div class="row-center">
                           <button>Upload</button>
                         </div>
@@ -240,13 +170,7 @@
                   </ion-popover>
                 </ion-card-content>
               </ion-col>
-              <ion-col
-                size="12"
-                size-sm="12"
-                size-md="6"
-                size-lg="4"
-                size-xl="4"
-              >
+              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
                 <ion-card-content>
                   <title>Job Titles</title>
                   <ion-list>
@@ -256,26 +180,14 @@
                       <ion-icon name="create-outline"></ion-icon>
                     </ion-item>
                   </ion-list>
-                  <ion-button id="addjob-popup" fill="clear"
-                    >Add Title</ion-button
-                  >
-                  <ion-popover
-                    trigger="addjob-popup"
-                    class="upload-file"
-                    [dismissOnSelect]="false"
-                  >
+                  <ion-button id="addjob-popup" fill="clear">Add Title</ion-button>
+                  <ion-popover trigger="addjob-popup" class="upload-file" [dismissOnSelect]="false">
                     <ng-template>
                       <ion-content class="ion-padding">
-                        <ion-input
-                          label="Job Title"
-                          labelPlacement="floating"
-                          placeholder="Enter Job Title"
-                        ></ion-input>
-                        <ion-input
-                          label="Job Category"
-                          labelPlacement="floating"
-                          placeholder="Enter Job Category"
-                        ></ion-input>
+                        <ion-input label="Job Title" labelPlacement="floating"
+                          placeholder="Enter Job Title"></ion-input>
+                        <ion-input label="Job Category" labelPlacement="floating"
+                          placeholder="Enter Job Category"></ion-input>
                         <div class="row-center">
                           <button>Upload</button>
                         </div>
@@ -284,13 +196,7 @@
                   </ion-popover>
                 </ion-card-content>
               </ion-col>
-              <ion-col
-                size="12"
-                size-sm="12"
-                size-md="6"
-                size-lg="4"
-                size-xl="4"
-              >
+              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
                 <ion-card-content>
                   <title>Job Locations</title>
                   <ion-list>
@@ -300,21 +206,11 @@
                       <ion-icon name="create-outline"></ion-icon>
                     </ion-item>
                   </ion-list>
-                  <ion-button id="addlocation-popup" fill="clear"
-                    >Add Location</ion-button
-                  >
-                  <ion-popover
-                    trigger="addlocation-popup"
-                    class="upload-file"
-                    [dismissOnSelect]="false"
-                  >
+                  <ion-button id="addlocation-popup" fill="clear">Add Location</ion-button>
+                  <ion-popover trigger="addlocation-popup" class="upload-file" [dismissOnSelect]="false">
                     <ng-template>
                       <ion-content class="ion-padding">
-                        <ion-input
-                          label="Location"
-                          labelPlacement="floating"
-                          placeholder="Enter Location"
-                        ></ion-input>
+                        <ion-input label="Location" labelPlacement="floating" placeholder="Enter Location"></ion-input>
                         <div class="row-center">
                           <button>Upload</button>
                         </div>
@@ -323,13 +219,7 @@
                   </ion-popover>
                 </ion-card-content>
               </ion-col>
-              <ion-col
-                size="12"
-                size-sm="12"
-                size-md="6"
-                size-lg="4"
-                size-xl="4"
-              >
+              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
                 <ion-card-content>
                   <title>Work Type</title>
                   <ion-list>
@@ -338,21 +228,12 @@
                       <ion-icon name="create-outline"></ion-icon>
                     </ion-item>
                   </ion-list>
-                  <ion-button id="addtype-popup" fill="clear"
-                    >Add Work Type</ion-button
-                  >
-                  <ion-popover
-                    trigger="addtype-popup"
-                    class="upload-file"
-                    [dismissOnSelect]="false"
-                  >
+                  <ion-button id="addtype-popup" fill="clear">Add Work Type</ion-button>
+                  <ion-popover trigger="addtype-popup" class="upload-file" [dismissOnSelect]="false">
                     <ng-template>
                       <ion-content class="ion-padding">
-                        <ion-input
-                          label="Work Type"
-                          labelPlacement="floating"
-                          placeholder="Enter Work type"
-                        ></ion-input>
+                        <ion-input label="Work Type" labelPlacement="floating"
+                          placeholder="Enter Work type"></ion-input>
                         <div class="row-center">
                           <button>Upload</button>
                         </div>
@@ -361,13 +242,7 @@
                   </ion-popover>
                 </ion-card-content>
               </ion-col>
-              <ion-col
-                size="12"
-                size-sm="12"
-                size-md="6"
-                size-lg="4"
-                size-xl="4"
-              >
+              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
                 <ion-card-content>
                   <title>Gender</title>
                   <ion-list>
@@ -376,21 +251,11 @@
                       <ion-icon name="create-outline"></ion-icon>
                     </ion-item>
                   </ion-list>
-                  <ion-button id="addgendere-popup" fill="clear"
-                    >Add Gender</ion-button
-                  >
-                  <ion-popover
-                    trigger="addgendere-popup"
-                    class="upload-file"
-                    [dismissOnSelect]="false"
-                  >
+                  <ion-button id="addgendere-popup" fill="clear">Add Gender</ion-button>
+                  <ion-popover trigger="addgendere-popup" class="upload-file" [dismissOnSelect]="false">
                     <ng-template>
                       <ion-content class="ion-padding">
-                        <ion-input
-                          label="Gender"
-                          labelPlacement="floating"
-                          placeholder="Enter Gender"
-                        ></ion-input>
+                        <ion-input label="Gender" labelPlacement="floating" placeholder="Enter Gender"></ion-input>
                         <div class="row-center">
                           <button>Upload</button>
                         </div>
@@ -431,15 +296,12 @@
     </div>
   </ion-grid>
   <div *ngIf="showModal">
-    <app-leave-modal
-      (saveLeaves)="handleSave($event)"
-      (closeModal)="handleClose()"
-    ></app-leave-modal>
+    <app-leave-modal (saveLeaves)="handleSave($event)" (closeModal)="handleClose()"></app-leave-modal>
   </div>
   <div>
     <app-shifts></app-shifts>
   </div>
   <div>
-    <app-weekoffs></app-weekoffs>
+    <app-weekoff></app-weekoff>
   </div>
 </ion-content>

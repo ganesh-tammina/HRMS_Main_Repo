@@ -7,8 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { environment } from 'src/environments/environment';
 import { ShiftsComponent } from './shifts/shifts.component';
-import { WeekoffsComponent } from '../weekoffs/weekoffs.component';
 import { Router } from '@angular/router';
+import { WeekoffComponent } from '../weekoffs/weekoffs.component';
 
 @Component({
   selector: 'app-admin',
@@ -21,7 +21,8 @@ import { Router } from '@angular/router';
     FormsModule,
     LeaveModalComponent,
     ShiftsComponent,
-    WeekoffsComponent,
+    WeekoffComponent
+
   ],
 })
 export class AdminComponent implements OnInit {
@@ -47,7 +48,7 @@ export class AdminComponent implements OnInit {
     private http: HttpClient,
     private candidateService: CandidateService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.isLoading = true;
@@ -193,7 +194,7 @@ export class AdminComponent implements OnInit {
     localStorage.removeItem('leaveData');
   }
 
-  dep(){
+  dep() {
     this.router.navigate(['/admin-department']);
   }
 }

@@ -4,7 +4,9 @@
     <ion-segment-button value="departments">Departments</ion-segment-button>
     <ion-segment-button value="roles">Roles</ion-segment-button>
     <ion-segment-button value="jobtitles">Job Titles</ion-segment-button>
+    <ion-segment-button value="weekOffs">Week Off's</ion-segment-button>
     <ion-segment-button value="assignments">Assignments</ion-segment-button>
+
   </ion-segment>
 
   <!-- ================= Departments ================= -->
@@ -21,7 +23,8 @@
           <ion-input [(ngModel)]="deptModel.description"></ion-input>
         </ion-item>
 
-        <ion-button expand="block" (click)="saveDepartment()">{{ editingDepartmentId ? 'Update' : 'Create' }} Department</ion-button>
+        <ion-button expand="block" (click)="saveDepartment()">{{ editingDepartmentId ? 'Update' : 'Create' }}
+          Department</ion-button>
         <ion-button expand="block" color="medium" (click)="resetDeptForm()">Reset</ion-button>
 
         <ion-list>
@@ -32,7 +35,8 @@
               <small *ngIf="d.created_at">Created: {{ d.created_at | date:'short' }}</small>
             </ion-label>
             <ion-button fill="clear" slot="end" (click)="startEditDepartment(d)">Edit</ion-button>
-            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDeleteDepartment(d.department_id)">Delete</ion-button>
+            <ion-button fill="clear" color="danger" slot="end"
+              (click)="confirmDeleteDepartment(d.department_id)">Delete</ion-button>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -63,7 +67,8 @@
               <p>{{ r.description }}</p>
             </ion-label>
             <ion-button fill="clear" slot="end" (click)="startEditRole(r)">Edit</ion-button>
-            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDeleteRole(r.role_id)">Delete</ion-button>
+            <ion-button fill="clear" color="danger" slot="end"
+              (click)="confirmDeleteRole(r.role_id)">Delete</ion-button>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -83,11 +88,13 @@
         <ion-item>
           <ion-label position="stacked">Department</ion-label>
           <ion-select [(ngModel)]="jobTitleModel.department_id" placeholder="Select department">
-            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name }}</ion-select-option>
+            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name
+              }}</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="saveJobTitle()">{{ editingJobTitleId ? 'Update' : 'Create' }} Job Title</ion-button>
+        <ion-button expand="block" (click)="saveJobTitle()">{{ editingJobTitleId ? 'Update' : 'Create' }} Job
+          Title</ion-button>
         <ion-button expand="block" color="medium" (click)="resetJobTitleForm()">Reset</ion-button>
 
         <ion-list>
@@ -97,7 +104,8 @@
               <p *ngIf="j.department_name">Dept: {{ j.department_name }}</p>
             </ion-label>
             <ion-button fill="clear" slot="end" (click)="startEditJobTitle(j)">Edit</ion-button>
-            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDeleteJobTitle(j.job_title_id)">Delete</ion-button>
+            <ion-button fill="clear" color="danger" slot="end"
+              (click)="confirmDeleteJobTitle(j.job_title_id)">Delete</ion-button>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -105,6 +113,13 @@
   </div>
 
   <!-- ================= Assignments (job-title / dept / employee) ================= -->
+  <div *ngIf="tab === 'weekOffs'">
+    <ion-card>
+      <ion-card-header><ion-card-title>Week Offs</ion-card-title></ion-card-header>
+    </ion-card>
+
+  </div>
+
   <div *ngIf="tab === 'assignments'">
     <ion-card>
       <ion-card-header><ion-card-title>Job Title ↔ Role</ion-card-title></ion-card-header>
@@ -112,7 +127,8 @@
         <ion-item>
           <ion-label>Job Title</ion-label>
           <ion-select [(ngModel)]="jobTitleRoleModel.job_title_id">
-            <ion-select-option *ngFor="let j of jobTitles" [value]="j.job_title_id">{{ j.job_title_name }}</ion-select-option>
+            <ion-select-option *ngFor="let j of jobTitles" [value]="j.job_title_id">{{ j.job_title_name
+              }}</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -134,7 +150,8 @@
         <ion-item>
           <ion-label>Department</ion-label>
           <ion-select [(ngModel)]="departmentRoleModel.department_id">
-            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name }}</ion-select-option>
+            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name
+              }}</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -146,7 +163,8 @@
         </ion-item>
 
         <ion-button expand="block" (click)="assignRoleToDepartment()">Assign to Department</ion-button>
-        <ion-button expand="block" color="danger" (click)="removeRoleFromDepartment()">Remove from Department</ion-button>
+        <ion-button expand="block" color="danger" (click)="removeRoleFromDepartment()">Remove from
+          Department</ion-button>
       </ion-card-content>
     </ion-card>
 
@@ -175,5 +193,7 @@
       </ion-card-content>
     </ion-card>
   </div>
+
+
 
 </ion-content>

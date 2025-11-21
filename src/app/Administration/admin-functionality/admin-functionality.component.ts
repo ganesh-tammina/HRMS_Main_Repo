@@ -19,7 +19,7 @@ export class AdminFunctionalityComponent implements OnInit {
   jobTitles: JobTitle[] = [];
 
   // UI
-  tab: 'departments' | 'roles' | 'jobtitles' | 'assignments' = 'departments';
+  tab: 'departments' | 'roles' | 'jobtitles' | 'weekOffs' | 'assignments' = 'departments';
   loading = false;
 
   // department form model
@@ -43,7 +43,7 @@ export class AdminFunctionalityComponent implements OnInit {
     private api: AdminService,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadAll();
@@ -63,7 +63,7 @@ export class AdminFunctionalityComponent implements OnInit {
   // ---------------- Departments ----------------
   loadDepartments() {
     this.loading = true;
-    this.api.getDepartments().pipe(finalize(()=> this.loading = false)).subscribe({
+    this.api.getDepartments().pipe(finalize(() => this.loading = false)).subscribe({
       next: (res: any) => this.departments = res?.data || [],
       error: async () => { await this.toast('Failed loading departments'); }
     });
