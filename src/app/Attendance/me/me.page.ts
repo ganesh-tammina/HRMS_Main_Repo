@@ -147,12 +147,15 @@ export class MePage implements OnInit {
   // RUN ONLY ONE-TIME LOGIC HERE
   // ---------------------------------------------------------
   ngOnInit() {
-    if (this.routeGuardService.employeeID) {
+    this.loadCandidateById();
+    /*if (this.routeGuardService.employeeID) {
       this.candidateService.getEmpDet().subscribe({
         next: (response: any) => {
           this.allEmployees = response.data || [];
+          console.log('allEmployees: ', this.allEmployees);
           if (this.allEmployees.length > 0) {
             this.one = this.allEmployees[0];
+            console.log("one: ",this.one);
             this.shift_policy = this.one[0].shift_policy_name;
           }
         },
@@ -163,8 +166,8 @@ export class MePage implements OnInit {
       // Subscribe to current candidate observable
 
       // Fallback: if page refreshed
-    }
-
+    }*/
+    
   }
 
   // ---------------------------------------------------------
@@ -508,14 +511,14 @@ export class MePage implements OnInit {
   }
 
   loadCandidateById() {
-    const employeeId = localStorage.getItem('employee_id');
-    if (employeeId) {
+    //const employeeId = localStorage.getItem('employee_id');
+    if (this.routeGuardService.employeeID) {
       this.candidateService.getEmpDet().subscribe({
         next: (response) => {
           if (response.data && response.data[0]) {
             const employees = response.data[0];
             const currentEmployee = employees.find(
-              (emp: any) => emp.employee_id == employeeId
+              (emp: any) => emp.employee_id == this.routeGuardService.employeeID
             );
 
             if (currentEmployee) {
@@ -529,6 +532,7 @@ export class MePage implements OnInit {
                       this.shiftData = shiftData;
                       this.shift_check_in = shiftData.data.check_in;
                       this.shift_check_out = shiftData.data.check_out;
+                      console.log('shiftData: ', shiftData);
                     },
                     error: (error) => {
                       console.error('Error getting shift details:', error);
