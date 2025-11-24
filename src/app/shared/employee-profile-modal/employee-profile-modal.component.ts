@@ -7,22 +7,26 @@ import { Candidate } from 'src/app/services/pre-onboarding.service';
   selector: 'app-employee-profile-modal',
   templateUrl: './employee-profile-modal.component.html',
   styleUrls: ['./employee-profile-modal.component.scss'],
-  standalone: true,   
-  imports: [IonicModule, CommonModule], 
+  standalone: true,
+  imports: [IonicModule, CommonModule],
 })
-export class EmployeeProfileModalComponent  implements OnInit {
+export class EmployeeProfileModalComponent implements OnInit {
 
- @Input() employee!: Candidate;  
+  @Input() selectedEmployee: any;
+  selectedObeject: any
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController) { }
+  ngOnInit() {
+    this.selectedObeject = this.selectedEmployee
+    console.log('Employee data in profile modal ganesh:', this.selectedEmployee);
+
+  }
 
   close() {
     this.modalCtrl.dismiss();
   }
 
-  ngOnInit() {
-  (this.employee as any).isAvailable = Math.random() > 0.5;
-}
+
 
 
 }
