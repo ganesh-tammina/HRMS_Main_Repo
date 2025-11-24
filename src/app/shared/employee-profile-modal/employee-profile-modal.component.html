@@ -1,4 +1,3 @@
-
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>Employee Profile</ion-title>
@@ -13,34 +12,33 @@
   <!-- Avatar with status dot -->
   <div class="profile-container">
     <ion-avatar class="profile-avatar">
-      <img [src]="employee.personalDetails?.profileImage || 'assets/default-avatar.png'" />
-      <span class="status-dot" [ngClass]="employee.isAvailable ? 'available' : 'unavailable'"></span>
+      <!-- <img [src]="employee.personalDetails?.profileImage || 'assets/default-avatar.png'" /> -->
+      <!-- <span class="status-dot" [ngClass]="employee.isAvailable ? 'available' : 'unavailable'"></span> -->
     </ion-avatar>
   </div>
 
   <!-- Name + Job Title -->
   <div class="profile-info">
-    <h2>{{ employee.personalDetails?.FirstName }} {{ employee.personalDetails?.LastName }}</h2>
-    <p class="job-title">{{ employee.jobDetailsForm?.JobTitle }}</p>
+    <h2>{{ selectedObeject.full_name }}</h2>
+    <p class="job-title">{{ selectedObeject.work_email}}</p>
   </div>
 
   <!-- Contact & Job Details -->
   <ion-list>
     <ion-item>
       <ion-icon name="call-outline" slot="start"></ion-icon>
-      <ion-label>{{ employee.personalDetails?.PhoneNumber }}</ion-label>
+      <!-- <ion-label>{{ employee.personalDetails?.PhoneNumber }}</ion-label> -->
     </ion-item>
 
     <ion-item>
-      <ion-icon name="mail-outline" slot="start"></ion-icon>
-      <ion-label>{{ employee.employeeCredentials?.companyEmail }}</ion-label>
+      <!-- <ion-icon name="mail-outline" slot="start"></ion-icon> -->
+      <!-- <ion-label>{{ employee.employeeCredentials?.companyEmail }}</ion-label> -->
     </ion-item>
 
     <ion-item>
       <ion-icon name="location-outline" slot="start"></ion-icon>
-      <ion-label>{{ employee.jobDetailsForm?.JobLocation }}</ion-label>
+      <!-- <ion-label>{{ employee.jobDetailsForm?.JobLocation }}</ion-label> -->
     </ion-item>
   </ion-list>
 
 </ion-content>
-
