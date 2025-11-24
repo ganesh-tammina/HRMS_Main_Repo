@@ -187,21 +187,57 @@ export default class AttendanceService {
   // }
   public static async getAttendance_Check(employeeId: any) {
     try {
-      let query = `SELECT * FROM attendance a1 WHERE employee_id = ? AND a1.attendance_date = curdate() ORDER BY a1.attendance_date DESC, a1.check_in ASC`;
+      const query = `
+      SELECT * 
+      FROM attendance a1 
+      WHERE employee_id = ? 
+        AND a1.attendance_date = CURDATE()
+      ORDER BY a1.attendance_date DESC, a1.check_in ASC
+    `;
+
       const params: any[] = [employeeId];
       const [result]: any = await pool.query(query, params);
+
+      const [bodarbal]: any = await pool.query(
+        `SELECT e.shift_policy_name, s.check_in, s.check_out 
+       FROM employment_details e 
+       JOIN shift_policy s ON e.shift_policy_name = s.shift_name 
+       WHERE e.employee_id = ?`,
+        [employeeId]
+      );
+      const [rowdy]: any = await pool.query(
+        `SELECT e.weekly_off_policy_name, w.week_off_days 
+       FROM employment_details e 
+       JOIN week_off_policies w ON e.weekly_off_policy_name = w.week_off_policy_name 
+       WHERE e.employee_id = ?`,
+        [employeeId]
+      );
+
       if (result.length > 0) {
         const lastCheckOut = result[result.length - 1].check_out;
-        if (lastCheckOut === null) {
-          return { status: 'in', isIn: true };
-        } else {
-          return { status: 'out', isIn: false };
-        }
+        const isIn = lastCheckOut === null;
+
+        return {
+          status: isIn ? 'in' : 'out',
+          isIn,
+          result,
+          shift: bodarbal[0],
+          week_off: rowdy[0],
+        };
+      } else {
+        return {
+          status: 'none',
+          isIn: false,
+          result,
+          shift: bodarbal[0],
+          week_off: rowdy[0],
+        };
       }
     } catch (err) {
       throw err;
     }
   }
+
   public static async notinyet() {
     const [all_Candidates]: any = await pool.query(
       "select id from candidates where status = 'accepted'"
@@ -369,6 +405,9 @@ export default class AttendanceService {
       `SELECT check_in, check_out FROM shift_policy WHERE shift_name = ?`,
       [asdads.trim()]
     );
+    if (adfasd.length == 0) {
+      throw new Error('No Shift Policy Found, contact Admin.');
+    }
     return { check_in: adfasd[0].check_in, check_out: adfasd[0].check_out };
   }
 
@@ -454,20 +493,28 @@ export default class AttendanceService {
     return rows;
   }
 
-  public static async getShiftPolicyService(shift_policy_name: string) {
-    const sql = `
-    SELECT shift_name, check_in, check_out
+  public static async getShiftPolicyService(shift_policy_name?: string) {
+    const sql = shift_policy_name
+      ? `
+    SELECT *
     FROM shift_policy
     WHERE shift_name = ?
+  `
+      : `
+    SELECT *
+    FROM shift_policy
   `;
 
-    const [rows]: any = await pool.query(sql, [shift_policy_name]);
+    const [rows]: any = await pool.query(
+      sql,
+      shift_policy_name ? [shift_policy_name] : []
+    );
 
     if (rows.length === 0) {
       return null;
     }
 
-    return rows[0];
+    return shift_policy_name ? rows[0] : rows;
   }
 
   // Utility functions here only do not put anywhere else ---
@@ -492,5 +539,17 @@ export default class AttendanceService {
     }
 
     return data.check_in > shiftPolicy.check_in;
+  }
+  public static async deleteShiftPolicyService(shift_id: number) {
+    const sql = `
+    DELETE FROM shift_policy
+    WHERE shift_id = ?
+  `;
+    try {
+      const query = await pool.query(sql, [shift_id]);
+      return query;
+    } catch (err) {
+      throw err;
+    }
   }
 }

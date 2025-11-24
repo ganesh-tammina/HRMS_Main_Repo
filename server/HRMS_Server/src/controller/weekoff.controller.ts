@@ -1,15 +1,16 @@
-import { Request, Response } from "express";
-import WeekOffPolicyService from "../services/weekoff.service";
+import { Request, Response } from 'express';
+import WeekOffPolicyService from '../services/weekoff.service';
 
 export default class WeekOffPolicyController {
   // Create
   public static async create(req: Request, res: Response) {
     try {
       const result = await WeekOffPolicyService.createPolicy(req.body);
-      res.status(201).json({ message: "Week Off Policy created", result });
+      res.json(result);
+      // res.status(201).json({ message: "Week Off Policy created", result });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error creating policy" });
+      res.status(500).json({ message: 'Error creating policy' });
     }
   }
 
@@ -20,7 +21,7 @@ export default class WeekOffPolicyController {
       res.json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error fetching policies" });
+      res.status(500).json({ message: 'Error fetching policies' });
     }
   }
 
@@ -32,7 +33,7 @@ export default class WeekOffPolicyController {
       res.json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error fetching policy" });
+      res.status(500).json({ message: 'Error fetching policy' });
     }
   }
 
@@ -40,11 +41,12 @@ export default class WeekOffPolicyController {
   public static async update(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
+      
       const result = await WeekOffPolicyService.updatePolicy(id, req.body);
-      res.json({ message: "Policy updated", result });
+      res.json({ message: 'Policy updated', result });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error updating policy" });
+      res.status(500).json({ message: 'Error updating policy' });
     }
   }
 
@@ -53,21 +55,21 @@ export default class WeekOffPolicyController {
     try {
       const id = Number(req.params.id);
       const result = await WeekOffPolicyService.deletePolicy(id);
-      res.json({ message: "Policy deleted", result });
+      res.json({ message: 'Policy deleted', result });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error deleting policy" });
+      res.status(500).json({ message: 'Error deleting policy' });
     }
   }
 
-    public static async getByPolicyByEmpId(req: Request, res: Response) {
+  public static async getByPolicyByEmpId(req: Request, res: Response) {
     try {
       const id = Number(req.params.emp_id);
       const result = await WeekOffPolicyService.getPolicyOfEmp(id);
       res.json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error fetching policy" });
+      res.status(500).json({ message: 'Error fetching policy' });
     }
   }
 }

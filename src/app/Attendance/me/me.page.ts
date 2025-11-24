@@ -109,6 +109,7 @@ export class MePage implements OnInit {
     'Saturday',
     'Sunday',
   ];
+  serverWeekOff: any;
   calendarDays: CalendarDay[] = [];
   attendanceRequests: AttendanceRequest[] = [];
   selectedLog: AttendanceLog | null = null;
@@ -126,7 +127,7 @@ export class MePage implements OnInit {
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
     private router: RouteGuardService,
-    private routeGuardService: RouteGuardService,
+    private routeGuardService: RouteGuardService
   ) {
     this.generateCalendar(this.currentMonth);
     this.generateDays();
@@ -161,12 +162,23 @@ export class MePage implements OnInit {
         },
       });
       // Subscribe to current candidate observable
-
+      this.custom_do_not_change_until_you_have_solution();
       // Fallback: if page refreshed
     }
-
   }
 
+  custom_do_not_change_until_you_have_solution() {
+    // _function_to_check_clock_in_and_clock_out
+    this.attendanceService
+      .checkLoginOrLoggedOut(this.routeGuardService.employeeID)
+      .subscribe({
+        next: (response: any) => {
+          this.shift_check_in = response.shift.check_in;
+          this.shift_check_out = response.shift.check_out;
+          this.splitWeeks(response.week_off.week_off_days);
+        },
+      });
+  }
   // ---------------------------------------------------------
   // 🔥 FULL INITIALIZATION (was inside ngOnInit before)
   // ---------------------------------------------------------
@@ -234,7 +246,7 @@ export class MePage implements OnInit {
       }
     }, 1000);
 
-    this.initRequestsAndLogs();
+    // this.initRequestsAndLogs();
   }
 
   // ------------------------------------------
@@ -386,127 +398,6 @@ export class MePage implements OnInit {
     return `${hours}h ${minutes}m ${seconds}s`;
   }
 
-  private initRequestsAndLogs() {
-    this.attendanceRequestsHistory = [
-      {
-        type: 'Work From Home / On Duty Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '26 Aug 2025',
-            request: 'Work From Home - 1 Day',
-            requestedOn: '26 Aug 2025 12:30 PM by XYZ',
-            note: 'working from home on this day.',
-            reason: 'Personal',
-            status: 'Approved',
-            lastAction: 'ABC on 26 Aug',
-          },
-        ],
-      },
-      {
-        type: 'Regularization Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [],
-      },
-      {
-        type: 'Remote Clock In Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '19 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '19 Aug 2025 by Employee',
-            note: 'I am working on some high-priority tasks.',
-            status: 'Approved',
-            lastAction: 'ABC on 19 Aug',
-          },
-          {
-            date: '22 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '22 Aug 2025 by Employee',
-            note: 'Working on some issues.',
-            status: 'Approved',
-            lastAction: 'ABC on 22 Aug',
-          },
-        ],
-      },
-      {
-        type: 'Partial Day Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [],
-      },
-    ];
-
-    this.attendanceRequests = [
-      {
-        type: 'Work From Home / On Duty Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: [],
-      },
-      {
-        type: 'Regularization Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: ['Request #101 | Pending Approval'],
-      },
-      {
-        type: 'Remote Clock In Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: [],
-      },
-      {
-        type: 'Partial Day Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: [],
-      },
-    ];
-
-    this.attendanceLogs = [
-      {
-        date: 'Mon, 01 Sept',
-        progress: 0.7,
-        effective: '6h 44m',
-        gross: '8h 42m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (01 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-          logs: [
-            { in: '09:16:48', out: '12:01:14' },
-            { in: '12:13:29', out: '13:25:47' },
-          ],
-          webClockIn: { in: '09:19:14', out: 'MISSING' },
-        },
-      },
-      {
-        date: 'Tue, 02 Sept',
-        progress: 0.5,
-        effective: '3h 56m',
-        gross: '4h 9m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (02 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-          logs: [{ in: '09:10:00', out: '14:30:00' }],
-        },
-      },
-      {
-        date: 'Wed, 03 Sept',
-        progress: 0.75,
-        effective: '6h 38m',
-        gross: '8h 46m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (03 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: 'HQ',
-          logs: [{ in: '09:20:00', out: '18:15:00' }],
-        },
-      },
-    ];
-  }
-
   loadCandidateById() {
     const employeeId = localStorage.getItem('employee_id');
     if (employeeId) {
@@ -605,5 +496,15 @@ export class MePage implements OnInit {
     } catch {
       return String(val);
     }
+  }
+  isWeekOff(day: string): boolean {
+    return this.serverWeekOff.includes(day.toLowerCase());
+  }
+  splitWeeks(weeds: string) {
+    const arry = weeds.split(',');
+
+    this.serverWeekOff = arry.map((day) => day.trim().toLowerCase());
+
+    console.log(this.serverWeekOff);
   }
 }
