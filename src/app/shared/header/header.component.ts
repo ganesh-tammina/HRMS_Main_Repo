@@ -48,7 +48,7 @@ export class HeaderComponent implements OnInit {
     private routeGuardService: RouteGuardService,
     private router: Router,
     private navCtrl: NavController // ✅ add this
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.candidateService.Employee$.subscribe((employees) => {
@@ -137,6 +137,8 @@ export class HeaderComponent implements OnInit {
     this.candidateService.searchCandidates(this.searchQuery).subscribe({
       next: (results) => {
         this.searchResults = results;
+        this.employee = this.searchResults;
+        this.openEmployeeListModal(results);
         this.results = this.searchResults.map(
           (emp) => `${emp.first_name} ${emp.last_name}`
         );
@@ -162,10 +164,10 @@ export class HeaderComponent implements OnInit {
   }
 
   // Open modal to show employee list
-  async openEmployeeListModal() {
+  async openEmployeeListModal(data: any) {
     const modal = await this.modalCtrl.create({
       component: EmployeeListModalComponent,
-      componentProps: { employees: this.searchResults },
+      componentProps: { employees: data },
     });
     await modal.present();
   }
