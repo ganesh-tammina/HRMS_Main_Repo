@@ -140,6 +140,14 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
+            <ion-menu-toggle auto-hide="false">
+              <ion-item lines="none" detail="false" routerLinkActive="selected">
+                <div class="text-center">
+                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
+                  <ion-label>Work Track</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
             <!-- Inbox -->
 
             <!-- ///////////////////////////////////////////////// -->
@@ -163,7 +171,7 @@
     <div *ngIf="isRefreshing" class="refresh-overlay">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
     </div>
-    
+
     <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>

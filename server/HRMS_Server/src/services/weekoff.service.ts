@@ -1,13 +1,18 @@
 import { pool } from '../config/database';
 import { WeekOffPolicy } from '../interface/weekoff.interface';
-
+import { Request, Response } from 'express';
 export default class WeekOffPolicyService {
   // Create new policy
-  public static async createPolicy(data: WeekOffPolicy) {
+  public static async createPolicy(data: any) {
+    const days = data.week_off_days;
+    if (days.length === 0 || !Array.isArray(days)) {
+      throw new Error('week_off_days must be a non-empty array');
+    }
+    const dd = days[0] + ', ' + days[1];
     const [result]: any = await pool.query(
       `INSERT INTO week_off_policies (week_off_policy_name, week_off_days)
        VALUES (?, ?)`,
-      [data.week_off_policy_name, data.week_off_days]
+      [data.week_off_policy_name, dd]
     );
     return result;
   }
@@ -29,11 +34,16 @@ export default class WeekOffPolicyService {
 
   // Update policy
   public static async updatePolicy(id: number, data: WeekOffPolicy) {
+    const days = data.week_off_days;
+    if (days.length === 0 || !Array.isArray(days)) {
+      throw new Error('week_off_days must be a non-empty array');
+    }
+    const dd = days[0] + ', ' + days[1];
     const [result]: any = await pool.query(
       `UPDATE week_off_policies
        SET week_off_policy_name = ?, week_off_days = ?
        WHERE week_off_policy_id = ?`,
-      [data.week_off_policy_name, data.week_off_days, id]
+      [data.week_off_policy_name, dd, id]
     );
     return result;
   }

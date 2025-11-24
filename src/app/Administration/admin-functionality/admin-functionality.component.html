@@ -1,16 +1,19 @@
 <ion-content class="ion-padding">
-
   <ion-segment [(ngModel)]="tab">
     <ion-segment-button value="departments">Departments</ion-segment-button>
     <ion-segment-button value="roles">Roles</ion-segment-button>
     <ion-segment-button value="jobtitles">Job Titles</ion-segment-button>
     <ion-segment-button value="assignments">Assignments</ion-segment-button>
+    <ion-segment-button value="shit-policy">Shift Policy</ion-segment-button>
+    <ion-segment-button value="weekoff">Week Off Policy</ion-segment-button>
   </ion-segment>
 
   <!-- ================= Departments ================= -->
   <div *ngIf="tab === 'departments'">
     <ion-card>
-      <ion-card-header><ion-card-title>Departments</ion-card-title></ion-card-header>
+      <ion-card-header
+        ><ion-card-title>Departments</ion-card-title></ion-card-header
+      >
       <ion-card-content>
         <ion-item>
           <ion-label position="stacked">Name</ion-label>
@@ -21,18 +24,35 @@
           <ion-input [(ngModel)]="deptModel.description"></ion-input>
         </ion-item>
 
-        <ion-button expand="block" (click)="saveDepartment()">{{ editingDepartmentId ? 'Update' : 'Create' }} Department</ion-button>
-        <ion-button expand="block" color="medium" (click)="resetDeptForm()">Reset</ion-button>
+        <ion-button expand="block" (click)="saveDepartment()"
+          >{{
+            editingDepartmentId ? "Update" : "Create"
+          }}
+          Department</ion-button
+        >
+        <ion-button expand="block" color="medium" (click)="resetDeptForm()"
+          >Reset</ion-button
+        >
 
         <ion-list>
           <ion-item *ngFor="let d of departments">
             <ion-label>
               <h3>{{ d.department_name }}</h3>
               <p>{{ d.description }}</p>
-              <small *ngIf="d.created_at">Created: {{ d.created_at | date:'short' }}</small>
+              <small *ngIf="d.created_at"
+                >Created: {{ d.created_at | date : "short" }}</small
+              >
             </ion-label>
-            <ion-button fill="clear" slot="end" (click)="startEditDepartment(d)">Edit</ion-button>
-            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDeleteDepartment(d.department_id)">Delete</ion-button>
+            <ion-button fill="clear" slot="end" (click)="startEditDepartment(d)"
+              >Edit</ion-button
+            >
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="confirmDeleteDepartment(d.department_id)"
+              >Delete</ion-button
+            >
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -53,8 +73,12 @@
           <ion-input [(ngModel)]="roleModel.description"></ion-input>
         </ion-item>
 
-        <ion-button expand="block" (click)="saveRole()">{{ editingRoleId ? 'Update' : 'Create' }} Role</ion-button>
-        <ion-button expand="block" color="medium" (click)="resetRoleForm()">Reset</ion-button>
+        <ion-button expand="block" (click)="saveRole()"
+          >{{ editingRoleId ? "Update" : "Create" }} Role</ion-button
+        >
+        <ion-button expand="block" color="medium" (click)="resetRoleForm()"
+          >Reset</ion-button
+        >
 
         <ion-list>
           <ion-item *ngFor="let r of roles">
@@ -62,8 +86,16 @@
               <h3>{{ r.role_name }}</h3>
               <p>{{ r.description }}</p>
             </ion-label>
-            <ion-button fill="clear" slot="end" (click)="startEditRole(r)">Edit</ion-button>
-            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDeleteRole(r.role_id)">Delete</ion-button>
+            <ion-button fill="clear" slot="end" (click)="startEditRole(r)"
+              >Edit</ion-button
+            >
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="confirmDeleteRole(r.role_id)"
+              >Delete</ion-button
+            >
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -73,7 +105,9 @@
   <!-- ================= Job Titles ================= -->
   <div *ngIf="tab === 'jobtitles'">
     <ion-card>
-      <ion-card-header><ion-card-title>Job Titles</ion-card-title></ion-card-header>
+      <ion-card-header
+        ><ion-card-title>Job Titles</ion-card-title></ion-card-header
+      >
       <ion-card-content>
         <ion-item>
           <ion-label position="stacked">Job Title</ion-label>
@@ -82,13 +116,24 @@
 
         <ion-item>
           <ion-label position="stacked">Department</ion-label>
-          <ion-select [(ngModel)]="jobTitleModel.department_id" placeholder="Select department">
-            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name }}</ion-select-option>
+          <ion-select
+            [(ngModel)]="jobTitleModel.department_id"
+            placeholder="Select department"
+          >
+            <ion-select-option
+              *ngFor="let d of departments"
+              [value]="d.department_id"
+              >{{ d.department_name }}</ion-select-option
+            >
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="saveJobTitle()">{{ editingJobTitleId ? 'Update' : 'Create' }} Job Title</ion-button>
-        <ion-button expand="block" color="medium" (click)="resetJobTitleForm()">Reset</ion-button>
+        <ion-button expand="block" (click)="saveJobTitle()"
+          >{{ editingJobTitleId ? "Update" : "Create" }} Job Title</ion-button
+        >
+        <ion-button expand="block" color="medium" (click)="resetJobTitleForm()"
+          >Reset</ion-button
+        >
 
         <ion-list>
           <ion-item *ngFor="let j of jobTitles">
@@ -96,8 +141,16 @@
               <h3>{{ j.job_title_name }}</h3>
               <p *ngIf="j.department_name">Dept: {{ j.department_name }}</p>
             </ion-label>
-            <ion-button fill="clear" slot="end" (click)="startEditJobTitle(j)">Edit</ion-button>
-            <ion-button fill="clear" color="danger" slot="end" (click)="confirmDeleteJobTitle(j.job_title_id)">Delete</ion-button>
+            <ion-button fill="clear" slot="end" (click)="startEditJobTitle(j)"
+              >Edit</ion-button
+            >
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="confirmDeleteJobTitle(j.job_title_id)"
+              >Delete</ion-button
+            >
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -107,61 +160,98 @@
   <!-- ================= Assignments (job-title / dept / employee) ================= -->
   <div *ngIf="tab === 'assignments'">
     <ion-card>
-      <ion-card-header><ion-card-title>Job Title ↔ Role</ion-card-title></ion-card-header>
+      <ion-card-header
+        ><ion-card-title>Job Title ↔ Role</ion-card-title></ion-card-header
+      >
       <ion-card-content>
         <ion-item>
           <ion-label>Job Title</ion-label>
           <ion-select [(ngModel)]="jobTitleRoleModel.job_title_id">
-            <ion-select-option *ngFor="let j of jobTitles" [value]="j.job_title_id">{{ j.job_title_name }}</ion-select-option>
+            <ion-select-option
+              *ngFor="let j of jobTitles"
+              [value]="j.job_title_id"
+              >{{ j.job_title_name }}</ion-select-option
+            >
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>Role</ion-label>
           <ion-select [(ngModel)]="jobTitleRoleModel.role_id">
-            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{ r.role_name }}</ion-select-option>
+            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{
+              r.role_name
+            }}</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="assignRoleToJobTitle()">Assign to Job Title</ion-button>
-        <ion-button expand="block" color="danger" (click)="removeRoleFromJobTitle()">Remove from Job Title</ion-button>
+        <ion-button expand="block" (click)="assignRoleToJobTitle()"
+          >Assign to Job Title</ion-button
+        >
+        <ion-button
+          expand="block"
+          color="danger"
+          (click)="removeRoleFromJobTitle()"
+          >Remove from Job Title</ion-button
+        >
       </ion-card-content>
     </ion-card>
 
     <ion-card>
-      <ion-card-header><ion-card-title>Department ↔ Role</ion-card-title></ion-card-header>
+      <ion-card-header
+        ><ion-card-title>Department ↔ Role</ion-card-title></ion-card-header
+      >
       <ion-card-content>
         <ion-item>
           <ion-label>Department</ion-label>
           <ion-select [(ngModel)]="departmentRoleModel.department_id">
-            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name }}</ion-select-option>
+            <ion-select-option
+              *ngFor="let d of departments"
+              [value]="d.department_id"
+              >{{ d.department_name }}</ion-select-option
+            >
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>Role</ion-label>
           <ion-select [(ngModel)]="departmentRoleModel.role_id">
-            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{ r.role_name }}</ion-select-option>
+            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{
+              r.role_name
+            }}</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="assignRoleToDepartment()">Assign to Department</ion-button>
-        <ion-button expand="block" color="danger" (click)="removeRoleFromDepartment()">Remove from Department</ion-button>
+        <ion-button expand="block" (click)="assignRoleToDepartment()"
+          >Assign to Department</ion-button
+        >
+        <ion-button
+          expand="block"
+          color="danger"
+          (click)="removeRoleFromDepartment()"
+          >Remove from Department</ion-button
+        >
       </ion-card-content>
     </ion-card>
 
     <ion-card>
-      <ion-card-header><ion-card-title>Employee ↔ Role</ion-card-title></ion-card-header>
+      <ion-card-header
+        ><ion-card-title>Employee ↔ Role</ion-card-title></ion-card-header
+      >
       <ion-card-content>
         <ion-item>
           <ion-label>Employee ID</ion-label>
-          <ion-input type="number" [(ngModel)]="employeeRoleModel.employee_id"></ion-input>
+          <ion-input
+            type="number"
+            [(ngModel)]="employeeRoleModel.employee_id"
+          ></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>Role</ion-label>
           <ion-select [(ngModel)]="employeeRoleModel.role_id">
-            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{ r.role_name }}</ion-select-option>
+            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{
+              r.role_name
+            }}</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -170,10 +260,178 @@
           <ion-input [(ngModel)]="employeeRoleModel.assigned_by"></ion-input>
         </ion-item>
 
-        <ion-button expand="block" (click)="assignRoleToEmployee()">Assign to Employee</ion-button>
-        <ion-button expand="block" color="danger" (click)="removeRoleFromEmployee()">Remove from Employee</ion-button>
+        <ion-button expand="block" (click)="assignRoleToEmployee()"
+          >Assign to Employee</ion-button
+        >
+        <ion-button
+          expand="block"
+          color="danger"
+          (click)="removeRoleFromEmployee()"
+          >Remove from Employee</ion-button
+        >
       </ion-card-content>
     </ion-card>
   </div>
 
+  <!-- ================= Shift ================= -->
+  <div *ngIf="tab === 'shit-policy'">
+    <ion-card>
+      <ion-card-header
+        ><ion-card-title>Departments</ion-card-title></ion-card-header
+      >
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Shift Name</ion-label>
+          <ion-input [(ngModel)]="shift.shift_name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Check In</ion-label>
+          <div style="display: flex; gap: 4px; align-items: center">
+            <ion-input
+              type="number"
+              min="0"
+              max="23"
+              [(ngModel)]="checkInHH"
+              (ionChange)="updateTime('check_in')"
+            ></ion-input>
+            :
+            <ion-input
+              type="number"
+              min="0"
+              max="59"
+              [(ngModel)]="checkInMM"
+              (ionChange)="updateTime('check_in')"
+            ></ion-input>
+            :
+            <ion-input
+              type="number"
+              min="0"
+              max="59"
+              [(ngModel)]="checkInSS"
+              (ionChange)="updateTime('check_in')"
+            ></ion-input>
+          </div>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Check Out</ion-label>
+
+          <div style="display: flex; gap: 4px; align-items: center">
+            <ion-input
+              type="number"
+              min="0"
+              max="23"
+              [(ngModel)]="checkOutHH"
+              (ionChange)="updateTime('check_out')"
+            ></ion-input>
+            :
+            <ion-input
+              type="number"
+              min="0"
+              max="59"
+              [(ngModel)]="checkOutMM"
+              (ionChange)="updateTime('check_out')"
+            ></ion-input>
+            :
+            <ion-input
+              type="number"
+              min="0"
+              max="59"
+              [(ngModel)]="checkOutSS"
+              (ionChange)="updateTime('check_out')"
+            ></ion-input>
+          </div>
+        </ion-item>
+
+        <ion-button expand="block" (click)="saveShift()"
+          >{{ shiftEditingId ? "Update" : "Create" }} Shift Policy</ion-button
+        >
+        <ion-button expand="block" color="medium" (click)="resetDeptForm()"
+          >Reset</ion-button
+        >
+
+        <ion-list>
+          <ion-item *ngFor="let d of shiftsData">
+            <ion-label>
+              <h3>{{ d.shift_name }}</h3>
+              <p>{{ d.check_in }}</p>
+              <p>{{ d.check_out }}</p>
+            </ion-label>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="startEditShiftPolicy(d)"
+              >Edit</ion-button
+            >
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="confirmdeleteShift(d.shift_id)"
+              >Delete</ion-button
+            >
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- ================= week off ================= -->
+  <div *ngIf="tab === 'weekoff'">
+    <ion-card>
+      <ion-card-header
+        ><ion-card-title>Week Off Policy</ion-card-title></ion-card-header
+      >
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Week Off Policy Name</ion-label>
+          <ion-input
+            [(ngModel)]="weekOffPolicy.week_off_policy_name"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Week Of Days</ion-label>
+          <div class="checkbox-group">
+            <div *ngFor="let day of days" class="checkbox-item">
+              <input
+                type="checkbox"
+                [value]="day"
+                (change)="onDaySelect($event)"
+                [checked]="weekOffsDay.includes(day)"
+              />
+              <span>{{ day }}</span>
+            </div>
+          </div>
+        </ion-item>
+
+        <ion-button expand="block" (click)="saveWeek()"
+          >{{ week_off_policy_id ? "Update" : "Create" }} Shift Policy</ion-button
+        >
+        <ion-button expand="block" color="medium" (click)="resetWeek()"
+          >Reset</ion-button
+        >
+
+        <ion-list>
+          <ion-item *ngFor="let d of weekofs">
+            <ion-label>
+              <h3>{{ d.week_off_policy_name }}</h3>
+              <p>{{ d.week_off_days }}</p>
+            </ion-label>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="startEditWeekOffPolicy(d)"
+              >Edit</ion-button
+            >
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="confirmdeleteWeekOffPolicy(d.week_off_policy_id)"
+              >Delete</ion-button
+            >
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

@@ -97,7 +97,7 @@ export class AppComponent implements OnInit {
     this.currentUrl = this.router.url;
 
     if (this.routeGaurdService.userRole) {
-      this.routeGaurdService.userRole === 'admin' || 'HR'
+      this.routeGaurdService.userRole === 'ADMIN' || 'HR'
         ? (this.isAdmin = true)
         : (this.isAdmin = false);
     }

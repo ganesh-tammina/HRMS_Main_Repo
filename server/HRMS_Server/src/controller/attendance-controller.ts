@@ -345,10 +345,10 @@ export default class AttendanceController {
         .status(400)
         .json({ status: false, message: 'Invalid LogType' });
     } catch (err: any) {
-      console.error('Error in kasdja:', err);
+      console.error('Error in Clock-In/Clock-Out:', err);
       return res.status(500).json({
         status: false,
-        message: 'Server Error',
+        message: err.message,
         error: err.message,
       });
     }
@@ -448,18 +448,71 @@ export default class AttendanceController {
       const result = await AttendanceService.getShiftPolicyService(
         String(shift_policy_name)
       );
-
-      res.status(200).json({
-        success: true,
-        message: 'Shift policy fetched successfully',
-        data: result,
-      });
+      if (result === null) {
+        return res.status(404).json({
+          success: false,
+          message: 'Shift policy not found',
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          message: 'Shift policy fetched successfully',
+          data: result,
+        });
+      }
     } catch (err) {
       console.error('Error fetching shift policy:', err);
 
       res.status(500).json({
         success: false,
         message: 'Server error, unable to fetch shift policy',
+      });
+    }
+  }
+  public static async getAllShiftPolicy(req: Request, res: Response) {
+    try {
+      const result = await AttendanceService.getShiftPolicyService();
+      if (result === null) {
+        return res.status(404).json({
+          success: false,
+          message: 'Shift policy not found',
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          message: 'Shift policy fetched successfully',
+          data: result,
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching shift policy:', err);
+
+      res.status(500).json({
+        success: false,
+        message: 'Server error, unable to fetch shift policy',
+      });
+    }
+  }
+  public static async deleteShiftPolicy(req: Request, res: Response) {
+    if (!req.params.shift_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Shift ID is required',
+      });
+    }
+
+    try {
+      const deleted = await AttendanceService.deleteShiftPolicyService(
+        Number(req.params.shift_id)
+      );
+      return res.status(200).json({
+        success: true,
+        message: 'Shift policy deleted successfully',
+      });
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to delete shift policy',
       });
     }
   }
