@@ -99,7 +99,16 @@ button:disabled {
             }
         }
       }
-
+.holiday-list {
+  ion-thumbnail {
+    background: $secondry-color;
+    border-radius: 20px;
+    padding: 12px;
+    text-align: center;
+    color: #fff;
+  }
+}
+     
     title {
         display: block;
         @include normal-text();
