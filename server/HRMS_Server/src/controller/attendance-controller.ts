@@ -5,6 +5,16 @@ import { get } from 'http';
 import { diff } from 'util';
 
 export default class AttendanceController {
+  public static async checkStatus(req: Request, res: Response) {
+    if (!req.params.employeeId) {
+      res
+        .status(400)
+        .json({ success: false, error: 'employeeId parameter is required' });
+      return;
+    }
+    const employeeId = parseInt(req.params.employeeId);
+    return res.json(await AttendanceService.getAttendance_Check(employeeId));
+  }
   public static async handleClockIn(req: Request, res: Response) {
     const { employee_id, check_in }: TT = req.body;
     if (!employee_id) {
@@ -63,11 +73,10 @@ export default class AttendanceController {
           endDate: req.body.endDate,
         });
       } else if (req.body.date) {
-        result = await AttendanceService.getTodayAttendanceExtra(
-          req.body.employee_id,
-          req.body.date
-        );
-        // Arrival time is already calculated in the service method
+        result = await AttendanceService.getAttendance({
+          employee_id: req.body.employee_id,
+          date: req.body.date,
+        });
       } else {
         result = await AttendanceService.getAttendance({
           employee_id: req.body.employee_id,
@@ -227,8 +236,12 @@ export default class AttendanceController {
   }
 
   public static async kasdja(req: Request, res: Response) {
+    console.log('d');
+
     try {
       const { LogType, EmpID } = req.body;
+      console.log('emp', LogType, EmpID);
+
       const currentTime = String(new Date().toTimeString().split(' ')[0]);
       const currentDate = String(new Date().toISOString().split('T')[0]);
 
@@ -251,9 +264,11 @@ export default class AttendanceController {
         });
       }
       if (LogType === 'IN') {
-        const hasOpenSession = todayRecords.some(
-          (rec: any) => rec.check_in && !rec.check_out
-        );
+        console.log(todayRecords);
+
+        const hasOpenSession = todayRecords
+          ? todayRecords.some((rec: any) => rec.check_in && !rec.check_out)
+          : false;
 
         if (hasOpenSession) {
           return res.status(400).json({
@@ -390,61 +405,62 @@ export default class AttendanceController {
   }
 
   public static async getEmployeesUnderManager(req: Request, res: Response) {
-  try {
-    const { manager_id } = req.params;
+    try {
+      const { manager_id } = req.params;
 
-    if (!manager_id) {
-      return res.status(400).json({
+      if (!manager_id) {
+        return res.status(400).json({
+          success: false,
+          message: 'manager_id parameter is required',
+        });
+      }
+
+      const result = await AttendanceService.getEmployeesUnderManagerService(
+        Number(manager_id)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Employees fetched successfully',
+        data: result,
+      });
+    } catch (err) {
+      console.error('Error fetching employees under manager:', err);
+
+      res.status(500).json({
         success: false,
-        message: "manager_id parameter is required",
+        message: 'Server error, unable to fetch employee list',
       });
     }
-
-    const result = await AttendanceService.getEmployeesUnderManagerService(
-      Number(manager_id)
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Employees fetched successfully",
-      data: result,
-    });
-  } catch (err) {
-    console.error("Error fetching employees under manager:", err);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error, unable to fetch employee list",
-    });
   }
-}
 
-public static async getShiftPolicy(req: Request, res: Response) {
-  try {
-    const { shift_policy_name } = req.body;
+  public static async getShiftPolicy(req: Request, res: Response) {
+    try {
+      const { shift_policy_name } = req.body;
 
-    if (!shift_policy_name) {
-      return res.status(400).json({
+      if (!shift_policy_name) {
+        return res.status(400).json({
+          success: false,
+          message: 'shift policy is required',
+        });
+      }
+
+      const result = await AttendanceService.getShiftPolicyService(
+        String(shift_policy_name)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Shift policy fetched successfully',
+        data: result,
+      });
+    } catch (err) {
+      console.error('Error fetching shift policy:', err);
+
+      res.status(500).json({
         success: false,
-        message: "shift policy is required",
+        message: 'Server error, unable to fetch shift policy',
       });
     }
-
-    const result = await AttendanceService.getShiftPolicyService(String(shift_policy_name));
-
-    res.status(200).json({
-      success: true,
-      message: "Shift policy fetched successfully",
-      data: result,
-    });
-  } catch (err) {
-    console.error("Error fetching shift policy:", err);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error, unable to fetch shift policy",
-    });
   }
-}
-
 }

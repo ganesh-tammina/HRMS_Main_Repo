@@ -21,7 +21,7 @@ export interface AttendanceRecord {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AttendanceService {
   private prefix = 'attendance_';
@@ -34,19 +34,29 @@ export class AttendanceService {
     distinctUntilChanged((prev, curr) => {
       // Allow all optimistic and confirmed updates to pass through
       if (curr?.optimistic || curr?.confirmed) return false;
-      return prev?.action === curr?.action && prev?.optimistic === curr?.optimistic;
+      return (
+        prev?.action === curr?.action && prev?.optimistic === curr?.optimistic
+      );
     })
   );
-  constructor(private http: HttpClient, private routeGuardService: RouteGuardService) { }
+  constructor(
+    private http: HttpClient,
+    private routeGuardService: RouteGuardService
+  ) {}
   private getKey(employeeId: number): string {
     return `${this.prefix}${employeeId}`;
   }
 
-
   getallattendace(body: any): Observable<any> {
-    return this.http.post(this.baseURL + '/get-attendance', body, { withCredentials: true });
+    return this.http.post(this.baseURL + '/get-attendance', body, {
+      withCredentials: true,
+    });
   }
-
+  getWeekOff(employeeId: any): Observable<any> {
+    return this.http.get(this.baseURL + '/weekoff/emp/' + employeeId, {
+      withCredentials: true,
+    });
+  }
   getRecord(employeeId: number): AttendanceRecord {
     const stored = localStorage.getItem(this.getKey(employeeId));
     let record: AttendanceRecord;
@@ -63,7 +73,7 @@ export class AttendanceService {
         accumulatedMs: 0,
         isClockedIn: false,
         history: [],
-        dailyAccumulatedMs: {}
+        dailyAccumulatedMs: {},
       };
       this.saveRecord(record);
     }
@@ -74,18 +84,24 @@ export class AttendanceService {
   }
 
   saveRecord(record: AttendanceRecord) {
-    localStorage.setItem(this.getKey(record.employeeId), JSON.stringify(record));
+    localStorage.setItem(
+      this.getKey(record.employeeId),
+      JSON.stringify(record)
+    );
     this.recordSubject.next(record);
   }
 
-
   employeeClockIN_Out(kjhk: any): Observable<any> {
-    return this.http.post(this.baseURL + "/attendance", kjhk, { withCredentials: true });
+    return this.http.post(this.baseURL + '/attendance', kjhk, {
+      withCredentials: true,
+    });
   }
   getAttendance() {
-    this.http.get(this.baseURL + 'getAttendance', { withCredentials: true }).subscribe((res) => {
-      console.log(res)
-    });
+    this.http
+      .get(this.baseURL + 'getAttendance', { withCredentials: true })
+      .subscribe((res) => {
+        console.log(res);
+      });
   }
   clockIn(employeeId: any): void {
     // Immediate local state update
@@ -101,104 +117,131 @@ export class AttendanceService {
   clockAction(employeeId: any, action: 'in' | 'out'): void {
     // Immediately emit optimistic update
     this.responseSubject.next({ action, optimistic: true });
-    
+
     this.employeeClockIN_Out(employeeId).subscribe({
       next: (res) => {
         console.log(`${action.toUpperCase()} response`, res);
-        
+
         // Immediate refresh after successful server response
         setTimeout(() => {
           this.refreshAttendanceStatus(employeeId);
         }, 100);
-        
+
         // Emit confirmed response
         this.responseSubject.next({ action, data: res, confirmed: true });
       },
       error: (err) => {
         console.error(`Error during clock ${action}:`, err);
         this.responseSubject.next({ action, error: err });
-      }
+      },
     });
   }
-
-
-
 
   checkServerAttendanceStatus(employeeId: number): Observable<any> {
     const body = {
       access_token: this.routeGuardService.token,
       refresh_token: this.routeGuardService.refreshToken,
-      employee_id: employeeId
+      employee_id: employeeId,
     };
-    return this.http.post(this.baseURL + '/check-attendance-status', body, { withCredentials: true });
+    return this.http.post(this.baseURL + '/check-attendance-status', body, {
+      withCredentials: true,
+    });
   }
 
   // Immediate data refresh with multiple attempts
   refreshAttendanceStatus(employeeId: number): void {
     const currentDate = new Date().toISOString().split('T')[0];
-    
-    console.log('🔄 Refreshing attendance status for employee:', employeeId, 'date:', currentDate);
-    
+
+    console.log(
+      '🔄 Refreshing attendance status for employee:',
+      employeeId,
+      'date:',
+      currentDate
+    );
+
     this.getallattendace({
       employee_id: employeeId,
-      date: currentDate
+      date: currentDate,
     }).subscribe({
-      next: (data) => {
+      next: (att) => {
+        console.log('basfasfasdfasdfasfasdfasdfasds', att);
+
+        const res = att.attendance;
+        const data = res.data[0];
         console.log('📊 Backend refresh response:', data);
-        
+
         if (data && data.attendance && data.attendance.length > 0) {
           const records = data.attendance;
           const record = this.getRecord(employeeId);
-          
+
           // Sort records by time to get the most recent
           const sortedRecords = records.sort((a: any, b: any) => {
             const timeA = a.check_out || a.check_in;
             const timeB = b.check_out || b.check_in;
             return timeB.localeCompare(timeA);
           });
-          
+
           const latestRecord = sortedRecords[0];
-          
+
           // Update local record with fresh server data
           record.isClockedIn = latestRecord.check_in && !latestRecord.check_out;
-          
+
           if (record.isClockedIn && latestRecord.check_in) {
             record.clockInTime = currentDate + 'T' + latestRecord.check_in;
           } else {
             record.clockInTime = undefined;
           }
-          
+
           // Update history with all today's records (sorted by time)
-          record.history = sortedRecords.map((r: any) => {
-            const events = [];
-            if (r.check_in) {
-              events.push({
-                type: 'CLOCK_IN' as const,
-                time: currentDate + 'T' + r.check_in,
-                displayTime: new Date(currentDate + 'T' + r.check_in).toLocaleTimeString()
-              });
-            }
-            if (r.check_out) {
-              events.push({
-                type: 'CLOCK_OUT' as const,
-                time: currentDate + 'T' + r.check_out,
-                displayTime: new Date(currentDate + 'T' + r.check_out).toLocaleTimeString()
-              });
-            }
-            return events;
-          }).flat().sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime());
-          
+          record.history = sortedRecords
+            .map((r: any) => {
+              const events = [];
+              if (r.check_in) {
+                events.push({
+                  type: 'CLOCK_IN' as const,
+                  time: currentDate + 'T' + r.check_in,
+                  displayTime: new Date(
+                    currentDate + 'T' + r.check_in
+                  ).toLocaleTimeString(),
+                });
+              }
+              if (r.check_out) {
+                events.push({
+                  type: 'CLOCK_OUT' as const,
+                  time: currentDate + 'T' + r.check_out,
+                  displayTime: new Date(
+                    currentDate + 'T' + r.check_out
+                  ).toLocaleTimeString(),
+                });
+              }
+              return events;
+            })
+            .flat()
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.time).getTime() - new Date(a.time).getTime()
+            );
+
           this.saveRecord(record);
           // Emit refresh event to update all components
-          this.responseSubject.next({ action: 'refresh', data: records, confirmed: true, timestamp: new Date().toISOString() });
-          console.log('✅ Attendance status refreshed with', records.length, 'records');
+          this.responseSubject.next({
+            action: 'refresh',
+            data: records,
+            confirmed: true,
+            timestamp: new Date().toISOString(),
+          });
+          console.log(
+            '✅ Attendance status refreshed with',
+            records.length,
+            'records'
+          );
         } else {
           console.log('⚠️ No attendance records found for today');
         }
       },
       error: (err) => {
         console.error('❌ Error refreshing attendance status:', err);
-      }
+      },
     });
   }
 
@@ -206,14 +249,14 @@ export class AttendanceService {
   syncAttendanceState(employeeId: number, action: 'in' | 'out'): void {
     const record = this.getRecord(employeeId);
     const now = new Date();
-    
+
     if (action === 'in') {
       record.isClockedIn = true;
       record.clockInTime = now.toISOString();
       record.history.push({
         type: 'CLOCK_IN',
         time: now.toISOString(),
-        displayTime: now.toLocaleTimeString()
+        displayTime: now.toLocaleTimeString(),
       });
     } else {
       record.isClockedIn = false;
@@ -221,19 +264,23 @@ export class AttendanceService {
       record.history.push({
         type: 'CLOCK_OUT',
         time: now.toISOString(),
-        displayTime: now.toLocaleTimeString()
+        displayTime: now.toLocaleTimeString(),
       });
     }
-    
+
     this.saveRecord(record);
   }
 
   clockInServer(employeeData: any): Observable<any> {
-    return this.http.post(this.baseURL + '/attendance', employeeData, { withCredentials: true });
+    return this.http.post(this.baseURL + '/attendance', employeeData, {
+      withCredentials: true,
+    });
   }
 
   clockOutServer(employeeData: any): Observable<any> {
-    return this.http.post(this.baseURL + '/attendance', employeeData, { withCredentials: true });
+    return this.http.post(this.baseURL + '/attendance', employeeData, {
+      withCredentials: true,
+    });
   }
 
   getHistoryByRange(
@@ -243,7 +290,7 @@ export class AttendanceService {
     const history = record.history || [];
     const now = new Date();
 
-    return history.filter(event => {
+    return history.filter((event) => {
       const eventDate = new Date(event.time);
       switch (range) {
         case 'TODAY':
@@ -261,6 +308,12 @@ export class AttendanceService {
         default:
           return true;
       }
+    });
+  }
+
+  checkLoginOrLoggedOut(empId: any): Observable<any> {
+    return this.http.get(this.baseURL + '/check-status/' + empId, {
+      withCredentials: true,
     });
   }
 }

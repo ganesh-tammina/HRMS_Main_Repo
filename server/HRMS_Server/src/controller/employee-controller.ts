@@ -225,4 +225,30 @@ export default class EmployeeController {
     const imageName = req.params.image_name;
     res.sendFile(`${process.cwd()}/uploads/${imageName}`);
   }
+
+  static async search(req: Request, res: Response) {
+    try {
+      const { q } = req.query;
+
+      if (!q || typeof q !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: "Query parameter 'q' is required",
+        });
+      }
+
+      const employees = await Employeeservices.searchEmployees(q);
+
+      return res.status(200).json({
+        success: true,
+        data: employees,
+      });
+    } catch (error) {
+      console.error('Error searching employees:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+      });
+    }
+  }
 }

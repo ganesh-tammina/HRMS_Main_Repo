@@ -3,6 +3,7 @@ import {
   CandidateService,
   Candidate,
   Employee,
+  CandidateSearchResult,
 } from 'src/app/services/pre-onboarding.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,10 +23,9 @@ import { environment } from 'src/environments/environment';
 })
 export class HeaderComponent implements OnInit {
   currentCandidate: Candidate | null = null;
-
   // Search functionality
   searchQuery: string = '';
-  searchResults: Candidate[] = [];
+  searchResults: CandidateSearchResult[] = [];
   results: any;
   one: any;
   full_name: string = '';
@@ -39,19 +39,20 @@ export class HeaderComponent implements OnInit {
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
-  profileimg: string = environment.apiURL
+
+  profileimg: string = environment.apiURL;
+
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService,
     private router: Router,
-    private navCtrl: NavController   // ✅ add this
-
-  ) { }
+    private navCtrl: NavController // ✅ add this
+  ) {}
 
   ngOnInit() {
     this.candidateService.Employee$.subscribe((employees) => {
-      console.log("👀 Employee$ value:", employees);
+      console.log('👀 Employee$ value:', employees);
     });
 
     // Load profile image from localStorage
@@ -68,7 +69,10 @@ export class HeaderComponent implements OnInit {
         console.log('🖼️ Header: Profile image cleared on logout');
       }
     });
-    console.log('🖼️ Loaded image URL from localStorage:', this.uploadedImageUrl);
+    console.log(
+      '🖼️ Loaded image URL from localStorage:',
+      this.uploadedImageUrl
+    );
 
     // this.currentEmployee$ = this.candidateService.currentEmployee$;
 
@@ -82,7 +86,6 @@ export class HeaderComponent implements OnInit {
     //   console.log('Current Employee:', this.currentemp);
     // });
 
-
     if (this.routeGuardService.employeeID) {
       this.candidateService.getEmpDet().subscribe({
         next: (response: any) => {
@@ -91,14 +94,17 @@ export class HeaderComponent implements OnInit {
             this.one = this.allEmployees[0];
             this.fullName = this.one[0].full_name;
             this.employee_id = this.one[0].employee_id;
-            this.imageUrls = this.one[0].image;
-            console.log(this.imageUrls);
+            if (this.one[0].image) {
+              this.imageUrls = `https://${this.profileimg}${this.one[0].image}`;
+            } else {
+              this.imageUrls = '../../../assets/user.svg';
+            }
+            console.log('profile', this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
             this.candidateService.setLoggedEmployeeId(this.employee_id);
             console.log(this.fullName);
 
             console.log(this.employee_id);
-
           }
         },
         error: (err) => {
@@ -107,9 +113,7 @@ export class HeaderComponent implements OnInit {
       });
       // Subscribe to current candidate observable
 
-
       // Fallback: if page refreshed
-
     }
   }
 
@@ -130,15 +134,16 @@ export class HeaderComponent implements OnInit {
       return;
     }
 
-    this.searchResults = this.candidateService.searchCandidates(
-      this.searchQuery
-    );
+    this.candidateService.searchCandidates(this.searchQuery).subscribe({
+      next: (results) => {
+        this.searchResults = results;
+        this.results = this.searchResults.map(
+          (emp) => `${emp.first_name} ${emp.last_name}`
+        );
+      },
+    });
     // this.results = JSON.stringify(this.searchResults)
     // console.log(this.results)
-    this.results = this.searchResults.map(
-      (emp) =>
-        `${emp.personalDetails.FirstName} ${emp.personalDetails.LastName}`
-    );
 
     console.log(this.results);
   }

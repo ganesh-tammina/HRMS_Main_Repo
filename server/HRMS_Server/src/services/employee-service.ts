@@ -1609,4 +1609,28 @@ Left Join employee_profile_pic tiger on tiger.employee_id = e.employee_id where 
       connection.release();
     }
   }
+
+   static async searchEmployees(searchText: string) {
+    const query = `
+      SELECT 
+        employee_id,
+        employee_number,
+        first_name,
+        middle_name,
+        last_name,
+        full_name,
+        work_email
+      FROM employees
+      WHERE 
+        first_name LIKE ? 
+        OR middle_name LIKE ?
+        OR last_name LIKE ?
+        OR full_name LIKE ?
+      LIMIT 50;
+    `;
+
+    const like = `%${searchText}%`;
+    const [rows] = await pool.query(query, [like, like, like, like]);
+    return rows;
+  }
 }
