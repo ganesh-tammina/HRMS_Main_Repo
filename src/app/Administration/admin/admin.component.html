@@ -5,7 +5,7 @@
     <div>
       <ion-row>
         <!-- add employees -->
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <ion-col size="12">
 
           <ion-card>
             <ion-card-header class="row-space-between">
@@ -45,34 +45,58 @@
                     </ion-content>
                   </ng-template>
                 </ion-modal>
-
-
-
-
-
-
-
-                <!-- <ion-popover trigger="popover-editform" class="upload-file" [dismissOnSelect]="false">
-                  <ng-template>
-                    <ion-content class="ion-padding">
-
-                      <input type="file" #EmployeeInput (click)="EmployeeInput.click()"
-                        (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />
-
-                      <div class="row-center">
-                        <button (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">Upload</button>
-                      </div>
-                    </ion-content>
-                  </ng-template>
-                </ion-popover> -->
-
-
-
               </ion-card-subtitle>
-
             </ion-card-header>
+
             <ion-card-content>
-              <ion-list *ngFor="let candidate of pagedCandidates">
+              <ion-grid class="table-block">
+                <ion-row class="table-header">
+                  <ion-col size="1">
+                     Emp Id
+                  </ion-col>
+                  <ion-col size="3">
+                    Name / Job Role
+                  </ion-col>
+                  <ion-col size="2">
+                      Department
+                    </ion-col>
+                    <ion-col size="3">
+                        Location / Shift
+                      </ion-col>
+                      <ion-col size="2">
+                          Email
+                        </ion-col>
+                        <ion-col size="1">
+                            Actions
+                          </ion-col>
+                </ion-row>
+                <ion-row class="table-list-row" *ngFor="let candidate of pagedCandidates">
+                    <ion-col size="1">
+                      <p>{{candidate.id}}</p>
+                    </ion-col>
+                    <ion-col size="3">
+                      <div class="row-left">
+                          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                          <p>{{candidate.personalDetails.FirstName}}</p>
+                      </div>
+                    </ion-col>
+                    <ion-col size="2">
+                        <p>{{candidate.Department}}</p>
+                      </ion-col>
+                      <ion-col size="3">
+                          <p>{{candidate.Department}}</p>
+                        </ion-col>
+                        <ion-col size="2">
+                            <p>{{candidate.Department}}</p>
+                          </ion-col>
+                          <ion-col size="1" class="row-center">
+                              <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
+                                  <ion-icon name="chevron-back-outline"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                  </ion-row>
+              </ion-grid>
+              <!-- <ion-list *ngFor="let candidate of pagedCandidates">
                 <ion-item>
                   <ion-thumbnail slot="start">
                     <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
@@ -81,7 +105,7 @@
                   <ion-label>{{candidate.personalDetails.FirstName}}</ion-label>
                   <ion-button fill="clear"><ion-icon name="create-outline"></ion-icon></ion-button>
                 </ion-item>
-              </ion-list>
+              </ion-list> -->
 
               <div class="row-center ion-padding">
                 <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
@@ -111,8 +135,58 @@
           </ion-card>
 
         </ion-col>
+        <!-- Leaves block -->
+        <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
+
+            <ion-card>
+              <ion-card-header class="row-space-between">
+                <ion-card-title>Total Leaves</ion-card-title>
+                <ion-card-subtitle>
+                  <button (click)="openModal()" class="primary-outline-btn row-center">
+                    <ion-icon name="add-circle-outline"></ion-icon>Add Leaves
+                  </button>
+  
+                </ion-card-subtitle>
+  
+              </ion-card-header>
+              <ion-card-content>
+
+                <ion-list class="leave-list-block" lines="none">
+                  <ion-item class="cl-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/CL.svg">
+                        <span>Casual</span></p>
+                        <p>12</p>      
+                      <!-- *ngIf="leaveData" {{ leaveData.marriageLeaves }} {{ leaveData.sickLeaves }}-->
+                  </ion-item>
+                  <ion-item class="ml-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/ML.svg">
+                        <span>Marriage</span></p>
+                      <p>2</p>  
+                  </ion-item>
+                  <ion-item class="sl-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/SL.svg">
+                        <span>Sick</span></p>
+                      <p>6</p> 
+                  </ion-item>     
+                  <ion-item class="co-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/CO.svg">
+                        <span>Comp Offs</span></p>
+                          <p>3</p>
+                    </ion-item>  
+                    <ion-item class="ul-text">
+                        <p class="row-left"><img src="../../../assets/leave-icons/UL.svg">
+                          <span>Unpiad</span></p>
+                        <p>0</p>  
+                      </ion-item>  
+                </ion-list>
+                <button (click)="deleteLeaves()" class="ion-float-right primary-rounded-btn my-15">Delete Data</button>
+              </ion-card-content>
+            </ion-card>
+  
+          </ion-col>
+
         <!-- Hollidays list -->
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <ion-col size="12" size-sm="12" size-md="8" size-lg="8" size-xl="8">
 
           <ion-card>
             <ion-card-header class="row-space-between">
@@ -138,6 +212,7 @@
               </ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
+                <ion-datetime presentation="date"></ion-datetime>
               <ion-list *ngFor="let holiday of holidays">
                 <ion-item>
                   <ion-thumbnail slot="start">
@@ -286,46 +361,17 @@
           </ion-card>
 
         </ion-col>
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
-
-          <ion-card>
-            <ion-card-header class="row-space-between">
-              <ion-card-title>Total Leaves</ion-card-title>
-              <ion-card-subtitle>
-                <button (click)="openModal()">
-                  <ion-icon name="add-circle-outline"></ion-icon>
-                </button>
-
-              </ion-card-subtitle>
-
-            </ion-card-header>
-            <ion-card-content>
-              <ion-list>
-                <ion-item>
-
-                  <div *ngIf="leaveData">
-                    <button (click)="deleteLeaves()">Delete Data</button>
-                    <h3>Saved Leave Data:</h3>
-                    <p>Sick Leaves: {{ leaveData.sickLeaves }}</p>
-                    <p>Paid Leaves: {{ leaveData.paidLeaves }}</p>
-                    <p>Marriage Leaves: {{ leaveData.marriageLeaves }}</p>
-                  </div>
-                </ion-item>
-              </ion-list>
-            </ion-card-content>
-          </ion-card>
-
+        <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
+            <app-shifts></app-shifts>
         </ion-col>
+        <ion-col size="12" size-sm="12" size-md="8" size-lg="8" size-xl="8">
+            <app-weekoffs></app-weekoffs>
+          </ion-col>
       </ion-row>
     </div>
   </ion-grid>
   <div *ngIf="showModal">
     <app-leave-modal (saveLeaves)="handleSave($event)" (closeModal)="handleClose()"></app-leave-modal>
   </div>
-  <div>
-    <app-shifts></app-shifts>
-  </div>
-  <div>
-    <app-weekoffs></app-weekoffs>
-  </div>
+ 
 </ion-content>
