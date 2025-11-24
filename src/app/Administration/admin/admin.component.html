@@ -285,43 +285,51 @@
                 </ion-popover>
               </ion-card-subtitle>
             </ion-card-header>
-            <ion-card-content class="d-flex ion-align-items-start holiday-list">
-                <ion-datetime presentation="date"></ion-datetime>
-              <!-- <ion-list *ngFor="let holiday of holidays">
-                <ion-item>
-                  <ion-thumbnail slot="start">
-                    <img
-                      alt="Silhouette of mountains"
-                      src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
-                    />
-                  </ion-thumbnail>
-                  <ion-label>{{ holiday.HolidayName }}</ion-label>
-                  <ion-label>{{ holiday.Date }}</ion-label>
-                  <ion-label>{{ holiday.Day }}</ion-label>
-                  <ion-button fill="popover-editform" id="popover-editform"
-                    ><ion-icon name="create-outline"></ion-icon
-                  ></ion-button>
-                </ion-item>
-              </ion-list> -->
-                   <ion-list>
-                <ion-item>
-                  <ion-thumbnail slot="start">
-                    <ion-label>Dec 15</ion-label>
-                  </ion-thumbnail>
-                  <div> 
-                    <ion-label>Happy Christmas</ion-label>                 
-                    <ion-label>Wednessday</ion-label>
-                  </div>                 
-                  <div>
-                    <ion-button fill="popover-editform" id="popover-editform"
-                    ><ion-icon name="create-outline"></ion-icon
-                  ></ion-button>
-                  <ion-button fill="popover-editform" id="popover-editform">
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </ion-button>
-                  </div>                  
-                </ion-item>
-              </ion-list>
+            <ion-card-content class="holiday-list">
+              <ion-row class="ion-items-start">
+                <ion-col size="5">
+                    <ion-datetime presentation="date"></ion-datetime>
+                </ion-col>
+                <ion-col size="7"  class="holiday-content">
+                    <!-- <ion-list *ngFor="let holiday of holidays">
+                    <ion-item>
+                      <ion-thumbnail slot="start">
+                        <img
+                          alt="Silhouette of mountains"
+                          src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
+                        />
+                      </ion-thumbnail>
+                      <ion-label>{{ holiday.HolidayName }}</ion-label>
+                      <ion-label>{{ holiday.Date }}</ion-label>
+                      <ion-label>{{ holiday.Day }}</ion-label>
+                      <ion-button fill="popover-editform" id="popover-editform"
+                        ><ion-icon name="create-outline"></ion-icon
+                      ></ion-button>
+                    </ion-item>
+                  </ion-list> -->     
+                      <p class="card-sub-title">Upcoming Holidays</p>
+                              <ion-list lines="none">
+                                  <ion-item>
+                                    <ion-thumbnail slot="start">
+                                      <ion-label>Dec 15</ion-label>
+                                    </ion-thumbnail>
+                                    <div class="content"> 
+                                      <ion-label>Happy Christmas</ion-label>                 
+                                      <ion-label>Wednessday</ion-label>
+                                    </div>                 
+                                    <div class="row-right">
+                                      <ion-button fill="popover-editform" id="popover-editform"
+                                      ><ion-icon name="create-outline"></ion-icon
+                                    ></ion-button>
+                                    <ion-button fill="popover-editform" id="popover-editform">
+                                      <ion-icon name="trash-outline"></ion-icon>
+                                    </ion-button>
+                                    </div>                  
+                                  </ion-item>
+                                </ion-list>
+                  </ion-col>
+                </ion-row>
+                         
             </ion-card-content>
           </ion-card>
         </ion-col>

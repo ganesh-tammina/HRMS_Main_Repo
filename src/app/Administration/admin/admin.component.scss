@@ -100,25 +100,40 @@ button:disabled {
         }
       }
 .holiday-list {
-  ion-thumbnail {
-    background: $secondry-color;
-    border-radius: 20px;
-    padding: 12px;
-    text-align: center;
-    color: #fff;
+  ion-datetime {
+    border: 1px solid #DFDFDF;
+    border-radius: 12px;
   }
+  .card-sub-title {
+    @include text-style-bold();
+    margin-bottom: 12px;
+  }
+  .holiday-content {
+    border: 1px solid #DFDFDF;
+    border-radius: 12px;
+    padding: 16px;
+    ion-thumbnail {
+      background: $secondry-color;
+      border-radius: 20px;
+      padding: 12px;
+      text-align: center;
+      color: #fff;
+    }  
+    ion-list {
+      width: 100%;
+      ion-item {
+        --background: #EDEDED;
+        border-radius: 8px !important;
+        width: 100%;
+        .content {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
 }
-     
-    title {
-        display: block;
-        @include normal-text();
-    }
-    ion-label {
-        @include normal-text-unbold();
-    }
-    ion-button {
-        text-transform: capitalize;
-    }
+  
 }
 .tooltip-container {
     position: relative;
