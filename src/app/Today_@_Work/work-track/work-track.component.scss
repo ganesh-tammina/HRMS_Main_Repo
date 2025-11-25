@@ -1,0 +1,138 @@
+.bg {
+  --background: linear-gradient(135deg, #e6ecff, #f8fbff);
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+
+  div {
+    flex: 1;
+    padding: 14px;
+    text-align: center;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+  }
+
+  .active {
+    background: #005eff;
+    color: white;
+    transform: translateY(-2px);
+  }
+}
+
+.box {
+  background: rgba(255,255,255,0.95);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 12px 38px rgba(0,0,0,0.08);
+  margin-bottom: 40px;
+}
+
+.animate {
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* DATE BAR */
+.date-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #edf1ff;
+  padding: 10px 14px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+}
+
+.date {
+  color: #005eff;
+  font-weight: bold;
+}
+
+.calendar-box {
+  padding: 10px;
+  border-radius: 18px;
+  margin-bottom: 15px;
+  background: #f4f6ff;
+}
+
+/* TECHNOLOGY */
+.glass-item {
+  border-radius: 18px;
+  margin-top: 10px;
+  --background: #f7f9ff;
+}
+
+.tech-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+/* HOURLY GRID */
+.hours-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.hour-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 140px;
+  gap: 12px;
+  align-items: center;
+}
+
+.break-label {
+  color: gray;
+  font-style: italic;
+}
+
+/* TEXT AREA */
+ion-textarea {
+  --background: #f4f7ff;
+  border-radius: 14px;
+  padding: 6px;
+  font-size: 14px;
+}
+
+/* GRAPH */
+.graph-box {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 20px;
+  background: #f5f8ff;
+}
+
+/* BUTTON */
+.submit-btn {
+  margin-top: 10px;
+  --background: linear-gradient(135deg,#005eff,#4f9bff);
+}
+
+.center {
+  text-align: center;
+  margin-top: 16px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.total {
+  color: #005eff;
+  margin-top: 10px;
+}

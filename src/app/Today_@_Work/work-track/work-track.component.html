@@ -1,3 +1,122 @@
-<p>
-  work-track works!
-</p>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title> Work Tracking</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg">
+
+  <!-- ⭐ TABS -->
+  <div class="tabs">
+    <div [class.active]="activeTab==='daily'" (click)="changeTab('daily')">Daily</div>
+    <div [class.active]="activeTab==='weekly'" (click)="changeTab('weekly')">Weekly</div>
+    <div [class.active]="activeTab==='monthly'" (click)="changeTab('monthly')">Monthly</div>
+  </div>
+
+  <!--------------------------------- DAILY --------------------------------->
+  <div *ngIf="activeTab==='daily'" class="box animate">
+
+    <!-- DATE BAR -->
+    <div class="date-bar">
+      <b>📅 Work Date :</b>
+      <span class="date">{{ selectedDate }}</span>
+      <ion-button size="small" shape="round" (click)="openMissedCalendar()">
+        Add Missed
+      </ion-button>
+    </div>
+
+    <div class="calendar-box" *ngIf="showCalendar">
+      <ion-datetime presentation="date" [max]="today" [value]="selectedDate" (ionChange)="onDateChange($event)">
+      </ion-datetime>
+    </div>
+
+    <!-- TECHNOLOGY INPUT -->
+    <ion-item class="glass-item">
+      <ion-label position="stacked">Technologies Used</ion-label>
+      <ion-input [(ngModel)]="techInput" placeholder="Angular, Node, Ionic"></ion-input>
+      <ion-button slot="end" (click)="addTechnology()">Add</ion-button>
+    </ion-item>
+
+    <div class="tech-chips">
+      <ion-chip color="primary" *ngFor="let tech of technologies; let i=index">
+        {{tech}}
+        <ion-icon name="close-circle" (click)="removeTechnology(i)"></ion-icon>
+      </ion-chip>
+    </div>
+
+    <!-- HOURLY GRID -->
+    <div class="hours-grid">
+
+      <div class="hour-row" *ngFor="let h of hours">
+
+        <b>{{h.hour}}</b>
+
+        <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done..." autoGrow="true">
+        </ion-textarea>
+
+        <ion-select *ngIf="h.type==='work'" interface="popover" placeholder="Project" [(ngModel)]="h.project">
+
+          <ion-select-option value="CNS">CNS</ion-select-option>
+          <ion-select-option value="CIS">CIS</ion-select-option>
+          <ion-select-option value="Nasco">Nasco</ion-select-option>
+          <ion-select-option value="COE">COE (Bench)</ion-select-option>
+        </ion-select>
+
+        <span class="break-label" *ngIf="h.type==='break'">🍔 Break</span>
+
+      </div>
+
+    </div>
+
+    <ion-button expand="block" class="submit-btn" (click)="submitDaily()">
+      Submit Daily Report
+    </ion-button>
+
+    <ion-button expand="block" fill="outline" (click)="exportDaily()">
+      Export Daily
+    </ion-button>
+
+    <!-- TOTAL -->
+    <div class="center total">
+      Total Hours: {{dailyTotal}} hrs
+    </div>
+
+    <div class="graph-box">
+      <canvas id="dailyChart"></canvas>
+    </div>
+
+  </div>
+
+  <!--------------------------------- WEEKLY --------------------------------->
+  <div *ngIf="activeTab==='weekly'" class="box animate">
+
+    <h2 class="center">📊 Weekly Report</h2>
+
+    <div class="graph-box">
+      <canvas id="weeklyChart"></canvas>
+    </div>
+
+    <ion-button expand="block" (click)="exportWeekly()">Export Weekly</ion-button>
+
+    <div class="center total">
+      Weekly Total: {{weeklyTotal}} hrs
+    </div>
+  </div>
+
+  <!--------------------------------- MONTHLY --------------------------------->
+  <div *ngIf="activeTab==='monthly'" class="box animate">
+
+    <h2 class="center">📈 Monthly Report</h2>
+
+    <div class="graph-box">
+      <canvas id="monthlyChart"></canvas>
+    </div>
+
+    <ion-button expand="block" (click)="exportMonthly()">Export Monthly</ion-button>
+
+    <div class="center total">
+      Monthly Total: {{monthlyTotal}} hrs
+    </div>
+  </div>
+
+</ion-content>

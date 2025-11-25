@@ -28,6 +28,7 @@ import { salaryStaructureComponent } from './salary-staructure/salary-staructure
 import { AuthGuard } from './services/route-guard/auth/single-guard.guard';
 import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-handler.guard';
 import { AdminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
+import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -82,6 +83,12 @@ export const routes: Routes = [
   {
     path: 'profile-page',
     component: ProfilePageComponent,
+  },
+  {
+    path: 'workTrack',
+    component: WorkTrackComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'admin',
