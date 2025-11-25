@@ -3,7 +3,7 @@
       <ion-card-title>Shift Management</ion-card-title>  
       <ion-card-subtitle>
           <ion-button class="primary-outline-btn row-center" (click)="OpenForm(true)"><ion-icon name="add-circle-outline"></ion-icon>Add Leaves</ion-button>
-          <ion-modal [isOpen]="isModalOpen">
+          <ion-modal [isOpen]="isModalOpen" class="shift-popup">
             <ng-template>
               <ion-header>
                 <ion-toolbar>
@@ -14,8 +14,7 @@
                 </ion-toolbar>
               </ion-header>
               <ion-content class="ion-padding">
-                  <form [formGroup]="shiftForm" (ngSubmit)="submitShift()">
-
+                  <form [formGroup]="shiftForm" (ngSubmit)="submitShift()">                 
                       <div class="form-group">
                         <label>Shift Name</label>
                         <input type="text" formControlName="shift_name" placeholder="Enter shift name" />
@@ -40,7 +39,7 @@
                         </small>
                       </div>
                   
-                      <button type="submit" class="btn">Save Shift</button>
+                      <button type="submit" class="primary-btn">Save Shift</button>
                     </form>
               </ion-content>
             </ng-template>
@@ -48,24 +47,64 @@
         </ion-card-subtitle>   
     </ion-card-header>
 
-    <ion-card-content>
-        <ion-list>
-          <ion-item *ngIf="shiftForm">
-             <div class="row-left">
-               <!-- <img [ngIf]="shift.shift_name='Day shift'" src="../../../../assets/leave-icons/day.svg" alt=""> -->
-               <!-- <img [ngIf]="shift.shift_name='Evening shift'" src="../../../../assets/leave-icons/evening.svg" alt=""> -->
-               <!-- <img [ngIf]="shift.shift_name='Night shift'" src="../../../../assets/leave-icons/night.svg" alt=""> -->
+    <ion-card-content class="shift-block">
+        <ion-list lines="none">
+          <!-- <ion-item *ngIf="shiftForm"> -->
+             <!-- <div class="row-left">
+               <img [ngIf]="shift.shift_name='Day shift'" src="../../../../assets/leave-icons/day.svg" alt="">
+               <img [ngIf]="shift.shift_name='Evening shift'" src="../../../../assets/leave-icons/evening.svg" alt="">
+                <img [ngIf]="shift.shift_name='Night shift'" src="../../../../assets/leave-icons/night.svg" alt="">
+
                <div>
-                 <!-- <p>{{shift_name}}</p> -->
-                 <!-- <p [ngIf]="shift.shift_name='Day shift'">default</p> -->
+                 <p>{{shift_name}}</p>
+                 <p [ngIf]="shift.shift_name='Day shift'">default</p>
+
                </div>
-             </div>
-             <!-- <p class="time-block">{{shift.check_in}} to {{shift.check_out}</p> -->
+             </div> -->
+             <ion-item *ngIf="shiftForm">
+             <div class="row-left text-block">
+                <img src="../../../../assets/leave-icons/day.svg" alt=""> 
+                <div class="pl-5 row-space-between w-100 pr-15">
+                  <div>
+                      <p>Day shift</p>
+                      <p class="label">default</p>
+                  </div>
+                  <p class="time">10:00 AM - 07:00 PM</p>
+                </div>
+              </div>
              <div class="row-right">
                 <ion-icon name="create-outline"></ion-icon>
                 <ion-icon name="trash-outline"></ion-icon>
              </div>
-          </ion-item>         
+          </ion-item> 
+          <ion-item *ngIf="shiftForm">
+              <div class="row-left text-block">
+                 <img src="../../../../assets/leave-icons/evening.svg" alt="">
+  
+                 <div class="pl-5 row-space-between w-100 pr-15">
+                   <p>Evening shift</p>  
+                   <p class="time">10:00 AM - 07:00 PM</p>
+                 </div>
+               </div>
+              <div class="row-right">
+                 <ion-icon name="create-outline"></ion-icon>
+                 <ion-icon name="trash-outline"></ion-icon>
+              </div>
+           </ion-item> 
+           <ion-item *ngIf="shiftForm">
+              <div class="row-left text-block">
+                  <img src="../../../../assets/leave-icons/night.svg" alt="">
+  
+                 <div class="pl-5 row-space-between w-100 pr-15">
+                   <p>Night shift</p>
+                   <p class="time">10:00 AM - 07:00 PM</p>  
+                 </div>
+               </div>
+              <div class="row-right">
+                 <ion-icon name="create-outline"></ion-icon>
+                 <ion-icon name="trash-outline"></ion-icon>
+              </div>
+           </ion-item>         
         </ion-list>
     </ion-card-content>
   </ion-card>
