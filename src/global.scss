@@ -177,8 +177,8 @@ ion-list-header, ion-item{
   margin-top: 8px !important;
 }
 .my-15 {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
 }
 // Modal popup
 ion-modal {
@@ -255,8 +255,9 @@ ion-popover.select-popover {
 .primary-outline-btn {
     background: #fff;
     --color: #2986CE;
+    color: #2986CE;
     border: 1.5px solid #2986CE;
-    @extend .custom-button ;
+    @extend .custom-button ;    
 }
 .danger-outline-btn {
     border: 1.5px solid #E45353;

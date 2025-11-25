@@ -20,18 +20,120 @@ button:disabled {
   cursor: not-allowed;
 }
 .admin-dashboard {
-    --background: #E6F1FF;
+    --background: var(--ion-bg-color);
     padding: 20px;
-    title {
-        display: block;
-        @include normal-text();
+    ion-card-title {
+      @include card-sub-title();
     }
-    ion-label {
-        @include normal-text-unbold();
+   .table-block {
+     .table-header {
+       height: 44px;
+       border-bottom: 1px solid $border-color;
+       p {
+         @include normal-text();
+         color: $text-color;
+       }
+     }
     }
-    ion-button {
-        text-transform: capitalize;
+
+
+
+
+
+
+
+      // Leaves block
+     .leave-list-block {
+        border: 1px solid #DFDFDF;
+          ion-item {
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #DFDFDF; 
+            width: 100%;
+            p {
+              width: 100%;
+              font-weight: 600;
+              img {
+                padding-right: 5px; 
+                width: 35px;
+              }
+              span {
+                padding: 4px 8px;
+                border-radius: 24px;
+                font-size: 13px;
+              }
+              &:last-child {
+                text-align: end;
+              }
+            }
+            &.cl-text {
+              span {
+                background: #E7D8FF;
+              }
+              color: #6941C6;
+            }
+            &.ml-text {
+              span {
+                background: #FFE9D2;
+              }
+              color: #A95300;
+            }
+            &.sl-text {
+              span {
+                background: #D7F3E5;
+              }
+              color: #077B4B;
+            }
+            &.co-text {
+              span {
+                background: #B4E1FF;
+              }
+              color: #014570;
+            }
+            &.ul-text {
+              span {
+                background: #FFC7C7;
+              }
+              color: #C80000;
+            }
+        }
+      }
+.holiday-list {
+  ion-datetime {
+    border: 1px solid #DFDFDF;
+    border-radius: 12px;
+  }
+  .card-sub-title {
+    @include text-style-bold();
+    margin-bottom: 12px;
+  }
+  .holiday-content {
+    border: 1px solid #DFDFDF;
+    border-radius: 12px;
+    padding: 16px;
+    ion-thumbnail {
+      background: $secondry-color;
+      border-radius: 20px;
+      padding: 12px;
+      text-align: center;
+      color: #fff;
+    }  
+    ion-list {
+      width: 100%;
+      ion-item {
+        --background: #EDEDED;
+        border-radius: 8px !important;
+        width: 100%;
+        .content {
+          width: 100%;
+        }
+      }
     }
+  }
+  
+}
+  
 }
 .tooltip-container {
     position: relative;

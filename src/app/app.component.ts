@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 // import { addIcons } from 'ionicons';
 // import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
@@ -20,24 +25,23 @@ import { NavController } from '@ionic/angular';
     HeaderComponent,
     CommonModule,
     IonicModule,
-    
   ],
 })
 export class AppComponent implements OnInit {
   public showCategories = false;
   showMenu = true;
   currentUser: Observable<Candidate | null>;
-  isLoginPage = false
-  iscandiateofferPage = false
-  iscandiateofferLetterPage = false
-  CurrentuserType: string = ''
+  isLoginPage = false;
+  iscandiateofferPage = false;
+  iscandiateofferLetterPage = false;
+  CurrentuserType: string = '';
   userType: string | null = null;
   one: any;
-  isAdmin: boolean = false
+  isAdmin: boolean = false;
   full_name: string = '';
   currentTime: string = '';
   allEmployees: any[] = [];
-  currentUrl: any;    //get current page
+  currentUrl: any; //get current page
   isRefreshing = false;
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
@@ -45,8 +49,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private candidateService: CandidateService,
     private routeGaurdService: RouteGuardService,
-    private navCtrl: NavController   // ✅ add this
-
+    private navCtrl: NavController // ✅ add this
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
     // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
@@ -55,16 +58,22 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         // Hide menu on login page
         this.showMenu = !event.urlAfterRedirects.includes('/login');
-        console.log("this.showMenu", this.showMenu)
+        console.log('this.showMenu', this.showMenu);
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
-        console.log("this.isLoginPage", this.isLoginPage)
-        this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
-        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
-        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter');
-        console.log("this.iscandiateofferLetterPage", this.iscandiateofferLetterPage)
+        console.log('this.isLoginPage', this.isLoginPage);
         this.iscandiateofferPage =
           event.urlAfterRedirects.includes('/candidate_status');
-        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
+        console.log('this.iscandiateofferPage', this.iscandiateofferPage);
+        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes(
+          '/candidate-offer-letter'
+        );
+        console.log(
+          'this.iscandiateofferLetterPage',
+          this.iscandiateofferLetterPage
+        );
+        this.iscandiateofferPage =
+          event.urlAfterRedirects.includes('/candidate_status');
+        console.log('this.iscandiateofferPage', this.iscandiateofferPage);
 
         // Quick refresh effect for main navigation pages after login
         this.handlePageRefresh(event.urlAfterRedirects);
@@ -88,10 +97,10 @@ export class AppComponent implements OnInit {
     this.currentUrl = this.router.url;
 
     if (this.routeGaurdService.userRole) {
-      this.routeGaurdService.userRole === 'admin' ? this.isAdmin = true : this.isAdmin = false;
+      this.routeGaurdService.userRole === 'ADMIN' || 'HR'
+        ? (this.isAdmin = true)
+        : (this.isAdmin = false);
     }
-   
-
   }
   // preonboard() {
   //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -101,25 +110,26 @@ export class AppComponent implements OnInit {
   // }
   preonboard() {
     //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/pre-onboarding-cards']);
+    this.router.navigate(['/pre-onboarding-cards']);
     //});
   }
 
   logout() {
     localStorage.clear();
     sessionStorage.clear();
-    this.router.navigate(['/login'])
+    this.router.navigate(['/login']);
   }
 
   private handlePageRefresh(url: string) {
     // Check if user is logged in and navigating to main pages
-    const isLoggedIn = this.routeGaurdService.token && this.routeGaurdService.refreshToken;
+    const isLoggedIn =
+      this.routeGaurdService.token && this.routeGaurdService.refreshToken;
     const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
-    const isMainPage = mainPages.some(page => url.includes(page));
-    
+    const isMainPage = mainPages.some((page) => url.includes(page));
+
     if (isLoggedIn && isMainPage && !this.isRefreshing) {
       this.isRefreshing = true;
-      
+
       // Quick refresh effect - show loading for milliseconds
       setTimeout(() => {
         this.isRefreshing = false;

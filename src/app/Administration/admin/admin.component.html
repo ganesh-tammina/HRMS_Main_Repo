@@ -1,56 +1,80 @@
 <!-- <input type="file" (change)="onFileSelected($event)" />
 <button (click)="uploadFile()">Upload Holidays</button> -->
 <ion-content [fullscreen]="true" class="admin-dashboard">
+  <ion-button (click)="dep()">Add Departments</ion-button>
   <ion-grid>
     <div>
       <ion-row>
         <!-- add employees -->
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <ion-col size="12">
 
           <ion-card>
             <ion-card-header class="row-space-between">
               <ion-card-title>Total Employees</ion-card-title>
+
               <ion-card-subtitle>
                 <div class="tooltip-container">
-                  <ion-button id='open-upload-modal' fill="clear"><ion-icon
-                      name="add-circle-outline"></ion-icon></ion-button>
+                  <ion-button id="open-upload-modal" fill="clear"
+                    ><ion-icon name="add-circle-outline"></ion-icon
+                  ></ion-button>
                   <span class="tooltip-text mt-8">Add Employees</span>
                 </div>
-                <ion-modal class="upload-main-block" trigger="open-upload-modal" #modal>
+                <ion-modal
+                  class="upload-main-block"
+                  trigger="open-upload-modal"
+                  #modal
+                >
                   <ng-template>
                     <ion-content class="ion-padding">
                       <div class="upload-block" (click)="EmployeeInput.click()">
-                        <ion-icon name="folder-open-outline" class="folder-icon"></ion-icon>
-                        <p> <strong>Upload a file</strong></p>
+                        <ion-icon
+                          name="folder-open-outline"
+                          class="folder-icon"
+                        ></ion-icon>
+                        <p><strong>Upload a file</strong></p>
                         <p>Attach the file below</p>
                         <div class="drag-drop-area">
-                          <ion-icon name="arrow-down-circle-outline" class="upload-icon"></ion-icon>
+                          <ion-icon
+                            name="arrow-down-circle-outline"
+                            class="upload-icon"
+                          ></ion-icon>
                           <p>Drag file(s) here to upload.</p>
-                          <p>Alternatively, you can select a file by
-                            <label for="file-upload-input" class="select-file-link">
+                          <p>
+                            Alternatively, you can select a file by
+                            <label
+                              for="file-upload-input"
+                              class="select-file-link"
+                            >
                               clicking here
-                              <input type="file" #EmployeeInput id="file-upload-input"
-                                (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />
+                              <input
+                                type="file"
+                                #EmployeeInput
+                                id="file-upload-input"
+                                (change)="EmployeeSelected($event)"
+                                accept=".xlsx,.xls"
+                              />
                             </label>
                           </p>
                         </div>
                       </div>
 
                       <div class="modal-actions">
-                        <ion-button fill="outline" color="medium"
-                          (click)="modal.dismiss(null, 'cancel')">Cancel</ion-button>
-                        <ion-button class="primary-btn" (click)="EmployeesUpload()"
-                          [disabled]="!EmployeeselectedFile">Upload File</ion-button>
+                        <ion-button
+                          fill="outline"
+                          color="medium"
+                          (click)="modal.dismiss(null, 'cancel')"
+                          >Cancel</ion-button
+                        >
+                        <ion-button
+                          class="primary-btn"
+                          (click)="EmployeesUpload()"
+                          [disabled]="!EmployeeselectedFile"
+                          >Upload File</ion-button
+                        >
                       </div>
                     </ion-content>
                   </ng-template>
                 </ion-modal>
-
-
-
-
-
-
 
                 <!-- <ion-popover trigger="popover-editform" class="upload-file" [dismissOnSelect]="false">
                   <ng-template>
@@ -65,14 +89,58 @@
                     </ion-content>
                   </ng-template>
                 </ion-popover> -->
-
-
-
               </ion-card-subtitle>
-
             </ion-card-header>
+
             <ion-card-content>
-              <ion-list *ngFor="let candidate of pagedCandidates">
+              <ion-grid class="table-block">
+                <ion-row class="table-header">
+                  <ion-col size="1">
+                     Emp Id
+                  </ion-col>
+                  <ion-col size="3">
+                    Name / Job Role
+                  </ion-col>
+                  <ion-col size="2">
+                      Department
+                    </ion-col>
+                    <ion-col size="3">
+                        Location / Shift
+                      </ion-col>
+                      <ion-col size="2">
+                          Email
+                        </ion-col>
+                        <ion-col size="1">
+                            Actions
+                          </ion-col>
+                </ion-row>
+                <ion-row class="table-list-row" *ngFor="let candidate of pagedCandidates">
+                    <ion-col size="1">
+                      <p>{{candidate.id}}</p>
+                    </ion-col>
+                    <ion-col size="3">
+                      <div class="row-left">
+                          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                          <p>{{candidate.personalDetails.FirstName}}</p>
+                      </div>
+                    </ion-col>
+                    <ion-col size="2">
+                        <p>{{candidate.Department}}</p>
+                      </ion-col>
+                      <ion-col size="3">
+                          <p>{{candidate.Department}}</p>
+                        </ion-col>
+                        <ion-col size="2">
+                            <p>{{candidate.Department}}</p>
+                          </ion-col>
+                          <ion-col size="1" class="row-center">
+                              <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
+                                  <ion-icon name="chevron-back-outline"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                  </ion-row>
+              </ion-grid>
+              <!-- <ion-list *ngFor="let candidate of pagedCandidates">
                 <ion-item>
                   <ion-thumbnail slot="start">
                     <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
@@ -81,251 +149,207 @@
                   <ion-label>{{candidate.personalDetails.FirstName}}</ion-label>
                   <ion-button fill="clear"><ion-icon name="create-outline"></ion-icon></ion-button>
                 </ion-item>
-              </ion-list>
+              </ion-list> -->
+              @if(employee_list_length > 0){
+              <h2>Parsed {{ employee_list_length }} employees from excel.</h2>
+              <button (click)="save_EMployees()">Save {{employee_list_length}} Employees.</button>
+              }
 
               <div class="row-center ion-padding">
-                <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
+                <ion-button
+                  (click)="prevPage()"
+                  [disabled]="currentPage === 1"
+                  fill="clear"
+                >
                   <ion-icon name="chevron-back-outline"></ion-icon>
                 </ion-button>
 
                 <ion-text>
-                  Page {{currentPage}} of {{totalPages}}
+                  Page {{ currentPage }} of {{ totalPages }}
                 </ion-text>
 
-                <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0"
-                  fill="clear">
+                <ion-button
+                  (click)="nextPage()"
+                  [disabled]="currentPage === totalPages || totalPages === 0"
+                  fill="clear"
+                >
                   <ion-icon name="chevron-forward-outline"></ion-icon>
                 </ion-button>
 
-                <ion-item lines="none" style="max-width: 100px; margin-left: 10px;">
-                  <ion-select [(ngModel)]="pageSize" placeholder="Size"
-                    (ionChange)="calculatePagination(); updatePagedCandidates(); currentPage = 1">
+                <ion-item
+                  lines="none"
+                  style="max-width: 100px; margin-left: 10px"
+                >
+                  <ion-select
+                    [(ngModel)]="pageSize"
+                    placeholder="Size"
+                    (ionChange)="
+                      calculatePagination();
+                      updatePagedCandidates();
+                      currentPage = 1
+                    "
+                  >
                     <ion-select-option [value]="5">5</ion-select-option>
                     <ion-select-option [value]="10">10</ion-select-option>
                     <ion-select-option [value]="20">20</ion-select-option>
                   </ion-select>
                 </ion-item>
               </div>
-
             </ion-card-content>
           </ion-card>
-
         </ion-col>
+        <!-- Leaves block -->
+        <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
+
+            <ion-card>
+              <ion-card-header class="row-space-between">
+                <ion-card-title>Total Leaves</ion-card-title>
+                <ion-card-subtitle>
+                  <button (click)="openModal()" class="primary-outline-btn row-center">
+                    <ion-icon name="add-circle-outline"></ion-icon>Add Leaves
+                  </button>
+  
+                </ion-card-subtitle>
+  
+              </ion-card-header>
+              <ion-card-content>
+
+                <ion-list class="leave-list-block" lines="none">
+                  <ion-item class="cl-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/CL.svg">
+                        <span>Casual</span></p>
+                        <p>12</p>      
+                      <!-- *ngIf="leaveData" {{ leaveData.marriageLeaves }} {{ leaveData.sickLeaves }}-->
+                  </ion-item>
+                  <ion-item class="ml-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/ML.svg">
+                        <span>Marriage</span></p>
+                      <p>2</p>  
+                  </ion-item>
+                  <ion-item class="sl-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/SL.svg">
+                        <span>Sick</span></p>
+                      <p>6</p> 
+                  </ion-item>     
+                  <ion-item class="co-text">
+                      <p class="row-left"><img src="../../../assets/leave-icons/CO.svg">
+                        <span>Comp Offs</span></p>
+                          <p>3</p>
+                    </ion-item>  
+                    <ion-item class="ul-text">
+                        <p class="row-left"><img src="../../../assets/leave-icons/UL.svg">
+                          <span>Unpiad</span></p>
+                        <p>0</p>  
+                      </ion-item>  
+                </ion-list>
+                <button (click)="deleteLeaves()" class="ion-float-right primary-rounded-btn my-15">Delete Data</button>
+              </ion-card-content>
+            </ion-card>
+  
+          </ion-col>
+
         <!-- Hollidays list -->
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <ion-col size="12" size-sm="12" size-md="8" size-lg="8" size-xl="8">
 
           <ion-card>
             <ion-card-header class="row-space-between">
               <ion-card-title>Holidays</ion-card-title>
               <ion-card-subtitle>
                 <div class="tooltip-container">
-                  <ion-button id="holiday-popup" fill="clear"><ion-icon
-                      name="add-circle-outline"></ion-icon></ion-button>
+                  <ion-button id="holiday-popup" fill="clear"
+                    ><ion-icon name="add-circle-outline"></ion-icon
+                  ></ion-button>
                   <span class="tooltip-text mt-8">Add holidays</span>
                 </div>
-                <ion-popover trigger="holiday-popup" class="upload-file" [dismissOnSelect]="false">
+                <ion-popover
+                  trigger="holiday-popup"
+                  class="upload-file"
+                  [dismissOnSelect]="false"
+                >
                   <ng-template>
                     <ion-content class="ion-padding">
-                      <input type="file" #fileInput (click)="fileInput.click()" (change)="onFileSelected($event)"
-                        accept=".xlsx,.xls" />
+                      <input
+                        type="file"
+                        #fileInput
+                        (click)="fileInput.click()"
+                        (change)="onFileSelected($event)"
+                        accept=".xlsx,.xls"
+                      />
                       <div class="row-center">
-                        <button (click)="Upload()" [disabled]="!selectedFile">Upload</button>
+                        <button (click)="Upload()" [disabled]="!selectedFile">
+                          Upload
+                        </button>
                       </div>
                     </ion-content>
                   </ng-template>
                 </ion-popover>
-
               </ion-card-subtitle>
             </ion-card-header>
-            <ion-card-content>
-              <ion-list *ngFor="let holiday of holidays">
-                <ion-item>
-                  <ion-thumbnail slot="start">
-                    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-                  </ion-thumbnail>
-                  <ion-label>{{holiday.HolidayName}}</ion-label>
-                  <ion-label>{{holiday.Date}}</ion-label>
-                  <ion-label>{{holiday.Day}}</ion-label>
-                  <ion-button fill="popover-editform" id='popover-editform'><ion-icon
-                      name="create-outline"></ion-icon></ion-button>
-
-                </ion-item>
-              </ion-list>
+            <ion-card-content class="holiday-list">
+              <ion-row class="ion-items-start">
+                <ion-col size="5">
+                    <ion-datetime presentation="date"></ion-datetime>
+                </ion-col>
+                <ion-col size="7"  class="holiday-content">
+                    <!-- <ion-list *ngFor="let holiday of holidays">
+                    <ion-item>
+                      <ion-thumbnail slot="start">
+                        <img
+                          alt="Silhouette of mountains"
+                          src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
+                        />
+                      </ion-thumbnail>
+                      <ion-label>{{ holiday.HolidayName }}</ion-label>
+                      <ion-label>{{ holiday.Date }}</ion-label>
+                      <ion-label>{{ holiday.Day }}</ion-label>
+                      <ion-button fill="popover-editform" id="popover-editform"
+                        ><ion-icon name="create-outline"></ion-icon
+                      ></ion-button>
+                    </ion-item>
+                  </ion-list> -->     
+                      <p class="card-sub-title">Upcoming Holidays</p>
+                              <ion-list lines="none">
+                                  <ion-item>
+                                    <ion-thumbnail slot="start">
+                                      <ion-label>Dec 15</ion-label>
+                                    </ion-thumbnail>
+                                    <div class="content"> 
+                                      <ion-label>Happy Christmas</ion-label>                 
+                                      <ion-label>Wednessday</ion-label>
+                                    </div>                 
+                                    <div class="row-right">
+                                      <ion-button fill="popover-editform" id="popover-editform"
+                                      ><ion-icon name="create-outline"></ion-icon
+                                    ></ion-button>
+                                    <ion-button fill="popover-editform" id="popover-editform">
+                                      <ion-icon name="trash-outline"></ion-icon>
+                                    </ion-button>
+                                    </div>                  
+                                  </ion-item>
+                                </ion-list>
+                  </ion-col>
+                </ion-row>
+                         
             </ion-card-content>
           </ion-card>
-
         </ion-col>
-        <!-- All dropdowns -->
-        <ion-col size="12">
-
-          <ion-card>
-            <ion-card-header class="row-space-between">
-              <ion-card-title>All dropdowns</ion-card-title>
-            </ion-card-header>
-            <ion-row>
-              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
-                <ion-card-content>
-                  <title>Department</title>
-                  <ion-list>
-                    <ion-item>
-                      <ion-label>Department Name</ion-label>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </ion-item>
-                  </ion-list>
-                  <ion-button id="addDept-popup" fill="clear">Add Department</ion-button>
-                  <ion-popover trigger="addDept-popup" class="upload-file" [dismissOnSelect]="false">
-                    <ng-template>
-                      <ion-content class="ion-padding">
-                        <ion-input label="Department" labelPlacement="floating"
-                          placeholder="Enter Department"></ion-input>
-                        <div class="row-center">
-                          <button>Upload</button>
-                        </div>
-                      </ion-content>
-                    </ng-template>
-                  </ion-popover>
-                </ion-card-content>
-              </ion-col>
-              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
-                <ion-card-content>
-                  <title>Job Titles</title>
-                  <ion-list>
-                    <ion-item>
-                      <ion-label>Job-title</ion-label>
-                      <ion-label>Job-category</ion-label>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </ion-item>
-                  </ion-list>
-                  <ion-button id="addjob-popup" fill="clear">Add Title</ion-button>
-                  <ion-popover trigger="addjob-popup" class="upload-file" [dismissOnSelect]="false">
-                    <ng-template>
-                      <ion-content class="ion-padding">
-                        <ion-input label="Job Title" labelPlacement="floating"
-                          placeholder="Enter Job Title"></ion-input>
-                        <ion-input label="Job Category" labelPlacement="floating"
-                          placeholder="Enter Job Category"></ion-input>
-                        <div class="row-center">
-                          <button>Upload</button>
-                        </div>
-                      </ion-content>
-                    </ng-template>
-                  </ion-popover>
-                </ion-card-content>
-              </ion-col>
-              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
-                <ion-card-content>
-                  <title>Job Locations</title>
-                  <ion-list>
-                    <ion-item>
-                      <ion-label>Location</ion-label>
-                      <ion-label>Address</ion-label>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </ion-item>
-                  </ion-list>
-                  <ion-button id="addlocation-popup" fill="clear">Add Location</ion-button>
-                  <ion-popover trigger="addlocation-popup" class="upload-file" [dismissOnSelect]="false">
-                    <ng-template>
-                      <ion-content class="ion-padding">
-                        <ion-input label="Location" labelPlacement="floating" placeholder="Enter Location"></ion-input>
-                        <div class="row-center">
-                          <button>Upload</button>
-                        </div>
-                      </ion-content>
-                    </ng-template>
-                  </ion-popover>
-                </ion-card-content>
-              </ion-col>
-              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
-                <ion-card-content>
-                  <title>Work Type</title>
-                  <ion-list>
-                    <ion-item>
-                      <ion-label>Name</ion-label>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </ion-item>
-                  </ion-list>
-                  <ion-button id="addtype-popup" fill="clear">Add Work Type</ion-button>
-                  <ion-popover trigger="addtype-popup" class="upload-file" [dismissOnSelect]="false">
-                    <ng-template>
-                      <ion-content class="ion-padding">
-                        <ion-input label="Work Type" labelPlacement="floating"
-                          placeholder="Enter Work type"></ion-input>
-                        <div class="row-center">
-                          <button>Upload</button>
-                        </div>
-                      </ion-content>
-                    </ng-template>
-                  </ion-popover>
-                </ion-card-content>
-              </ion-col>
-              <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="4">
-                <ion-card-content>
-                  <title>Gender</title>
-                  <ion-list>
-                    <ion-item>
-                      <ion-label>Name</ion-label>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </ion-item>
-                  </ion-list>
-                  <ion-button id="addgendere-popup" fill="clear">Add Gender</ion-button>
-                  <ion-popover trigger="addgendere-popup" class="upload-file" [dismissOnSelect]="false">
-                    <ng-template>
-                      <ion-content class="ion-padding">
-                        <ion-input label="Gender" labelPlacement="floating" placeholder="Enter Gender"></ion-input>
-                        <div class="row-center">
-                          <button>Upload</button>
-                        </div>
-                      </ion-content>
-                    </ng-template>
-                  </ion-popover>
-                </ion-card-content>
-              </ion-col>
-            </ion-row>
-
-
-          </ion-card>
-
+        <!-- Shift management list -->
+        <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
+            <app-shifts></app-shifts>
         </ion-col>
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
 
-          <ion-card>
-            <ion-card-header class="row-space-between">
-              <ion-card-title>Total Leaves</ion-card-title>
-              <ion-card-subtitle>
-                <button (click)="openModal()">
-                  <ion-icon name="add-circle-outline"></ion-icon>
-                </button>
-
-              </ion-card-subtitle>
-
-            </ion-card-header>
-            <ion-card-content>
-              <ion-list>
-                <ion-item>
-
-                  <div *ngIf="leaveData">
-                    <button (click)="deleteLeaves()">Delete Data</button>
-                    <h3>Saved Leave Data:</h3>
-                    <p>Sick Leaves: {{ leaveData.sickLeaves }}</p>
-                    <p>Paid Leaves: {{ leaveData.paidLeaves }}</p>
-                    <p>Marriage Leaves: {{ leaveData.marriageLeaves }}</p>
-                  </div>
-                </ion-item>
-              </ion-list>
-            </ion-card-content>
-          </ion-card>
-
-        </ion-col>
+          <!-- weekoffs list -->
+        <ion-col size="12" size-sm="12" size-md="8" size-lg="8" size-xl="8">
+            <app-weekoffs></app-weekoffs>
+          </ion-col>
       </ion-row>
     </div>
   </ion-grid>
   <div *ngIf="showModal">
-    <app-leave-modal (saveLeaves)="handleSave($event)" (closeModal)="handleClose()"></app-leave-modal>
+    <app-leave-modal
+      (saveLeaves)="handleSave($event)"
+      (closeModal)="handleClose()"
+    ></app-leave-modal>
   </div>
-  <div>
-    <app-shifts></app-shifts>
-  </div>
-  <div>
-    <app-weekoffs></app-weekoffs>
-  </div>
+ 
 </ion-content>

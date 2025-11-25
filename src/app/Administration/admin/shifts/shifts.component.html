@@ -1,32 +1,72 @@
-<div class="shift-container">
-  <h2>Create Shift</h2>
+<ion-card>
+    <ion-card-header class="row-space-between">
+      <ion-card-title>Shift Management</ion-card-title>  
+      <ion-card-subtitle>
+          <ion-button class="primary-outline-btn row-center" (click)="OpenForm(true)"><ion-icon name="add-circle-outline"></ion-icon>Add Leaves</ion-button>
+          <ion-modal [isOpen]="isModalOpen">
+            <ng-template>
+              <ion-header>
+                <ion-toolbar>
+                  <ion-title>Create Shift</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="OpenForm(false)">Close</ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content class="ion-padding">
+                  <form [formGroup]="shiftForm" (ngSubmit)="submitShift()">
 
-  <form [formGroup]="shiftForm" (ngSubmit)="submitShift()">
+                      <div class="form-group">
+                        <label>Shift Name</label>
+                        <input type="text" formControlName="shift_name" placeholder="Enter shift name" />
+                        <small *ngIf="shiftForm.get('shift_name')?.touched && shiftForm.get('shift_name')?.invalid">
+                          Shift name is required
+                        </small>
+                      </div>
+                  
+                      <div class="form-group">
+                        <label>Check-In Time</label>
+                        <input type="time" formControlName="check_in" />
+                        <small *ngIf="shiftForm.get('check_in')?.touched && shiftForm.get('check_in')?.invalid">
+                          Check-in time is required
+                        </small>
+                      </div>
+                  
+                      <div class="form-group">
+                        <label>Check-Out Time</label>
+                        <input type="time" formControlName="check_out" />
+                        <small *ngIf="shiftForm.get('check_out')?.touched && shiftForm.get('check_out')?.invalid">
+                          Check-out time is required
+                        </small>
+                      </div>
+                  
+                      <button type="submit" class="btn">Save Shift</button>
+                    </form>
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+        </ion-card-subtitle>   
+    </ion-card-header>
 
-    <div class="form-group">
-      <label>Shift Name</label>
-      <input type="text" formControlName="shift_name" placeholder="Enter shift name" />
-      <small *ngIf="shiftForm.get('shift_name')?.touched && shiftForm.get('shift_name')?.invalid">
-        Shift name is required
-      </small>
-    </div>
+    <ion-card-content>
+        <ion-list>
+          <ion-item *ngIf="shiftForm">
+             <div class="row-left">
+               <!-- <img [ngIf]="shift.shift_name='Day shift'" src="../../../../assets/leave-icons/day.svg" alt=""> -->
+               <!-- <img [ngIf]="shift.shift_name='Evening shift'" src="../../../../assets/leave-icons/evening.svg" alt=""> -->
+               <!-- <img [ngIf]="shift.shift_name='Night shift'" src="../../../../assets/leave-icons/night.svg" alt=""> -->
+               <div>
+                 <!-- <p>{{shift_name}}</p> -->
+                 <!-- <p [ngIf]="shift.shift_name='Day shift'">default</p> -->
+               </div>
+             </div>
+             <!-- <p class="time-block">{{shift.check_in}} to {{shift.check_out}</p> -->
+             <div class="row-right">
+                <ion-icon name="create-outline"></ion-icon>
+                <ion-icon name="trash-outline"></ion-icon>
+             </div>
+          </ion-item>         
+        </ion-list>
+    </ion-card-content>
+  </ion-card>
 
-    <div class="form-group">
-      <label>Check-In Time</label>
-      <input type="time" formControlName="check_in" />
-      <small *ngIf="shiftForm.get('check_in')?.touched && shiftForm.get('check_in')?.invalid">
-        Check-in time is required
-      </small>
-    </div>
-
-    <div class="form-group">
-      <label>Check-Out Time</label>
-      <input type="time" formControlName="check_out" />
-      <small *ngIf="shiftForm.get('check_out')?.touched && shiftForm.get('check_out')?.invalid">
-        Check-out time is required
-      </small>
-    </div>
-
-    <button type="submit" class="btn">Save Shift</button>
-  </form>
-</div>

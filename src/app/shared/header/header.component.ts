@@ -40,15 +40,15 @@ export class HeaderComponent implements OnInit {
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
 
-profileimg: string = environment.apiURL;
- 
+  profileimg: string = environment.apiURL;
+
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService,
     private router: Router,
     private navCtrl: NavController // ✅ add this
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.candidateService.Employee$.subscribe((employees) => {
@@ -94,8 +94,12 @@ profileimg: string = environment.apiURL;
             this.one = this.allEmployees[0];
             this.fullName = this.one[0].full_name;
             this.employee_id = this.one[0].employee_id;
-            this.imageUrls = this.one[0].image;
-            console.log('profile',this.imageUrls);
+            if (this.one[0].image) {
+              this.imageUrls = `https://${this.profileimg}${this.one[0].image}`;
+            } else {
+              this.imageUrls = '../../../assets/user.svg';
+            }
+            console.log('profile', this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
             this.candidateService.setLoggedEmployeeId(this.employee_id);
             console.log(this.fullName);
@@ -133,6 +137,8 @@ profileimg: string = environment.apiURL;
     this.candidateService.searchCandidates(this.searchQuery).subscribe({
       next: (results) => {
         this.searchResults = results;
+        this.employee = this.searchResults;
+        this.openEmployeeListModal(results);
         this.results = this.searchResults.map(
           (emp) => `${emp.first_name} ${emp.last_name}`
         );
@@ -158,10 +164,10 @@ profileimg: string = environment.apiURL;
   }
 
   // Open modal to show employee list
-  async openEmployeeListModal() {
+  async openEmployeeListModal(data: any) {
     const modal = await this.modalCtrl.create({
       component: EmployeeListModalComponent,
-      componentProps: { employees: this.searchResults },
+      componentProps: { employees: data },
     });
     await modal.present();
   }

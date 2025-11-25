@@ -15,23 +15,23 @@
             </ion-card-header>
 
             <ion-card-content>
-              Status: <strong>{{ status }}</strong><br>
+              Status: <strong>{{ status }}</strong><br />
               <ion-grid class="days-grid ion-no-padding">
                 <ion-row>
                   <ion-col class="row-left">
-                    <img src="../../assets/user.svg" width="25">
-                    <p class="pl-5"> Me</p>
+                    <img src="../../assets/user.svg" width="25" />
+                    <p class="pl-5">Me</p>
                   </ion-col>
                   <ion-col>
                     <div>
-                      <p> Gross Hours:</p>
-                      <p> <strong>{{ grossHours }}</strong></p>
+                      <p>Gross Hours:</p>
+                      <p><strong>{{ grossHours }}</strong></p>
                     </div>
                   </ion-col>
                   <ion-col>
                     <div>
-                      <p> Effective Hours:</p>
-                      <p> <strong>{{ effectiveHours }}</strong></p>
+                      <p>Effective Hours:</p>
+                      <p><strong>{{ effectiveHours }}</strong></p>
                     </div>
                   </ion-col>
                 </ion-row>
@@ -41,58 +41,58 @@
         </ion-col>
 
         <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
-  <!-- Timings -->
-  <ion-card class="timings-card">
-    <ion-card-header>
-      <ion-card-title>Timings</ion-card-title>
-    </ion-card-header>
+          <!-- Timings -->
+          <ion-card class="timings-card">
+            <ion-card-header>
+              <ion-card-title>Timings</ion-card-title>
+            </ion-card-header>
 
-    <ion-card-content>
-      <ion-grid class="days-grid ion-no-padding" style="margin-bottom: 8px;">
-        <ion-row>
-          <ion-col
-            *ngFor="let day of days; trackBy: trackByDate"
-            class="ion-text-center"
-            [attr.aria-label]="'Day ' + (day | date:'EEEE')"
-            title="{{ day | date:'fullDate' }}"
-          >
-            <div class="day-container" [ngClass]="{'highlight-today': isToday(day)}">
-              <p class="day-of-week">{{ day | date:'E' }}</p>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+            <ion-card-content>
+              <ion-grid class="days-grid ion-no-padding" style="margin-bottom: 8px">
+                <ion-row>
+                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center"
+                    [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
+                    <div class="day-container" [ngClass]="{'highlight-today': isToday(day)}">
+                      <p class="day-of-week">{{ day | date:'E' }}</p>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
 
-      <!-- display check-in time safely and formatted -->
-      <p style="margin-bottom: 8px;">
-        Today: 
-        <strong *ngIf="shiftData?.data?.check_in; else noShift">
-          {{ formatShiftTime(shift_check_in) }} - {{ formatShiftTime(shift_check_out)}}
-        </strong>
-        <ng-template #noShift>
-          <em>No shift configured</em>
-        </ng-template>
-      </p>
+              <!-- display check-in time safely and formatted -->
+              <p style="margin-bottom: 8px">
+                Today:
+                <strong *ngIf="one; else noShift">
+                  {{ shift_policy }} : {{ shift_check_in }} - {{
+                  shift_check_out}}
+                </strong>
+                <ng-template #noShift>
+                  <em>No shift configured</em>
+                </ng-template>
+              </p>
 
-      <!-- display weekoff details -->
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <p><strong>Week Offs: </strong></p>
-        <div class="weekdays-container">
-          <!-- <span *ngFor="let day of allWeekDays" 
-                [ngClass]="{'week-off': isWeekOff(day), 'work-day': !isWeekOff(day)}">
-            {{ day.substring(0, 3) }}
-          </span> -->
-        </div>
-      </div>
-      <!-- progress binds to a numeric value between 0 and 1 -->
-      <ion-progress-bar [value]="progressValue"></ion-progress-bar>
+              <!-- display weekoff details -->
+              <div style="display: flex; align-items: center; gap: 6px">
+                <p><strong>Week Offs: </strong></p>
+                <div class="weekdays-container">
+                  @if(serverWeekOff){
+                  <span *ngFor="let day of allWeekDays"
+                    [ngClass]="{'week-off': isWeekOff(day), 'work-day': !isWeekOff(day)}">
+                    {{ day.substring(0, 3) }}
+                  </span>
+                  }
+                </div>
+              </div>
+              <!-- progress binds to a numeric value between 0 and 1 -->
+              <ion-progress-bar [value]="progressValue"></ion-progress-bar>
 
-      <small>
-        Duration: {{ shiftDuration || '9h 0m' }} | Break: {{ breakMinutes || 60 }}m
-      </small>
-    </ion-card-content>
-  </ion-card>
-</ion-col>
+              <small>
+                Duration: {{ shiftDuration || '9h 0m' }} | Break: {{
+                breakMinutes || 60 }}m
+              </small>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
 
         <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
           <ion-card class="actions">
@@ -118,19 +118,19 @@
                   </div> -->
 
                   <ion-button fill="clear" class="clear">
-                    <img src="../../assets/Icons/attendance-icons/remote.svg" width="16" height="16">
+                    <img src="../../assets/Icons/attendance-icons/remote.svg" width="16" height="16" />
                     Remote Clock-In
                   </ion-button>
                   <ion-button fill="clear" class="clear">
-                    <img src="../../assets/Icons/attendance-icons/wfh clockin.svg" width="16" height="16">
+                    <img src="../../assets/Icons/attendance-icons/wfh clockin.svg" width="16" height="16" />
                     WFH Clock-In
                   </ion-button>
                   <ion-button fill="clear" class="clear">
-                    <img src="../../assets/Icons/attendance-icons/WFH.svg" width="16" height="16">
+                    <img src="../../assets/Icons/attendance-icons/WFH.svg" width="16" height="16" />
                     Work From Home
                   </ion-button>
                   <ion-button fill="clear" class="clear">
-                    <img src="../../assets/Icons/attendance-icons/partial day rq.svg" width="16" height="16">
+                    <img src="../../assets/Icons/attendance-icons/partial day rq.svg" width="16" height="16" />
                     Partial Day Request
                   </ion-button>
                 </ion-col>
@@ -145,9 +145,15 @@
   <div class="attendance-log-card">
     <h2>Logs & Requests</h2>
     <div class="tabs-container custom-tabs">
-      <button [class.active]="activeTab === 'log'" (click)="setTab('log')">Attendance Log</button>
-      <button [class.active]="activeTab === 'calendar'" (click)="setTab('calendar')">Calendar</button>
-      <button [class.active]="activeTab === 'requests'" (click)="setTab('requests')">Attendance Requests</button>
+      <button [class.active]="activeTab === 'log'" (click)="setTab('log')">
+        Attendance Log
+      </button>
+      <button [class.active]="activeTab === 'calendar'" (click)="setTab('calendar')">
+        Calendar
+      </button>
+      <button [class.active]="activeTab === 'requests'" (click)="setTab('requests')">
+        Attendance Requests
+      </button>
     </div>
 
     <!-- Attendance Log Tab -->

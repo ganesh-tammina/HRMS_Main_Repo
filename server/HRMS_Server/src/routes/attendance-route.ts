@@ -75,4 +75,12 @@ AttendanceRouter.post(
   '/v1/get-shift-policy',
   AttendanceController.getShiftPolicy
 )
+AttendanceRouter.get(
+  '/v1/get-all-shift-policy',
+  AttendanceController.getAllShiftPolicy
+)
+AttendanceRouter.delete(
+  '/v1/delete-shift-policy/:shift_id',
+  AttendanceController.deleteShiftPolicy
+)
 export default AttendanceRouter;
