@@ -51,7 +51,7 @@
 
         <b> {{h.start_time}} - {{h.end_time}} </b>
 
-        <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done..." autoGrow="true">
+        <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done..." autoGrow="true" aria-required="true">
         </ion-textarea>
 
         <ion-select *ngIf="h.type==='work'" interface="popover" placeholder="Project" [(ngModel)]="h.project">

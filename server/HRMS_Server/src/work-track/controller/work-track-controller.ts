@@ -9,7 +9,7 @@ export class WorkTrackController {
         const result = await WorkTrackService.saveWorkReport(workTrackData);
         res.status(201).json({ message: 'Work report saved successfully', data: result });
     } catch (error) {
-        res.status(500).json({ message: 'Error saving work report', error });
+        res.status(500).json({ error: (error as Error).message });
     }
   }
 }

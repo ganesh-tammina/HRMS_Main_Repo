@@ -6,6 +6,7 @@ import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { WorkTrackService } from '../work-track.service';
+import { CandidateService } from 'src/app/services/pre-onboarding.service';
 
 @Component({
   selector: 'app-work-track-tabs',
@@ -16,7 +17,10 @@ import { WorkTrackService } from '../work-track.service';
 })
 export class WorkTrackComponent implements AfterViewInit  {
 
-  constructor(private workTrackService: WorkTrackService) { }
+  constructor(
+    private candidateService: CandidateService,
+    private workTrackService: WorkTrackService
+  ) { }
 
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
 
@@ -26,6 +30,10 @@ export class WorkTrackComponent implements AfterViewInit  {
   employee_id = localStorage.getItem('employee_id') || '0';
   techInput = '';
   technologies: string[] = [];
+  shiftData: any;
+  shift_check_in: string = '';
+  shift_check_out: string = '';
+  week_off_days: string[] = [];
 
   originalHours = [
     { start_time: '10:00 AM', end_time: '11:00 AM', task: '', project: '', type: 'work' },
@@ -52,6 +60,7 @@ export class WorkTrackComponent implements AfterViewInit  {
   ngAfterViewInit() {
     this.loadDayData();
     this.calculateWeeklyAndMonthly();
+    this.loadCandidateById();
     setTimeout(() => this.loadCharts(), 300);
   }
 
@@ -88,6 +97,26 @@ export class WorkTrackComponent implements AfterViewInit  {
   }
 
   submitDaily() {
+    // Validation
+    if (this.technologies.length === 0) {
+      alert('❌ Please add at least one technology');
+      return;
+    }
+
+    const workHours = this.hours.filter((h: any) => h.type === 'work');
+    const hasEmptyTask = workHours.some((h: any) => !h.task.trim());
+    const hasEmptyProject = workHours.some((h: any) => !h.project.trim());
+
+    if (hasEmptyTask) {
+      alert('❌ Please fill all task descriptions');
+      return;
+    }
+
+    if (hasEmptyProject) {
+      alert('❌ Please select project for all work hours');
+      return;
+    }
+
     const workedHours = this.hours.filter(
       (h: any) => h.type === 'work' && h.task.trim() !== ''
     ).length;
@@ -112,7 +141,7 @@ export class WorkTrackComponent implements AfterViewInit  {
       },
       error: (error) => {
         console.error('Error saving report:', error);
-        alert('❌ Error saving report');
+        alert('❌ Error saving report: ' + error.error.error);
       }
     });
   }
@@ -380,5 +409,67 @@ export class WorkTrackComponent implements AfterViewInit  {
   private downloadExcel(buffer: any, fileName: string): void {
     const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
     saveAs(data, fileName);
+  }
+
+  loadCandidateById() {
+    const employeeId = localStorage.getItem('employee_id');
+    if (employeeId) {
+      this.candidateService.getEmpDet().subscribe({
+        next: (response) => {
+          if (response.data && response.data[0]) {
+            const employees = response.data[0];
+            const currentEmployee = employees.find(
+              (emp: any) => emp.employee_id == employeeId
+            );
+
+            if (currentEmployee) {
+              if (currentEmployee.shift_policy_name) {
+                this.candidateService
+                  .getShiftByName(currentEmployee.shift_policy_name)
+                  .subscribe({
+                    next: (shiftData) => {
+                      this.shiftData = shiftData;
+                      this.shift_check_in = shiftData.data.check_in;
+                      this.shift_check_out = shiftData.data.check_out;
+                      this.updateOriginalHours();
+                      console.log('Loaded shift details:', this.shiftData);
+                    },
+                    error: (error) => {
+                      console.error('Error getting shift details:', error);
+                    },
+                  });
+              }
+            }
+          }
+        },
+        error: (error) => {
+          console.error('Error getting employee details:', error);
+        },
+      });
+    }
+  }
+
+  updateOriginalHours() {
+    if (this.shift_check_in && this.shift_check_out) {
+      const startTime = new Date(`1970-01-01T${this.shift_check_in}`);
+      const endTime = new Date(`1970-01-01T${this.shift_check_out}`);
+      const totalHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+      
+      this.originalHours = [];
+      for (let i = 0; i < totalHours; i++) {
+        const hourStart = new Date(startTime.getTime() + i * 60 * 60 * 1000);
+        const hourEnd = new Date(startTime.getTime() + (i + 1) * 60 * 60 * 1000);
+        
+        this.originalHours.push({
+          start_time: hourStart.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+          end_time: hourEnd.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+          task: '',
+          project: '',
+          type: i === Math.floor(totalHours / 2) ? 'break' : 'work'
+        });
+      }
+      
+      this.hours = JSON.parse(JSON.stringify(this.originalHours));
+    }
   }
 }
