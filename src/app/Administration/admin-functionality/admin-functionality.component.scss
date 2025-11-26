@@ -1,0 +1,136 @@
+@import '../../../global.scss';
+
+ion-content {
+    --background: var(--ion-bg-color);
+}
+.border-block {
+  border: 1px solid #ABABAB80;
+  border-radius: 12px;
+}
+.manage-main-block {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  h2 {
+    @include card-sub-title();
+    margin: 0;
+  }
+  .sub-text {
+    @include text-style-normal();
+    color: #4A5568;
+    margin-top: 5px; 
+  }
+    ion-segment.custom-btn-tabs {
+      border: 1.25px solid #CBD5E0;
+      box-shadow: 0px 1px 3px 0px #0000001A;
+      border-radius: 8px;
+      grid-auto-columns: auto;
+      justify-content: flex-start;
+      width: max-content;
+    ion-segment-button {
+      width: max-content;
+      margin: 5px;
+      text-transform: capitalize;
+      min-height: 42px;
+      &.segment-button-checked {
+        background: $secondry-color;
+        color: #fff;
+        --color-checked: #fff;
+        --indicator-height: 0px;
+        border: 1.25px solid #EDF2F7;
+        border-radius: 6px;
+      box-shadow: 0px 1px 3px 0px #0000001A;
+      }
+
+    }
+  }
+  .header-title {
+     @include card-header-title();
+     padding-left: 12px; 
+     margin: 20px 0;
+     span {
+      background: #CFECFF;
+      padding: 2px 8px;
+      border-radius: 15px;
+      @include normal-text-unbold();
+     }
+  }
+   .sigment-content-list {
+    @extend .border-block;
+    .table-block {
+      .table-header {
+        border-top: 1px solid #D7D7D7;
+        border-bottom: 1px solid #D7D7D7;
+        height: 43px;
+        align-items: center;        
+        ion-col {
+          @include normal-text();
+          color: #707070;
+          padding-left: 12px;
+        }
+      }
+      .table-list-row {
+        @include normal-text-unbold();
+        border-bottom: 1px solid #D7D7D7;
+        height: 73px;
+        align-items: center;
+        ion-col {
+          padding-left: 12px;
+          p {
+            margin: 0;
+          }
+        }
+        .active-status {
+          background: rgb(49 130 206 / 24%);
+          color: #3182CE;
+          border-radius: 16px;
+          width: fit-content;
+          padding: 8px 16px;
+        }
+        .inactive-status {
+          background: #A0AEC040;
+          color: #4A5568;
+          border-radius: 16px;
+          width: fit-content;
+          padding: 8px 16px;
+        }
+      }
+    }
+  }
+  .sigment-content-form {
+   @extend .border-block;
+   padding: 24px;
+   .form-header {
+     @include text-style-bold();
+   }
+   .form-subheader {
+    @include normal-text-unbold();
+   }
+   ion-list {
+     ion-item {
+       margin-bottom: 15px;
+       ion-label {
+        @include normal-text-unbold();
+        margin-bottom: 8px;
+        transform: none;
+       }
+       ion-input {
+        border: 1px solid #D1D5DB;
+        background: #EFEFEF;
+        border-radius: 8px;
+        height: 37px;
+        padding-left: 12px; 
+       }
+     
+       ion-textarea {
+        border: 1px solid #D1D5DB;
+        background: #EFEFEF;
+        border-radius: 8px;
+        height: 100px;       
+        padding-left: 12px; 
+       }
+     }
+   }
+  }
+  
+  }
