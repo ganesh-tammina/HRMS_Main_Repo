@@ -476,63 +476,70 @@
   </div>
 
   <!-- ================= week off ================= -->
-  <div *ngIf="tab === 'weekoff'">
-    <ion-card>
-      <ion-card-header
-        ><ion-card-title>Week Off Policy</ion-card-title></ion-card-header
-      >
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Week Off Policy Name</ion-label>
-          <ion-input
-            [(ngModel)]="weekOffPolicy.week_off_policy_name"
-          ></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Week Of Days</ion-label>
-          <div class="checkbox-group">
-            <div *ngFor="let day of days" class="checkbox-item">
-              <input
-                type="checkbox"
-                [value]="day"
-                (change)="onDaySelect($event)"
-                [checked]="weekOffsDay.includes(day)"
-              />
-              <span>{{ day }}</span>
-            </div>
-          </div>
-        </ion-item>
-
-        <ion-button expand="block" (click)="saveWeek()"
-          >{{ week_off_policy_id ? "Update" : "Create" }} Shift Policy</ion-button
-        >
-        <ion-button expand="block" color="medium" (click)="resetWeek()"
-          >Reset</ion-button
-        >
-
-        <ion-list>
-          <ion-item *ngFor="let d of weekofs">
-            <ion-label>
-              <h3>{{ d.week_off_policy_name }}</h3>
-              <p>{{ d.week_off_days }}</p>
-            </ion-label>
-            <ion-button
-              fill="clear"
-              slot="end"
-              (click)="startEditWeekOffPolicy(d)"
-              >Edit</ion-button
-            >
-            <ion-button
-              fill="clear"
-              color="danger"
-              slot="end"
-              (click)="confirmdeleteWeekOffPolicy(d.week_off_policy_id)"
-              >Delete</ion-button
-            >
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
+  <div *ngIf="tab === 'weekoff'" class="weekoff-block">
+      <p class="header-title">Week Off Policy <span>{{jobTitles.length}}</span></p>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="7" class="sigment-content-list">
+          <ion-list line="none">
+              <ion-item>
+                <p class="label">Defualt:</p>
+                <p>Saturday & Sunday</p>
+                </ion-item>
+                  <h3>Custom rules per location</h3> 
+                  <ion-item *ngFor="let d of weekofs" class="weekoff-list">
+                      <div>
+                          <p class="label">{{ d.week_off_policy_name }}</p>
+                          <p>{{ d.week_off_days }}</p>
+                      </div>
+                        
+                      <ion-button
+                        fill="clear"
+                        (click)="startEditWeekOffPolicy(d)"
+                        >Edit</ion-button
+                      >
+                      <ion-button
+                        fill="clear"
+                        color="danger"
+                        (click)="confirmdeleteWeekOffPolicy(d.week_off_policy_id)"
+                        >Delete</ion-button
+                      >
+                    </ion-item>
+          </ion-list>
+         
+        </ion-col>
+        <ion-col size="4" class="sigment-content-form">
+            <ion-list lines="none">
+                <ion-item>
+                    <ion-label position="stacked">Week Off Policy Name</ion-label>
+                    <ion-input
+                      [(ngModel)]="weekOffPolicy.week_off_policy_name"
+                    ></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="stacked">Week Of Days</ion-label>
+                    <div class="checkbox-group">
+                      <div *ngFor="let day of days" class="checkbox-item">
+                        <input
+                          type="checkbox"
+                          [value]="day"
+                          (change)="onDaySelect($event)"
+                          [checked]="weekOffsDay.includes(day)"
+                        />
+                        <span>{{ day }}</span>
+                      </div>
+                    </div>
+                  </ion-item> 
+            </ion-list>
+            <ion-button expand="block" (click)="saveWeek()"
+            >{{ week_off_policy_id ? "Update" : "Create" }} Shift Policy</ion-button
+          >
+          <ion-button expand="block" color="medium" (click)="resetWeek()"
+            >Reset</ion-button
+          >
+          </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
   </div>
 </ion-content>
