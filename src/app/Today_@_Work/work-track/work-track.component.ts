@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { WorkTrackService } from '../work-track.service';
 
 @Component({
   selector: 'app-work-track-tabs',
@@ -15,25 +16,27 @@ import { saveAs } from 'file-saver';
 })
 export class WorkTrackComponent implements AfterViewInit  {
 
+  constructor(private workTrackService: WorkTrackService) { }
+
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
 
   today = new Date().toISOString().split('T')[0];
   selectedDate = this.today;
   showCalendar = false;
-
+  employee_id = localStorage.getItem('employee_id') || '0';
   techInput = '';
   technologies: string[] = [];
 
   originalHours = [
-    { hour: '10-11', task: '', project: '', type: 'work' },
-    { hour: '11-12', task: '', project: '', type: 'work' },
-    { hour: '12-1', task: '', project: '', type: 'work' },
-    { hour: '1-2', task: '', project: '', type: 'work' },
-    { hour: '2-3', task: '', project: '', type: 'break' },
-    { hour: '3-4', task: '', project: '', type: 'work' },
-    { hour: '4-5', task: '', project: '', type: 'work' },
-    { hour: '5-6', task: '', project: '', type: 'work' },
-    { hour: '6-7', task: '', project: '', type: 'work' }
+    { start_time: '10:00 AM', end_time: '11:00 AM', task: '', project: '', type: 'work' },
+    { start_time: '11:00 AM', end_time: '12:00 PM', task: '', project: '', type: 'work' },
+    { start_time: '12:00 PM', end_time: '1:00 PM', task: '', project: '', type: 'work' },
+    { start_time: '1:00 PM', end_time: '2:00 PM', task: '', project: '', type: 'work' },
+    { start_time: '2:00 PM', end_time: '3:00 PM', task: '', project: '', type: 'break' },
+    { start_time: '3:00 PM', end_time: '4:00 PM', task: '', project: '', type: 'work' },
+    { start_time: '4:00 PM', end_time: '5:00 PM', task: '', project: '', type: 'work' },
+    { start_time: '5:00 PM', end_time: '6:00 PM', task: '', project: '', type: 'work' },
+    { start_time: '6:00 PM', end_time: '7:00 PM', task: '', project: '', type: 'work' }
   ];
 
   hours = JSON.parse(JSON.stringify(this.originalHours));
@@ -92,20 +95,26 @@ export class WorkTrackComponent implements AfterViewInit  {
     this.dailyTotal = workedHours;
 
     const data = {
+      employee_id : this.employee_id,
       date: this.selectedDate,
       total: this.dailyTotal,
       technologies: this.technologies,
       hours: this.hours
     };
 
-    localStorage.setItem(this.selectedDate, JSON.stringify(data));
-
-    this.calculateWeeklyAndMonthly();
-    this.loadCharts();
-
-    alert(`✅ Report saved for ${this.selectedDate}`);
-
-    this.resetDailyForm();
+    this.workTrackService.submitReport(data).subscribe({
+      next: (response) => {
+        localStorage.setItem(this.selectedDate, JSON.stringify(data));
+        this.calculateWeeklyAndMonthly();
+        this.loadCharts();
+        alert(`✅ Report saved for ${this.selectedDate}`);
+        this.resetDailyForm();
+      },
+      error: (error) => {
+        console.error('Error saving report:', error);
+        alert('❌ Error saving report');
+      }
+    });
   }
 
   resetDailyForm() {
@@ -192,7 +201,7 @@ export class WorkTrackComponent implements AfterViewInit  {
       this.dailyChart = new Chart(dtx, {
         type: 'bar',
         data: {
-          labels: this.hours.map((h: any) => h.hour),
+          labels: this.hours.map((h: any) => `${h.start_time}-${h.end_time}`),
           datasets: [{
             label: 'Worked',
             data: this.hours.map((h: any) => h.task ? 1 : 0),

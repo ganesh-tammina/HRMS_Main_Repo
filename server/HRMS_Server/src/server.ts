@@ -19,6 +19,7 @@ import https from 'https';
 import path from 'path';
 import weekOffRoutes from './routes/weekoff.routes';
 import LoginService from './services/employee-login-service';
+import { workTrackRouter } from './routes/work-track-route';
 
 dotenv.config();
 
@@ -94,6 +95,7 @@ class Server {
     this.app.use('/', salaryStructureRoutes);
     this.app.use('/candidates', candidateRoutes);
     this.app.use('/api/v1/weekoff', weekOffRoutes);
+    this.app.use('api/v1/work-track', workTrackRouter)
     // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }

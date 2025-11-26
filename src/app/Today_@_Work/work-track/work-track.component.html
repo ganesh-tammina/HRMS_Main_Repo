@@ -49,7 +49,7 @@
 
       <div class="hour-row" *ngFor="let h of hours">
 
-        <b>{{h.hour}}</b>
+        <b> {{h.start_time}} - {{h.end_time}} </b>
 
         <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done..." autoGrow="true">
         </ion-textarea>

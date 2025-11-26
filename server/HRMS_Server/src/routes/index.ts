@@ -13,6 +13,7 @@ import {
 } from '../middlewares/cookie-parser-middleware';
 import EmployeeController from '../controller/employee-controller';
 import LeaveController from '../controller/leave.controller';
+import { workTrackRouter } from './work-track-route';
 import path from 'path';
 
 const storage = multer.diskStorage({
@@ -204,6 +205,9 @@ router.post(
 );
 
 router.get("/v1/search", EmployeeController.search);
+
+// Work Track Routes
+router.use('/v1/work-track', workTrackRouter);
 
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole);
