@@ -188,10 +188,10 @@
                    </ion-col>
                   
                      <ion-col size="4">
-                        <ion-button fill="clear" (click)="startEditJobTitle(j)">Edit</ion-button>
-                        <ion-button fill="clear" slot="end"
+                       <ion-button fill="clear" (click)="startEditJobTitle(j)"><ion-icon name="create-outline"></ion-icon></ion-button>
+                        <ion-button fill="clear"
                           (click)="confirmDeleteJobTitle(j.job_title_id)"
-                          >Delete</ion-button> 
+                          ><ion-icon name="trash-outline"></ion-icon></ion-button> 
                        </ion-col>
                 </ion-row>   
               </ion-grid>
@@ -355,31 +355,42 @@
               <p class="header-title">Job Titles <span>{{shiftsData.length}}</span></p>
               <ion-grid class="table-block ion-no-padding">
                <ion-row class="table-header">
-                 <ion-col size="4">
-                    Job title
+                 <ion-col size="3">
+                    Shift Name
                  </ion-col>
-                 <ion-col size="4">
-                    Department
+                 <ion-col size="3">
+                    Clock In
                   </ion-col>                 
-                    <ion-col size="4">
-                        Actions
+                    <ion-col size="3">
+                        Clock Out
                       </ion-col>
+                      <ion-col size="3">
+                          Clock Out
+                        </ion-col>
                </ion-row>
                <ion-row *ngFor="let d of shiftsData" class="table-list-row">
-                  <ion-col size="4">
+                  <ion-col size="3">
                       <p>{{ d.shift_name }}</p>
-                      <small *ngIf="d.created_at">Created: {{ d.created_at | date : "short" }}</small>
                   </ion-col>
-                  <ion-col size="4">
-                      <p>{{ d.check_in }}</p>
+                  <ion-col size="3">
+                      <p>{{ d.check_out }}</p>
+                   </ion-col>
+                   <ion-col size="3">
                       <p>{{ d.check_out }}</p>
                    </ion-col>
                   
-                     <ion-col size="4">
-                        <ion-button fill="clear" (click)="startEditJobTitle(j)">Edit</ion-button>
-                        <ion-button fill="clear" slot="end"
-                          (click)="confirmDeleteJobTitle(j.job_title_id)"
-                          >Delete</ion-button> 
+                     <ion-col size="3">
+                     <ion-button
+                        fill="clear"
+                        (click)="startEditShiftPolicy(d)"
+                        ><ion-icon name="create-outline"></ion-icon></ion-button
+                      >
+                      <ion-button
+                        fill="clear"
+                        color="danger"
+                        (click)="confirmdeleteShift(d.shift_id)"
+                        ><ion-icon name="trash-outline"></ion-icon></ion-button
+                      >
                        </ion-col>
                 </ion-row>   
               </ion-grid>
@@ -462,37 +473,6 @@
           </ion-row>
         </ion-grid>  
 
-
-
-
-
-
-
-    <ion-card>
-     
-          <ion-item *ngFor="let d of shiftsData">
-            <ion-label>
-              <h3>{{ d.shift_name }}</h3>
-              <p>{{ d.check_in }}</p>
-              <p>{{ d.check_out }}</p>
-            </ion-label>
-            <ion-button
-              fill="clear"
-              slot="end"
-              (click)="startEditShiftPolicy(d)"
-              >Edit</ion-button
-            >
-            <ion-button
-              fill="clear"
-              color="danger"
-              slot="end"
-              (click)="confirmdeleteShift(d.shift_id)"
-              >Delete</ion-button
-            >
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
   </div>
 
   <!-- ================= week off ================= -->
