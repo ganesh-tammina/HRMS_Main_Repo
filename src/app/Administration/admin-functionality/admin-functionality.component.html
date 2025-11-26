@@ -348,81 +348,128 @@
 
   <!-- ================= Shift ================= -->
   <div *ngIf="tab === 'shit-policy'">
+
+      <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="7" class="sigment-content-list mr-15">
+              <p class="header-title">Job Titles <span>{{shiftsData.length}}</span></p>
+              <ion-grid class="table-block ion-no-padding">
+               <ion-row class="table-header">
+                 <ion-col size="4">
+                    Job title
+                 </ion-col>
+                 <ion-col size="4">
+                    Department
+                  </ion-col>                 
+                    <ion-col size="4">
+                        Actions
+                      </ion-col>
+               </ion-row>
+               <ion-row *ngFor="let d of shiftsData" class="table-list-row">
+                  <ion-col size="4">
+                      <p>{{ d.shift_name }}</p>
+                      <small *ngIf="d.created_at">Created: {{ d.created_at | date : "short" }}</small>
+                  </ion-col>
+                  <ion-col size="4">
+                      <p>{{ d.check_in }}</p>
+                      <p>{{ d.check_out }}</p>
+                   </ion-col>
+                  
+                     <ion-col size="4">
+                        <ion-button fill="clear" (click)="startEditJobTitle(j)">Edit</ion-button>
+                        <ion-button fill="clear" slot="end"
+                          (click)="confirmDeleteJobTitle(j.job_title_id)"
+                          >Delete</ion-button> 
+                       </ion-col>
+                </ion-row>   
+              </ion-grid>
+            </ion-col>
+            <ion-col size="4" class="sigment-content-form">
+                <p class="form-header">Add New Shift Policy</p>
+                <p class="form-subheader">Create a new Shift Policy in your organization</p>
+                <ion-list lines="none">
+                    <ion-item>
+                        <ion-label position="stacked">Shift Name</ion-label>
+                        <ion-input [(ngModel)]="shift.shift_name"></ion-input>
+                      </ion-item>
+                      <ion-item>
+                        <ion-label position="stacked">Check In</ion-label>
+                        <div style="display: flex; gap: 4px; align-items: center">
+                          <ion-input
+                            type="number"
+                            min="0"
+                            max="23"
+                            [(ngModel)]="checkInHH"
+                            (ionChange)="updateTime('check_in')"
+                          ></ion-input>
+                          :
+                          <ion-input
+                            type="number"
+                            min="0"
+                            max="59"
+                            [(ngModel)]="checkInMM"
+                            (ionChange)="updateTime('check_in')"
+                          ></ion-input>
+                          :
+                          <ion-input
+                            type="number"
+                            min="0"
+                            max="59"
+                            [(ngModel)]="checkInSS"
+                            (ionChange)="updateTime('check_in')"
+                          ></ion-input>
+                        </div>
+                      </ion-item>
+                      <ion-item>
+                        <ion-label position="stacked">Check Out</ion-label>
+              
+                        <div style="display: flex; gap: 4px; align-items: center">
+                          <ion-input
+                            type="number"
+                            min="0"
+                            max="23"
+                            [(ngModel)]="checkOutHH"
+                            (ionChange)="updateTime('check_out')"
+                          ></ion-input>
+                          :
+                          <ion-input
+                            type="number"
+                            min="0"
+                            max="59"
+                            [(ngModel)]="checkOutMM"
+                            (ionChange)="updateTime('check_out')"
+                          ></ion-input>
+                          :
+                          <ion-input
+                            type="number"
+                            min="0"
+                            max="59"
+                            [(ngModel)]="checkOutSS"
+                            (ionChange)="updateTime('check_out')"
+                          ></ion-input>
+                        </div>
+                      </ion-item>    
+               </ion-list>
+
+               <div class="row-center">
+                  <ion-button class="primary-btn" (click)="saveShift()">
+                    {{ shiftEditingId ? "Update" : "Create" }} Shift Policy</ion-button>
+                <ion-button class="primary-outline-btn" (click)="resetDeptForm()">Reset</ion-button>
+                
+               </div>  
+                  
+              </ion-col>
+          </ion-row>
+        </ion-grid>  
+
+
+
+
+
+
+
     <ion-card>
-      <ion-card-header
-        ><ion-card-title>Departments</ion-card-title></ion-card-header
-      >
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Shift Name</ion-label>
-          <ion-input [(ngModel)]="shift.shift_name"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Check In</ion-label>
-          <div style="display: flex; gap: 4px; align-items: center">
-            <ion-input
-              type="number"
-              min="0"
-              max="23"
-              [(ngModel)]="checkInHH"
-              (ionChange)="updateTime('check_in')"
-            ></ion-input>
-            :
-            <ion-input
-              type="number"
-              min="0"
-              max="59"
-              [(ngModel)]="checkInMM"
-              (ionChange)="updateTime('check_in')"
-            ></ion-input>
-            :
-            <ion-input
-              type="number"
-              min="0"
-              max="59"
-              [(ngModel)]="checkInSS"
-              (ionChange)="updateTime('check_in')"
-            ></ion-input>
-          </div>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Check Out</ion-label>
-
-          <div style="display: flex; gap: 4px; align-items: center">
-            <ion-input
-              type="number"
-              min="0"
-              max="23"
-              [(ngModel)]="checkOutHH"
-              (ionChange)="updateTime('check_out')"
-            ></ion-input>
-            :
-            <ion-input
-              type="number"
-              min="0"
-              max="59"
-              [(ngModel)]="checkOutMM"
-              (ionChange)="updateTime('check_out')"
-            ></ion-input>
-            :
-            <ion-input
-              type="number"
-              min="0"
-              max="59"
-              [(ngModel)]="checkOutSS"
-              (ionChange)="updateTime('check_out')"
-            ></ion-input>
-          </div>
-        </ion-item>
-
-        <ion-button expand="block" (click)="saveShift()"
-          >{{ shiftEditingId ? "Update" : "Create" }} Shift Policy</ion-button
-        >
-        <ion-button expand="block" color="medium" (click)="resetDeptForm()"
-          >Reset</ion-button
-        >
-
-        <ion-list>
+     
           <ion-item *ngFor="let d of shiftsData">
             <ion-label>
               <h3>{{ d.shift_name }}</h3>
