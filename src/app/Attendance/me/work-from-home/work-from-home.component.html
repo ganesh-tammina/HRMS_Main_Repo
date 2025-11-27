@@ -1,0 +1,113 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Request work from home</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="close()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- DATE SECTION -->
+  <div class="date-header">
+
+    <div class="date-box" [class.active]="pickerOpen==='from'" (click)="openPicker('from')">
+      <span>From</span>
+      <b>{{ displayFromDate }}</b>
+    </div>
+
+    <div class="day-count">
+      {{ totalDays }} {{ totalDays === 1 ? 'day' : 'days' }}
+    </div>
+
+    <div class="date-box" [class.active]="pickerOpen==='to'" (click)="openPicker('to')">
+      <span>To</span>
+      <b>{{ displayToDate }}</b>
+    </div>
+
+  </div>
+
+  <!-- CUSTOM CALENDAR -->
+  <div class="calendar" *ngIf="pickerOpen">
+
+    <div class="calendar-header">
+      <ion-icon name="chevron-back" (click)="prevMonth()"></ion-icon>
+      <span>{{ months[currentMonth] }} {{ currentYear }}</span>
+      <ion-icon name="chevron-forward" (click)="nextMonth()"></ion-icon>
+    </div>
+
+    <div class="weekdays">
+      <span *ngFor="let d of weekDays">{{ d }}</span>
+    </div>
+
+    <div class="calendar-grid">
+      <span *ngFor="let d of blankDays"></span>
+
+      <span *ngFor="let day of monthDays" (click)="selectDate(day)" [class.selected]="isSelected(day)">
+        {{ day }}
+      </span>
+    </div>
+
+  </div>
+
+  <!-- FULL / CUSTOM -->
+  <div class="type-select">
+    <button [class.active]="requestType==='full'" (click)="setType('full')">Full Days</button>
+    <button [class.active]="requestType==='custom'" (click)="setType('custom')">Custom</button>
+  </div>
+
+  <!-- HALF DAY -->
+  <div *ngIf="requestType==='custom'" class="custom-box">
+
+    <div>
+      <small>From {{ displayFromDate }}</small>
+      <select [(ngModel)]="fromSession" (change)="calculateDays()">
+        <option value="full">Full</option>
+        <option value="first">First Half</option>
+        <option value="second">Second Half</option>
+      </select>
+    </div>
+
+    <div>
+      <small>To {{ displayToDate }}</small>
+      <select [(ngModel)]="toSession" (change)="calculateDays()">
+        <option value="full">Full</option>
+        <option value="first">First Half</option>
+        <option value="second">Second Half</option>
+      </select>
+    </div>
+
+  </div>
+
+  <p class="request-info">
+    You are requesting
+    <b>{{ totalDays }}</b>
+    {{ totalDays === 1 ? 'day' : 'days' }}
+  </p>
+
+  <!-- NOTE -->
+  <div class="input-block">
+    <label>Note *</label>
+    <textarea rows="4" [(ngModel)]="note"></textarea>
+  </div>
+
+  <!-- NOTIFY -->
+  <div class="input-block">
+    <label>Notify</label>
+    <input type="text" [(ngModel)]="notifyEmployee" placeholder="Search employee" />
+  </div>
+
+</ion-content>
+
+<div class="footer">
+  <ion-button fill="clear" color="medium" (click)="close()">
+    Cancel
+  </ion-button>
+
+  <ion-button color="primary" [disabled]="!note" (click)="submit()">
+    Request
+  </ion-button>
+</div>
