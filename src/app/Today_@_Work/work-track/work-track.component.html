@@ -51,22 +51,29 @@
 
         <b> {{h.start_time}} - {{h.end_time}} </b>
 
-        <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done..." autoGrow="true" aria-required="true">
+        <ion-select interface="popover" placeholder="Type" [(ngModel)]="h.type">
+          <ion-select-option value="work">Work</ion-select-option>
+          <ion-select-option value="break">Break</ion-select-option>
+        </ion-select>
+
+        <ion-textarea *ngIf="h.type!=='break'" [(ngModel)]="h.task" placeholder="Describe work done..." autoGrow="true">
         </ion-textarea>
+        <span *ngIf="h.type==='break'" class="break-label">🍔 Break</span>
 
-        <ion-select *ngIf="h.type==='work'" interface="popover" placeholder="Project" [(ngModel)]="h.project">
-
+        <ion-select *ngIf="h.type!=='break'" interface="popover" placeholder="Project" [(ngModel)]="h.project">
           <ion-select-option value="CNS">CNS</ion-select-option>
           <ion-select-option value="CIS">CIS</ion-select-option>
           <ion-select-option value="Nasco">Nasco</ion-select-option>
-          <ion-select-option value="COE">COE (Bench)</ion-select-option>
+          <ion-select-option value="COE">COE</ion-select-option>
         </ion-select>
-
-        <span class="break-label" *ngIf="h.type==='break'">🍔 Break</span>
 
       </div>
 
     </div>
+
+    <ion-button fill="outline" (click)="addRow()">
+      Add Row
+    </ion-button>
 
     <ion-button expand="block" class="submit-btn" (click)="submitDaily()">
       Submit Daily Report
