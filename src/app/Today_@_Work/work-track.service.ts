@@ -49,4 +49,9 @@ export class WorkTrackService {
       withCredentials: true,
     });
   }
+  getAllReport(data: { employee_id: number }): Observable<WorkReportResponse> {
+    return this.http.post<WorkReportResponse>(`${this.api}/get-all`, data, {
+      withCredentials: true,
+    });
+  }
 }
