@@ -21,7 +21,6 @@ export class WorkTrackComponent implements AfterViewInit  {
     private candidateService: CandidateService,
     private workTrackService: WorkTrackService
   ) { }
-
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
 
   today = new Date().toISOString().split('T')[0];
@@ -62,6 +61,7 @@ export class WorkTrackComponent implements AfterViewInit  {
     this.calculateWeeklyAndMonthly();
     this.loadCandidateById();
     setTimeout(() => this.loadCharts(), 300);
+   
   }
 
   changeTab(tab: any) {
