@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../shared/header/header.component';
 import {
@@ -18,6 +18,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { RadialTimeGraphComponent } from './radial-time-graph/radial-time-graph.component';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
 
 interface AttendanceRequest {
   type: string;
@@ -127,6 +128,7 @@ export class MePage implements OnInit {
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
     private router: RouteGuardService,
+    private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService
   ) {
     this.generateCalendar(this.currentMonth);
@@ -507,4 +509,16 @@ export class MePage implements OnInit {
 
     console.log(this.serverWeekOff);
   }
+
+  async wfh() {
+    const modal = await this.modalCtrl.create({
+      component: WorkFromHomeComponent,
+      cssClass: 'wfh-modal',
+      backdropDismiss: false,
+    });
+
+    await modal.present();
+  }
+
+
 }
