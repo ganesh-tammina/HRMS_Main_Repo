@@ -4,3 +4,5 @@ import { WorkTrackController } from '../work-track/controller/work-track-control
 export const workTrackRouter = Router();
 
 workTrackRouter.post('/save', WorkTrackController.saveWorkTrack);
+workTrackRouter.post('/get', WorkTrackController.getWorkTrack);
+workTrackRouter.post('/get-all', WorkTrackController.getAllWorkTrack);

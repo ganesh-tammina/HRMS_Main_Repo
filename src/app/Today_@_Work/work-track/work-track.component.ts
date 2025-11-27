@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { WorkTrackService } from '../work-track.service';
+import { workTrack, WorkTrackService } from '../work-track.service';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 
 @Component({
@@ -15,12 +15,19 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
   templateUrl: './work-track.component.html',
   styleUrls: ['./work-track.component.scss'],
 })
-export class WorkTrackComponent implements AfterViewInit  {
+export class WorkTrackComponent implements AfterViewInit {
 
   constructor(
     private candidateService: CandidateService,
     private workTrackService: WorkTrackService
-  ) { }
+  ) {
+    const data: workTrack = { employee_id: parseInt(this.employee_id), date: this.selectedDate }
+    this.workTrackService.getReport(data).subscribe((response: any) => {
+      console.log('Fetched work report:', response);
+    });
+
+  }
+
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
 
   today = new Date().toISOString().split('T')[0];
@@ -61,7 +68,7 @@ export class WorkTrackComponent implements AfterViewInit  {
     this.calculateWeeklyAndMonthly();
     this.loadCandidateById();
     setTimeout(() => this.loadCharts(), 300);
-   
+
   }
 
   changeTab(tab: any) {
@@ -128,7 +135,7 @@ export class WorkTrackComponent implements AfterViewInit  {
     this.dailyTotal = workedHours;
 
     const data = {
-      employee_id : this.employee_id,
+      employee_id: this.employee_id,
       date: this.selectedDate,
       total: this.dailyTotal,
       technologies: this.technologies,
@@ -137,6 +144,7 @@ export class WorkTrackComponent implements AfterViewInit  {
 
     this.workTrackService.submitReport(data).subscribe({
       next: (response) => {
+        console.log('Report saved:', response);
         localStorage.setItem(this.selectedDate, JSON.stringify(data));
         this.calculateWeeklyAndMonthly();
         this.loadCharts();
@@ -458,12 +466,12 @@ export class WorkTrackComponent implements AfterViewInit  {
       const startTime = new Date(`1970-01-01T${this.shift_check_in}`);
       const endTime = new Date(`1970-01-01T${this.shift_check_out}`);
       const totalHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-      
+
       this.originalHours = [];
       for (let i = 0; i < totalHours; i++) {
         const hourStart = new Date(startTime.getTime() + i * 60 * 60 * 1000);
         const hourEnd = new Date(startTime.getTime() + (i + 1) * 60 * 60 * 1000);
-        
+
         this.originalHours.push({
           start_time: hourStart.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
           end_time: hourEnd.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
@@ -472,7 +480,7 @@ export class WorkTrackComponent implements AfterViewInit  {
           type: i === Math.floor(totalHours / 2) ? 'break' : 'work'
         });
       }
-      
+
       this.hours = JSON.parse(JSON.stringify(this.originalHours));
     }
   }
