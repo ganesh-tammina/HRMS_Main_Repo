@@ -72,7 +72,11 @@ export class WorkTrackComponent implements AfterViewInit  {
       setTimeout(() => this.loadCharts(), 200);
     }
   }
-
+  monthlybtn() {
+    this.calculateWeeklyAndMonthly();
+    setTimeout(() => this.loadCharts(), 200);
+  }
+  
   openMissedCalendar() {
     this.showCalendar = !this.showCalendar;
   }
