@@ -192,7 +192,6 @@ export class WorkTrackComponent implements AfterViewInit  {
       d.setDate(monday.getDate() + i);
       week.push(d.toISOString().split('T')[0]);
     }
-
     return week;
   }
 
@@ -200,23 +199,60 @@ export class WorkTrackComponent implements AfterViewInit  {
 
     const weekDates = this.getWeekDates();
     this.weeklyTotal = 0;
-
-    weekDates.forEach(date => {
-      const saved = localStorage.getItem(date);
-
-      if (saved) {
-        const data = JSON.parse(saved);
-        this.weeklyTotal += Number(data.total) || 0;
+    
+    //console.log('Fetching reports for week:', weekDates[0], 'to', weekDates[weekDates.length - 1]);
+    this.workTrackService.fetchReportsByDateRange(Number(this.employee_id), weekDates[0], weekDates[weekDates.length - 1]).subscribe({
+      next: (response) => {
+        //console.log('Available dates in workHours:', response.workHours.map((wh: any) => wh.date));
+        //console.log('Looking for dates:', weekDates);
+        weekDates.forEach(date => {
+          const workHour = response.workHours.find((wh: any) => new Date(wh.date).toISOString().split('T')[0] === date);
+          //console.log('Work hour for', date, ':', workHour);
+          if (workHour) {
+            this.weeklyTotal += Number(workHour.work_hours) || 0;
+          }
+        });
+        console.log('Final Weekly Total:', this.weeklyTotal);
+        this.loadCharts();
+      },
+      error: (error) => {
+        console.error('Error fetching weekly reports:', error);
+        weekDates.forEach(date => {
+          const saved = localStorage.getItem(date);
+          if (saved) {
+            const data = JSON.parse(saved);
+            this.weeklyTotal += Number(data.total) || 0;
+          }
+        });
       }
     });
 
     this.monthlyTotal = 0;
     const monthPrefix = this.selectedDate.substring(0, 7);
-
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith(monthPrefix)) {
-        const data = JSON.parse(localStorage.getItem(key)!);
-        this.monthlyTotal += Number(data.total) || 0;
+    const year = parseInt(monthPrefix.split('-')[0]);
+    const month = parseInt(monthPrefix.split('-')[1]);
+    const monthStart = `${monthPrefix}-01`;
+    const monthEnd = `${monthPrefix}-${new Date(year, month, 0).getDate()}`;
+    //console.log('Fetching monthly reports from', monthStart, 'to', monthEnd);
+    this.workTrackService.fetchReportsByDateRange(Number(this.employee_id), monthStart, monthEnd).subscribe({
+      next: (response) => {
+        //console.log('Calculating monthly total from response:', response);
+        if (response.workHours && Array.isArray(response.workHours)) {
+          response.workHours.forEach((wh: any) => {
+            this.monthlyTotal += Number(wh.work_hours) || 0;
+          });
+        }
+        console.log('Monthly Total:', this.monthlyTotal);
+      },
+      error: (error) => {
+        console.error('Error fetching monthly reports:', error);
+        // Fallback to localStorage
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith(monthPrefix)) {
+            const data = JSON.parse(localStorage.getItem(key)!);
+            this.monthlyTotal += Number(data.total) || 0;
+          }
+        });
       }
     });
   }

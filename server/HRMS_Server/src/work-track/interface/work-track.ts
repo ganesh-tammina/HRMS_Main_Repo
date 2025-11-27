@@ -9,4 +9,5 @@ export interface WorkTrack {
     type: 'work' | 'break';
   }[];
   technologies: string[];
+  total: number;
 }
