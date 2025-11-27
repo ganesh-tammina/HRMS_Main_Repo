@@ -1,10 +1,10 @@
 <!-- <input type="file" (change)="onFileSelected($event)" />
 <button (click)="uploadFile()">Upload Holidays</button> -->
 <ion-content [fullscreen]="true" class="admin-dashboard">
-  <ion-button (click)="dep()">Add Departments</ion-button>
+  
   <ion-grid>
     <div>
-      <ion-row>
+      <ion-row class="ion-no-padding">
         <!-- add employees -->
         <ion-col size="12">
 
@@ -13,12 +13,14 @@
               <ion-card-title>Total Employees</ion-card-title>
 
               <ion-card-subtitle>
-                <div class="tooltip-container">
-                  <ion-button id="open-upload-modal" fill="clear"
-                    ><ion-icon name="add-circle-outline"></ion-icon
-                  ></ion-button>
-                  <span class="tooltip-text mt-8">Add Employees</span>
+                <div class="row-right">
+                  <ion-button  class="primary-outline-btn" id="open-upload-modal">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                      Add Employees
+                  </ion-button>
+                  <ion-button class="primary-btn" (click)="dep()">Add Departments</ion-button>
                 </div>
+                
                 <ion-modal
                   class="upload-main-block"
                   trigger="open-upload-modal"
@@ -198,6 +200,25 @@
             </ion-card-content>
           </ion-card>
         </ion-col>
+
+
+
+
+        <ion-col size="12" class="manage-block">
+            <ion-card>
+                <ion-card-header class="row-space-between">
+                  <div>
+                      <ion-card-title>Organization Master Data</ion-card-title>
+                      <p>Access and manage core organizational lists and settings.</p>
+                  </div>                  
+                    <div class="row-right">                     
+                      <ion-button class="primary-outline-btn" (click)="dep()">Manage Data Lists</ion-button>
+                    </div>
+                    </ion-card-header>
+                    </ion-card>
+        </ion-col>
+
+
         <!-- Leaves block -->
         <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
 
@@ -288,7 +309,7 @@
             <ion-card-content class="holiday-list">
               <ion-row class="ion-items-start">
                 <ion-col size="5">
-                    <ion-datetime presentation="date"></ion-datetime>
+                    <ion-datetime show-adjacent-days="true" presentation="date"></ion-datetime>
                 </ion-col>
                 <ion-col size="7"  class="holiday-content">
                     <!-- <ion-list *ngFor="let holiday of holidays">
@@ -318,12 +339,8 @@
                                       <ion-label>Wednessday</ion-label>
                                     </div>                 
                                     <div class="row-right">
-                                      <ion-button fill="popover-editform" id="popover-editform"
-                                      ><ion-icon name="create-outline"></ion-icon
-                                    ></ion-button>
-                                    <ion-button fill="popover-editform" id="popover-editform">
+                                      <ion-icon name="create-outline"></ion-icon>
                                       <ion-icon name="trash-outline"></ion-icon>
-                                    </ion-button>
                                     </div>                  
                                   </ion-item>
                                 </ion-list>
@@ -345,7 +362,7 @@
       </ion-row>
     </div>
   </ion-grid>
-  <div *ngIf="showModal">
+  <div *ngIf="showModal" class="shift-popup">
     <app-leave-modal
       (saveLeaves)="handleSave($event)"
       (closeModal)="handleClose()"
