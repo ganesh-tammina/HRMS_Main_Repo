@@ -58,6 +58,7 @@ export class WorkTrackComponent implements AfterViewInit {
     this.loadDayData();
     this.calculateWeeklyAndMonthly();
     this.loadCandidateById();
+    /*this.loadReport(); for test to employee_name*/ 
     setTimeout(() => this.loadCharts(), 300);
   }
 
@@ -435,4 +436,14 @@ export class WorkTrackComponent implements AfterViewInit {
     }
     this.hours = JSON.parse(JSON.stringify(this.originalHours));
   }
+  /* for testing employee_name
+  loadReport(){
+    const employeeId = localStorage.getItem('employee_id');
+    if (!employeeId) return;
+    this.workTrackService.getAllReport({employee_id: parseInt(employeeId)}).subscribe({
+      next: (response) => {
+        console.log("Work Report Data:", response);
+      }
+    });
+  }*/
 }
