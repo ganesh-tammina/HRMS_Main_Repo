@@ -17,6 +17,8 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
 })
 export class WorkTrackComponent implements AfterViewInit {
 
+  allReports: any;
+
   constructor(
     private candidateService: CandidateService,
     private workTrackService: WorkTrackService
@@ -24,6 +26,12 @@ export class WorkTrackComponent implements AfterViewInit {
     const data: workTrack = { employee_id: parseInt(this.employee_id), date: this.selectedDate }
     this.workTrackService.getReport(data).subscribe((response: any) => {
       console.log('Fetched work report:', response);
+    });
+
+    const allData: workTrack = { employee_id: parseInt(this.employee_id), date: '' }
+    this.workTrackService.getAllReport(allData).subscribe((response: any) => {
+      this.allReports = response.data.date;
+      console.log('Fetched all work reports:', this.allReports);
     });
 
   }
@@ -70,6 +78,22 @@ export class WorkTrackComponent implements AfterViewInit {
     setTimeout(() => this.loadCharts(), 300);
 
   }
+  // Format ISO date string to local display (DD-MM-YYYY)
+  formatDate(date: string): string {
+    const dt = new Date(date);
+    dt.setDate(dt.getDate() + 1); // add 1 day to correct UTC offset
+    const day = String(dt.getDate()).padStart(2, '0');
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const year = dt.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  // Get all report dates sorted descending
+  getReportDates(): string[] {
+    if (!this.allReports) return [];
+    return Object.keys(this.allReports)
+      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  }
 
   changeTab(tab: any) {
     this.activeTab = tab;
@@ -78,6 +102,10 @@ export class WorkTrackComponent implements AfterViewInit {
       this.calculateWeeklyAndMonthly();
       setTimeout(() => this.loadCharts(), 200);
     }
+  }
+  monthlybtn() {
+    this.calculateWeeklyAndMonthly();
+    setTimeout(() => this.loadCharts(), 200);
   }
 
   openMissedCalendar() {
