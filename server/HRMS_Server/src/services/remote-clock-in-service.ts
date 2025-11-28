@@ -38,6 +38,13 @@ export class RemoteClockInService {
         return result;
     }
 
+    public static async getAllRemoteClockInRequests() {
+        const [rows] : any = await pool.query(
+            `SELECT * FROM remote_clock_in ORDER BY id DESC`
+        );
+        return rows;
+    }
+
     public static async getRemoteClockInRequestsByDate(date: string) {
         const [rows] : any = await pool.query(
             `SELECT * FROM remote_clock_in WHERE date = ? ORDER BY id DESC`,
@@ -64,22 +71,22 @@ export class RemoteClockInService {
         return rows;
     }   
 
-    public static async updateRemoteClockInRequestStatus(id: number, status: string) {
+    public static async updateRemoteClockInRequestStatus(id: number, employee_id : number, status: string) {
         const [result]: any = await pool.query(
             `UPDATE remote_clock_in
             SET status = ?
-            WHERE id = ?`,
-            [status, id]
+            WHERE id = ? and employee_id = ?`,
+            [status, id, employee_id]
         );
         return result;
     }
 
-    public static async updateRemoteClockInRequestClockOut(id: number, clock_out: string) {
+    public static async updateRemoteClockInRequestClockOut(id: number, clock_out: string, employee_id : number) {
         const [result]: any = await pool.query(
             `UPDATE remote_clock_in
             SET clock_out = ?
-            WHERE id = ?`,
-            [clock_out, id]
+            WHERE id = ? and employee_id = ?`,
+            [clock_out, id, employee_id]
         );
         return result;
     }

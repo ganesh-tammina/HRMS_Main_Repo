@@ -12,7 +12,7 @@ export class RemoteClockInController {
             res.status(500).json({ error: (error as Error).message });
         }
     }
-
+/*
     public static async getRemoteClockInById(req: Request, res: Response) {
         const { id } = req.body;
         try {
@@ -21,7 +21,7 @@ export class RemoteClockInController {
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
         }   
-    }
+    } */
 
     public static async getAllRemoteClockIns(req: Request, res: Response) {
         try {
@@ -32,7 +32,7 @@ export class RemoteClockInController {
         }
     }
 
-    public static async updateRemoteClockIn(req: Request, res: Response) {
+    /*public static async updateRemoteClockIn(req: Request, res: Response) {
         const { id } = req.body;
         const remoteClockInData: RemoteClockIn = req.body;
         try {
@@ -41,7 +41,7 @@ export class RemoteClockInController {
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
         }
-    }
+    }*/
 
     public static async getRemoteClockInsByDate(req: Request, res: Response) {
         const { date } = req.body;
@@ -63,7 +63,7 @@ export class RemoteClockInController {
         }
     }
 
-    public static async getRemoteClockInsByStatus(req: Request, res: Response) {
+  /*  public static async getRemoteClockInsByStatus(req: Request, res: Response) {
         const { status } = req.body;
         try {   
             const result = await RemoteClockInService.getRemoteClockInRequestsByStatus(status);
@@ -71,8 +71,9 @@ export class RemoteClockInController {
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
         }   
-    }
+    } */
 
+        /*
     public static async getRemoteClockInsByManager(req: Request, res: Response) {
         const { notify } = req.body;
         try {
@@ -81,12 +82,12 @@ export class RemoteClockInController {
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
         }
-    }
+    }*/
 
     public static async updateRemoteClockInStatus(req: Request, res: Response) {
-        const { id, status } = req.body;
+        const { id, status, employee_id } = req.body;
         try {
-            const result = await RemoteClockInService.updateRemoteClockInRequestStatus(id, status);
+            const result = await RemoteClockInService.updateRemoteClockInRequestStatus(id, status, employee_id);
             res.status(200).json({ message: 'Remote clock-in status updated successfully', data: result });
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
@@ -94,15 +95,15 @@ export class RemoteClockInController {
     }
 
     public static async updateRemoteClockInClockOut(req: Request, res: Response) {
-        const { id, clock_out } = req.body;
+        const { id, clock_out, employee_id } = req.body;
         try {
-            const result = await RemoteClockInService.updateRemoteClockInRequestClockOut(id, clock_out);
+            const result = await RemoteClockInService.updateRemoteClockInRequestClockOut(id, clock_out, employee_id);
             res.status(200).json({ message: 'Remote clock-in clock-out time updated successfully', data: result });
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
         }
     }
-
+/*
     public static async deleteRemoteClockIn(req: Request, res: Response) {
         const { id } = req.body;
         try {
@@ -111,5 +112,5 @@ export class RemoteClockInController {
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
         }   
-    }
+    } */
 }  
