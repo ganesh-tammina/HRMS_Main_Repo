@@ -4,6 +4,7 @@ import { HolidayController } from "../holidays/controllers/holidays.controll";
 
 const router = express.Router();
 
+// Folder for storing uploaded files
 const upload = multer({ dest: "uploads/" });
 
 router.post(
