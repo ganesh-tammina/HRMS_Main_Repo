@@ -170,3 +170,45 @@ ion-content {
     @include normal-text();
   }
 }
+
+ion-accordion-group {
+  border-left: 3px solid #07488d;
+  ion-accordion {
+    ion-item {
+      --padding-start: 0;
+      ion-icon {
+        color: #00568F;
+        padding-right: 15px;
+      }
+    }
+    .table-block {
+      border: 0.5px solid #ABABAB;
+      border-radius: 8px;
+      padding: 0;
+      ion-col {
+        padding-left: 8px;
+      }
+      .table-header {
+        height: 44px;
+        border-bottom: 0.5px solid #ABABAB;
+        align-items: center;
+        ion-col {
+          @include normal-text();
+        }
+      }
+      .table-row-list {
+        height: 48px;
+        border-bottom: 0.5px solid #ABABAB;
+        @include normal-text-unbold();
+        align-items: center;
+        &:nth-child(odd) {
+          background: #f4f6ff;
+
+        }
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+    }
+  }
+}

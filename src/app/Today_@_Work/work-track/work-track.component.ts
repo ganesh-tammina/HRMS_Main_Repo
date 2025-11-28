@@ -43,6 +43,9 @@ export class WorkTrackComponent implements AfterViewInit {
   dailyChart: any;
   weeklyChart: any;
   monthlyChart: any;
+  selectedPeriod: string = '30DAYS';  //filter block
+  monthButtons: string[] = [];   //filter month block
+
 
   constructor(
     private candidateService: CandidateService,
@@ -52,6 +55,7 @@ export class WorkTrackComponent implements AfterViewInit {
     this.workTrackService.getAllReport(allData).subscribe((response: any) => {
       this.allReports = response.data.date;
     });
+    this.generateMonthButtons();
   }
 
   ngAfterViewInit() {
@@ -434,5 +438,30 @@ export class WorkTrackComponent implements AfterViewInit {
       });
     }
     this.hours = JSON.parse(JSON.stringify(this.originalHours));
+  }
+
+  generateMonthButtons() {
+    const currentMonth = new Date().getMonth();
+    const monthAbbr = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
+
+    this.monthButtons = [];
+    for (let i = 0; i < 6; i++) {
+      let monthIndex = currentMonth - 1 - i;
+      if (monthIndex < 0) monthIndex += 12;
+      this.monthButtons.push(monthAbbr[monthIndex]);
+    }
   }
 }

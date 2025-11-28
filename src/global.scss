@@ -302,3 +302,64 @@ ion-popover ion-content::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
 }
+
+// filters block
+.filters {
+    display: flex;
+   .filter-block {
+     margin-right: 10px;
+   .btn-secondry { 
+     padding:12px 24px;
+     background: #fff;
+     border: 0.5px solid #DEDEDE;
+     color: #3498db;
+     box-shadow: none;
+     font-weight: 600;
+     margin: 0;    
+     @include normal-text-unbold();
+     &:first-child {
+       border-bottom-left-radius: 8px;
+       border-top-left-radius: 8px;
+     }
+     &:last-child {
+       border-bottom-right-radius: 8px;
+       border-top-right-radius: 8px;
+     }
+     &.active {
+       background: #3498DB;
+       color: #fff;
+       font-weight: 600;
+     } 
+   } 
+   }
+ 
+   .outline-btns {
+     .btn-secondry {
+   height: 44px;
+   padding: 0 10px;
+   background: #fff;
+   border: 0.5px solid #DEDEDE;
+   color: #3498db;
+   box-shadow: none;
+   font-weight: 600;
+   margin: 0;
+   &:first-child {
+     border-bottom-left-radius: 8px;
+     border-top-left-radius: 8px;
+   }
+   &:last-child {
+     border-bottom-right-radius: 8px;
+     border-top-right-radius: 8px;
+   }
+   ion-icon {
+     font-weight: 600;
+     font-size: 24px;
+   }
+   &.active {
+     background: #3498DB;
+     color: #fff;
+     font-weight: 600;
+   } 
+     }
+   }
+  }
