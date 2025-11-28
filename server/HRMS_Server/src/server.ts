@@ -20,6 +20,7 @@ import path from 'path';
 import weekOffRoutes from './routes/weekoff.routes';
 import LoginService from './services/employee-login-service';
 import { workTrackRouter } from './routes/work-track-route';
+import { remoteClockInRouter } from './routes/remote-clockin-route';
 
 dotenv.config();
 
@@ -96,6 +97,7 @@ class Server {
     this.app.use('/candidates', candidateRoutes);
     this.app.use('/api/v1/weekoff', weekOffRoutes);
     this.app.use('api/v1/work-track', workTrackRouter)
+    this.app.use('api/v1/remote-clock-in', remoteClockInRouter)
     // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }

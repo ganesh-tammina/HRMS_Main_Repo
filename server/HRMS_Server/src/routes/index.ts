@@ -14,6 +14,7 @@ import {
 import EmployeeController from '../controller/employee-controller';
 import LeaveController from '../controller/leave.controller';
 import { workTrackRouter } from './work-track-route';
+import { remoteClockInRouter } from './remote-clockin-route';
 import path from 'path';
 
 const storage = multer.diskStorage({
@@ -208,6 +209,9 @@ router.get("/v1/search", EmployeeController.search);
 
 // Work Track Routes
 router.use('/v1/work-track', workTrackRouter);
+
+// Remote Clock-In Routes
+router.use('/v1/remote-clock-in', remoteClockInRouter);
 
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole);
