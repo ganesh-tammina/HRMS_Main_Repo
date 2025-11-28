@@ -313,7 +313,7 @@ export class CandidateService {
 
   getAllWeeklyOffPolicies(): Observable<any> {
     return this.http.get<any>(`${this.weekoffsUrl}`, {
-      withCredentials: true
+      withCredentials: true,
     });
   }
 
@@ -553,7 +553,9 @@ export class CandidateService {
 
   searchCandidates(query: string): Observable<CandidateSearchResult[]> {
     const lowerQuery = query.toLowerCase().trim();
-    return this.http.get<CandidateSearchResult[]>(`${this.api}search?q=${lowerQuery}`);
+    return this.http.get<CandidateSearchResult[]>(
+      `${this.api}search?q=${lowerQuery}`
+    );
   }
   setCurrentEmployee(employee: Employee | null): void {
     this.currentEmployeeSubject.next(employee);
@@ -607,5 +609,9 @@ export class CandidateService {
   clearProfileImage(): void {
     localStorage.removeItem('profile_image_url');
     this.profileImageSubject.next(null);
+  }
+
+  requestWorkFromHome(body: any): Observable<any> {
+    return this.http.post<any>(`${this.api}apply`, body);
   }
 }
