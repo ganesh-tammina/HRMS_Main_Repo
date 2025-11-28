@@ -14,6 +14,7 @@ import {
 import EmployeeController from '../controller/employee-controller';
 import LeaveController from '../controller/leave.controller';
 import { workTrackRouter } from './work-track-route';
+import { workFromHomeRouter } from './work-from-home-route';
 import path from 'path';
 
 const storage = multer.diskStorage({
@@ -209,6 +210,7 @@ router.get("/v1/search", EmployeeController.search);
 // Work Track Routes
 router.use('/v1/work-track', workTrackRouter);
 
+router.use('/v1/work-from-home', workFromHomeRouter);
 // test apis here 🤡
 router.post('/v1/test-api', EmployeeLoginController.getRole);
 // add test apis here only
