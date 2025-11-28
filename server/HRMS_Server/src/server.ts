@@ -20,6 +20,7 @@ import path from 'path';
 import weekOffRoutes from './routes/weekoff.routes';
 import LoginService from './services/employee-login-service';
 import { workTrackRouter } from './routes/work-track-route';
+import holidayRoutes from "./routes/holiday-route";
 
 dotenv.config();
 
@@ -43,8 +44,7 @@ class Server {
       const clientIp =
         req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
       console.log(
-        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${
-          req.method
+        `[${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}] ${req.method
         } ${req.originalUrl} - from ${clientIp}`
       );
       next();
@@ -96,6 +96,7 @@ class Server {
     this.app.use('/candidates', candidateRoutes);
     this.app.use('/api/v1/weekoff', weekOffRoutes);
     this.app.use('api/v1/work-track', workTrackRouter)
+    this.app.use(holidayRoutes);
     // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }
