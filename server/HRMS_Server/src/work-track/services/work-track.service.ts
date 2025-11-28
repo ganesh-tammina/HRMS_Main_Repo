@@ -38,20 +38,17 @@ export class WorkTrackService {
   public static async getWorkReport(employee_id: number, date: string) {
 
     const [rows]: any = await pool.query(
-      `SELECT 
-          employee_id,
-          date,
-          task_start_time AS start_time,
-          task_end_time AS end_time,
-          task,
-          project,
-          type,
-          technology
-       FROM work_report
-       WHERE employee_id = ? AND date = ?
-       ORDER BY task_start_time ASC`,
+      `SELECT
+        w.*,
+        e.full_name as employee_name
+      FROM work_report w
+      JOIN employees e 
+      ON w.employee_id = e.employee_id
+      WHERE w.employee_id = ? AND w.date = ?
+      ORDER BY task_start_time ASC`,
       [employee_id, date]
     );
+
 
     if ((rows as any[]).length === 0) {
       return { message: 'No work report found for this employee on given date.' };
@@ -72,6 +69,7 @@ export class WorkTrackService {
 
     return {
       employee_id,
+      employee_name: rows[0].employee_name,
       date,
       technologies,
       hours
@@ -82,16 +80,12 @@ export class WorkTrackService {
 
     const [rows]: any = await pool.query(
       `SELECT 
-        employee_id,
-        date,
-        task_start_time AS start_time,
-        task_end_time AS end_time,
-        task,
-        project,
-        type,
-        technology
-     FROM work_report
-     WHERE employee_id = ?
+        w.*,
+        e.full_name as employee_name
+     FROM work_report as w
+     JOIN employees e
+     ON w.employee_id = e.employee_id
+     WHERE w.employee_id = ?
      ORDER BY date ASC, task_start_time ASC`,
       [employee_id]
     );
@@ -133,6 +127,7 @@ export class WorkTrackService {
 
     return {
       employee_id,
+      employee_name: rows[0].employee_name,
       technologies,
       date: groupedByDate   // ✅ your required format
     };
