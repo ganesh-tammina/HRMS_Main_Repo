@@ -59,7 +59,8 @@
 
           <div>
             <label>Leave Reason</label>
-            <ion-textarea formControlName="remarks"></ion-textarea>
+            <ion-textarea   [(ngModel)]="description" (ionInput)="validateWordLimit($event)" formControlName="remarks"></ion-textarea>
+            <p>{{ wordsCount }}/100 words</p>
           </div>
 
           <div>

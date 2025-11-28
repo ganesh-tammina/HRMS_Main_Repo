@@ -44,6 +44,8 @@ export class LeavesComponent implements OnInit {
   leaveRequests: any[] = [];
   leaveForm!: FormGroup;
   total_days: number = 0;
+  description = '';
+wordsCount = 0;
 
   constructor(
     private candidateService: CandidateService,
@@ -219,4 +221,15 @@ export class LeavesComponent implements OnInit {
     }
     this.closePopup();
   }
+validateWordLimit(ev: any) {
+  let value = ev.target.value || '';
+
+  let words = value.trim().split(/\s+/);
+  this.wordsCount = words.length;
+
+  if (words.length > 100) {
+    words = words.slice(0, 100);
+    this.description = words.join(' ');
+  }
+}
 }

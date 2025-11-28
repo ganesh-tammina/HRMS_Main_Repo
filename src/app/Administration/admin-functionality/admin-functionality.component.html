@@ -70,7 +70,7 @@
             </ion-item>
       </ion-list>
        <div class="row-center">
-          <ion-button class="primary-btn" (click)="saveDepartment()"
+          <ion-button class="primary-btn" (click)="saveDepartment()"[disabled]="!deptModel.department_name"
           >{{
             editingDepartmentId ? "Update" : "Create"
           }}
@@ -146,8 +146,8 @@
                 </ion-item>
           </ion-list>
            <div class="row-center">
-              <ion-button class="primary-btn" (click)="saveRole()"
-              >{{ editingRoleId ? "Update" : "Create" }} Role</ion-button
+              <ion-button class="primary-btn" (click)="saveRole()" [disabled]="!roleModel.role_name">
+                {{ editingRoleId ? "Update" : "Create" }} Role</ion-button
             >
             <ion-button class="primary-outline-btn" (click)="resetRoleForm()"
               >Reset</ion-button>              
@@ -219,7 +219,7 @@
                </ion-list>
 
                <div class="row-center">
-                  <ion-button class="primary-btn" (click)="saveJobTitle()"
+                  <ion-button class="primary-btn" (click)="saveJobTitle()" [disabled]="!jobTitleModel.job_title_name || !jobTitleModel.department_id"
                     >{{ editingJobTitleId ? "Update" : "Create" }} Job Title</ion-button>
                   <ion-button class="primary-outline-btn" (click)="resetJobTitleForm()"
                     >Reset</ion-button>
@@ -409,7 +409,7 @@
                           <ion-input
                             type="number"
                             min="0"
-                            max="23"
+                            max="12"
                             [(ngModel)]="checkInHH"
                             (ionChange)="updateTime('check_in')"
                           ></ion-input>
