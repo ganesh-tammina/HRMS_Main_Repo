@@ -97,7 +97,7 @@ class Server {
     this.app.use('/candidates', candidateRoutes);
     this.app.use('/api/v1/weekoff', weekOffRoutes);
     this.app.use('api/v1/work-track', workTrackRouter)
-    this.app.use('/api/v1/work-from-home', workFromHomeRouter);
+    this.app.use('/api', workFromHomeRouter);
     
     this.app.use(holidayRoutes);
     // ✅ NotFound middleware MUST be last

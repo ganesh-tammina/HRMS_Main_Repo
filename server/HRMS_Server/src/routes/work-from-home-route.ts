@@ -3,10 +3,11 @@ import { WorkFromHomeController } from '../controller/work-from-home-controller'
 
 export const workFromHomeRouter = Router();
 
-workFromHomeRouter.post('/apply', WorkFromHomeController.applyWorkFromHome);
-workFromHomeRouter.post('/get-by-employee', WorkFromHomeController.getWFHRequestsByEmployeeId);
-workFromHomeRouter.get('/get-all', WorkFromHomeController.getAllWFHRequests);
-workFromHomeRouter.put('/update-status', WorkFromHomeController.updateWFHRequestStatus);
-workFromHomeRouter.delete('/delete', WorkFromHomeController.deleteWFHRequest);
+workFromHomeRouter.post('/v1/apply', WorkFromHomeController.applyWorkFromHome);
+workFromHomeRouter.get('/v1/get-by-employee/:empId', WorkFromHomeController.getWFHRequestsByEmployeeId);
+workFromHomeRouter.get('/v1/get-all', WorkFromHomeController.getAllWFHRequests);
+workFromHomeRouter.get('/v1/get-my-notified/:empId', WorkFromHomeController.getMyNotified)
+workFromHomeRouter.put('/v1/update-status', WorkFromHomeController.updateWFHRequestStatus);
+workFromHomeRouter.delete('/v1/delete', WorkFromHomeController.deleteWFHRequest);
 
 

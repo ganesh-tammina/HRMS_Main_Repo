@@ -77,6 +77,7 @@ export class AdminComponent implements OnInit {
       this.calculatePagination();
       this.updatePagedCandidates();
     });
+    this.getwfhreq()
   }
 
   // ✅ WHEN DATE PICKED FROM CALENDAR
@@ -218,5 +219,10 @@ export class AdminComponent implements OnInit {
 
   dep() {
     this.router.navigate(['/admin-department']);
+  }
+  getwfhreq() {
+    this.candidateService.getAllWFHRequests().subscribe((res: any) => {
+      console.log(res);
+    });
   }
 }

@@ -186,6 +186,7 @@ export class CandidateService {
   private leaveactionUrl = `${this.api}leave-action`;
   private weekoffsUrl = `https://${this.env.apiURL}/api/weekoff`;
   private holidaysApiUrl = "https://localhost:3562/api/v1/holidays";
+  private allwFHRequestsUrl = `https://localhost:3562/api/v1/get-all`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -209,7 +210,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {}
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -314,7 +315,7 @@ export class CandidateService {
 
   getAllWeeklyOffPolicies(): Observable<any> {
     return this.http.get<any>(`${this.weekoffsUrl}`, {
-      withCredentials: true
+      withCredentials: true,
     });
   }
 
@@ -554,7 +555,9 @@ export class CandidateService {
 
   searchCandidates(query: string): Observable<CandidateSearchResult[]> {
     const lowerQuery = query.toLowerCase().trim();
-    return this.http.get<CandidateSearchResult[]>(`${this.api}search?q=${lowerQuery}`);
+    return this.http.get<CandidateSearchResult[]>(
+      `${this.api}search?q=${lowerQuery}`
+    );
   }
   setCurrentEmployee(employee: Employee | null): void {
     this.currentEmployeeSubject.next(employee);
@@ -608,5 +611,12 @@ export class CandidateService {
   clearProfileImage(): void {
     localStorage.removeItem('profile_image_url');
     this.profileImageSubject.next(null);
+  }
+
+  requestWorkFromHome(body: any): Observable<any> {
+    return this.http.post<any>(`${this.api}apply`, body);
+  }
+  getAllWFHRequests(): Observable<any> {
+    return this.http.get<any>(this.allwFHRequestsUrl);
   }
 }

@@ -3,6 +3,9 @@ import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-work-from-home',
@@ -12,7 +15,6 @@ import { IonicModule } from '@ionic/angular';
   imports: [IonicModule, CommonModule, FormsModule],
 })
 export class WorkFromHomeComponent implements OnInit {
-
   pickerOpen: 'from' | 'to' | null = null;
 
   fromDate = new Date();
@@ -28,7 +30,7 @@ export class WorkFromHomeComponent implements OnInit {
   toSession: 'full' | 'first' | 'second' = 'full';
 
   note = '';
-  notifyEmployee = '';
+  notifyEmployee: any;
 
   currentMonth = new Date().getMonth();
   currentYear = new Date().getFullYear();
@@ -37,9 +39,27 @@ export class WorkFromHomeComponent implements OnInit {
   monthDays: number[] = [];
 
   weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
-  constructor(private modalCtrl: ModalController) { }
+  constructor(
+    private modalCtrl: ModalController,
+    private candidateService: CandidateService,
+    private routerGaurd: RouteGuardService,
+    private https: HttpClient
+  ) { }
 
   ngOnInit() {
     this.updateDisplayDates();
@@ -57,7 +77,11 @@ export class WorkFromHomeComponent implements OnInit {
 
   generateCalendar() {
     const firstDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
-    const totalDays = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+    const totalDays = new Date(
+      this.currentYear,
+      this.currentMonth + 1,
+      0
+    ).getDate();
 
     this.blankDays = Array(firstDay).fill(0);
     this.monthDays = Array.from({ length: totalDays }, (_, i) => i + 1);
@@ -110,7 +134,11 @@ export class WorkFromHomeComponent implements OnInit {
   }
 
   updateDisplayDates() {
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    };
     this.displayFromDate = this.fromDate.toLocaleDateString('en-GB', options);
     this.displayToDate = this.toDate.toLocaleDateString('en-GB', options);
   }
@@ -131,9 +159,9 @@ export class WorkFromHomeComponent implements OnInit {
 
   calculateDays() {
     const oneDay = 1000 * 60 * 60 * 24;
-    let diff = Math.floor(
-      (this.toDate.getTime() - this.fromDate.getTime()) / oneDay
-    ) + 1;
+    let diff =
+      Math.floor((this.toDate.getTime() - this.fromDate.getTime()) / oneDay) +
+      1;
 
     if (diff <= 0) diff = 1;
 
@@ -157,17 +185,58 @@ export class WorkFromHomeComponent implements OnInit {
 
   submit() {
     const payload = {
-      from_date: this.fromDate,
-      to_date: this.toDate,
+      employee_id: this.routerGaurd.employeeID,
+      from_date: this.formatDate(this.fromDate),
+      to_date: this.formatDate(this.toDate),
       type: this.requestType,
       from_session: this.fromSession,
       to_session: this.toSession,
       total_days: this.totalDays,
-      note: this.note,
-      notify: this.notifyEmployee,
+      reason: this.note,
+      notify_id: this.selectedNotifyID,
     };
+    this.candidateService.requestWorkFromHome(payload).subscribe((res: any) => {
+      alert(res.message);
+      console.log(res.result);
+      if (res.statusCode === 200) {
+        this.modalCtrl.dismiss();
+      }
+    });
 
-    console.log('WFH Request ==> ', payload);
-    this.modalCtrl.dismiss(payload);
+  }
+
+  // search controller and displaying function
+  results: any;
+  searchResults: any;
+  selectedNotify: any = null;
+  selectedNotifyID: any = null;
+  onSearch() {
+    if (!this.notifyEmployee || this.notifyEmployee.trim().length === 0) {
+      this.searchResults = [];
+      return;
+    }
+
+    this.candidateService.searchCandidates(this.notifyEmployee).subscribe({
+      next: (results: any) => {
+        this.searchResults = results.data;
+        console.log('Search results:', this.searchResults);
+      },
+    });
+  }
+  onSelectNotify(emp: any) {
+    // Allow only ONE selection
+    if (this.selectedNotify === emp.first_name) {
+      this.selectedNotify = null;
+      this.selectedNotifyID = emp.employee_id;
+    } else {
+      this.selectedNotify = emp.first_name;
+      this.selectedNotifyID = emp.employee_id;
+    }
+
+    this.notifyEmployee = this.selectedNotify;
+  }
+
+  formatDate(date: Date) {
+    return date.toISOString().split('T')[0];
   }
 }
