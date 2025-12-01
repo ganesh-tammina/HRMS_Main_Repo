@@ -269,3 +269,73 @@ ion-datetime[part= calendar-day] {
 ion-card {
   margin: 0;
 }
+
+.page-bg {
+  --background: #f4f6fb;
+}
+
+.date-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  margin: 10px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.dates {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
+}
+
+.date-box {
+  background: #f1f3f6;
+  border-radius: 12px;
+  padding: 8px 12px;
+  text-align: center;
+  cursor: pointer;
+  min-width: 52px;
+  transition: 0.3s ease;
+}
+
+.date-box h5 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.date-box p {
+  margin: 0;
+  font-size: 12px;
+  color: gray;
+}
+
+.date-box.active {
+  background: var(--ion-color-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.task h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.empty {
+  text-align: center;
+  margin-top: 40px;
+  color: gray;
+  font-size: 14px;
+}
