@@ -326,11 +326,24 @@
             <div class="header-row">
               <h2>Upload Employees Salary</h2>
 
-              <button class="add-btn">
-                <ion-icon name="add-circle-outline"></ion-icon>
-                upload
+              <button class="add-btn" (click)="fileInput.click()">
+                <ion-icon name="cloud-upload-outline"></ion-icon>
+                Upload
               </button>
+
+              <!-- Hidden File Input -->
+              <input type="file" accept=".xlsx,.xls" #fileInput style="display: none;"
+                (change)="onFileSalarySelected($event)" />
             </div>
+
+            <div *ngIf="SalaryselectedFile" class="file-info">
+              <p>Selected File: <strong></strong></p>
+
+              <ion-button expand="block" color="primary" (click)="uploadFile()">
+                Upload Now
+              </ion-button>
+            </div>
+
           </ion-content>
 
 

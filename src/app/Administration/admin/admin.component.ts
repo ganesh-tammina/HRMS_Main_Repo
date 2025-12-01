@@ -49,6 +49,7 @@ export class AdminComponent implements OnInit {
   selectedFiles: FileList | null = null;
 
   isLoading: boolean = true;
+  SalaryselectedFile: any = null;
 
   constructor(
     private http: HttpClient,
@@ -57,7 +58,6 @@ export class AdminComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-
     this.isLoading = true;
     const savedData = localStorage.getItem('leaveData');
     if (savedData) {
@@ -79,6 +79,30 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  onFileSalarySelected(event: any) {
+    this.SalaryselectedFile = event.target.files[0];
+  }
+  uploadFile() {
+    if (!this.SalaryselectedFile) {
+      alert("Please select an Excel file");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", this.SalaryselectedFile);
+
+    this.http.post("https://localhost:3562/api/upload-payslips", formData)
+      .subscribe({
+        next: (res) => {
+          console.log("Upload success", res);
+          alert("File uploaded successfully!");
+        },
+        error: (err) => {
+          console.log("Upload error", err);
+          alert("Failed to upload file!");
+        }
+      });
+  }
   // ✅ WHEN DATE PICKED FROM CALENDAR
   onDateChange(event: any) {
     this.selectedDate = new Date(event.detail.value);
