@@ -531,7 +531,7 @@
                     </div>
                   </ion-item> 
             </ion-list>
-            <ion-button expand="block" (click)="saveWeek()"
+            <ion-button expand="block" (click)="saveWeek()" [disabled]="weekOffsDay.length !== 2 || !weekOffPolicy.week_off_policy_name"
             >{{ week_off_policy_id ? "Update" : "Create" }} Shift Policy</ion-button
           >
           <ion-button expand="block" color="medium" (click)="resetWeek()"

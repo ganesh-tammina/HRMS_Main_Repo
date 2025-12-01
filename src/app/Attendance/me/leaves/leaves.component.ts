@@ -199,6 +199,7 @@ wordsCount = 0;
 
   closeleavePopup() {
     this.IsOpenleavePopup = false;
+    this.leaveForm.reset();
   }
 
   // -----------------------------
