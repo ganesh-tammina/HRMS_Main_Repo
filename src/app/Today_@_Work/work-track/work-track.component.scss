@@ -176,6 +176,8 @@ ion-accordion-group {
   ion-accordion {
     ion-item {
       --padding-start: 0;
+      --background: var(--ion-bg-color);
+      --border-radius: 8px;
       ion-icon {
         color: #00568F;
         padding-right: 15px;

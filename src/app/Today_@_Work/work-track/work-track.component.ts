@@ -255,8 +255,6 @@ export class WorkTrackComponent implements AfterViewInit {
     rows.push([
       "Name",
       "M.Siva Devi Ganesh",
-      "",
-      "",
       "Date",
       this.formatDate(date)
     ]);
@@ -265,8 +263,6 @@ export class WorkTrackComponent implements AfterViewInit {
     rows.push([
       "Technology",
       this.technologies.join(", "),
-      "",
-      "",
       "Duration (HH:MI to)",
       ""
     ]);
@@ -294,12 +290,12 @@ export class WorkTrackComponent implements AfterViewInit {
     // ───────────────────
     ws["!merges"] = [
       // Row 1
-      { s: { r: 0, c: 1 }, e: { r: 0, c: 3 } }, // Merge Name value
-      { s: { r: 0, c: 5 }, e: { r: 0, c: 5 } }, // Date value stays single
+      // { s: { r: 0, c: 1 }, e: { r: 0, c: 3 } }, // Merge Name value
+      // { s: { r: 0, c: 5 }, e: { r: 0, c: 5 } }, // Date value stays single
 
       // Row 2
-      { s: { r: 1, c: 1 }, e: { r: 1, c: 3 } }, // Merge Technology value
-      { s: { r: 1, c: 5 }, e: { r: 1, c: 5 } }  // Duration right cell
+      // { s: { r: 1, c: 1 }, e: { r: 1, c: 3 } }, // Merge Technology value
+      // { s: { r: 1, c: 5 }, e: { r: 1, c: 5 } }  // Duration right cell
     ];
 
     // BOLD HEADERS
