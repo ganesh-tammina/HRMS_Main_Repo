@@ -185,6 +185,7 @@ export class CandidateService {
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
   private leaveactionUrl = `${this.api}leave-action`;
   private weekoffsUrl = `https://${this.env.apiURL}/api/weekoff`;
+  private allwFHRequestsUrl = `https://localhost:3562/api/v1/get-all`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -208,7 +209,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {}
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -613,5 +614,8 @@ export class CandidateService {
 
   requestWorkFromHome(body: any): Observable<any> {
     return this.http.post<any>(`${this.api}apply`, body);
+  }
+  getAllWFHRequests(): Observable<any> {
+    return this.http.get<any>(this.allwFHRequestsUrl);
   }
 }

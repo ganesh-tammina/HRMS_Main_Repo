@@ -7,5 +7,5 @@ export interface WorkFromHome {
   to_session: string;
   reason: string;
   total_days: number;
-  type:string
+  type: string;
 }

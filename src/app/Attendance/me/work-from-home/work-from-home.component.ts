@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-work-from-home',
@@ -56,8 +57,9 @@ export class WorkFromHomeComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private candidateService: CandidateService,
-    private routerGaurd: RouteGuardService
-  ) {}
+    private routerGaurd: RouteGuardService,
+    private https: HttpClient
+  ) { }
 
   ngOnInit() {
     this.updateDisplayDates();
@@ -191,7 +193,7 @@ export class WorkFromHomeComponent implements OnInit {
       to_session: this.toSession,
       total_days: this.totalDays,
       reason: this.note,
-      notified_user_id: this.selectedNotifyID,
+      notify_id: this.selectedNotifyID,
     };
     this.candidateService.requestWorkFromHome(payload).subscribe((res: any) => {
       alert(res.message);
@@ -200,6 +202,7 @@ export class WorkFromHomeComponent implements OnInit {
         this.modalCtrl.dismiss();
       }
     });
+
   }
 
   // search controller and displaying function

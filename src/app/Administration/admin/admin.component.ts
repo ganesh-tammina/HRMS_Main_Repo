@@ -47,7 +47,7 @@ export class AdminComponent implements OnInit {
     private http: HttpClient,
     private candidateService: CandidateService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.isLoading = true;
@@ -67,6 +67,7 @@ export class AdminComponent implements OnInit {
       this.updatePagedCandidates();
       console.log('Candidates:', this.allCandidates);
     });
+    this.getwfhreq()
   }
 
   //pagination for employees list
@@ -193,7 +194,12 @@ export class AdminComponent implements OnInit {
     localStorage.removeItem('leaveData');
   }
 
-  dep(){
+  dep() {
     this.router.navigate(['/admin-department']);
+  }
+  getwfhreq() {
+    this.candidateService.getAllWFHRequests().subscribe((res: any) => {
+      console.log(res);
+    });
   }
 }

@@ -10,27 +10,34 @@ export class WorkFromHomeService {
     return adfasd;
   }
   public static async applyWorkFromHome(data: WorkFromHome) {
+
+    console.log("SERVICE DATA =>", data);
+
+    if (!(data as any).notify_id) {
+      throw new Error('notify_id is missing from request body');
+    }
+
     const [notifyResult]: any = await pool.query(
       `INSERT INTO notified_user (employee_id) VALUES (?)`,
-      [data.notified_user_id]
+      [(data as any).notify_id]
     );
 
     const notify_id = notifyResult.insertId;
 
     const [result]: any = await pool.query(
       `INSERT INTO work_from_home 
-        (employee_id, from_date, from_session, to_date, to_session, reason, type, total_days, notify_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     (employee_id, from_date, from_session, to_date, to_session, reason, type, total_days, notify_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.employee_id,
         data.from_date,
-        data.from_session,
+        data.from_session || 'Full Day',
         data.to_date,
-        data.to_session,
+        data.to_session || 'Full Day',
         data.reason,
-        data.type,
+        data.type || 'WFH',
         data.total_days,
-        notify_id,
+        notify_id
       ]
     );
 
