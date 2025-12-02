@@ -43,6 +43,9 @@ export class WorkTrackComponent implements AfterViewInit {
   dailyChart: any;
   weeklyChart: any;
   monthlyChart: any;
+  selectedPeriod: string = '30DAYS';  //filter block
+  monthButtons: string[] = [];   //filter month block
+
 
   constructor(
     private candidateService: CandidateService,
@@ -52,6 +55,7 @@ export class WorkTrackComponent implements AfterViewInit {
     this.workTrackService.getAllReport(allData).subscribe((response: any) => {
       this.allReports = response.data.date;
     });
+    this.generateMonthButtons();
   }
 
   ngAfterViewInit() {
@@ -251,8 +255,6 @@ export class WorkTrackComponent implements AfterViewInit {
     rows.push([
       "Name",
       "M.Siva Devi Ganesh",
-      "",
-      "",
       "Date",
       this.formatDate(date)
     ]);
@@ -261,8 +263,6 @@ export class WorkTrackComponent implements AfterViewInit {
     rows.push([
       "Technology",
       this.technologies.join(", "),
-      "",
-      "",
       "Duration (HH:MI to)",
       ""
     ]);
@@ -290,12 +290,12 @@ export class WorkTrackComponent implements AfterViewInit {
     // ───────────────────
     ws["!merges"] = [
       // Row 1
-      { s: { r: 0, c: 1 }, e: { r: 0, c: 3 } }, // Merge Name value
-      { s: { r: 0, c: 5 }, e: { r: 0, c: 5 } }, // Date value stays single
+      // { s: { r: 0, c: 1 }, e: { r: 0, c: 3 } }, // Merge Name value
+      // { s: { r: 0, c: 5 }, e: { r: 0, c: 5 } }, // Date value stays single
 
       // Row 2
-      { s: { r: 1, c: 1 }, e: { r: 1, c: 3 } }, // Merge Technology value
-      { s: { r: 1, c: 5 }, e: { r: 1, c: 5 } }  // Duration right cell
+      // { s: { r: 1, c: 1 }, e: { r: 1, c: 3 } }, // Merge Technology value
+      // { s: { r: 1, c: 5 }, e: { r: 1, c: 5 } }  // Duration right cell
     ];
 
     // BOLD HEADERS
@@ -434,5 +434,30 @@ export class WorkTrackComponent implements AfterViewInit {
       });
     }
     this.hours = JSON.parse(JSON.stringify(this.originalHours));
+  }
+
+  generateMonthButtons() {
+    const currentMonth = new Date().getMonth();
+    const monthAbbr = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
+
+    this.monthButtons = [];
+    for (let i = 0; i < 6; i++) {
+      let monthIndex = currentMonth - 1 - i;
+      if (monthIndex < 0) monthIndex += 12;
+      this.monthButtons.push(monthAbbr[monthIndex]);
+    }
   }
 }

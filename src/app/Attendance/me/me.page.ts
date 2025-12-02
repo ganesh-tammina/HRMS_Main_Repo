@@ -175,12 +175,25 @@ export class MePage implements OnInit {
       .checkLoginOrLoggedOut(this.routeGuardService.employeeID)
       .subscribe({
         next: (response: any) => {
-          this.shift_check_in = response.shift.check_in;
-          this.shift_check_out = response.shift.check_out;
+          // this.shift_check_in = response.shift.check_in;
+          // this.shift_check_out = response.shift.check_out;
+          this.shift_check_in = this.convertTo12Hour(response.shift.check_in);
+          this.shift_check_out = this.convertTo12Hour(response.shift.check_out);
           this.splitWeeks(response.week_off.week_off_days);
         },
       });
   }
+
+
+    // clock in clock out add 12hrs format 
+    convertTo12Hour(time: string): string {
+      if (!time) return '';
+      const [hours, minutes, seconds] = time.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, seconds, 0);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+    
   // ---------------------------------------------------------
   // 🔥 FULL INITIALIZATION (was inside ngOnInit before)
   // ---------------------------------------------------------

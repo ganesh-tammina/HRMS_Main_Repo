@@ -1,4 +1,5 @@
-<ion-header>
+<div class="custom-popup">
+  <ion-header>
   <ion-toolbar>
     <ion-title>Request work from home</ion-title>
     <ion-buttons slot="end">
@@ -15,18 +16,19 @@
   <div class="date-header">
 
     <div class="date-box" [class.active]="pickerOpen==='from'" (click)="openPicker('from')">
-      <span>From</span>
-      <b>{{ displayFromDate }}</b>
+      <p class="pr-5">From </p>
+      <p><strong>{{ displayFromDate }}</strong></p>
     </div>
 
     <div class="day-count">
       {{ totalDays }} {{ totalDays === 1 ? 'day' : 'days' }}
     </div>
 
+    
     <div class="date-box" [class.active]="pickerOpen==='to'" (click)="openPicker('to')">
-      <span>To</span>
-      <b>{{ displayToDate }}</b>
-    </div>
+        <p class="pr-5">To </p>
+        <p><strong>{{ displayToDate }}</strong></p>
+      </div>
 
   </div>
 
@@ -103,11 +105,12 @@
 </ion-content>
 
 <div class="footer">
-  <ion-button fill="clear" color="medium" (click)="close()">
+  <ion-button class="primary-outline-btn" (click)="close()">
     Cancel
   </ion-button>
 
-  <ion-button color="primary" [disabled]="!note" (click)="submit()">
+  <ion-button class="primary-btn" [disabled]="!note" (click)="submit()">
     Request
   </ion-button>
+</div>
 </div>
