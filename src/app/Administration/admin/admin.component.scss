@@ -133,6 +133,7 @@ button:disabled {
         --background: #EDEDED;
         border-radius: 8px !important;
         width: 100%;
+        margin-bottom: 12px;
         .content {
           width: 100%;
         }
@@ -268,4 +269,247 @@ ion-datetime[part= calendar-day] {
 }
 ion-card {
   margin: 0;
+}
+
+.page-bg {
+  --background: #f4f6fb;
+}
+
+.date-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  margin: 10px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.dates {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
+}
+
+.date-box {
+  background: #f1f3f6;
+  border-radius: 12px;
+  padding: 8px 12px;
+  text-align: center;
+  cursor: pointer;
+  min-width: 52px;
+  transition: 0.3s ease;
+}
+
+.date-box h5 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.date-box p {
+  margin: 0;
+  font-size: 12px;
+  color: gray;
+}
+
+.date-box.active {
+  background: var(--ion-color-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.task h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.empty {
+  text-align: center;
+  margin-top: 40px;
+  color: gray;
+  font-size: 14px;
+}
+
+
+
+.shift-container {
+  padding: 16px;
+  margin: 20px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .add-btn {
+    background: #e9f3ff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #1c6dd0;
+    font-weight: 500;
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 20px;
+      margin-right: 5px;
+    }
+  }
+}
+
+.shift-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+
+  .left {
+    display: flex;
+    align-items: center;
+  }
+
+  .icon-box {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 12px;
+
+    ion-icon {
+      font-size: 24px;
+      color: white;
+    }
+
+    &.day {
+      background: #4db8ff;
+    }
+
+    &.evening {
+      background: #8ec3ff;
+    }
+
+    &.night {
+      background: #6a8cff;
+    }
+  }
+
+  .info {
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 14px;
+      color: #555;
+    }
+  }
+
+  .default-tag {
+    background: #eef3f7;
+    padding: 2px 8px;
+    font-size: 12px;
+    margin-left: 8px;
+    border-radius: 8px;
+    color: #5d6e7c;
+  }
+
+  .actions {
+    ion-icon {
+      font-size: 20px;
+      margin-left: 14px;
+      color: #444;
+      cursor: pointer;
+    }
+  }
+// holiday image popup
+.img-button {
+  --background: transparent;
+  --box-shadow: none;
+  --color: var(--ion-primary-color);
+}
+ion-popover{ 
+  &.image-popup::part(content) {
+    --width: 430px;
+    top: auto !important;
+    left: auto !important;
+    bottom: 15% !important;
+    right: 35% !important;
+  }
+} 
+.image-popup {
+  .popup-title {
+    @include card-sub-title();  
+  }
+  .img-border {
+    border: 2px dashed #ABABAB;
+    padding: 25px;
+    margin: 24px;
+    text-align: center;
+    img {
+      height: 200px;
+      width: 200px;      
+      border-radius: 50%;
+    }
+  }
+  .file-attach {
+    position: relative;
+    width: 150px;
+    display: block;
+    text-align: center;
+    margin: auto;
+    input {
+      visibility: hidden;
+      width: 100px;
+    }
+    p {
+      position: absolute;
+      top: -16px;
+      left: 7px;
+      font-size: 16px;
+      background: #707070;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+  }
+  .primary-btn {
+    margin-top: 30px;
+    float: none;
+    width: fit-content;
+    justify-self: anchor-center;
+  }
+}
 }

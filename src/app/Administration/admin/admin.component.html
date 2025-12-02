@@ -1,7 +1,7 @@
 <!-- <input type="file" (change)="onFileSelected($event)" />
 <button (click)="uploadFile()">Upload Holidays</button> -->
 <ion-content [fullscreen]="true" class="admin-dashboard">
-  
+
   <ion-grid>
     <div>
       <ion-row class="ion-no-padding">
@@ -14,65 +14,39 @@
 
               <ion-card-subtitle>
                 <div class="row-right">
-                  <ion-button  class="primary-outline-btn" id="open-upload-modal">
+                  <ion-button class="primary-outline-btn" id="open-upload-modal">
                     <ion-icon name="add-circle-outline"></ion-icon>
-                      Add Employees
+                    Add Employees
                   </ion-button>
-                  <ion-button class="primary-btn" (click)="dep()">Add Departments</ion-button>
+                  <!-- <ion-button class="primary-btn" (click)="dep()">Add Departments</ion-button> -->
                 </div>
-                
-                <ion-modal
-                  class="upload-main-block"
-                  trigger="open-upload-modal"
-                  #modal
-                >
+
+                <ion-modal class="upload-main-block" trigger="open-upload-modal" #modal>
                   <ng-template>
                     <ion-content class="ion-padding">
                       <div class="upload-block" (click)="EmployeeInput.click()">
-                        <ion-icon
-                          name="folder-open-outline"
-                          class="folder-icon"
-                        ></ion-icon>
+                        <ion-icon name="folder-open-outline" class="folder-icon"></ion-icon>
                         <p><strong>Upload a file</strong></p>
                         <p>Attach the file below</p>
                         <div class="drag-drop-area">
-                          <ion-icon
-                            name="arrow-down-circle-outline"
-                            class="upload-icon"
-                          ></ion-icon>
+                          <ion-icon name="arrow-down-circle-outline" class="upload-icon"></ion-icon>
                           <p>Drag file(s) here to upload.</p>
                           <p>
                             Alternatively, you can select a file by
-                            <label
-                              for="file-upload-input"
-                              class="select-file-link"
-                            >
+                            <label for="file-upload-input" class="select-file-link">
                               clicking here
-                              <input
-                                type="file"
-                                #EmployeeInput
-                                id="file-upload-input"
-                                (change)="EmployeeSelected($event)"
-                                accept=".xlsx,.xls"
-                              />
+                              <input type="file" #EmployeeInput id="file-upload-input"
+                                (change)="EmployeeSelected($event)" accept=".xlsx,.xls" />
                             </label>
                           </p>
                         </div>
                       </div>
 
                       <div class="modal-actions">
-                        <ion-button
-                          fill="outline"
-                          color="medium"
-                          (click)="modal.dismiss(null, 'cancel')"
-                          >Cancel</ion-button
-                        >
-                        <ion-button
-                          class="primary-btn"
-                          (click)="EmployeesUpload()"
-                          [disabled]="!EmployeeselectedFile"
-                          >Upload File</ion-button
-                        >
+                        <ion-button fill="outline" color="medium"
+                          (click)="modal.dismiss(null, 'cancel')">Cancel</ion-button>
+                        <ion-button class="primary-btn" (click)="EmployeesUpload()"
+                          [disabled]="!EmployeeselectedFile">Upload File</ion-button>
                       </div>
                     </ion-content>
                   </ng-template>
@@ -98,49 +72,50 @@
               <ion-grid class="table-block">
                 <ion-row class="table-header">
                   <ion-col size="1">
-                     Emp Id
+                    Emp Id
                   </ion-col>
                   <ion-col size="3">
                     Name / Job Role
                   </ion-col>
                   <ion-col size="2">
-                      Department
-                    </ion-col>
-                    <ion-col size="3">
-                        Location / Shift
-                      </ion-col>
-                      <ion-col size="2">
-                          Email
-                        </ion-col>
-                        <ion-col size="1">
-                            Actions
-                          </ion-col>
+                    Department
+                  </ion-col>
+                  <ion-col size="3">
+                    Location / Shift
+                  </ion-col>
+                  <ion-col size="2">
+                    Email
+                  </ion-col>
+                  <ion-col size="1">
+                    Actions
+                  </ion-col>
                 </ion-row>
                 <ion-row class="table-list-row" *ngFor="let candidate of pagedCandidates">
-                    <ion-col size="1">
-                      <p>{{candidate.id}}</p>
-                    </ion-col>
-                    <ion-col size="3">
-                      <div class="row-left">
-                          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-                          <p>{{candidate.personalDetails.FirstName}}</p>
-                      </div>
-                    </ion-col>
-                    <ion-col size="2">
-                        <p>{{candidate.Department}}</p>
-                      </ion-col>
-                      <ion-col size="3">
-                          <p>{{candidate.Department}}</p>
-                        </ion-col>
-                        <ion-col size="2">
-                            <p>{{candidate.Department}}</p>
-                          </ion-col>
-                          <ion-col size="1" class="row-center">
-                              <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
-                                  <ion-icon name="chevron-back-outline"></ion-icon>
-                                </ion-button>
-                            </ion-col>
-                  </ion-row>
+                  <ion-col size="1">
+                    <p>{{candidate.id}}</p>
+                  </ion-col>
+                  <ion-col size="3">
+                    <div class="row-left">
+                      <img alt="Silhouette of mountains"
+                        src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                      <p>{{candidate.personalDetails.FirstName}}</p>
+                    </div>
+                  </ion-col>
+                  <ion-col size="2">
+                    <p>{{candidate.Department}}</p>
+                  </ion-col>
+                  <ion-col size="3">
+                    <p>{{candidate.Department}}</p>
+                  </ion-col>
+                  <ion-col size="2">
+                    <p>{{candidate.Department}}</p>
+                  </ion-col>
+                  <ion-col size="1" class="row-center">
+                    <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
+                      <ion-icon name="chevron-back-outline"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
               </ion-grid>
               <!-- <ion-list *ngFor="let candidate of pagedCandidates">
                 <ion-item>
@@ -158,11 +133,7 @@
               }
 
               <div class="row-center ion-padding">
-                <ion-button
-                  (click)="prevPage()"
-                  [disabled]="currentPage === 1"
-                  fill="clear"
-                >
+                <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
                   <ion-icon name="chevron-back-outline"></ion-icon>
                 </ion-button>
 
@@ -170,27 +141,17 @@
                   Page {{ currentPage }} of {{ totalPages }}
                 </ion-text>
 
-                <ion-button
-                  (click)="nextPage()"
-                  [disabled]="currentPage === totalPages || totalPages === 0"
-                  fill="clear"
-                >
+                <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0"
+                  fill="clear">
                   <ion-icon name="chevron-forward-outline"></ion-icon>
                 </ion-button>
 
-                <ion-item
-                  lines="none"
-                  style="max-width: 100px; margin-left: 10px"
-                >
-                  <ion-select
-                    [(ngModel)]="pageSize"
-                    placeholder="Size"
-                    (ionChange)="
+                <ion-item lines="none" style="max-width: 100px; margin-left: 10px">
+                  <ion-select [(ngModel)]="pageSize" placeholder="Size" (ionChange)="
                       calculatePagination();
                       updatePagedCandidates();
                       currentPage = 1
-                    "
-                  >
+                    ">
                     <ion-select-option [value]="5">5</ion-select-option>
                     <ion-select-option [value]="10">10</ion-select-option>
                     <ion-select-option [value]="20">20</ion-select-option>
@@ -205,97 +166,94 @@
 
 
         <ion-col size="12" class="manage-block">
-            <ion-card>
-                <ion-card-header class="row-space-between">
-                  <div>
-                      <ion-card-title>Organization Master Data</ion-card-title>
-                      <p>Access and manage core organizational lists and settings.</p>
-                  </div>                  
-                    <div class="row-right">                     
-                      <ion-button class="primary-outline-btn" (click)="dep()">Manage Data Lists</ion-button>
-                    </div>
-                    </ion-card-header>
-                    </ion-card>
+          <ion-card>
+            <ion-card-header class="row-space-between">
+              <div>
+                <ion-card-title>Organization Master Data</ion-card-title>
+                <p>Access and manage core organizational lists and settings.</p>
+              </div>
+              <div class="row-right">
+                <ion-button class="primary-outline-btn" (click)="dep()">Manage Data Lists</ion-button>
+              </div>
+            </ion-card-header>
+          </ion-card>
         </ion-col>
 
 
         <!-- Leaves block -->
         <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
 
-            <ion-card>
-              <ion-card-header class="row-space-between">
-                <ion-card-title>Total Leaves</ion-card-title>
-                <ion-card-subtitle>
-                  <button (click)="openModal()" class="primary-outline-btn row-center">
-                    <ion-icon name="add-circle-outline"></ion-icon>Add Leaves
-                  </button>
-  
-                </ion-card-subtitle>
-  
-              </ion-card-header>
-              <ion-card-content>
+          <ion-card>
+            <ion-card-header class="row-space-between">
+              <ion-card-title>Total Leaves</ion-card-title>
+              <ion-card-subtitle>
+                <button (click)="openModal()" class="primary-outline-btn row-center">
+                  <ion-icon name="add-circle-outline"></ion-icon>Add Leaves
+                </button>
 
-                <ion-list class="leave-list-block" lines="none">
-                  <ion-item class="cl-text">
-                      <p class="row-left"><img src="../../../assets/leave-icons/CL.svg">
-                        <span>Casual</span></p>
-                        <p>12</p>      
-                      <!-- *ngIf="leaveData" {{ leaveData.marriageLeaves }} {{ leaveData.sickLeaves }}-->
-                  </ion-item>
-                  <ion-item class="ml-text">
-                      <p class="row-left"><img src="../../../assets/leave-icons/ML.svg">
-                        <span>Marriage</span></p>
-                      <p>2</p>  
-                  </ion-item>
-                  <ion-item class="sl-text">
-                      <p class="row-left"><img src="../../../assets/leave-icons/SL.svg">
-                        <span>Sick</span></p>
-                      <p>6</p> 
-                  </ion-item>     
-                  <ion-item class="co-text">
-                      <p class="row-left"><img src="../../../assets/leave-icons/CO.svg">
-                        <span>Comp Offs</span></p>
-                          <p>3</p>
-                    </ion-item>  
-                    <ion-item class="ul-text">
-                        <p class="row-left"><img src="../../../assets/leave-icons/UL.svg">
-                          <span>Unpiad</span></p>
-                        <p>0</p>  
-                      </ion-item>  
-                </ion-list>
-                <button (click)="deleteLeaves()" class="ion-float-right primary-rounded-btn my-15">Delete Data</button>
-              </ion-card-content>
-            </ion-card>
-  
-          </ion-col>
+              </ion-card-subtitle>
+
+            </ion-card-header>
+            <ion-card-content>
+
+              <ion-list class="leave-list-block" lines="none">
+                <ion-item class="cl-text">
+                  <p class="row-left"><img src="../../../assets/leave-icons/CL.svg">
+                    <span>Casual</span>
+                  </p>
+                  <p>12</p>
+                  <!-- *ngIf="leaveData" {{ leaveData.marriageLeaves }} {{ leaveData.sickLeaves }}-->
+                </ion-item>
+                <ion-item class="ml-text">
+                  <p class="row-left"><img src="../../../assets/leave-icons/ML.svg">
+                    <span>Marriage</span>
+                  </p>
+                  <p>2</p>
+                </ion-item>
+                <ion-item class="sl-text">
+                  <p class="row-left"><img src="../../../assets/leave-icons/SL.svg">
+                    <span>Sick</span>
+                  </p>
+                  <p>6</p>
+                </ion-item>
+                <ion-item class="co-text">
+                  <p class="row-left"><img src="../../../assets/leave-icons/CO.svg">
+                    <span>Comp Offs</span>
+                  </p>
+                  <p>3</p>
+                </ion-item>
+                <ion-item class="ul-text">
+                  <p class="row-left"><img src="../../../assets/leave-icons/UL.svg">
+                    <span>Unpiad</span>
+                  </p>
+                  <p>0</p>
+                </ion-item>
+              </ion-list>
+              <button (click)="deleteLeaves()" class="ion-float-right primary-rounded-btn my-15">Delete Data</button>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
 
         <!-- Hollidays list -->
         <ion-col size="12" size-sm="12" size-md="8" size-lg="8" size-xl="8">
-
           <ion-card>
             <ion-card-header class="row-space-between">
               <ion-card-title>Holidays</ion-card-title>
               <ion-card-subtitle>
                 <div class="tooltip-container">
-                  <ion-button id="holiday-popup" fill="clear"
-                    ><ion-icon name="add-circle-outline"></ion-icon
-                  ></ion-button>
+                  <ion-button id="holiday-popup" fill="clear">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                  </ion-button>
                   <span class="tooltip-text mt-8">Add holidays</span>
                 </div>
-                <ion-popover
-                  trigger="holiday-popup"
-                  class="upload-file"
-                  [dismissOnSelect]="false"
-                >
+
+                <ion-popover trigger="holiday-popup" class="upload-file" [dismissOnSelect]="false">
                   <ng-template>
                     <ion-content class="ion-padding">
-                      <input
-                        type="file"
-                        #fileInput
-                        (click)="fileInput.click()"
-                        (change)="onFileSelected($event)"
-                        accept=".xlsx,.xls"
-                      />
+                      <input type="file" #fileInput (click)="fileInput.click()" (change)="onFileSelected($event)"
+                        accept=".xlsx,.xls" />
+
                       <div class="row-center">
                         <button (click)="Upload()" [disabled]="!selectedFile">
                           Upload
@@ -306,67 +264,122 @@
                 </ion-popover>
               </ion-card-subtitle>
             </ion-card-header>
+
             <ion-card-content class="holiday-list">
               <ion-row class="ion-items-start">
+
+                <!-- ✅ CALENDAR -->
                 <ion-col size="5">
-                    <ion-datetime show-adjacent-days="true" presentation="date"></ion-datetime>
+                  <ion-datetime show-adjacent-days="true" presentation="date" (ionChange)="onDateChange($event)">
+                  </ion-datetime>
                 </ion-col>
-                <ion-col size="7"  class="holiday-content">
-                    <!-- <ion-list *ngFor="let holiday of holidays">
-                    <ion-item>
-                      <ion-thumbnail slot="start">
-                        <img
-                          alt="Silhouette of mountains"
-                          src="https://ionicframework.com/docs/img/demos/thumbnail.svg"
-                        />
-                      </ion-thumbnail>
-                      <ion-label>{{ holiday.HolidayName }}</ion-label>
-                      <ion-label>{{ holiday.Date }}</ion-label>
-                      <ion-label>{{ holiday.Day }}</ion-label>
-                      <ion-button fill="popover-editform" id="popover-editform"
-                        ><ion-icon name="create-outline"></ion-icon
-                      ></ion-button>
-                    </ion-item>
-                  </ion-list> -->     
-                      <p class="card-sub-title">Upcoming Holidays</p>
-                              <ion-list lines="none">
-                                  <ion-item>
-                                    <ion-thumbnail slot="start">
-                                      <ion-label>Dec 15</ion-label>
-                                    </ion-thumbnail>
-                                    <div class="content"> 
-                                      <ion-label>Happy Christmas</ion-label>                 
-                                      <ion-label>Wednessday</ion-label>
-                                    </div>                 
-                                    <div class="row-right">
-                                      <ion-icon name="create-outline"></ion-icon>
-                                      <ion-icon name="trash-outline"></ion-icon>
-                                    </div>                  
-                                  </ion-item>
-                                </ion-list>
-                  </ion-col>
-                </ion-row>
-                         
+
+                <!-- ✅ UPCOMING HOLIDAYS -->
+                <ion-col size="7" class="holiday-content">
+
+                  <div>
+                    <p class="card-sub-title">Upcoming Holidays</p>
+
+                    <ion-list lines="none">
+
+                      <ion-item *ngFor="let holiday of upcomingHolidays">
+                        <ion-thumbnail slot="start">
+                          <ion-label>
+                            {{ holiday.holiday_date | date:'MMM d' }}
+                          </ion-label>
+                        </ion-thumbnail>
+
+                        <div class="content">
+                          <ion-label class="title">
+                            {{ holiday.holiday_name }}
+                          </ion-label>
+
+                          <ion-label class="subtitle">
+                            {{ holiday.day_name }}
+                          </ion-label>
+                        </div>
+
+                        <div class="row-right">
+                        <ion-button class="img-button" id="add-holidayimg-{{holiday.id}}">
+                          <ion-icon name="create-outline" class="icon"></ion-icon>                         
+                          </ion-button>
+                      <!-- modal popup for image uploader -->
+                        <ion-popover trigger="add-holidayimg-{{holiday.id}}" class="image-popup" triggerAction="click">
+                            <ng-template>
+                              <div class="ion-padding">
+                                <p class="popup-title">Upload Holiday Background Image</p>
+                                <div class="img-border">
+                                  <img src='../../assets/user.svg' width="100" height="100" />
+                                </div>
+                
+                                <label class="file-attach">
+                                  <input type="file" accept="image/*">
+                                  <p>Choose image</p>
+                                </label>
+                
+                                <ion-button class="primary-btn row-right" type="submit">
+                                  Upload image
+                                </ion-button>
+                              </div>
+                            </ng-template>
+                          </ion-popover>
+                        </div>
+                      </ion-item>
+
+                      <!-- Empty state -->
+                      <ion-item *ngIf="upcomingHolidays.length === 0">
+                        <ion-label>No upcoming holidays found</ion-label>
+                      </ion-item>
+
+                    </ion-list>
+                  </div>
+
+                </ion-col>
+
+              </ion-row>
             </ion-card-content>
           </ion-card>
         </ion-col>
         <!-- Shift management list -->
         <ion-col size="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
-            <app-shifts></app-shifts>
+          <app-shifts></app-shifts>
+          <ion-content class="shift-container">
+
+            <div class="header-row">
+              <h2>Upload Employees Salary</h2>
+
+              <button class="add-btn" (click)="fileInput.click()">
+                <ion-icon name="cloud-upload-outline"></ion-icon>
+                Upload
+              </button>
+
+              <!-- Hidden File Input -->
+              <input type="file" accept=".xlsx,.xls" #fileInput style="display: none;"
+                (change)="onFileSalarySelected($event)" />
+            </div>
+
+            <div *ngIf="SalaryselectedFile" class="file-info">
+              <p>Selected File: <strong></strong></p>
+
+              <ion-button expand="block" color="primary" (click)="uploadFile()">
+                Upload Now
+              </ion-button>
+            </div>
+
+          </ion-content>
+
+
         </ion-col>
 
-          <!-- weekoffs list -->
+        <!-- weekoffs list -->
         <ion-col size="12" size-sm="12" size-md="8" size-lg="8" size-xl="8">
-            <app-weekoffs></app-weekoffs>
-          </ion-col>
+          <app-weekoffs></app-weekoffs>
+        </ion-col>
       </ion-row>
     </div>
   </ion-grid>
   <div *ngIf="showModal" class="shift-popup">
-    <app-leave-modal
-      (saveLeaves)="handleSave($event)"
-      (closeModal)="handleClose()"
-    ></app-leave-modal>
+    <app-leave-modal (saveLeaves)="handleSave($event)" (closeModal)="handleClose()"></app-leave-modal>
   </div>
- 
+
 </ion-content>
