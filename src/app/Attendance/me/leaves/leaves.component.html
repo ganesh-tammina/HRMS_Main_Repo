@@ -41,12 +41,20 @@
 
           <div>
             <label>From</label>
-            <ion-input type="date" formControlName="start_date"></ion-input>
+            <ion-datetime  formControlName="start_date"  [min]="minDate"
+  [isDateEnabled]="isWeekday"
+      presentation="date"
+    displayFormat="DD MMM YYYY"
+    pickerFormat="DD MMM YYYY"></ion-datetime>
           </div>
 
           <div>
             <label>To</label>
-            <ion-input type="date" formControlName="end_date"></ion-input>
+            <ion-datetime formControlName="end_date"   [min]="leaveForm.value.start_date || minDate"
+  [isDateEnabled]="isWeekday"
+      presentation="date"
+    displayFormat="DD MMM YYYY"
+    pickerFormat="DD MMM YYYY"></ion-datetime>
           </div>
 
           <!-- Error Message for Date Validation -->
