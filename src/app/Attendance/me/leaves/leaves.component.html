@@ -32,8 +32,9 @@
             <ion-select formControlName="leave_type" placeholder="Select Leave Type">
               <ion-select-option value="CASUAL">Casual Leaves</ion-select-option>
               <ion-select-option value="MARRIAGE">Marriage Leaves</ion-select-option>
-              <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
               <ion-select-option value="COMP_OFF">Comp-Offs</ion-select-option>
+              <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
+              <ion-select-option value="PAID">Paid Leaves</ion-select-option>
               <ion-select-option value="UNPAID">Unpaid Leaves</ion-select-option>
             </ion-select>
           </div>
@@ -109,9 +110,17 @@
       </ion-col>
 
       <ion-col size="2" class="card-block">
+        <p class="card-header">Paid Leaves</p>
+        <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
+        <p class="number">{{ leaveData?.paid_leave_taken || 0 }}/{{ leaveData?.paid_leave_allocated || 0 }}</p>
+        <p class="label">days available</p>
+      </ion-col>
+
+
+      <ion-col size="2" class="card-block">
         <p class="card-header">Unpaid</p>
         <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
-        <p class="number">{{ leaveData?.paid_leave_taken || 0 }}/&infin;</p>
+        <p class="number">{{ leaveData?.unpaid_leave_taken || 0 }}/&infin;</p>
         <p class="label">days available</p>
       </ion-col>
     </ion-row>

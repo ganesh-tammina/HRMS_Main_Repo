@@ -38,7 +38,9 @@ export class LeavesComponent implements OnInit {
     comp_offs_taken: 0,
     comp_offs_allocated: 0,
     paid_leave_taken: 0,
-    paid_leave_allocated: 0
+    paid_leave_allocated: 0,
+    unpaid_leave_taken : 'NULL',
+    unpaid_leave_allocated:'NULL'
   };
 
   leaveRequests: any[] = [];
@@ -64,7 +66,7 @@ wordsCount = 0;
       start_date: ['', Validators.required],
       end_date: ['', [Validators.required, this.dateValidator.bind(this)]],
       remarks: ['', Validators.required],
-      notify: ['']
+      notify: [''],
     });
 
     this.leaveForm.valueChanges.subscribe(val => {
