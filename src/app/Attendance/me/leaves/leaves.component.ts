@@ -38,7 +38,9 @@ export class LeavesComponent implements OnInit {
     comp_offs_taken: 0,
     comp_offs_allocated: 0,
     paid_leave_taken: 0,
-    paid_leave_allocated: 0
+    paid_leave_allocated: 0,
+    unpaid_leave_taken : 'NULL',
+    unpaid_leave_allocated:'NULL'
   };
 
   leaveRequests: any[] = [];
@@ -46,6 +48,14 @@ export class LeavesComponent implements OnInit {
   total_days: number = 0;
   description = '';
 wordsCount = 0;
+minDate: string = new Date().toISOString().split('T')[0];
+
+isWeekday = (dateIsoString: string) => {
+  const date = new Date(dateIsoString);
+  const day = date.getDay();
+  // 0 = Sunday, 6 = Saturday → disable these
+  return day !== 0 && day !== 6;
+};
 
   constructor(
     private candidateService: CandidateService,
@@ -64,7 +74,7 @@ wordsCount = 0;
       start_date: ['', Validators.required],
       end_date: ['', [Validators.required, this.dateValidator.bind(this)]],
       remarks: ['', Validators.required],
-      notify: ['']
+      notify: [''],
     });
 
     this.leaveForm.valueChanges.subscribe(val => {
@@ -138,6 +148,14 @@ wordsCount = 0;
   }
 
   submitRequest() {
+      const start = new Date(this.leaveForm.value.start_date);
+  const end = new Date(this.leaveForm.value.end_date);
+
+  if (start.getDay() === 0 || start.getDay() === 6 ||
+      end.getDay() === 0 || end.getDay() === 6) {
+    alert("Cannot apply leave on weekends!");
+    return;
+  }
     if (this.leaveForm.invalid || this.total_days <= 0) {
       this.leaveForm.markAllAsTouched();
       this.presentToast('Please fill all required fields and ensure dates are valid.', 'warning');
