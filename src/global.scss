@@ -363,3 +363,23 @@ ion-popover ion-content::-webkit-scrollbar {
      }
    }
   }
+  
+
+  .profile-modal {
+    --width: 625px;
+    --height: 400px;
+    &::part(backdrop){
+        opacity: 0.35 !important;
+      }
+  }
+  .employee-list-modal {
+    --width: 350px;
+    --height: 400px;
+    justify-content: left;
+    padding-left: 236px;
+    align-items: baseline;
+    padding-top: 65px;
+    &::part(backdrop){
+        opacity: 0 !important;
+      }
+  }

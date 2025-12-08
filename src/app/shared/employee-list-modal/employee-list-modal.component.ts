@@ -29,7 +29,8 @@ export class EmployeeListModalComponent implements OnInit {
   async openEmployeeProfile(employee: any) {
     const modal = await this.modalCtrl.create({
       component: EmployeeProfileModalComponent,
-      componentProps: { selectedEmployee:employee }
+      componentProps: { selectedEmployee:employee },
+          cssClass: 'profile-modal' // <-- Add the class here   
     });
 
     await modal.present();
