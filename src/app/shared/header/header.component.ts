@@ -168,6 +168,7 @@ export class HeaderComponent implements OnInit {
     const modal = await this.modalCtrl.create({
       component: EmployeeListModalComponent,
       componentProps: { employees: data },
+      cssClass: 'employee-list-modal' // <-- Add the class here 
     });
     await modal.present();
   }

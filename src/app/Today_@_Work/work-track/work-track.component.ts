@@ -142,9 +142,11 @@ export class WorkTrackComponent implements AfterViewInit {
     this.workTrackService.submitReport(data).subscribe({
       next: (response) => {
         localStorage.setItem(this.selectedDate, JSON.stringify(data));
+        this.refreshReports();
         this.calculateWeeklyAndMonthly();
         this.loadCharts();
         alert(`✅ Report saved for ${this.selectedDate}`);
+        this.closePopover(); 
         this.resetDailyForm();
       },
       error: (error) => {
@@ -460,4 +462,21 @@ export class WorkTrackComponent implements AfterViewInit {
       this.monthButtons.push(monthAbbr[monthIndex]);
     }
   }
+
+closePopover() {
+  const popover = document.querySelector('ion-popover');
+  if (popover) {
+    (popover as any).dismiss();
+  }
+}
+refreshReports() {
+  const allData: workTrack = { 
+    employee_id: parseInt(this.employee_id), 
+    date: '' 
+  };
+
+  this.workTrackService.getAllReport(allData).subscribe((response: any) => {
+    this.allReports = response.data.date;
+  });
+}
 }

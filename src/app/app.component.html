@@ -115,7 +115,7 @@
 
             <!-- Admin -->
             @if(isAdmin){
-            <ion-menu-toggle auto-hide="false">
+            <ion-menu-toggle *ngIf="isAdmin" auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" detail="false"
                 routerLinkActive="selected" [ngClass]="(currentUrl=='/admin') ? 'selected':''">
                 <div class="text-center">

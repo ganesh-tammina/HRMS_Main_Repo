@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
     private candidateService: CandidateService,
     private routeGaurdService: RouteGuardService,
     private navCtrl: NavController // ✅ add this
-  ) {
+  ) {   
     this.currentUser = this.candidateService.currentCandidate$;
     // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
 
@@ -94,14 +94,33 @@ export class AppComponent implements OnInit {
     this.showCategories = !this.showCategories;
   }
   ngOnInit(): void {
+    this.isAdmin = false;
     this.currentUrl = this.router.url;
-
-    if (this.routeGaurdService.userRole) {
-      this.routeGaurdService.userRole === 'ADMIN' || 'HR'
-        ? (this.isAdmin = true)
-        : (this.isAdmin = false);
+    const role = this.routeGaurdService.userRole?.trim().toUpperCase() || '';
+    if (role === 'ADMIN' || role === 'HR') {
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false
     }
+
+     
+    // const role = this.routeGaurdService.userRole;
+    // if (this.routeGaurdService.userRole) {
+    //   this.routeGaurdService.userRole === 'ADMIN' || 'HR'
+    //     ? (this.isAdmin = true)
+    //     : (this.isAdmin = false);
+    // }
   }
+
+  // ionViewDidEnter() {
+  //   const role = this.routeGaurdService.userRole?.trim().toUpperCase() || '';
+  //   if (role === 'ADMIN' || role === 'HR') {
+  //     this.isAdmin = true;
+  //   } else {
+  //     this.isAdmin = false
+  //   }
+  // }
+
   // preonboard() {
   //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
   //     this.router.navigate(['/pre_onboarding']);
