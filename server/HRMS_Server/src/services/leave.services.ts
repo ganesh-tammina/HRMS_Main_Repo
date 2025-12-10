@@ -42,7 +42,7 @@ export default class LeaveService {
         throw new Error('Insufficient casual leave balance.');
       }
       if (
-        data.leave_type === 'MEDICAL' &&
+        data.leave_type === 'SICK' &&
         leaveBalance.medical_leave_allocated < data.total_days
       ) {
         throw new Error('Insufficient medical leave balance.');
