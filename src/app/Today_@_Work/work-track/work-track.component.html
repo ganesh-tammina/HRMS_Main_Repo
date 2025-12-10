@@ -68,7 +68,7 @@
         </ion-row>
       </ion-grid>
 
-      <ion-popover trigger="trigger-button1" class="daily-block">
+      <ion-popover trigger="trigger-button1" *ngIf="show" class="daily-block">
         <ng-template>
           <!-- DATE BAR -->
           <div class="date-bar">

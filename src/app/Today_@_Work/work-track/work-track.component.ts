@@ -17,7 +17,7 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
 })
 export class WorkTrackComponent implements AfterViewInit {
   allReports: any;
-
+  show:boolean= true;
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
   today = new Date().toISOString().split('T')[0];
   selectedDate = this.today;
@@ -145,15 +145,20 @@ export class WorkTrackComponent implements AfterViewInit {
         this.refreshReports();
         this.calculateWeeklyAndMonthly();
         this.loadCharts();
+        this.show = false;
         alert(`✅ Report saved for ${this.selectedDate}`);
-        this.closePopover(); 
         this.resetDailyForm();
+
+
+
       },
       error: (error) => {
         console.error('Error saving report:', error);
         alert('❌ Error saving report: ' + error.error.error);
       }
     });
+        this.closePopover(); 
+
   }
 
   resetDailyForm() {
