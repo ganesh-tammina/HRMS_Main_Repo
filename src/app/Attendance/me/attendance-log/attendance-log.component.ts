@@ -137,7 +137,6 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     this.attendanceService.response$.subscribe((response) => {
       if (response) {
         console.log('Clock action detected:', response.action);
-
         if (response.optimistic) {
           // Immediate optimistic update
           console.log('Applying optimistic update...');
@@ -294,8 +293,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
                   arrivalTime = `${hours.toString().padStart(2, '0')}:${minutes
                     .toString()
                     .padStart(2, '0')}:${seconds
-                    .toString()
-                    .padStart(2, '0')} late`;
+                      .toString()
+                      .padStart(2, '0')} late`;
                 }
               } else {
                 arrivalTime = '-';
@@ -684,9 +683,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
             'Nov',
             'Dec',
           ];
-          const displayDate = `${dayName}, ${date.getDate()} ${
-            monthNames[date.getMonth()]
-          }`;
+          const displayDate = `${dayName}, ${date.getDate()} ${monthNames[date.getMonth()]
+            }`;
 
           result.push({
             attendance_date: dateStr,
@@ -798,9 +796,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
       'Nov',
       'Dec',
     ];
-    return `${days[date.getDay()]}, ${date.getDate()} ${
-      months[date.getMonth()]
-    }`;
+    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]
+      }`;
   }
 
   generateMonthButtons() {
