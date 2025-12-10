@@ -8,9 +8,13 @@
   }
   .btn-clockout {
     --background: #F95F5F;
+    --border-radius: 60px;
+    font-size: 12px;
   }
   .btn-clockin {
     --background: #1870B9;
+    --border-radius: 60px;
+    font-size: 12px;
   }
   .me-clock-out{
     text-transform: capitalize;
