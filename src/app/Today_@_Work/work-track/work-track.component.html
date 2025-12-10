@@ -1,19 +1,20 @@
 <ion-content class="ion-padding">
   <div class="manage-main-block">
     <h2>Work Tracking</h2>
-<!-- Filters -->
-<div class="row-space-between">
-    <div>
-      <p>30DAYS</p>
-    </div>
-    <div class="filters">
-      <div class="filter-block">
-        <button class="btn-secondry" [class.active]="selectedPeriod === '30DAYS'">30 DAYS</button>
-        <button *ngFor="let month of monthButtons" class="btn-secondry" [class.active]="selectedPeriod === month" >{{ month }}</button>
+    <!-- Filters -->
+    <div class="row-space-between">
+      <div>
+        <p>30DAYS</p>
+      </div>
+      <div class="filters">
+        <div class="filter-block">
+          <button class="btn-secondry" [class.active]="selectedPeriod === '30DAYS'">30 DAYS</button>
+          <button *ngFor="let month of monthButtons" class="btn-secondry" [class.active]="selectedPeriod === month">{{
+            month }}</button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Content -->
+    <!-- Content -->
     <div class="box animate">
       <div class="row-right">
         <ion-button id="monthly-report" (click)="monthlybtn()">Monthly report</ion-button>
@@ -25,9 +26,9 @@
           <ion-col size="12">
             <ion-accordion-group>
               <ion-accordion *ngFor="let date of getReportDates()" [value]="date">
-                  
+
                 <ion-item slot="header">
-                    <ion-icon name="alarm-outline"></ion-icon>
+                  <ion-icon name="alarm-outline"></ion-icon>
                   <ion-label>
                     <!-- <ion-icon name="calendar-clear-outline"></ion-icon> -->
                     {{ formatDate(date) }}
@@ -36,8 +37,8 @@
                   </ion-label>
 
                   <!-- Download button with tooltip -->
-                    <ion-icon  name="download-outline" (click)="exportDay(date)" ></ion-icon>
-                  
+                  <ion-icon name="download-outline" (click)="exportDay(date)"></ion-icon>
+
                 </ion-item>
 
                 <div class="ion-padding" slot="content">
@@ -48,10 +49,10 @@
                       </ion-col>
                       <ion-col size="6">
                         Task Description
-                        </ion-col>
-                        <ion-col size="3">
-                          Project
-                          </ion-col>
+                      </ion-col>
+                      <ion-col size="3">
+                        Project
+                      </ion-col>
                     </ion-row>
                     <ion-row *ngFor="let h of allReports[date]" class="table-row-list">
                       <ion-col size="3">{{ h.start_time }} - {{ h.end_time }}</ion-col>
@@ -63,11 +64,11 @@
               </ion-accordion>
             </ion-accordion-group>
           </ion-col>
-    
+
         </ion-row>
       </ion-grid>
 
-      <ion-popover trigger="trigger-button1" class="daily-block">
+      <ion-popover trigger="trigger-button1" *ngIf="show" class="daily-block">
         <ng-template>
           <!-- DATE BAR -->
           <div class="date-bar">

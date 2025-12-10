@@ -17,7 +17,7 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
 })
 export class WorkTrackComponent implements AfterViewInit {
   allReports: any;
-
+  show:boolean= true;
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
   today = new Date().toISOString().split('T')[0];
   selectedDate = this.today;
@@ -142,16 +142,23 @@ export class WorkTrackComponent implements AfterViewInit {
     this.workTrackService.submitReport(data).subscribe({
       next: (response) => {
         localStorage.setItem(this.selectedDate, JSON.stringify(data));
+        this.refreshReports();
         this.calculateWeeklyAndMonthly();
         this.loadCharts();
+        this.show = false;
         alert(`✅ Report saved for ${this.selectedDate}`);
         this.resetDailyForm();
+
+
+
       },
       error: (error) => {
         console.error('Error saving report:', error);
         alert('❌ Error saving report: ' + error.error.error);
       }
     });
+        this.closePopover(); 
+
   }
 
   resetDailyForm() {
@@ -460,4 +467,21 @@ export class WorkTrackComponent implements AfterViewInit {
       this.monthButtons.push(monthAbbr[monthIndex]);
     }
   }
+
+closePopover() {
+  const popover = document.querySelector('ion-popover');
+  if (popover) {
+    (popover as any).dismiss();
+  }
+}
+refreshReports() {
+  const allData: workTrack = { 
+    employee_id: parseInt(this.employee_id), 
+    date: '' 
+  };
+
+  this.workTrackService.getAllReport(allData).subscribe((response: any) => {
+    this.allReports = response.data.date;
+  });
+}
 }
