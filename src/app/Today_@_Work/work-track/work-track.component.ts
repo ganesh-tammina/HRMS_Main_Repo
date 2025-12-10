@@ -6,8 +6,10 @@ import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { workTrack, WorkTrackService } from '../work-track.service';
+import { PopoverController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
-
+import { ClientTimesheetPopoverComponent } from '../client-timesheet-popover/client-timesheet-popover.component';
 @Component({
   selector: 'app-work-track-tabs',
   standalone: true,
@@ -17,7 +19,7 @@ import { CandidateService } from 'src/app/services/pre-onboarding.service';
 })
 export class WorkTrackComponent implements AfterViewInit {
   allReports: any;
-  show:boolean= true;
+  show: boolean = true;
   activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
   today = new Date().toISOString().split('T')[0];
   selectedDate = this.today;
@@ -49,7 +51,9 @@ export class WorkTrackComponent implements AfterViewInit {
 
   constructor(
     private candidateService: CandidateService,
-    private workTrackService: WorkTrackService
+    private workTrackService: WorkTrackService,
+    private popoverCtrl: PopoverController,
+    private modalCtrl: ModalController
   ) {
     const allData: workTrack = { employee_id: parseInt(this.employee_id), date: '' };
     this.workTrackService.getAllReport(allData).subscribe((response: any) => {
@@ -63,6 +67,26 @@ export class WorkTrackComponent implements AfterViewInit {
     this.calculateWeeklyAndMonthly();
     this.loadCandidateById();
     setTimeout(() => this.loadCharts(), 300);
+  }
+
+  async openClientTimeSheet() {
+    const modal = await this.modalCtrl.create({
+      component: ClientTimesheetPopoverComponent,
+      cssClass: 'big-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data) {
+      console.log('Timesheet Submitted:', data);
+      // Call your API here
+    }
+  }
+
+
+  closeModal(data?: any) {
+    this.modalCtrl.dismiss(data);
   }
 
   formatDate(date: string): string {
@@ -157,7 +181,7 @@ export class WorkTrackComponent implements AfterViewInit {
         alert('❌ Error saving report: ' + error.error.error);
       }
     });
-        this.closePopover(); 
+    this.closePopover();
 
   }
 
@@ -468,20 +492,20 @@ export class WorkTrackComponent implements AfterViewInit {
     }
   }
 
-closePopover() {
-  const popover = document.querySelector('ion-popover');
-  if (popover) {
-    (popover as any).dismiss();
+  closePopover() {
+    const popover = document.querySelector('ion-popover');
+    if (popover) {
+      (popover as any).dismiss();
+    }
   }
-}
-refreshReports() {
-  const allData: workTrack = { 
-    employee_id: parseInt(this.employee_id), 
-    date: '' 
-  };
+  refreshReports() {
+    const allData: workTrack = {
+      employee_id: parseInt(this.employee_id),
+      date: ''
+    };
 
-  this.workTrackService.getAllReport(allData).subscribe((response: any) => {
-    this.allReports = response.data.date;
-  });
-}
+    this.workTrackService.getAllReport(allData).subscribe((response: any) => {
+      this.allReports = response.data.date;
+    });
+  }
 }
