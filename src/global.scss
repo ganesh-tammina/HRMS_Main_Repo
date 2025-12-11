@@ -173,6 +173,9 @@ ion-list-header, ion-item{
 .m-auto {
     margin: auto !important;
 }
+.mt-0 {
+    margin: 0 !important;
+}
 .mt-8 {
   margin-top: 8px !important;
 }
@@ -227,7 +230,7 @@ ion-modal {
       }
       ion-input, ion-textarea {
         border: 1px solid #C4C4C4;
-        height: 45px;
+        height: auto;
         border-radius: 4px;
         padding: 0px 12px !important;
        margin: 11px 0px;

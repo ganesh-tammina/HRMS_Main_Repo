@@ -50,11 +50,11 @@
             <ion-card-content>
               <ion-grid class="days-grid ion-no-padding mb-30">
                 <ion-row>
-                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center" [ngClass]="{
-      'highlight-today': isToday(day),
-      'highlight-weekoff': isWeekOffDay(day)
-  }" [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
-                    <div class="day-container">
+                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center" [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
+                    <div class="day-container"  [ngClass]="{
+                      'highlight-today': isToday(day),
+                      'highlight-weekoff': isWeekOffDay(day)
+                  }">
                       <p class="day-of-week">{{ day | date:'E' }}</p>
                     </div>
                   </ion-col>
