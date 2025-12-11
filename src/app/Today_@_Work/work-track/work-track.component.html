@@ -1,6 +1,8 @@
 <ion-content class="ion-padding">
   <div class="manage-main-block">
+
     <h2>Work Tracking</h2>
+
     <!-- Filters -->
     <div class="row-space-between">
       <div>
@@ -14,138 +16,107 @@
         </div>
       </div>
     </div>
-    <!-- Content -->
-    <div class="box animate">
-      <div class="row-right">
-        <ion-button id="monthly-report" (click)="monthlybtn()">Monthly report</ion-button>
-        <ion-button id="trigger-button1">Add work details</ion-button>
-      </div>
 
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12">
-            <ion-accordion-group>
-              <ion-accordion *ngFor="let date of getReportDates()" [value]="date">
+    <!-- Daily Reports Accordion -->
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let date of getReportDates()" [value]="date">
+        <ion-item slot="header">
+          <ion-icon name="alarm-outline"></ion-icon>
+          <ion-label>
+            {{ formatDate(date) }} ({{ allReports[date][0]?.start_time }} to {{
+            allReports[date][allReports[date].length-1]?.end_time }})
+          </ion-label>
+          <ion-icon name="download-outline" (click)="exportDailyReport(date)"></ion-icon>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-grid class="table-block">
+            <ion-row class="table-header">
+              <ion-col size="3">Time</ion-col>
+              <ion-col size="6">Task Description</ion-col>
+              <ion-col size="3">Project</ion-col>
+            </ion-row>
+            <ion-row *ngFor="let h of allReports[date]" class="table-row-list">
+              <ion-col size="3">{{ h.start_time }} - {{ h.end_time }}</ion-col>
+              <ion-col size="6">{{ h.task || 'Break' }}</ion-col>
+              <ion-col size="3">{{ h.project || '-' }}</ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
 
-                <ion-item slot="header">
-                  <ion-icon name="alarm-outline"></ion-icon>
-                  <ion-label>
-                    <!-- <ion-icon name="calendar-clear-outline"></ion-icon> -->
-                    {{ formatDate(date) }}
-                    ({{ allReports[date].length > 0 ? allReports[date][0].start_time : '' }}
-                    to {{ allReports[date].length > 0 ? allReports[date][allReports[date].length - 1].end_time : '' }})
-                  </ion-label>
+    <!-- Client Timesheets Accordion -->
+    <h2>Client Time Sheets</h2>
+    <div class="manage-main-block">
+      <h2>Monthly Reports</h2>
+      <ion-accordion-group>
+        <ion-accordion *ngFor="let report of clientTimesheet" [value]="report.id">
+          <ion-item slot="header">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <ion-label>{{ report.time_sheet_month }} - {{ report.consultant_name }} ({{ report.project_name
+              }})</ion-label>
+            <ion-icon name="download-outline" (click)="exportMonthlyReport(report)"></ion-icon>
+          </ion-item>
 
-                  <!-- Download button with tooltip -->
-                  <ion-icon name="download-outline" (click)="exportDay(date)"></ion-icon>
+          <div class="ion-padding" slot="content">
+            <!-- Consultant Details -->
+            <ion-grid>
+              <ion-row>
+                <ion-col><strong>Consultant:</strong> {{ report.consultant_name }} ({{ report.consultant_temp_id
+                  }})</ion-col>
+                <ion-col><strong>Manager:</strong> {{ report.manager_name }}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col><strong>Project:</strong> {{ report.project_name }}</ion-col>
+                <ion-col><strong>Location:</strong> {{ report.location }}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col><strong>Business Unit:</strong> {{ report.business_unit }}</ion-col>
+                <ion-col><strong>Start Date:</strong> {{ formatDate(report.start_date_of_consultant) }}</ion-col>
+              </ion-row>
+            </ion-grid>
 
-                </ion-item>
+            <hr />
 
-                <div class="ion-padding" slot="content">
-                  <ion-grid class="table-block">
-                    <ion-row class="table-header">
-                      <ion-col size="3">
-                        Time
-                      </ion-col>
-                      <ion-col size="6">
-                        Task Description
-                      </ion-col>
-                      <ion-col size="3">
-                        Project
-                      </ion-col>
-                    </ion-row>
-                    <ion-row *ngFor="let h of allReports[date]" class="table-row-list">
-                      <ion-col size="3">{{ h.start_time }} - {{ h.end_time }}</ion-col>
-                      <ion-col size="6">{{ h.task || 'Break' }}</ion-col>
-                      <ion-col size="3">{{ h.project || '-' }}</ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </div>
-              </ion-accordion>
-            </ion-accordion-group>
-          </ion-col>
+            <!-- Days Table (Compact 7-column format) -->
+            <ion-grid class="table-block">
+              <ion-row class="table-header">
+                <ion-col *ngFor="let i of [].constructor(7); let idx = index" size="1">Day</ion-col>
+                <ion-col *ngFor="let i of [].constructor(7); let idx = index" size="1">Status</ion-col>
+              </ion-row>
 
-        </ion-row>
-      </ion-grid>
+              <ng-container *ngFor="let row of [].constructor(5); let rIdx = index">
+                <ion-row>
+                  <ng-container *ngFor="let col of [].constructor(7); let cIdx = index">
+                    <ion-col size="1">{{ rIdx*7 + cIdx + 1 <= 31 ? rIdx*7 + cIdx + 1 : '' }}</ion-col>
+                        <ion-col size="1">{{ rIdx*7 + cIdx + 1 <= 31 ? report['day' + (rIdx*7 + cIdx + 1)] || '-' : ''
+                            }}</ion-col>
+                  </ng-container>
+                </ion-row>
+              </ng-container>
+            </ion-grid>
 
-      <ion-popover trigger="trigger-button1" *ngIf="show" class="daily-block">
-        <ng-template>
-          <!-- DATE BAR -->
-          <div class="date-bar">
-            <div class="row-left">
-              <p>📅 <b>Work Date :</b> <span class="date pl-5">{{ selectedDate }}</span></p>
-              <p class="total-hours pl-5">( {{dailyTotal}} hrs )</p>
-            </div>
-            <ion-button size="small" shape="round" (click)="openMissedCalendar()">Add Missed</ion-button>
-            <div class="calendar-box" *ngIf="showCalendar">
-              <ion-datetime presentation="date" [max]="today" [value]="selectedDate" (ionChange)="onDateChange($event)">
-              </ion-datetime>
-            </div>
+            <hr />
+
+            <!-- Summary -->
+            <ion-grid>
+              <ion-row>
+                <ion-col><strong>Days Worked:</strong> {{ report.days_worked }}</ion-col>
+                <ion-col><strong>Leaves:</strong> {{ report.leaves }}</ion-col>
+                <ion-col><strong>Comp-offs:</strong> {{ report.comp_offs }}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col><strong>Holidays:</strong> {{ report.holidays }}</ion-col>
+                <ion-col><strong>Weekends:</strong> {{ report.weekends }}</ion-col>
+                <ion-col><strong>Total Pay:</strong> {{ report.total_pay }}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col colspan="3"><strong>Remarks:</strong> {{ report.remarks }}</ion-col>
+              </ion-row>
+            </ion-grid>
           </div>
-
-          <!-- TECHNOLOGY INPUT -->
-          <div class="row-left">
-            <div class="glass-item">
-              <ion-input [(ngModel)]="techInput" placeholder="Technologies(ex: Angular, Node, Ionic...) "></ion-input>
-              <ion-button slot="end" (click)="addTechnology()">Add</ion-button>
-            </div>
-            <div class="tech-chips">
-              <ion-chip *ngFor="let tech of technologies; let i=index">
-                {{tech}}
-                <ion-icon name="close-circle" (click)="removeTechnology(i)"></ion-icon>
-              </ion-chip>
-            </div>
-          </div>
-
-          <!-- HOURLY GRID -->
-          <div class="hours-grid">
-            <div class="hour-row" *ngFor="let h of hours">
-              <p class="time"> {{h.start_time}} - {{h.end_time}} </p>
-
-              <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done...">
-              </ion-textarea>
-
-              <ion-select *ngIf="h.type==='work'" interface="popover" placeholder="Project" [(ngModel)]="h.project">
-                <ion-select-option value="CNS">CNS</ion-select-option>
-                <ion-select-option value="CIS">CIS</ion-select-option>
-                <ion-select-option value="Nasco">Nasco</ion-select-option>
-                <ion-select-option value="COE">COE (Bench)</ion-select-option>
-              </ion-select>
-
-              <span class="break-label" *ngIf="h.type==='break'">🍔 Break</span>
-            </div>
-          </div>
-
-          <div class="row-center">
-            <ion-button class="primary-btn" (click)="submitDaily()">Submit Daily Report</ion-button>
-            <ion-button fill="outline" (click)="exportDaily()">Export Daily</ion-button>
-          </div>
-
-          <!-- TOTAL -->
-          <div class="graph-box">
-            <canvas id="dailyChart"></canvas>
-          </div>
-        </ng-template>
-      </ion-popover>
-
-      <ion-popover trigger="monthly-report" class="box animate monthly-report">
-        <ng-template>
-          <div>
-            <h2 class="center">📈 Monthly Report</h2>
-            <div class="graph-box">
-              <canvas id="monthlyChart"></canvas>
-            </div>
-
-            <ion-button class="primary-btn" (click)="exportMonthly()">
-              <ion-icon name="download-outline" class="pr-5"></ion-icon>Export Monthly
-            </ion-button>
-
-            <div class="center total">
-              Monthly Total: {{monthlyTotal}} hrs
-            </div>
-          </div>
-        </ng-template>
-      </ion-popover>
+        </ion-accordion>
+      </ion-accordion-group>
     </div>
   </div>
 </ion-content>

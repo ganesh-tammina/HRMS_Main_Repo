@@ -140,6 +140,7 @@ export class MePage implements OnInit {
   // ---------------------------------------------------------
   ionViewWillEnter() {
     console.log('Me Page - ionViewWillEnter');
+    this.initializePage();
 
     // setTimeout(() => {
     //   this.initializePage();
@@ -185,15 +186,15 @@ export class MePage implements OnInit {
   }
 
 
-    // clock in clock out add 12hrs format 
-    convertTo12Hour(time: string): string {
-      if (!time) return '';
-      const [hours, minutes, seconds] = time.split(':').map(Number);
-      const date = new Date();
-      date.setHours(hours, minutes, seconds, 0);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
-    
+  // clock in clock out add 12hrs format 
+  convertTo12Hour(time: string): string {
+    if (!time) return '';
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, seconds, 0);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
   // ---------------------------------------------------------
   // 🔥 FULL INITIALIZATION (was inside ngOnInit before)
   // ---------------------------------------------------------
@@ -512,8 +513,11 @@ export class MePage implements OnInit {
       return String(val);
     }
   }
-  isWeekOff(day: string): boolean {
-    return this.serverWeekOff.includes(day.toLowerCase());
+  isWeekOffDay(day: Date): boolean {
+    if (!day || !this.serverWeekOff) return false;
+
+    const weekday = day.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    return this.serverWeekOff.includes(weekday);
   }
   splitWeeks(weeds: string) {
     const arry = weeds.split(',');

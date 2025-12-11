@@ -22,6 +22,7 @@ import LoginService from './services/employee-login-service';
 import { workTrackRouter } from './routes/work-track-route';
 import holidayRoutes from "./routes/holiday-route";
 import paySlipRoutes from "./routes/payslip-route";
+import timesheetRoutes from "./consultant/consultant-routes";
 
 dotenv.config();
 
@@ -99,6 +100,7 @@ class Server {
     this.app.use('api/v1/work-track', workTrackRouter)
     this.app.use(holidayRoutes);
     this.app.use("/api", paySlipRoutes);
+    this.app.use("/api/timesheet", timesheetRoutes);
     // ✅ NotFound middleware MUST be last
     this.app.use(notFound);
   }
