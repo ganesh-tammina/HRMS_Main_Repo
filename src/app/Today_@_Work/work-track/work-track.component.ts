@@ -65,7 +65,7 @@ export class WorkTrackComponent implements AfterViewInit {
     this.generateMonthButtons();
 
     // Load client timesheets
-    this.http.get<any>('https://localhost:3562/api/timesheet').subscribe(data => {
+    this.http.get<any>('https://30.0.0.78:3562/api/timesheet').subscribe(data => {
       this.clientTimesheet = data;
       console.log('Client Timesheet Data:', this.clientTimesheet);
     });

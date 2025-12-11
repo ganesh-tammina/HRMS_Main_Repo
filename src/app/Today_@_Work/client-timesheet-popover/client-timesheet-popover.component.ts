@@ -19,7 +19,7 @@ export class ClientTimesheetPopoverComponent {
   sheetForm: FormGroup;
   daysArray: number[] = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  API_URL: string = 'https://localhost:3562/api/timesheet';
+  API_URL: string = 'https://30.0.0.78:3562/api/timesheet';
 
   constructor(
     private modalCtrl: ModalController,
