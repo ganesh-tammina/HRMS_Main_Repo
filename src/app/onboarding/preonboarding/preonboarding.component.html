@@ -23,7 +23,7 @@
   <div class="filters">
     <ion-grid class="filters-grid">
       <ion-row class="ion-align-items-center">
-        <ion-col class="row-left">
+        <ion-col class="row-left" size = "2">
           <div class="filter-chip" lines="none">
             <ion-label>Business Unit</ion-label>
             <ion-select class="custom-dropdown" toggleIcon="chevron-down" (ionChange)="onFilterChange('businessunit', $event)"
@@ -97,6 +97,7 @@
   <!-- Table Header -->
   <div class="table">
     <ion-row class="table-header">
+
       <ion-col size="2" class="row-left">
         <ion-checkbox class="pr-15"></ion-checkbox>
         <p>Candidate Name</p>
@@ -104,7 +105,10 @@
       <ion-col size="1">
         <p>Offer Status</p>
       </ion-col>
-      <ion-col size="2">
+            <ion-col size="1">
+  <p>Business Unit</p>
+</ion-col>
+      <ion-col size="1">
         <p>Department</p>
       </ion-col>
       <ion-col size="2">
@@ -140,7 +144,10 @@
               {{candidate.status}}</h5>
             <!-- <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div> -->
           </ion-col>
-          <ion-col size="2">
+          <ion-col size="1">
+  <p>{{ candidate.BusinessUnit }}</p>
+</ion-col>
+          <ion-col size="1">
               <p>{{candidate.Department}}</p>
           </ion-col>
           <ion-col size="2">

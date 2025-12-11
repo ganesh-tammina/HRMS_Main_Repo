@@ -59,8 +59,8 @@ export class PreonboardingComponent implements OnInit {
     //   console.log('Candidates:', this.candidates);
     // });
     this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
-      this.candidates = data.candidates;
-      this.filterCandidates = data.candidates;
+      this.candidates = [...data.candidates];  
+      this.filterCandidates = [...data.candidates];
       // job title list
       this.JobTitleList = this.candidates.map(c => c.JobTitle)
         .filter((value, index, self) => self.indexOf(value) === index);
@@ -179,28 +179,95 @@ export class PreonboardingComponent implements OnInit {
   }
 
 
-  applyFilters(){
-    // Filter candidates based on all selected filters including search text
-    this.candidates = this.filterCandidates.filter(c => {
-      const businessMatch = this.selectedBusiness ? c.BusinessUnit === this.selectedBusiness : true;
-      const jobMatch = this.selectedJobTitle ? c.JobTitle === this.selectedJobTitle : true;
-      const deptMatch  = this.selectedDept ? c.Department === this.selectedDept : true;
-      const locationMatch  = this.selectedLocation ? c.JobLocation === this.selectedLocation : true;
+  // applyFilters(){
+  //   let filtered = [...this.filterCandidates];
+  //    if (this.selectedJobTitle) {
+  //   filtered = filtered.filter(c => c.JobTitle === this.selectedJobTitle);
+  // }
+
+  // if (this.selectedBusiness) {
+  //   filtered = filtered.filter(c => c.BusinessUnit === this.selectedBusiness);
+  // }
+
+  // if (this.selectedDept) {
+  //   filtered = filtered.filter(c => c.Department === this.selectedDept);
+  // }
+
+  // if (this.selectedLocation) {
+  //   filtered = filtered.filter(c => c.JobLocation === this.selectedLocation);
+  // }
+  //  if (this.searchText) {
+  //   const txt = this.searchText.toLowerCase();
+  //   filtered = filtered.filter(c =>
+  //     c.JobTitle.toLowerCase().includes(txt) ||
+  //     c.Department.toLowerCase().includes(txt) ||
+  //     c.JobLocation.toLowerCase().includes(txt) ||
+  //     c.BusinessUnit.toLowerCase().includes(txt) ||
+  //     c.status.toLowerCase().includes(txt) ||
+  //     c.FirstName.toLowerCase().includes(txt)
+  //   );
+  //     this.candidates = filtered;
+  // }
+  //   // Filter candidates based on all selected filters including search text
+  //   this.candidates = this.filterCandidates.filter(c => {
+  //     const businessMatch = this.selectedBusiness ? c.BusinessUnit === this.selectedBusiness : true;
+  //     const jobMatch = this.selectedJobTitle ? c.JobTitle === this.selectedJobTitle : true;
+  //     const deptMatch  = this.selectedDept ? c.Department === this.selectedDept : true;
+  //     const locationMatch  = this.selectedLocation ? c.JobLocation === this.selectedLocation : true;
       
-      // Search text match across multiple fields
-      const searchMatch = this.searchText ? (
-        c.JobTitle.toLowerCase().includes(this.searchText) ||
-        c.Department.toLowerCase().includes(this.searchText) ||
-        c.JobLocation.toLowerCase().includes(this.searchText) ||
-        c.BusinessUnit.toLowerCase().includes(this.searchText) ||
-        c.status.toLowerCase().includes(this.searchText) ||
-        c.FirstName.toLowerCase().includes(this.searchText)
-      ) : true;
+  //     // Search text match across multiple fields
+  //     const searchMatch = this.searchText ? (
+  //       c.JobTitle.toLowerCase().includes(this.searchText) ||
+  //       c.Department.toLowerCase().includes(this.searchText) ||
+  //       c.JobLocation.toLowerCase().includes(this.searchText) ||
+  //       c.BusinessUnit.toLowerCase().includes(this.searchText) ||
+  //       c.status.toLowerCase().includes(this.searchText) ||
+  //       c.FirstName.toLowerCase().includes(this.searchText)
+  //     ) : true;
       
-      return businessMatch && jobMatch && deptMatch && locationMatch && searchMatch;
-    });
+  //     return businessMatch && jobMatch && deptMatch && locationMatch && searchMatch;
+  //   });
+  // }
+applyFilters() {
+  // Always start from master list
+  let filtered = [...this.filterCandidates];
+
+  // Business Unit
+  if (this.selectedBusiness) {
+    filtered = filtered.filter(c => c.BusinessUnit === this.selectedBusiness);
   }
 
+  // Job Title
+  if (this.selectedJobTitle) {
+    filtered = filtered.filter(c => c.JobTitle === this.selectedJobTitle);
+  }
+
+  // Department
+  if (this.selectedDept) {
+    filtered = filtered.filter(c => c.Department === this.selectedDept);
+  }
+
+  // Location
+  if (this.selectedLocation) {
+    filtered = filtered.filter(c => c.JobLocation === this.selectedLocation);
+  }
+
+  // Search
+  if (this.searchText) {
+    const txt = this.searchText.toLowerCase();
+    filtered = filtered.filter(c =>
+      c.JobTitle.toLowerCase().includes(txt) ||
+      c.Department.toLowerCase().includes(txt) ||
+      c.JobLocation.toLowerCase().includes(txt) ||
+      c.BusinessUnit.toLowerCase().includes(txt) ||
+      c.status.toLowerCase().includes(txt) ||
+      c.FirstName.toLowerCase().includes(txt)
+    );
+  }
+
+  // FINAL result
+  this.candidates = filtered;
+}
 
   // Filtered by Search - now works with existing filters
   SearchCandidates(event: any) {
