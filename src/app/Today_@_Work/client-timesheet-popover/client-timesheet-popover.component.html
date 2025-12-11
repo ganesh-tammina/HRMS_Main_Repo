@@ -1,0 +1,153 @@
+<ion-content class="ion-padding">
+
+  <h2 class="title">🗓️ Client Time Sheet</h2>
+
+  <form [formGroup]="sheetForm" class="form-container">
+
+    <!-- BASIC DETAILS -->
+    <div class="section-card">
+      <h3 class="section-title">👤 Consultant Details</h3>
+
+      <ion-item>
+        <ion-label position="floating">Time Sheet Month</ion-label>
+        <ion-input formControlName="time_sheet_month"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Project Name</ion-label>
+        <ion-input formControlName="project_name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Consultant Name</ion-label>
+        <ion-input formControlName="consultant_name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Consultant Temp ID</ion-label>
+        <ion-input formControlName="consultant_temp_id"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Manager Name</ion-label>
+        <ion-input formControlName="manager_name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Business Unit</ion-label>
+        <ion-input formControlName="business_unit"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Location</ion-label>
+        <ion-input formControlName="location"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Start Date</ion-label>
+        <ion-datetime formControlName="start_date_of_consultant" presentation="date"></ion-datetime>
+      </ion-item>
+    </div>
+
+    <!-- DAYS GRID -->
+    <div class="section-card">
+      <h3 class="section-title">📅 Daily Status (1 - 31)</h3>
+
+      <div class="days-grid">
+        <div class="day-box" *ngFor="let d of daysArray">
+          <label class="day-label">Day {{ d }}</label>
+
+          <ion-select formControlName="day{{d}}" interface="popover">
+            <ion-select-option value="P">Present</ion-select-option>
+            <ion-select-option value="V">Weekend</ion-select-option>
+            <ion-select-option value="L">Leave</ion-select-option>
+            <ion-select-option value="C">Comp Off</ion-select-option>
+            <ion-select-option value="H">Holiday</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="section-card">
+      <h3 class="section-title">📊 Summary</h3>
+
+      <div class="summary-grid">
+
+        <div class="summary-box">
+          <label>Worked</label>
+          <ion-input formControlName="days_worked" readonly></ion-input>
+        </div>
+
+        <div class="summary-box">
+          <label>Leaves</label>
+          <ion-input formControlName="leaves" readonly></ion-input>
+        </div>
+
+        <div class="summary-box">
+          <label>Comp Offs</label>
+          <ion-input formControlName="comp_offs" readonly></ion-input>
+        </div>
+
+        <div class="summary-box">
+          <label>Holidays</label>
+          <ion-input formControlName="holidays" readonly></ion-input>
+        </div>
+
+        <div class="summary-box">
+          <label>Weekends</label>
+          <ion-input formControlName="weekends" readonly></ion-input>
+        </div>
+
+      </div>
+
+      <ion-item>
+        <ion-label position="floating">Total Pay</ion-label>
+        <ion-input type="number" formControlName="total_pay"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Remarks</ion-label>
+        <ion-textarea formControlName="remarks"></ion-textarea>
+      </ion-item>
+    </div>
+
+    <!-- SIGNATURE SECTION -->
+    <div class="section-card">
+      <h3 class="section-title">✍️ Signatures</h3>
+
+      <ion-item>
+        <ion-label position="floating">Consultant Signature</ion-label>
+        <ion-input formControlName="consultant_signature"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Consultant Sign Date</ion-label>
+        <ion-datetime presentation="date" formControlName="consultant_sign_date"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Manager Signature</ion-label>
+        <ion-input formControlName="manager_signature"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Manager Sign Date</ion-label>
+        <ion-datetime presentation="date" formControlName="manager_sign_date"></ion-datetime>
+      </ion-item>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-group">
+      <ion-button expand="block" class="btn-primary" (click)="submit()" [disabled]="sheetForm.invalid">
+        Submit
+      </ion-button>
+
+      <ion-button expand="block" class="btn-cancel" (click)="close()">
+        Cancel
+      </ion-button>
+    </div>
+
+  </form>
+
+</ion-content>

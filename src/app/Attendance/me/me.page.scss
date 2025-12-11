@@ -112,9 +112,15 @@
 }
 
 .highlight-today {
-  background-color: #3498DB;;
-  color: #fff;
-  border-color: var(--ion-color-primary);
+    background-color: #3498DB;
+    color: #fff;
+    border-color: var(--ion-color-primary);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   .day-of-week {
     color: #fff;
   }
@@ -379,3 +385,15 @@ ion-modal {
   }
 }
 
+.highlight-weekoff {
+  background: #ffe6e6 !important;
+  color: blue !important;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 50px;
+    height: 50px;
+      display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
