@@ -185,7 +185,7 @@ export class CandidateService {
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
   private leaveactionUrl = `${this.api}leave-action`;
   private weekoffsUrl = `https://${this.env.apiURL}/api/weekoff`;
-  private holidaysApiUrl = "https://localhost:3562/api/v1/holidays";
+  private holidaysApiUrl = "https://30.0.0.78:3562/api/v1/holidays";
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();

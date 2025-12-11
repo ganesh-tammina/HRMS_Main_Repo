@@ -50,9 +50,11 @@
             <ion-card-content>
               <ion-grid class="days-grid ion-no-padding mb-30">
                 <ion-row>
-                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center"
-                    [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
-                    <div class="day-container" [ngClass]="{'highlight-today': isToday(day)}">
+                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center" [ngClass]="{
+      'highlight-today': isToday(day),
+      'highlight-weekoff': isWeekOffDay(day)
+  }" [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
+                    <div class="day-container">
                       <p class="day-of-week">{{ day | date:'E' }}</p>
                     </div>
                   </ion-col>
@@ -64,7 +66,7 @@
                 Today
                 <strong *ngIf="one; else noShift">
                   <!-- {{ shift_policy }} : -->
-                   ( {{ shift_check_in }} - {{ shift_check_out }} )
+                  ( {{ shift_check_in }} - {{ shift_check_out }} )
                 </strong>
                 <ng-template #noShift>
                   <em>No shift configured</em>
@@ -86,14 +88,14 @@
               <!-- progress binds to a numeric value between 0 and 1 -->
               <ion-progress-bar [value]="progressValue"></ion-progress-bar>
               <p class="row-space-between">
-                  <small>
-                      Duration: {{ shiftDuration || '9h 0m' }}
-                    </small>
-                    <small>
-                       Break: {{ breakMinutes || 60 }}m
-                    </small>
+                <small>
+                  Duration: {{ shiftDuration || '9h 0m' }}
+                </small>
+                <small>
+                  Break: {{ breakMinutes || 60 }}m
+                </small>
               </p>
-             
+
             </ion-card-content>
           </ion-card>
         </ion-col>

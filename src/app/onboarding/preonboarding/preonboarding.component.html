@@ -26,53 +26,54 @@
         <ion-col class="row-left" size = "2">
           <div class="filter-chip" lines="none">
             <ion-label>Business Unit</ion-label>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down" (ionChange)="onFilterChange('businessunit', $event)"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let list1 of BusinessunitList" [value]="list1" >
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
+              (ionChange)="onFilterChange('businessunit', $event)" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let list1 of BusinessunitList" [value]="list1">
                 {{list1}}
               </ion-select-option>
             </ion-select>
           </div>
           <div class="filter-chip">
             <ion-label>Job Title</ion-label>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('jobtitle', $event)">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let title of JobTitleList" [value]="title" >
-                  {{title}}
-                </ion-select-option>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover" (ionChange)="onFilterChange('jobtitle', $event)">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let title of JobTitleList" [value]="title">
+                {{title}}
+              </ion-select-option>
             </ion-select>
             <!-- <ion-icon color="gray" slot="end" name="chevron-down-outline"></ion-icon> -->
           </div>
           <div class="filter-chip">
             <span>Department</span>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('department', $event)">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let department of DeptList" [value]="department" >
-                  {{department}}
-                </ion-select-option>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover" (ionChange)="onFilterChange('department', $event)">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let department of DeptList" [value]="department">
+                {{department}}
+              </ion-select-option>
             </ion-select>
           </div>
           <div class="filter-chip">
             <span>Location</span>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('location', $event)">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let location of LocationList" [value]="location" >
-                  {{location}}
-                </ion-select-option>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover" (ionChange)="onFilterChange('location', $event)">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let location of LocationList" [value]="location">
+                {{location}}
+              </ion-select-option>
             </ion-select>
-          </div>        
+          </div>
         </ion-col>
       </ion-row>
 
@@ -80,7 +81,7 @@
         <ion-col size="6" size-lg="5" size-md="6">
           <div class="search-wrap">
             <ion-icon name="search-outline"></ion-icon>
-            <input #searchInput placeholder="Search" (keyup)="SearchCandidates($event)"/>
+            <input #searchInput placeholder="Search" (keyup)="SearchCandidates($event)" />
           </div>
         </ion-col>
         <ion-col>
@@ -113,7 +114,7 @@
       </ion-col>
       <ion-col size="2">
         <p>Location</p>
-      </ion-col>  
+      </ion-col>
       <ion-col size="2">
         <p>Joining Date</p>
       </ion-col>
@@ -151,7 +152,7 @@
               <p>{{candidate.Department}}</p>
           </ion-col>
           <ion-col size="2">
-              <p>{{candidate.JobLocation}}</p>
+            <p>{{candidate.JobLocation}}</p>
           </ion-col>
           <ion-col size="2">
             <p>{{candidate.date_joined}}</p>
