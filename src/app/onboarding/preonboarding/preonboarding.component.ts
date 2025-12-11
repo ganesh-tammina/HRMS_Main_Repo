@@ -214,5 +214,9 @@ export class PreonboardingComponent implements OnInit {
     this.searchText = '';
     this.applyFilters(); // Apply filters without search text
   }
-
+preonboard() {
+    //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['./onboarding_Tasks']);
+    //});
+  }
 }
