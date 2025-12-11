@@ -4,7 +4,7 @@
     <h2>Work Tracking</h2>
 
     <!-- Filters -->
-    <div class="row-space-between">
+    <div class="row-space-between" *ngIf="getReportDates().length > 0">
       <div>
         <p>30DAYS</p>
       </div>
@@ -16,11 +16,14 @@
         </div>
       </div>
     </div>
-    <ion-button class="btn-primary" (click)="openClientTimeSheet()">
-      + Add Client Time Sheet
-    </ion-button>
-    <ion-button id="monthly-report" (click)="monthlybtn()">Monthly report</ion-button>
-    <ion-button id="trigger-button1">Add work details</ion-button>
+    <div class="row-right">
+        <ion-button class="btn-primary" (click)="openClientTimeSheet()">
+            + Add Client Time Sheet
+          </ion-button>
+          <ion-button id="monthly-report" *ngIf="getReportDates().length > 0"  (click)="monthlybtn()">Monthly report</ion-button>
+          <ion-button id="trigger-button1">Add work details</ion-button>
+    </div>
+  
     <!-- Daily Reports Accordion -->
     <ion-accordion-group>
       <ion-accordion *ngFor="let date of getReportDates()" [value]="date">
@@ -80,11 +83,59 @@
               </ion-row>
             </ion-grid>
 
-            <hr />
+          
 
             <!-- Days Table (Compact 7-column format) -->
-            <ion-grid class="table-block">
-              <ion-row class="table-header">
+            <ion-row class="calendar-details-block">
+                <ion-col class="calendar-grid" size="8">
+                    <div class="day-header">
+                      <button class="day-header-cell" *ngFor="let day of weekDays">{{ day }}</button>
+                    </div>
+                    <div class="day-cell-row" *ngFor="let row of [].constructor(5); let rIdx = index">
+                      <div class="day-cell" *ngFor="let col of [].constructor(7); let cIdx = index">
+                        <div class="date">{{ rIdx*7 + cIdx + 1 <= 31 ? rIdx*7 + cIdx + 1 : '' }}</div>
+                        <!-- <div class="timing" *ngIf="date.timing">{{ date.timing }}</div> -->
+                        <div class="timing">{{ rIdx*7 + cIdx + 1 <= 31 ? report['day' + (rIdx*7 + cIdx + 1)] || '-' : ''}}</div>
+                      </div>
+                    </div>
+                  </ion-col>
+                  <ion-col size="4"  class="details-container ion-no-padding">                    
+                            <div class="detail-item">
+                              <p>Days Worked:</p>
+                              <p>{{ report.days_worked }}</p></div>
+                            <div class="detail-item">
+                              <p>Leaves:</p>
+                              <p>{{ report.leaves }}</p>
+                            </div>
+                            <div class="detail-item">
+                              <p>Comp-offs:</p> 
+                              <p>{{ report.comp_offs }}</p>
+                            </div>
+                        
+                            <div class="detail-item">
+                              <p>Holidays:</p>
+                              <p> {{ report.holidays }}</p>
+                            </div>
+                            <div class="detail-item">
+                              <p>Weekends:</p>
+                              <p> {{ report.weekends }}</p>
+                            </div>                            
+                            <div class="detail-item">
+                              <p>Total Pay:</p>
+                              <p>{{ report.total_pay }}</p>
+                            </div>                          
+                            <div class="detail-item" colspan="3">
+                              <p>Remarks:</p>
+                              <p>{{ report.remarks }}</p>
+                            </div>
+                        
+                  </ion-col>
+            </ion-row>
+          
+        
+
+            <!-- <ion-grid class="table-block">
+            <ion-row class="table-header">
                 <ion-col *ngFor="let i of [].constructor(7); let idx = index" size="1">Day</ion-col>
                 <ion-col *ngFor="let i of [].constructor(7); let idx = index" size="1">Status</ion-col>
               </ion-row>
@@ -98,12 +149,12 @@
                   </ng-container>
                 </ion-row>
               </ng-container>
-            </ion-grid>
+            </ion-grid> -->
 
-            <hr />
+            <!-- <hr /> -->
 
             <!-- Summary -->
-            <ion-grid>
+            <!-- <ion-grid>
               <ion-row>
                 <ion-col><strong>Days Worked:</strong> {{ report.days_worked }}</ion-col>
                 <ion-col><strong>Leaves:</strong> {{ report.leaves }}</ion-col>
@@ -117,7 +168,7 @@
               <ion-row>
                 <ion-col colspan="3"><strong>Remarks:</strong> {{ report.remarks }}</ion-col>
               </ion-row>
-            </ion-grid>
+            </ion-grid> -->
           </div>
         </ion-accordion>
       </ion-accordion-group>

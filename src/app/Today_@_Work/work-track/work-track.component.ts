@@ -48,6 +48,7 @@ export class WorkTrackComponent implements AfterViewInit {
   monthlyChart: any;
   selectedPeriod: string = '30DAYS';
   monthButtons: string[] = [];
+  weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   constructor(
     private candidateService: CandidateService,

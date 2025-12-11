@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -21,6 +21,13 @@ export class ClientTimesheetPopoverComponent {
 
   API_URL: string = 'https://30.0.0.78:3562/api/timesheet';
 
+  formattedDate: string = '';
+  formattedDate1: string = '';
+  formattedDate2: string = '';
+  @ViewChild('dateModal', { static: false }) dateModal: any;
+  @ViewChild('dateModal1', { static: false }) dateModal1: any;
+  @ViewChild('dateModal2', { static: false }) dateModal2: any;
+  
   constructor(
     private modalCtrl: ModalController,
     private fb: FormBuilder,
@@ -128,5 +135,52 @@ export class ClientTimesheetPopoverComponent {
         alert("Error submitting timesheet!");
       }
     });
+  }
+
+  openDatePicker() {
+    this.dateModal.present();
+  }
+  openDatePicker1() {
+    this.dateModal1.present();
+  }
+  openDatePicker2() {
+    this.dateModal2.present();
+  }
+  
+  dateChanged(event: any) {
+    const value = event.detail.value; // raw ISO value
+    const date = new Date(value);
+  
+    // Format: DD-MM-YYYY
+    this.formattedDate =
+      date.getDate().toString().padStart(2, '0') + '-' +
+      (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+      date.getFullYear();
+  
+    this.dateModal.dismiss();
+  }
+  dateChanged1(event: any) {
+    const value = event.detail.value; // raw ISO value
+    const date = new Date(value);
+  
+    // Format: DD-MM-YYYY
+    this.formattedDate1 =
+      date.getDate().toString().padStart(2, '0') + '-' +
+      (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+      date.getFullYear();
+  
+    this.dateModal.dismiss();
+  }
+  dateChanged2(event: any) {
+    const value = event.detail.value; // raw ISO value
+    const date = new Date(value);
+  
+    // Format: DD-MM-YYYY
+    this.formattedDate2 =
+      date.getDate().toString().padStart(2, '0') + '-' +
+      (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+      date.getFullYear();
+  
+    this.dateModal.dismiss();
   }
 }

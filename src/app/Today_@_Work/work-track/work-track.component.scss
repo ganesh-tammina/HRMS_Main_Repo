@@ -174,6 +174,7 @@ ion-content {
 ion-accordion-group {
   border-left: 3px solid #07488d;
   ion-accordion {
+    margin-bottom: 8px;
     ion-item {
       --padding-start: 0;
       --background: var(--ion-bg-color);
@@ -213,4 +214,67 @@ ion-accordion-group {
       }
     }
   }
+}
+.details-container {
+  background: #fff;
+  border-radius: 4px;
+  margin-top: 50px;
+  position: relative;
+  padding: 24px;
+  .detail-item {
+    margin-bottom: 8px;
+    display: flex;
+    p {
+      margin: 0;
+    }
+  }
+}
+.calendar-details-block {
+  background: #E9E9E9;
+  padding: 16px;      
+  margin-top: 15px;
+  border-radius: 8px;
+.calendar-grid {
+  .day-header {
+    height: 44px;
+  .day-header-cell {    
+    background: transparent;
+    width: 13.5%;
+    height: 44px;
+    padding: 16px 8px;
+    @include text-bold();
+    text-align: left;
+    margin: 2px;
+  }
+}
+  .day-cell-row {
+    display: flex;
+    flex-wrap: wrap;
+    .day-cell {      
+      background: #fff;
+      width: 13.5%;
+      height: 100px;
+      padding: 16px 8px;
+      position: relative;
+      border-radius: 4px;
+      margin: 2px;
+      border: 1px solid #ABABAB;
+      &.highlight-today  {
+        background: #FEE2E2 !important;
+      }
+      &.weekoffs {
+        background: #D0D0D0BA !important;
+      }
+      .date {
+        @include text-style-normal();
+      }
+      .timing {
+      font-size: 10px;
+      margin-top: 30px;
+      position: absolute;
+      bottom: 5px;
+      }
+    }
+  }    
+}
 }

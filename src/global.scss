@@ -383,3 +383,18 @@ ion-popover ion-content::-webkit-scrollbar {
         opacity: 0 !important;
       }
   }
+  ion-modal {
+    &.big-modal {
+        justify-content: right !important;
+        --max-height: 100vh;
+        --height: 100vh;
+        --border-radius: 0;
+        --width: 650px;
+    }
+    &.date-modal {
+        --width: auto;
+    --height: fit-content; 
+    --backdrop-opacity: 0.35 !important;
+    }
+}
+  
