@@ -16,7 +16,11 @@
         </div>
       </div>
     </div>
-
+    <ion-button class="btn-primary" (click)="openClientTimeSheet()">
+      + Add Client Time Sheet
+    </ion-button>
+    <ion-button id="monthly-report" (click)="monthlybtn()">Monthly report</ion-button>
+    <ion-button id="trigger-button1">Add work details</ion-button>
     <!-- Daily Reports Accordion -->
     <ion-accordion-group>
       <ion-accordion *ngFor="let date of getReportDates()" [value]="date">
@@ -119,4 +123,83 @@
       </ion-accordion-group>
     </div>
   </div>
+
+  <ion-popover trigger="trigger-button1" *ngIf="show" class="daily-block">
+    <ng-template>
+      <!-- DATE BAR -->
+      <div class="date-bar">
+        <div class="row-left">
+          <p>📅 <b>Work Date :</b> <span class="date pl-5">{{ selectedDate }}</span></p>
+          <p class="total-hours pl-5">( {{dailyTotal}} hrs )</p>
+        </div>
+        <ion-button size="small" shape="round" (click)="openMissedCalendar()">Add Missed</ion-button>
+        <div class="calendar-box" *ngIf="showCalendar">
+          <ion-datetime presentation="date" [max]="today" [value]="selectedDate" (ionChange)="onDateChange($event)">
+          </ion-datetime>
+        </div>
+      </div>
+
+      <!-- TECHNOLOGY INPUT -->
+      <div class="row-left">
+        <div class="glass-item">
+          <ion-input [(ngModel)]="techInput" placeholder="Technologies(ex: Angular, Node, Ionic...) "></ion-input>
+          <ion-button slot="end" (click)="addTechnology()">Add</ion-button>
+        </div>
+        <div class="tech-chips">
+          <ion-chip *ngFor="let tech of technologies; let i=index">
+            {{tech}}
+            <ion-icon name="close-circle" (click)="removeTechnology(i)"></ion-icon>
+          </ion-chip>
+        </div>
+      </div>
+
+      <!-- HOURLY GRID -->
+      <div class="hours-grid">
+        <div class="hour-row" *ngFor="let h of hours">
+          <p class="time"> {{h.start_time}} - {{h.end_time}} </p>
+
+          <ion-textarea *ngIf="h.type==='work'" [(ngModel)]="h.task" placeholder="Describe work done...">
+          </ion-textarea>
+
+          <ion-select *ngIf="h.type==='work'" interface="popover" placeholder="Project" [(ngModel)]="h.project">
+            <ion-select-option value="CNS">CNS</ion-select-option>
+            <ion-select-option value="CIS">CIS</ion-select-option>
+            <ion-select-option value="Nasco">Nasco</ion-select-option>
+            <ion-select-option value="COE">COE (Bench)</ion-select-option>
+          </ion-select>
+
+          <span class="break-label" *ngIf="h.type==='break'">🍔 Break</span>
+        </div>
+      </div>
+
+      <div class="row-center">
+        <ion-button class="primary-btn" (click)="submitDaily()">Submit Daily Report</ion-button>
+        <ion-button fill="outline" (click)="exportDaily()">Export Daily</ion-button>
+      </div>
+
+      <!-- TOTAL -->
+      <div class="graph-box">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover trigger="monthly-report" class="box animate monthly-report">
+    <ng-template>
+      <div>
+        <h2 class="center">📈 Monthly Report</h2>
+        <div class="graph-box">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+
+        <ion-button class="primary-btn" (click)="exportMonthly()">
+          <ion-icon name="download-outline" class="pr-5"></ion-icon>Export Monthly
+        </ion-button>
+
+        <div class="center total">
+          Monthly Total: {{monthlyTotal}} hrs
+        </div>
+      </div>
+    </ng-template>
+  </ion-popover>
 </ion-content>

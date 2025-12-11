@@ -89,6 +89,11 @@ export class WorkTrackComponent implements AfterViewInit {
     if (data) console.log('Timesheet Submitted:', data);
   }
 
+  monthlybtn() {
+    this.calculateWeeklyAndMonthly();
+    setTimeout(() => this.loadCharts(), 200);
+  }
+
   closeModal(data?: any) {
     this.modalCtrl.dismiss(data);
   }
@@ -464,6 +469,146 @@ export class WorkTrackComponent implements AfterViewInit {
     saveAs(new Blob([buf], { type: 'application/octet-stream' }), fileName);
   }
 
+  exportDay(date: string) {
+    if (!this.allReports[date]) return;
+ 
+    const rows: any[] = [];
+ 
+    // ROW 1 (Name - Date)
+    rows.push([
+      "Name",
+      "M.Siva Devi Ganesh",
+      "Date",
+      this.formatDate(date)
+    ]);
+ 
+    // ROW 2 (Technology - Duration)
+    rows.push([
+      "Technology",
+      this.technologies.join(", "),
+      "Duration (HH:MI to)",
+      ""
+    ]);
+ 
+    rows.push([]); // spacing
+ 
+    // TABLE HEADER
+    rows.push(["Sl. No", "Work Completed", "From", "To"]);
+ 
+    // TABLE ROWS
+    this.allReports[date].forEach((item: any, index: number) => {
+      const workText = item.task || "";
+      rows.push([
+        index + 1,
+        workText.replace(/\n/g, "\n"), // multi-line support
+        item.start_time,
+        item.end_time
+      ]);
+    });
+ 
+    const ws: any = XLSX.utils.aoa_to_sheet(rows);
+ 
+    // ───────────────────
+    // MERGE CELLS (like screenshot)
+    // ───────────────────
+    ws["!merges"] = [
+      // Row 1
+      // { s: { r: 0, c: 1 }, e: { r: 0, c: 3 } }, // Merge Name value
+      // { s: { r: 0, c: 5 }, e: { r: 0, c: 5 } }, // Date value stays single
+ 
+      // Row 2
+      // { s: { r: 1, c: 1 }, e: { r: 1, c: 3 } }, // Merge Technology value
+      // { s: { r: 1, c: 5 }, e: { r: 1, c: 5 } }  // Duration right cell
+    ];
+ 
+    // BOLD HEADERS
+    const boldCells = ["A1", "A2", "E1", "E2", "A4", "B4", "C4", "D4"];
+ 
+    // APPLY STYLE: Borders + Bold + WrapText
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+ 
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const ref = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = ws[ref];
+        if (!cell) continue;
+ 
+        cell.s = {
+          border: {
+            top: { style: "thin", color: { rgb: "000000" } },
+            bottom: { style: "thin", color: { rgb: "000000" } },
+            left: { style: "thin", color: { rgb: "000000" } },
+            right: { style: "thin", color: { rgb: "000000" } }
+          },
+          alignment: {
+            wrapText: true,
+            vertical: "top"
+          }
+        };
+ 
+        if (boldCells.includes(ref)) {
+          cell.s.font = { bold: true };
+        }
+      }
+    }
+ 
+    // Column widths
+    ws["!cols"] = [
+      { wch: 10 },  // Sl. No
+      { wch: 60 },  // Work Completed
+      { wch: 15 },  // From
+      { wch: 15 },  // To
+      { wch: 20 },  // Date/Duration header
+      { wch: 20 }
+    ];
+ 
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Daily Report");
+ 
+    const buf = XLSX.write(wb, { bookType: "xlsx", type: "array", cellStyles: true });
+    this.downloadExcel(buf, `Work_Report_${this.formatDate(date)}.xlsx`);
+  }
+
+    exportDaily() { this.exportDay(this.selectedDate); }
+ 
+  exportWeekly() {
+    const rows: any[] = [];
+    const weekDates = this.getWeekDates();
+    weekDates.forEach(d => {
+      const saved = localStorage.getItem(d);
+      if (saved) {
+        JSON.parse(saved).hours.forEach((h: any) => {
+          rows.push({ Date: d, Hour: h.hour, Task: h.task || '-', Project: h.project || '-' });
+        });
+      } else rows.push({ Date: d, Hour: '-', Task: 'No Report', Project: '-' });
+    });
+    rows.push({ Date: '', Hour: '', Task: 'WEEK TOTAL', Project: this.weeklyTotal });
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Weekly Report');
+    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.downloadExcel(buffer, `Weekly_Report_${this.selectedDate}.xlsx`);
+  }
+ 
+  exportMonthly() {
+    const rows: any[] = [];
+    const month = this.selectedDate.substring(0, 7);
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith(month)) {
+        const data = JSON.parse(localStorage.getItem(key)!);
+        data.hours.forEach((h: any) => {
+          if (h.type === 'work') rows.push({ Date: key, Hour: h.hour, Task: h.task || '-', Project: h.project || '-' });
+        });
+      }
+    });
+    rows.push({ Date: '', Hour: '', Task: 'MONTH TOTAL', Project: this.monthlyTotal });
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Monthly Report');
+    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.downloadExcel(buffer, `Monthly_Report_${month}.xlsx`);
+  }
+
 
   // -------------------- CANDIDATE & SHIFT -----------------------
   loadCandidateById() {
@@ -537,4 +682,5 @@ export class WorkTrackComponent implements AfterViewInit {
       this.allReports = response.data.date;
     });
   }
+
 }
