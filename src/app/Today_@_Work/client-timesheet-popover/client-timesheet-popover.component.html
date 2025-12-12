@@ -3,7 +3,7 @@
   <h2 class="title">🗓️ Client Time Sheet</h2>
 
   <form [formGroup]="sheetForm" class="form-container">
-
+    <div class="scroll-container">
     <!-- BASIC DETAILS -->
     <div class="section-card">
       <h3 class="section-title">Consultant Details</h3>
@@ -202,7 +202,7 @@
           </ion-col>
       </ion-row>
     </div>
-
+  </div>
     <!-- BUTTONS -->
     <div class="row-right border-top">
       <ion-button class="primary-rounded-btn" (click)="submit()" [disabled]="sheetForm.invalid">

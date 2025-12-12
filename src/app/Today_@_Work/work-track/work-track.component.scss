@@ -221,11 +221,28 @@ ion-accordion-group {
   margin-top: 50px;
   position: relative;
   padding: 24px;
+  h2 {
+    @include normal-text();
+    border-bottom: 1px solid #ababab;
+    padding-bottom: 16px;
+  }
   .detail-item {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     display: flex;
+    justify-content: space-between;
     p {
       margin: 0;
+      @include normal-text-unbold();
+      &:last-child {
+        font-weight: 600;
+      }
+    }
+  }
+  .message-item {
+    border-top: 1px solid $border-color;
+    padding-top: 12px;
+    p:last-child {
+      @include normal-text();
     }
   }
 }
