@@ -171,18 +171,21 @@
   
   // Holidays section style
   .holidays-section {
-      height: 200px;
-      background-size: cover;
-      background-position: center center; 
-      .section-title, .card-main-header, p {
-        color: #B01712;        
+    height: 245px;
+    background-size: 100%;
+    background-position: center center;
+    width: 80%;
+    border-radius: 10px;
+    background-repeat: no-repeat;
+    padding: 24px;
+    margin-top: 15px;
+      .section-title, .card-main-header {
+        color: #fff;      
       }
-      a {
-        color: #B01712; 
-        text-decoration:none;   
-      }
+     
       p{
       @include text-style-normal();
+      color: #fff;
     }
   }
   .Announcement-card {

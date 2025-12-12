@@ -31,7 +31,7 @@ export class HomePage implements OnInit {
   uploadedImageUrl: string | null = null;
   imageUrls: any;
   profileimg: string = environment.apiURL;
-  backgroundImageUrl: string = '../../assets/holidays-pics/holidays-img.svg';
+  backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
 
   constructor(
     private candidateService: CandidateService,
