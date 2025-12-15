@@ -31,6 +31,17 @@ export class AdminFunctionalityComponent implements OnInit {
   roles: Role[] = [];
   jobTitles: JobTitle[] = [];
   sfit: Shift[] = [];
+  deptPage = 1;
+  rolePage = 1;
+jobPage = 1;
+shiftPage = 1;
+deptLimit = 5;
+  // Page = 1;
+pageLimit = 5;
+paginatedDepartments: Department[] = [];
+paginatedJobs: JobTitle[] = [];
+paginatedRoles: Role[] = [];
+paginatedShifts: Shift[] =[];
 
   // UI
   tab:
@@ -123,13 +134,91 @@ export class AdminFunctionalityComponent implements OnInit {
       .getDepartments()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
-        next: (res: any) => (this.departments = res?.data || []),
+          next: (res: any) => {
+        this.departments = res?.data || [];
+        this.updateDepartmentPagination();
+        this.updateJobPagination();
+        this.updateRolePagination();
+        this.updateShiftPagination();
+      },
         error: async () => {
           await this.toast('Failed loading departments');
         },
       });
   }
+updateDepartmentPagination() {
+  const start = (this.deptPage  - 1) * this.pageLimit;
+  const end = start + this.pageLimit;
+  this.paginatedDepartments = this.departments.slice(start, end);
+}
+nextDeptPage() {
+  if (this.deptPage  * this.pageLimit < this.departments.length) {
+    this.deptPage++;
+    this.updateDepartmentPagination();
+  }
+}
+updateJobPagination() {
+  const start = (this.jobPage  - 1) * this.pageLimit;
+  const end = start + this.pageLimit;
+  this.paginatedJobs = this.jobTitles.slice(start,end);
+}
+nextJobPage() {
+  if (this.jobPage  * this.pageLimit < this.jobTitles.length) {
+    this.jobPage ++;
+    this.updateJobPagination();
+  }
+}
+prevJobPage() {
+  if (this.jobPage > 1) {
+    this.jobPage--;
+    this.updateJobPagination();
+  }
+}
+updateRolePagination() {
+  const start = (this.rolePage  - 1) * this.pageLimit;
+  const end = start + this.pageLimit;
+  this.paginatedRoles = this.roles.slice(start,end);
+}
+nextRolePage() {
+  if (this.rolePage  * this.pageLimit < this.roles.length) {
+    this.rolePage ++;
+    this.updateRolePagination();
+  }
+}
+prevRolePage() {
+  if (this.rolePage > 1) {
+    this.rolePage--;
+    this.updateRolePagination();
+  }
+}
+updateShiftPagination() {
+  const start = (this.shiftPage  - 1) * this.pageLimit;
+  const end = start + this.pageLimit;
+  this.paginatedShifts = this.shiftsData.slice(start,end);
+}
+nextShiftPage() {
+  if (this.shiftPage  * this.pageLimit < this.shiftsData.length) {
+    this.shiftPage ++;
+    this.updateShiftPagination();
+  }
+}
+prevShiftPage() {
+  if (this.shiftPage > 1) {
+    this.shiftPage--;
+    this.updateShiftPagination();
+  }
+}
 
+
+prevDeptPage() {
+  if (this.deptPage  > 1) {
+    this.deptPage --;
+    this.updateDepartmentPagination();
+    // this.updateJobPagination();
+    // this.updateRolePagination();
+    // this.updateShiftPagination();
+    }
+}
   startEditDepartment(d: Department) {
     this.editingDepartmentId = d.department_id || null;
     this.deptModel = { ...d };
@@ -198,7 +287,11 @@ export class AdminFunctionalityComponent implements OnInit {
   // ---------------- Roles ----------------
   loadRoles() {
     this.api.getRoles().subscribe({
-      next: (res: any) => (this.roles = res?.data || []),
+      next: (res: any) => {
+      (this.roles = res?.data || []),
+      this.rolePage = 1;              // reset page
+      this.updateRolePagination();    // 🔥 REQUIRED
+      },
       error: async () => this.toast('Failed loading roles'),
     });
   }
@@ -270,7 +363,12 @@ export class AdminFunctionalityComponent implements OnInit {
   // ---------------- Job Titles ----------------
   loadJobTitles() {
     this.api.getJobTitles().subscribe({
-      next: (res: any) => (this.jobTitles = res?.data || []),
+      next: (res: any) =>{
+        (this.jobTitles = res?.data || [])
+            this.jobPage = 1; // reset page
+      this.updateJobPagination(); // 🔥 REQUIRED
+      },
+      // } (this.jobTitles = res?.data || []),
       error: async () => this.toast('Failed loading job titles'),
     });
   }
@@ -439,7 +537,11 @@ export class AdminFunctionalityComponent implements OnInit {
   //Shift Policy Functions
   loadShifts() {
     this.api.getShifts().subscribe({
-      next: (res: any) => (this.shiftsData = res?.data || []),
+      next: (res: any) =>{
+(this.shiftsData = res?.data || []),
+      this.shiftPage = 1;              // reset page
+      this.updateShiftPagination();    // 🔥 REQUIRED
+      } ,
       error: async () => this.toast('Failed loading Shift Policies'),
     });
   }
@@ -660,4 +762,7 @@ export class AdminFunctionalityComponent implements OnInit {
     };
     this.weekOffsDay = [];
   }
+  getTotalPages(totalItems: number): number {
+  return Math.ceil(totalItems / this.pageLimit);
+}
 }
