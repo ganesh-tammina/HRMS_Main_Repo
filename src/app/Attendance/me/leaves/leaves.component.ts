@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { Component, OnInit, Input } from '@angular/core';
+import { IonicModule, ToastController, IonPopover } from '@ionic/angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
 import { CandidateService } from '../../../services/pre-onboarding.service';
@@ -27,6 +27,8 @@ export class LeavesComponent implements OnInit {
   IsOpenleavePopup = false; // for "Apply Leave" form modal
   isPopupOpen = false;      // for "Cancel/View" popup
   selectedLeave: any = null;
+  selectedDateTo: string = ''; //for datepicker string To
+  selectedDateFrom: string = ''; //for datepicker string from
 
   leaveData: any = {
     casual_leave_taken: 0,
@@ -251,4 +253,24 @@ validateWordLimit(ev: any) {
     this.description = words.join(' ');
   }
 }
+
+  /** 📅 From Date picker handler */
+  onDateChangeFrom(event: any, popover: IonPopover) {
+    const value = event.detail.value; // ISO date
+    if (value) {
+      this.selectedDateFrom = value; // store as ISO
+      this.leaveForm.patchValue({ start_date: value });
+    }
+    popover.dismiss();
+  }
+  
+  onDateChangeTo(event: any, popover: IonPopover) {
+    const value = event.detail.value;
+    if (value) {
+      this.selectedDateTo = value;
+      this.leaveForm.patchValue({ end_date: value });
+    }
+    popover.dismiss();
+  }
+
 }

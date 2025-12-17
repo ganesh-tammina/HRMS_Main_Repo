@@ -92,39 +92,56 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5px;
   border-radius: 50%;
   transition: background-color 0.3s ease;
   width: 30px;
 
   .day-of-week {
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: 1em;
     margin: 0;
     text-overflow: initial;
-    width: 12px;
+    width: 18px;
     overflow: hidden;
     white-space: nowrap;
     letter-spacing: 10px;
-    margin-left: 2px;
+    padding: 4px;
   }
   
 }
 
 .highlight-today {
-    background-color: #3498DB;
-    color: #fff;
-    border-color: var(--ion-color-primary);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background-color: #3498DB;
+  color: #fff;
+  border-color: var(--ion-color-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -6px;
+  margin-left: -6px;
   .day-of-week {
     color: #fff;
   }
 }
+
+.highlight-weekoff {
+  background: #ffe6e6 !important;
+  color: blue !important;
+  font-weight: 600;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -6px;
+  margin-left: -6px;
+}
+
+
 }
  ion-progress-bar {
     height: 6px;
@@ -383,17 +400,4 @@ ion-modal {
       color: #d93025;
     }
   }
-}
-
-.highlight-weekoff {
-  background: #ffe6e6 !important;
-  color: blue !important;
-  font-weight: 600;
-  border-radius: 50%;
-  width: 50px;
-    height: 50px;
-      display: flex;
-    align-items: center;
-    justify-content: center;
-
 }
