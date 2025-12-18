@@ -50,7 +50,7 @@
                         <ion-datetime
                         [min]="minDate"
                         formControlName="start_date"
-                        [isDateEnabled]="isWeekday"
+                        [isDateEnabled]="isDateEnabled"
                         (ionChange)="onDateChangeFrom($event, datePopover)"
                       ></ion-datetime>               
                       </ng-template>
@@ -69,7 +69,7 @@
                       <ion-datetime
                       formControlName="end_date"
                       [min]="leaveForm.value.start_date || minDate"
-                      [isDateEnabled]="isWeekday"
+                      [isDateEnabled]="isDateEnabled"
                       (ionChange)="onDateChangeTo($event, datePopover1)"
                     ></ion-datetime>     
                   </ng-template>

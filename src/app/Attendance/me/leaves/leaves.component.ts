@@ -59,6 +59,23 @@ isWeekday = (dateIsoString: string) => {
   return day !== 0 && day !== 6;
 };
 
+isDateEnabled = (dateIsoString: string) => {
+  const date = new Date(dateIsoString);
+  const day = date.getDay();
+
+  //  Disable weekends
+  if (day === 0 || day === 6) {
+    return false;
+  }
+
+  //  Disable already requested leave dates
+  if (this.isDateBlocked(dateIsoString)) {
+    return false;
+  }
+
+  return true;
+};
+
   constructor(
     private candidateService: CandidateService,
     private leaveService: LeaveService,
@@ -273,4 +290,18 @@ validateWordLimit(ev: any) {
     popover.dismiss();
   }
 
+  isDateBlocked(dateIso: string): boolean {
+  const date = new Date(dateIso);
+  date.setHours(0, 0, 0, 0);
+
+  return this.leaveRequests.some(leave => {
+    const start = new Date(leave.start_date);
+    const end = new Date(leave.end_date);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    return date >= start && date <= end;
+  });
+}
 }
