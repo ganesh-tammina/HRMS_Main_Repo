@@ -18,6 +18,7 @@ import { ClientTimesheetPopoverComponent } from '../client-timesheet-popover/cli
   styleUrls: ['./work-track.component.scss'],
 })
 export class WorkTrackComponent implements AfterViewInit {
+  rows: any[] = [];
   allReports: any;
   clientTimesheet: any[] = [];
   show: boolean = true;
@@ -270,19 +271,79 @@ export class WorkTrackComponent implements AfterViewInit {
   exportDailyReport(date: string) {
     const entry = this.allReports[date];
     if (!entry) return;
-
-    const rows: any[] = [];
-    rows.push(["Sl. No", "Task", "Start Time", "End Time", "Project"]);
-
+  
+    // Build table rows as HTML
+    let tableRows = '';
+  
     entry.forEach((h: any, index: number) => {
-      rows.push([index + 1, h.task || '-', h.start_time, h.end_time, h.project || '-']);
+      tableRows += `
+        <tr>
+          <td colspan="1">${index + 1}</td>
+          <td colspan="5">${h.task || '-'}</td>
+          <td colspan="1">${h.start_time || '-'}</td>
+          <td colspan="1">${h.end_time || '-'}</td>
+          <td colspan="1">${h.project || '-'}</td>
+        </tr>
+      `;
     });
-
-    const ws: any = XLSX.utils.aoa_to_sheet(rows);
-    const wb: any = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Daily Report");
-    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellStyles: true });
-    this.downloadExcel(buf, `DailyReport_${date}.xlsx`);
+  
+    const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel">
+    <head>
+      <meta charset="UTF-8" />
+      <style>
+        table {
+          border-collapse: collapse;
+          font-family: Arial;
+          font-size: 16px;
+          width: 100%;
+        }
+        td {
+          border: 1px solid #000;
+          padding: 6px;
+          vertical-align: middle;
+          font-size: 16px;          
+          width: 80px;
+        }
+        .label {
+          background: #00568F;
+          font-weight: bold;
+          text-align: left;
+          color: #ffffff;
+          font-size: 16px;
+        }
+      </style>
+    </head>
+  
+    <body>
+      <table>
+  
+        <!-- HEADER -->
+        <tr>
+          <td class="label" colspan="1">S.No</td>
+          <td class="label" colspan="5">Task</td>
+          <td class="label" colspan="1">Start Time</td>
+          <td class="label" colspan="1">End Time</td>
+          <td class="label" colspan="1">Project</td>
+        </tr>
+  
+        <!-- DATA ROWS -->
+        ${tableRows}
+  
+      </table>
+    </body>
+    </html>
+    `;
+  
+    const blob = new Blob([html], {
+      type: 'application/vnd.ms-excel;charset=utf-8;'
+    });
+  
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `DailyReport_${date}.xls`; // use .xls for HTML-based Excel
+    link.click();
   }
 
   exportMonthlyReport(report: any) {
@@ -392,12 +453,10 @@ export class WorkTrackComponent implements AfterViewInit {
   
         <!-- DAYS -->
         <tr>
-          <td></td>
           ${dayHeaderHtml}
         </tr>
   
         <tr>
-          <td></td>
           ${dayValuesHtml}
         </tr>
   
@@ -405,8 +464,11 @@ export class WorkTrackComponent implements AfterViewInit {
   
         <!-- LEGEND -->
         <tr>
-          <td colspan="31">
-            <b>LEGEND:</b> V-Weekend, P-Present, L-Leave, C-Comp Off, H-Holiday
+        <td class="summary" colspan="5">
+        LEGEND
+        </td>
+          <td colspan="26">
+            V-Weekend, P-Present, L-Leave, C-Comp Off, H-Holiday
           </td>
         </tr>
   
@@ -414,20 +476,19 @@ export class WorkTrackComponent implements AfterViewInit {
   
         <!-- SUMMARY -->
         <tr>
-          <td class="summary" colspan="4">Days Worked</td><td>${report.days_worked}</td>
-          <td class="summary" colspan="4">Leaves</td><td>${report.leaves}</td>
-          <td class="summary" colspan="4">Comp Offs</td><td>${report.comp_offs}</td>
-          <td class="summary" colspan="4">Holidays</td><td>${report.holidays}</td>
-          <td class="summary" colspan="4">Weekends</td><td>${report.weekends}</td>
-          <td class="summary" colspan="4">TOTAL PAY</td><td colspan="2">${report.total_pay}</td>
+          <td class="summary" colspan="5">Days Worked</td><td>${report.days_worked}</td>
+          <td class="summary" colspan="5">Leaves</td><td>${report.leaves}</td>
+          <td class="summary" colspan="6">Comp Offs</td><td>${report.comp_offs}</td>
+          <td class="summary" colspan="5">Holidays</td><td>${report.holidays}</td>
+          <td class="summary" colspan="5">Weekends</td><td>${report.weekends}</td>
         </tr>
   
         <tr><td colspan="31"></td></tr>
   
         <!-- REMARKS -->
         <tr>
-          <td class="label">Remarks:</td>
-          <td colspan="30">${report.remarks || ''}</td>
+          <td class="label" colspan="5">Remarks:</td>
+          <td colspan="26">${report.remarks || ''}</td>
         </tr>
   
         <tr><td colspan="31"></td></tr>

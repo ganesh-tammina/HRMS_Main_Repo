@@ -1,6 +1,11 @@
 @import './../../global.scss';
 
 .main-block {
+  p {
+    color: $text-color;
+    --color: var(--ion-text-color);
+  }
+  
   ion-card {
     margin: 0;
   }
@@ -105,6 +110,20 @@
   }
 
   .card-content {
+    .label-test {
+      @include normal-text-unbold();
+      color: #707070;
+    }
+    .time {
+      @include normal-text();
+      color: $text-color;
+    }
+    .status {
+      background: #3182CE2E;
+      color: #166FC3;
+      padding: 3px 15px;
+      border-radius: 33px;
+    }
     .time-block {
       background: #EFF0F4;
       padding: 16px;
@@ -133,6 +152,7 @@
     }
     .text, .number {
       @include text-style-bold();
+      color: $text-color;
     }
     .number {
      color: #1870B9;
@@ -194,6 +214,7 @@
     align-items: flex-start;
     padding: 16px 8px;
     border-radius: 8px;
+    margin-top: 12px;
     img {
       margin-right: 8px;
     }
