@@ -148,6 +148,29 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
+            <ion-menu-toggle auto-hide="false" id="menu-buttons">
+              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
+                <div class="text-center">
+                  <img src="assets/Icons/building-07.svg" width="24" height="24" />
+                  <ion-label>My Fanance</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
+            <ion-popover trigger="menu-buttons" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdowns">
+              <ng-template>
+                <ion-content>
+                  <ion-menu-toggle auto-hide="false">
+                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+                    <ion-item routerLink="/payslip" lines="none" detail="false"
+                      [ngClass]="(currentUrl=='/payslip') ? 'selected':''">
+                      <ion-label>Pay Slips</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+
+                </ion-content>
+              </ng-template>
+            </ion-popover>
             <!-- Inbox -->
 
             <!-- ///////////////////////////////////////////////// -->

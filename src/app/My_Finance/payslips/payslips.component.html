@@ -1,0 +1,237 @@
+<div class="payslip-wrapper" *ngIf="completepayroll">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <h3 class="sidebar-title">PAYS LIPS</h3>
+
+    <ul class="month-list">
+      <li class="month-item active">
+        <p class="month-name">{{completepayroll?.payroll_month
+          }}</p>
+        <span class="company-name">Sree Tammina Software solutions Pvt. Ltd.</span>
+      </li>
+
+
+      <!-- Add months dynamically -->
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="content-area">
+
+    <div class="payslip-card">
+
+      <!-- Header -->
+      <header class="payslip-header">
+        <div>
+          <h2>PAYSLIP {{completepayroll?.payroll_month
+            }}</h2>
+          <p>TECH TAMMINA SOFTWARE SOLUTIONS PVT LTD</p>
+          <p>2nd Floor, Sri Sai Plaza, Madhapur</p>
+          <p>Hyderabad, Telangana, 500081</p>
+        </div>
+        <div class="logo">
+          <img src="../../../assets/tammina-blue-logo.svg" alt="Tech Tammina Logo">
+        </div>
+      </header>
+
+      <!-- EMPLOYEE DETAILS -->
+      <h2 class="employee-name">
+        {{completepayroll?.full_name}}
+      </h2>
+
+      <ion-grid class="details-grid">
+        <ion-row class="detail-item">
+          <ion-col size="3">
+            <label>EMPLOYEE NAME</label>
+            <p>{{completepayroll?.full_name}}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>EMPLOYEE ID</label>
+            <p>{{completepayroll?.employee_number
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>DEPARTMENT</label>
+            <p>{{completepayroll?.department
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>DESIGNATION</label>
+            <p>{{completepayroll?.job_title
+              }}</p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="detail-item">
+          <ion-col size="3">
+            <label>LOCATION</label>
+            <p>{{completepayroll?.location}}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>PAN NUMBER</label>
+            <p>{{completepayroll?.pan_number
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>Aadhan NUMBER</label>
+            <p>{{completepayroll?.aadhaar_number
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>Monthly Salary</label>
+            <p>{{completepayroll?.remuneration_amount}}</p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="detail-item">
+          <ion-col size="3">
+            <label>UAN Numver</label>
+            <p>{{completepayroll?.uan_number}}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>PF Number</label>
+            <p>{{completepayroll?.pf_number}}</p>
+          </ion-col>
+          <ion-col size="3">
+
+          </ion-col>
+          <ion-col size="3">
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <hr />
+
+      <!-- SALARY TABLE -->
+      <h2 class="employee-name">
+        Salary Details
+      </h2>
+
+      <ion-grid class="details-grid">
+        <ion-row class="detail-item">
+          <ion-col size="3">
+            <label>Actual Payable days</label>
+            <p>{{completepayroll?.actual_payable_days
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>Total Working Days</label>
+            <p>{{completepayroll?.days_payable
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>Days Payable</label>
+            <p>{{completepayroll?.days_payable
+              }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <label>Loss of Pay Days</label>
+            <p>{{completepayroll?.loss_of_pay_days
+              }}</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid class="salary-table">
+        <ion-row>
+          <ion-col size="7" class="border-right">
+            <ion-row class="table-header">
+              <ion-col size="6" class="label">EARNINGS</ion-col>
+              <ion-col size="3">Paid Amount</ion-col>
+              <ion-col size="3">Actual Amount</ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="6" class="label">Basic</ion-col>
+              <ion-col size="3">{{completepayroll?.basic}}</ion-col>
+              <ion-col size="3">{{completepayroll?.basic}}</ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="6" class="label">HRA</ion-col>
+              <ion-col size="3">{{completepayroll?.hra}}</ion-col>
+              <ion-col size="3">{{completepayroll?.hra}}</ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="6" class="label">Transport Allowance</ion-col>
+              <ion-col size="3">{{completepayroll?.transport_allowance}}</ion-col>
+              <ion-col size="3">{{completepayroll?.transport_allowance}}</ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="6" class="label">Medical Allowance</ion-col>
+              <ion-col size="3">{{completepayroll?.medical_allowance}}</ion-col>
+              <ion-col size="3">{{completepayroll?.medical_allowance}}</ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="6" class="label">Special Allowance</ion-col>
+              <ion-col size="3">{{completepayroll?.special_allowance}}</ion-col>
+              <ion-col size="3">{{completepayroll?.special_allowance}}</ion-col>
+            </ion-row>
+            <ion-row class="table-list label-total">
+              <ion-col size="6" class="label">Total Earnings (A)</ion-col>
+              <ion-col size="3">{{completepayroll?.total_earnings}}</ion-col>
+              <ion-col size="3">{{completepayroll?.total_earnings}}</ion-col>
+            </ion-row>
+          </ion-col>
+          <ion-col size="5">
+            <ion-row class="table-header">
+              <ion-col size="8" class="label">CONTRIBUTIONS</ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="8" class="label">PF Employee</ion-col>
+              <ion-col size="4">₹ 1,800</ion-col>
+            </ion-row>
+            <ion-row class="table-list label-total">
+              <ion-col size="8" class="label">Total Contributions (B)</ion-col>
+              <ion-col size="4">₹ 1,800</ion-col>
+            </ion-row>
+            <ion-row class="table-header">
+              <ion-col size="8" class="label">TAXES & DEDUCTIONS</ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+            <ion-row class="table-list">
+              <ion-col size="8" class="label">Professional Tax</ion-col>
+              <ion-col size="4">₹ 200</ion-col>
+            </ion-row>
+            <ion-row class="table-list label-total">
+              <ion-col size="8" class="label">Total Taxes & Deductions (C)</ion-col>
+              <ion-col size="4">₹ 200</ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid class="netpay-section">
+        <ion-row>
+          <ion-col size="5" class="netpay-label">
+            Net Salary Payable ( A - B - C ) :
+          </ion-col>
+          <ion-col size="7" class="netpay-amount">
+            ₹ 37,500
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="5" class="netpay-label">
+            Net Salary in words :
+          </ion-col>
+          <ion-col size="7" class="netpay-amount">
+            thirty seven thousand and five hundred only
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-note class="note-section mt-15">
+        <p>**Note: </p>
+        <ul>
+          <li>All amounts displayed in this payslip are in INR</li>
+          <li>Paid Amount is the amount being paid after LOP adjustments</li>
+          <li>Actual Amount is the amount as per the salary structure</li>
+        </ul>
+      </ion-note>
+      <footer class="disclaimer">
+        <p>* This is a computer-generated payslip.</p>
+      </footer>
+
+    </div>
+  </main>
+</div>

@@ -29,6 +29,7 @@ import { AuthGuard } from './services/route-guard/auth/single-guard.guard';
 import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-handler.guard';
 import { AdminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
+import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -108,4 +109,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['HR', 'ADMIN'] },
   },
+  {
+    path: 'payslip',
+    component: PayslipsComponent
+  }
 ];

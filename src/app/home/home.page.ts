@@ -63,7 +63,9 @@ export class HomePage implements OnInit {
             this.one = this.allEmployees[0];
             this.fullName = this.one[0].reporting_to;
             this.employee_id = this.one[0].employee_id;
-
+            this.candidateService.getpayslips(this.employee_id).subscribe((response: any) => {
+              console.log('PaySlips', response);
+            })  
             console.log('profile', this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
             this.candidateService.setLoggedEmployeeId(this.employee_id);
@@ -102,6 +104,7 @@ export class HomePage implements OnInit {
         hour12: true,
       });
     }, 1000);
+
   }
 
   async showLoginSuccessAlert() {
