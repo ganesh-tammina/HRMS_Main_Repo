@@ -117,6 +117,10 @@ paginatedShifts: Shift[] =[];
     const t = await this.toastCtrl.create({ message: msg, duration: 1500 });
     await t.present();
   }
+  private timeToSeconds(time: string): number {
+  const [hh, mm, ss] = time.split(':').map(Number);
+  return hh * 3600 + mm * 60 + ss;
+}
 
   loadAll() {
     this.loadDepartments();
@@ -575,33 +579,76 @@ prevDeptPage() {
     return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(value);
   }
 
+  // saveShift() {
+  //   if (!this.shift.shift_name || this.shift.shift_name.trim() === '') {
+  //     alert('Shift Name is required');
+  //     return;
+  //   }
+  //   if (!this.isValidTime(this.shift.check_in!)) {
+  //     alert('Invalid Check In time');
+  //     return;
+  //   }
+  //   if (!this.isValidTime(this.shift.check_out!)) {
+  //     alert('Invalid Check Out time');
+  //     return;
+  //   }
+  //   this.api.upsertShift(this.shift).subscribe({
+  //     next: () => {
+  //       this.toast(
+  //         `Shift Policy ${this.shiftEditingId ? 'updated' : 'created'}`
+  //       );
+  //       this.resetShiftForm();
+  //       this.loadShifts();
+  //     },
+  //     error: async () =>
+  //       this.toast(
+  //         `Failed to ${this.shiftEditingId ? 'update' : 'create'} Shift Policy`
+  //       ),
+  //   });
+  // }
+
+
   saveShift() {
-    if (!this.shift.shift_name || this.shift.shift_name.trim() === '') {
-      alert('Shift Name is required');
-      return;
-    }
-    if (!this.isValidTime(this.shift.check_in!)) {
-      alert('Invalid Check In time');
-      return;
-    }
-    if (!this.isValidTime(this.shift.check_out!)) {
-      alert('Invalid Check Out time');
-      return;
-    }
-    this.api.upsertShift(this.shift).subscribe({
-      next: () => {
-        this.toast(
-          `Shift Policy ${this.shiftEditingId ? 'updated' : 'created'}`
-        );
-        this.resetShiftForm();
-        this.loadShifts();
-      },
-      error: async () =>
-        this.toast(
-          `Failed to ${this.shiftEditingId ? 'update' : 'create'} Shift Policy`
-        ),
-    });
+  if (!this.shift.shift_name || this.shift.shift_name.trim() === '') {
+    alert('Shift Name is required');
+    return;
   }
+
+  if (!this.isValidTime(this.shift.check_in!)) {
+    alert('Invalid Check In time');
+    return;
+  }
+
+  if (!this.isValidTime(this.shift.check_out!)) {
+    alert('Invalid Check Out time');
+    return;
+  }
+
+  const checkInSeconds = this.timeToSeconds(this.shift.check_in!);
+  const checkOutSeconds = this.timeToSeconds(this.shift.check_out!);
+
+  // 🔥 IMPORTANT VALIDATION
+  if (checkInSeconds >= checkOutSeconds) {
+    alert('Check In time must be less than Check Out time');
+    return;
+  }
+
+  // ✅ proceed only if valid
+  this.api.upsertShift(this.shift).subscribe({
+    next: () => {
+      this.toast(
+        `Shift Policy ${this.shiftEditingId ? 'updated' : 'created'}`
+      );
+      this.resetShiftForm();
+      this.loadShifts();
+    },
+    error: async () =>
+      this.toast(
+        `Failed to ${this.shiftEditingId ? 'update' : 'create'} Shift Policy`
+      ),
+  });
+}
+
   resetShiftForm() {
     this.shift.shift_name = '';
     this.shift.check_in = 'HH:MM:SS';

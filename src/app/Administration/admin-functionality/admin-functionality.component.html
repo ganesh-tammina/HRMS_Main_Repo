@@ -354,7 +354,7 @@
       <ion-grid class="ion-no-padding">
           <ion-row>
             <ion-col size="7" class="sigment-content-list mr-15">
-              <p class="header-title">Job Titles <span>{{shiftsData.length}}</span></p>
+              <p class="header-title">Shifts <span>{{shiftsData.length}}</span></p>
               <ion-grid class="table-block ion-no-padding">
                <ion-row class="table-header">
                  <ion-col size="3">
@@ -480,7 +480,7 @@
                </ion-list>
 
                <div class="row-center">
-                  <ion-button class="primary-btn" (click)="saveShift()">
+                  <ion-button class="primary-btn" (click)="saveShift()" [disabled]="!shift.shift_name">
                     {{ shiftEditingId ? "Update" : "Create" }} Shift Policy</ion-button>
                 <ion-button class="primary-outline-btn" (click)="resetDeptForm()">Reset</ion-button>
                 
