@@ -48,6 +48,7 @@ export class WorkTrackComponent implements AfterViewInit {
   monthlyChart: any;
   selectedPeriod: string = '30DAYS';
   monthButtons: string[] = [];
+  weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   constructor(
     private candidateService: CandidateService,
@@ -286,188 +287,178 @@ export class WorkTrackComponent implements AfterViewInit {
 
   exportMonthlyReport(report: any) {
     if (!report) return;
-
-    const ws_data: any[][] = [];
-
-    // Empty row
-    ws_data.push([]);
-
-    // MAIN HEADER
-    ws_data.push(['', '', 'CONSULTANT TIMESHEET']);
-    ws_data.push([]);
-
-    // SECTION ROWS (WITH GREY BOXES LATER)
-    ws_data.push(['Time Sheet of Month:', report.time_sheet_month, '', '', '', '', 'Project Name:', report.project_name]);
-    ws_data.push(['Consultant/ Temp ID:', report.consultant_name + ' / ' + report.consultant_temp_id, '', '', '', '', 'Manager:', report.manager_name]);
-    ws_data.push(['Business Unit:', report.business_unit, '', '', '', '', 'Location:', report.location]);
-    ws_data.push(['Start Date of Consultant:', this.formatDate(report.start_date_of_consultant)]);
-    ws_data.push([]);
-
-    // DAYS HEADER + VALUES
-    const dayHeader = [''];
-    const dayValues = [''];
-
-    for (let i = 1; i <= 31; i++) {
-      dayHeader.push(i.toString());
-      dayValues.push(report['day' + i] || '-');
-    }
-
-    ws_data.push(dayHeader);
-    ws_data.push(dayValues);
-
-    ws_data.push([]);
-    ws_data.push(['LEGEND: V-Weekend, P-Present, L-Leave, C-Comp Off, H-Holiday']);
-    ws_data.push([]);
-
-    // SUMMARY
-    ws_data.push([
-      'Days Worked', report.days_worked,
-      'Leaves', report.leaves,
-      'Comp Offs', report.comp_offs,
-      'Holidays', report.holidays,
-      'Weekends', report.weekends,
-      'TOTAL PAY', report.total_pay
-    ]);
-
-    ws_data.push([]);
-    ws_data.push(['Remarks:', report.remarks]);
-    ws_data.push([]);
-
-    // SIGNATURES
-    ws_data.push(['Signature of the consultant', '', '', '', '', '', 'Signature of the Manager']);
-    ws_data.push(['Date', '', '', '', '', '', 'Date']);
-
-    // ----------------------------------------------------
-    // CREATE WORKSHEET
-    // ----------------------------------------------------
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ws_data);
-
-    // MERGES
-    ws['!merges'] = [
-      { s: { r: 1, c: 2 }, e: { r: 1, c: 6 } }, // Header
-      { s: { r: ws_data.length - 2, c: 0 }, e: { r: ws_data.length - 2, c: 5 } }, // consultant signature
-      { s: { r: ws_data.length - 2, c: 6 }, e: { r: ws_data.length - 2, c: 11 } }, // manager signature
-      { s: { r: ws_data.length - 1, c: 0 }, e: { r: ws_data.length - 1, c: 5 } },
-      { s: { r: ws_data.length - 1, c: 6 }, e: { r: ws_data.length - 1, c: 11 } }
-    ];
-
-    // ----------------------------------------------------
-    // STYLING DEFINITIONS
-    // ----------------------------------------------------
-    const headerStyle = {
-      font: { bold: true, sz: 14 },
-      alignment: { horizontal: "center", vertical: "center" }
-    };
-
-    const greyBox = {
-      fill: { fgColor: { rgb: "D9D9D9" } },
-      font: { bold: true },
-      alignment: { horizontal: "left", vertical: "center" },
-      border: {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } }
-      }
-    };
-
-    const borderStyle = {
-      border: {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } }
-      }
-    };
-
-    // ----------------------------------------------------
-    // APPLY STYLES
-    // ----------------------------------------------------
-
-    // Main header
-    if (ws["C2"]) ws["C2"].s = headerStyle;
-
-    // Apply grey label boxes
-    const greyRows = [3, 4, 5, 6]; // rows of labels
-    const greyCols = [0, 6];       // columns of labels
-
-    greyRows.forEach(r => {
-      greyCols.forEach(c => {
-        const cell = XLSX.utils.encode_cell({ r, c });
-        if (ws[cell]) ws[cell].s = greyBox;
-      });
-    });
-
-    // Column widths
-    ws["!cols"] = [
-      { wpx: 140 },
-      { wpx: 160 },
-      { wpx: 60 },
-      { wpx: 60 },
-      { wpx: 60 },
-      { wpx: 60 },
-      { wpx: 160 },
-      { wpx: 120 },
-      ...Array(25).fill({ wpx: 35 })
-    ];
-
-    // DAY HEADER + VALUES STYLING
-    const dayHeaderRow = ws_data.indexOf(dayHeader);
-    const dayValueRow = ws_data.indexOf(dayValues);
-
-    for (let c = 1; c <= 31; c++) {
-      const hdr = XLSX.utils.encode_cell({ r: dayHeaderRow, c });
-      const val = XLSX.utils.encode_cell({ r: dayValueRow, c });
-
-      if (ws[hdr]) ws[hdr].s = { font: { bold: true }, alignment: { horizontal: "center" }, ...borderStyle };
-      if (ws[val]) ws[val].s = { alignment: { horizontal: "center" }, ...borderStyle };
-    }
-
-    // STATUS COLORS
+  
+    const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  
     const statusColors: any = {
-      'P': 'FF92D050', // Green
-      'V': 'FF00B0F0', // Blue
-      'L': 'FFFFC000', // Orange
-      'C': 'FF7030A0', // Purple
-      'H': 'FFFF0000'  // Red
+      'P': '#92D050',
+      'V': '#00B0F0',
+      'L': '#FFC000',
+      'C': '#7030A0',
+      'H': '#FF0000'
     };
-
-    for (let i = 1; i <= 31; i++) {
-      const cellRef = XLSX.utils.encode_cell({ r: dayValueRow, c: i });
-      const value = report['day' + i];
-
-      if (ws[cellRef] && statusColors[value]) {
-        ws[cellRef].s = { fill: { fgColor: { rgb: statusColors[value] } }, alignment: { horizontal: "center" }, ...borderStyle };
-      }
-    }
-
-    // SUMMARY STYLING
-    const summaryRow = ws_data.findIndex(r => r[0] === "Days Worked");
-
-    if (summaryRow !== -1) {
-      for (let c = 0; c <= 10; c++) {
-        const ref = XLSX.utils.encode_cell({ r: summaryRow, c });
-        if (ws[ref]) {
-          ws[ref].s = {
-            font: { bold: true },
-            alignment: { horizontal: "center", vertical: "center" },
-            ...borderStyle
-          };
+  
+    const dayHeaderHtml = days
+      .map(d => `<td class="day-header">${d}</td>`)
+      .join('');
+  
+    const dayValuesHtml = days
+      .map(d => {
+        const val = report['day' + d] || '-';
+        const bg = statusColors[val] || '#FFFFFF';
+        return `<td style="background:${bg};text-align:center;">${val}</td>`;
+      })
+      .join('');
+  
+    const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel">
+    <head>
+      <meta charset="UTF-8" />
+      <style>
+        table {
+          border-collapse: collapse;
+          font-family: Arial;
+          font-size: 14px;
         }
-      }
-    }
-
-    // ----------------------------------------------------
-    // CREATE & DOWNLOAD WORKBOOK
-    // ----------------------------------------------------
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Timesheet');
-
-    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellStyles: true });
-    const fileName = `Timesheet_${report.consultant_name}_${report.time_sheet_month}.xlsx`;
-
-    saveAs(new Blob([buf], { type: 'application/octet-stream' }), fileName);
+        td {
+          border: 1px solid #000;
+          padding: 6px;
+          vertical-align: middle;
+        }
+        .center { text-align: center; }
+        .label {
+          background: #D9D9D9;
+          font-weight: bold;
+        }
+        .title {
+          font-size: 16px;
+          font-weight: bold;
+          text-align: center;
+        }
+        .day-header {
+          background: #CCFFCC;
+          font-weight: bold;
+          text-align: center;
+          width: 32px;
+        }
+        .summary {
+          background: #EFEFEF;
+          font-weight: bold;
+          text-align: center;
+        }
+      </style>
+    </head>
+  
+    <body>
+      <table>
+  
+        <!-- MAIN HEADER -->
+        <tr>
+          <td colspan="12"></td>
+          <td colspan="8" class="title">CONSULTANT TIMESHEET</td>
+        </tr>
+  
+        <tr><td colspan="31"></td></tr>
+  
+        <!-- HEADER DETAILS -->
+        <tr>
+          <td class="label" colspan="4">Time Sheet of Month:</td>
+          <td colspan="8">${report.time_sheet_month}</td>
+          <td class="label" colspan="4">Project Name:</td>
+          <td colspan="15">${report.project_name}</td>
+        </tr>
+  
+        <tr>
+          <td class="label" colspan="4">Consultant / Temp ID:</td>
+          <td colspan="8">${report.consultant_name} / ${report.consultant_temp_id}</td>
+          <td class="label" colspan="4">Manager:</td>
+          <td colspan="15">${report.manager_name}</td>
+        </tr>
+  
+        <tr>
+          <td class="label" colspan="4">Business Unit:</td>
+          <td colspan="8">${report.business_unit}</td>
+          <td class="label" colspan="4">Location:</td>
+          <td colspan="15">${report.location}</td>
+        </tr>
+  
+        <tr>
+          <td class="label" colspan="4">Start Date of Consultant:</td>
+          <td colspan="8">${this.formatDate(report.start_date_of_consultant)}</td>
+        </tr>
+  
+        <tr><td colspan="31"></td></tr>
+  
+        <!-- DAYS -->
+        <tr>
+          <td></td>
+          ${dayHeaderHtml}
+        </tr>
+  
+        <tr>
+          <td></td>
+          ${dayValuesHtml}
+        </tr>
+  
+        <tr><td colspan="31"></td></tr>
+  
+        <!-- LEGEND -->
+        <tr>
+          <td colspan="31">
+            <b>LEGEND:</b> V-Weekend, P-Present, L-Leave, C-Comp Off, H-Holiday
+          </td>
+        </tr>
+  
+        <tr><td colspan="31"></td></tr>
+  
+        <!-- SUMMARY -->
+        <tr>
+          <td class="summary" colspan="4">Days Worked</td><td>${report.days_worked}</td>
+          <td class="summary" colspan="4">Leaves</td><td>${report.leaves}</td>
+          <td class="summary" colspan="4">Comp Offs</td><td>${report.comp_offs}</td>
+          <td class="summary" colspan="4">Holidays</td><td>${report.holidays}</td>
+          <td class="summary" colspan="4">Weekends</td><td>${report.weekends}</td>
+          <td class="summary" colspan="4">TOTAL PAY</td><td colspan="2">${report.total_pay}</td>
+        </tr>
+  
+        <tr><td colspan="31"></td></tr>
+  
+        <!-- REMARKS -->
+        <tr>
+          <td class="label">Remarks:</td>
+          <td colspan="30">${report.remarks || ''}</td>
+        </tr>
+  
+        <tr><td colspan="31"></td></tr>
+  
+        <!-- SIGNATURES -->
+        <tr>
+        <td class="label" colspan="5">Signature of the Consultant</td><td colspan="8"></td>
+        <td colspan="5"></td>
+        <td class="label" colspan="5">Signature of the Manager</td><td colspan="8"></td>
+        </tr>
+        <tr>
+        <td class="label" colspan="5">Date</td><td colspan="8"></td>
+        <td colspan="5"></td>
+        <td class="label" colspan="5">Date</td><td colspan="8"></td>
+        </tr>
+  
+      </table>
+    </body>
+    </html>
+    `;
+  
+    const blob = new Blob([html], {
+      type: 'application/vnd.ms-excel;charset=utf-8;'
+    });
+  
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Timesheet_${report.consultant_name}_${report.time_sheet_month}.xls`;
+    link.click();
   }
+  
 
   exportDay(date: string) {
     if (!this.allReports[date]) return;

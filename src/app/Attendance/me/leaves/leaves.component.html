@@ -36,23 +36,47 @@
               <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
               <ion-select-option value="PAID">Paid Leaves</ion-select-option>
               <ion-select-option value="UNPAID">Unpaid Leaves</ion-select-option>
-            </ion-select>
+              </ion-select>
           </div>
-
-          <div>
-            <label>From</label>
-            <ion-datetime  formControlName="start_date"  [min]="minDate"  [isDateEnabled]="isWeekday"
-             presentation="date" displayFormat="DD MMM YYYY" pickerFormat="DD MMM YYYY"></ion-datetime>
+          <div class="row-left">
+              <div class="from-input">
+                  <label>From</label>
+                  <ion-input id="from-input"
+                  readonly
+                  [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''"
+                ></ion-input>
+                  <ion-popover #datePopover trigger="from-input" show-backdrop="true">
+                      <ng-template>
+                        <ion-datetime
+                        [min]="minDate"
+                        formControlName="start_date"
+                        [isDateEnabled]="isWeekday"
+                        (ionChange)="onDateChangeFrom($event, datePopover)"
+                      ></ion-datetime>               
+                      </ng-template>
+                    </ion-popover>
+                  
+                </div>
+      
+                <div class="to-input">
+                  <label>To</label>            
+                  <ion-input id="to-input"
+                    readonly
+                    [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''"
+                  ></ion-input>
+                <ion-popover #datePopover1 trigger="to-input" show-backdrop="true">
+                  <ng-template>
+                      <ion-datetime
+                      formControlName="end_date"
+                      [min]="leaveForm.value.start_date || minDate"
+                      [isDateEnabled]="isWeekday"
+                      (ionChange)="onDateChangeTo($event, datePopover1)"
+                    ></ion-datetime>     
+                  </ng-template>
+                </ion-popover>
+                </div>
           </div>
-
-          <div>
-            <label>To</label>
-            <ion-datetime formControlName="end_date"   [min]="leaveForm.value.start_date || minDate"
-  [isDateEnabled]="isWeekday"
-      presentation="date"
-    displayFormat="DD MMM YYYY"
-    pickerFormat="DD MMM YYYY"></ion-datetime>
-          </div>
+         
 
           <!-- Error Message for Date Validation -->
           <ion-item *ngIf="leaveForm.get('end_date')?.hasError('dateError')" lines="none">
@@ -60,12 +84,12 @@
           </ion-item>
 
           <div *ngIf="total_days > 0" class="totalDays">
-            <ion-text color="medium">Total Days: {{ total_days }}</ion-text>
+            <p class="mt-0" color="medium">Total Days: {{ total_days }}</p>
           </div>
 
           <div>
             <label>Leave Reason</label>
-            <ion-textarea   [(ngModel)]="description" (ionInput)="validateWordLimit($event)" formControlName="remarks"></ion-textarea>
+            <ion-textarea [(ngModel)]="description" (ionInput)="validateWordLimit($event)" formControlName="remarks"></ion-textarea>
             <p>{{ wordsCount }}/100 words</p>
           </div>
 
