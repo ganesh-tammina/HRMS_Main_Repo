@@ -354,32 +354,38 @@ export class MePage implements OnInit {
     this.selectedLog = null;
   }
 
-  updateTimes() {
-    if (!this.record) return;
+updateTimes() {
+  if (!this.record) return;
 
-    const now = new Date();
-    this.currentTime = now.toLocaleTimeString('en-US', { hour12: true });
-    this.currentDate = now.toDateString();
+  const now = new Date();
+  this.currentTime = now.toLocaleTimeString('en-US', { hour12: true });
+  this.currentDate = now.toDateString();
 
-    const dailyMs = this.record.dailyAccumulatedMs?.[this.currentDate] || 0;
-    let totalMs = dailyMs;
-    let sessionMs = 0;
+  const dailyMs = this.record.dailyAccumulatedMs?.[this.currentDate] || 0;
+  let totalMs = dailyMs;
+  let sessionMs = 0;
 
-    if (this.record.isClockedIn && this.record.clockInTime) {
-      sessionMs = Math.max(
-        0,
-        now.getTime() - new Date(this.record.clockInTime).getTime()
-      );
-      totalMs += sessionMs;
-    }
-
-    this.timeSinceLastLogin = this.formatHMS(sessionMs);
-    const grossMinutes = Math.max(0, Math.floor(totalMs / 60000));
-    this.grossHours = this.formatHoursMinutes(grossMinutes);
-    const effectiveMinutes = Math.max(grossMinutes - this.breakMinutes, 0);
-    this.effectiveHours = this.formatHoursMinutes(effectiveMinutes);
-    this.status = totalMs > 0 ? 'Present' : 'Absent';
+  if (this.record.isClockedIn && this.record.clockInTime) {
+    sessionMs = Math.max(
+      0,
+      now.getTime() - new Date(this.record.clockInTime).getTime()
+    );
+    totalMs += sessionMs;
   }
+
+  this.timeSinceLastLogin = this.formatHMS(sessionMs);
+  const grossMinutes = Math.max(0, Math.floor(totalMs / 60000));
+  this.grossHours = this.formatHoursMinutes(grossMinutes);
+  const effectiveMinutes = Math.max(grossMinutes - this.breakMinutes, 0);
+  this.effectiveHours = this.formatHoursMinutes(effectiveMinutes);
+
+  // ✅ FIXED STATUS LOGIC
+const hasClockedInToday =
+  this.record.isClockedIn ||
+  this.hasClockedInToday();
+
+this.status = hasClockedInToday ? 'Present' : 'Absent';
+}
 
   loadHistory() {
     if (!this.record) return;
@@ -537,5 +543,13 @@ export class MePage implements OnInit {
     await modal.present();
   }
 
+hasClockedInToday(): boolean {
+  const today = this.currentDate;
 
+  return this.history.some(
+    (event) =>
+      event.type === 'CLOCK_IN' &&
+      new Date(event.time).toDateString() === today
+  );
+}
 }
