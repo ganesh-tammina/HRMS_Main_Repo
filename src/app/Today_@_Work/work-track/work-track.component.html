@@ -25,7 +25,7 @@
     </div>
   
     <!-- Daily Reports Accordion -->
-    <ion-accordion-group>
+    <ion-accordion-group class="mt-30">
       <ion-accordion *ngFor="let date of getReportDates()" [value]="date">
         <ion-item slot="header">
           <ion-icon name="alarm-outline"></ion-icon>
@@ -53,8 +53,8 @@
     </ion-accordion-group>
 
     <!-- Client Timesheets Accordion -->
-    <h2>Client Time Sheets</h2>
-    <div class="manage-main-block">
+    <h2 class="client-title">Client Time Sheets</h2>
+    <div>
       <h2>Monthly Reports</h2>
       <ion-accordion-group>
         <ion-accordion *ngFor="let report of clientTimesheet" [value]="report.id">
@@ -92,10 +92,19 @@
                       <button class="day-header-cell" *ngFor="let day of weekDays">{{ day }}</button>
                     </div>
                     <div class="day-cell-row" *ngFor="let row of [].constructor(5); let rIdx = index">
-                      <div class="day-cell" *ngFor="let col of [].constructor(7); let cIdx = index">
-                        <div class="date">{{ rIdx*7 + cIdx + 1 <= 31 ? rIdx*7 + cIdx + 1 : '' }}</div>
+                      <div class="day-cell" *ngFor="let col of [].constructor(7); let cIdx = index"
+                      [ngClass]="{
+                        'present': report['day' + (rIdx * 7 + cIdx + 1)] === 'P',
+                        'leave': report['day' + (rIdx * 7 + cIdx + 1)] === 'L',
+                        'holiday': report['day' + (rIdx * 7 + cIdx + 1)] === 'H',
+                        'comp-Offs': report['day' + (rIdx * 7 + cIdx + 1)] === 'C',
+                        'weekend': report['day' + (rIdx * 7 + cIdx + 1)] === 'W',
+                        'empty' : report['day' + (rIdx * 7 + cIdx + 1)] === null
+                      }">
+                           <div class="date">{{ rIdx*7 + cIdx + 1 <= 31 ? rIdx*7 + cIdx + 1 : '' }}</div>
                         <!-- <div class="timing" *ngIf="date.timing">{{ date.timing }}</div> -->
                         <div class="timing">{{ rIdx*7 + cIdx + 1 <= 31 ? report['day' + (rIdx*7 + cIdx + 1)] || '-' : ''}}</div>
+                        
                       </div>
                     </div>
                   </ion-col>
