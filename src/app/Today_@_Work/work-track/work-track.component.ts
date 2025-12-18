@@ -464,8 +464,11 @@ export class WorkTrackComponent implements AfterViewInit {
   
         <!-- LEGEND -->
         <tr>
-          <td colspan="31">
-            <b>LEGEND:</b> V-Weekend, P-Present, L-Leave, C-Comp Off, H-Holiday
+        <td class="summary" colspan="5">
+        LEGEND
+        </td>
+          <td colspan="26">
+            V-Weekend, P-Present, L-Leave, C-Comp Off, H-Holiday
           </td>
         </tr>
   
@@ -473,20 +476,19 @@ export class WorkTrackComponent implements AfterViewInit {
   
         <!-- SUMMARY -->
         <tr>
-          <td class="summary" colspan="4">Days Worked</td><td>${report.days_worked}</td>
-          <td class="summary" colspan="4">Leaves</td><td>${report.leaves}</td>
-          <td class="summary" colspan="4">Comp Offs</td><td>${report.comp_offs}</td>
-          <td class="summary" colspan="4">Holidays</td><td>${report.holidays}</td>
-          <td class="summary" colspan="4">Weekends</td><td>${report.weekends}</td>
-          <td class="summary" colspan="4">TOTAL PAY</td><td colspan="2">${report.total_pay}</td>
+          <td class="summary" colspan="5">Days Worked</td><td>${report.days_worked}</td>
+          <td class="summary" colspan="5">Leaves</td><td>${report.leaves}</td>
+          <td class="summary" colspan="6">Comp Offs</td><td>${report.comp_offs}</td>
+          <td class="summary" colspan="5">Holidays</td><td>${report.holidays}</td>
+          <td class="summary" colspan="5">Weekends</td><td>${report.weekends}</td>
         </tr>
   
         <tr><td colspan="31"></td></tr>
   
         <!-- REMARKS -->
         <tr>
-          <td class="label">Remarks:</td>
-          <td colspan="30">${report.remarks || ''}</td>
+          <td class="label" colspan="5">Remarks:</td>
+          <td colspan="26">${report.remarks || ''}</td>
         </tr>
   
         <tr><td colspan="31"></td></tr>
