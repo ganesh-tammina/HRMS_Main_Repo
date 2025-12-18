@@ -8,7 +8,7 @@
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="['/Home']" lines="none" detail="false"
+              <ion-item  [routerLink]="['/Home']" lines="none" detail="false"
                 routerLinkActive="selected" [ngClass]="(currentUrl=='/Home') ? 'selected':''">
                 <div class="text-center">
                   <img src="assets/Icons/home-05.svg" width="24" height="24" />
@@ -18,8 +18,8 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="['/Me']" lines="none" detail="false"
-                routerLinkActive="selected" [ngClass]="(currentUrl=='/Me') ? 'selected':''">
+              <ion-item  [routerLink]="['/Me']" lines="none" detail="false"
+                [ngClass]="(currentUrl=='/Me') ? 'selected':''">
                 <div class="text-center">
                   <img src="assets/Icons/user-01.svg" width="24" height="24" />
                   <ion-label>Me</ion-label>
@@ -30,7 +30,7 @@
             <!-- <div class="dropdown-wrapper"> -->
             <!-- Org Parent Item -->
             <ion-menu-toggle auto-hide="false" id="menu-button">
-              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" 
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
                 <div class="text-center">
                   <img src="assets/Icons/building-07.svg" width="24" height="24" />

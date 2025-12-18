@@ -24,13 +24,18 @@ export class ShiftsComponent implements OnInit {
       check_in: ['', Validators.required],
       check_out: ['', Validators.required]
     });
-    this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
-      console.log(res)
-      alert('Shift Saved Successfully!');
-      this.shiftsDetails = res;
-    });
+      this.loadShifts();
+    // this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
+    //   console.log(res)
+    //   alert('Shift Saved Successfully!');
+    //   this.shiftsDetails = res;
+    // });
   }
-
+loadShifts() {
+  this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
+    this.shiftsDetails = res;
+  });
+}
   submitShift() {
     if (this.shiftForm.invalid) {
       this.shiftForm.markAllAsTouched();
@@ -40,6 +45,8 @@ export class ShiftsComponent implements OnInit {
       console.log(res)
       alert('Shift Saved Successfully!');
       this.shiftsDetails = res;
+        this.OpenForm(false);
+         this.shiftForm.reset();
       console.log("shiftDetails", this.shiftsDetails);
     });
   }

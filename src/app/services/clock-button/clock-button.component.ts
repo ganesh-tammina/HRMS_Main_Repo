@@ -22,13 +22,13 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
   template: `
     <div class="ion-text-left">
       <!-- Clock In Button -->
+      <div class="row-center" *ngIf="!temp && currentUrl !== '/Me'">
       <ion-button
-        class="btn-clockin"
-        *ngIf="!temp && currentUrl !== '/Me'"
-        (click)="clockIn()"
-      >
-        Web Clock-In
-      </ion-button>
+      class="btn-clockin"      
+      (click)="clockIn()">
+      Web Clock-In
+    </ion-button></div>
+     
 
       <ion-button
         fill="clear"
@@ -45,13 +45,12 @@ import { RouteGuardService } from '../route-guard/route-service/route-guard.serv
       </ion-button>
 
       <!-- Clock Out Button -->
+      <div class="row-center" *ngIf="temp && currentUrl !== '/Me'">
       <ion-button
-        class="btn-clockout"
-        *ngIf="temp && currentUrl !== '/Me'"
-        (click)="clockOut()"
-      >
+        class="btn-clockout"        
+        (click)="clockOut()">
         Web Clock-Out
-      </ion-button>
+      </ion-button></div>
 
       <ion-button
         class="btn-clockout me-clock-out"

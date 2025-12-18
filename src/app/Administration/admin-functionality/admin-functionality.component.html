@@ -32,7 +32,7 @@
                 Actions
               </ion-col>
        </ion-row>
-       <ion-row *ngFor="let d of departments" class="table-list-row">
+       <ion-row *ngFor="let d of paginatedDepartments" class="table-list-row">
           <ion-col size="3">
               <p>{{ d.department_name }}</p>
               <small *ngIf="d.created_at">Created: {{ d.created_at | date : "short" }}</small>
@@ -53,6 +53,21 @@
                 ><ion-icon name="trash-outline"></ion-icon></ion-button>
                </ion-col>
         </ion-row>   
+        <div class="row-right mt-10">
+  <ion-button  fill="clear" (click)="prevDeptPage()" [disabled]="deptPage === 1">
+    <ion-icon name="chevron-back-circle-outline"></ion-icon>
+  </ion-button>
+
+  <span style="padding: 0 12px;">Page {{ deptPage }} of {{ getTotalPages(departments.length) }}</span>
+
+  <ion-button
+     fill="clear" 
+    (click)="nextDeptPage()"
+    [disabled]="deptPage >= getTotalPages(departments.length)">
+    <ion-icon name="chevron-forward-circle-outline"></ion-icon>
+ 
+  </ion-button>
+</div>
       </ion-grid>
     </ion-col>
     <ion-col size="4" class="sigment-content-form">
@@ -107,7 +122,8 @@
                     Actions
                   </ion-col>
            </ion-row>
-           <ion-row *ngFor="let r of roles" class="table-list-row">
+
+           <ion-row *ngFor="let r of paginatedRoles" class="table-list-row">
               <ion-col size="3">
                   <p>{{ r.role_name }}</p>
                   <small *ngIf="r.created_at">Created: {{ r.created_at | date : "short" }}</small>
@@ -128,7 +144,22 @@
                     ><ion-icon name="trash-outline"></ion-icon></ion-button>
                    
                    </ion-col>
-            </ion-row>   
+            </ion-row>  
+                <div class="row-right mt-10">
+                <ion-button  fill="clear" (click)="prevRolePage()" [disabled]="rolePage === 1">
+                  <ion-icon name="chevron-back-circle-outline"></ion-icon>
+                </ion-button>
+
+                 <span style="padding: 0 12px;">Page {{ rolePage }} of {{ getTotalPages(roles.length) }}</span>
+
+                <ion-button
+                  fill="clear" 
+                  (click)="nextRolePage()"
+                  [disabled]="rolePage >= getTotalPages(roles.length)">
+                  <ion-icon name="chevron-forward-circle-outline"></ion-icon>
+              
+                </ion-button>
+                </div>
           </ion-grid>
         </ion-col>
         <ion-col size="4" class="sigment-content-form">
@@ -178,7 +209,7 @@
                         Actions
                       </ion-col>
                </ion-row>
-               <ion-row *ngFor="let j of jobTitles" class="table-list-row">
+               <ion-row *ngFor="let j of paginatedJobs" class="table-list-row">
                   <ion-col size="4">
                       <p>{{ j.job_title_name }}</p>
                       <small *ngIf="j.created_at">Created: {{ j.created_at | date : "short" }}</small>
@@ -194,8 +225,25 @@
                           ><ion-icon name="trash-outline"></ion-icon></ion-button> 
                        </ion-col>
                 </ion-row>   
+                <div class="row-right mt-10">
+                <ion-button  fill="clear" (click)="prevJobPage()" [disabled]="jobPage === 1">
+                  <ion-icon name="chevron-back-circle-outline"></ion-icon>
+                </ion-button>
+
+                 <span style="padding: 0 12px;">Page {{ jobPage }} of {{ getTotalPages(jobTitles.length) }}</span>
+
+                <ion-button
+                  fill="clear" 
+                  (click)="nextJobPage()"
+                  [disabled]="jobPage >= getTotalPages(jobTitles.length)">
+                  <ion-icon name="chevron-forward-circle-outline"></ion-icon>
+              
+                </ion-button>
+                </div>
               </ion-grid>
+ 
             </ion-col>
+
             <ion-col size="4" class="sigment-content-form">
                 <p class="form-header">Add New Job Title</p>
                 <p class="form-subheader">Create a new Job Title in your organization</p>
@@ -207,24 +255,17 @@
           
                   <ion-item>
                     <ion-label position="stacked">Department</ion-label>
-                    <ion-select
-                      [(ngModel)]="jobTitleModel.department_id"
-                      placeholder="Select department">
-                      <ion-select-option
-                        *ngFor="let d of departments"
-                        [value]="d.department_id">
-                        {{ d.department_name }}</ion-select-option>
+                    <ion-select [(ngModel)]="jobTitleModel.department_id" placeholder="Select department">
+                      <ion-select-option *ngFor="let d of departments" [value]="d.department_id"> {{ d.department_name }}</ion-select-option>
                     </ion-select>
                   </ion-item>
                </ion-list>
 
                <div class="row-center">
-                  <ion-button class="primary-btn" (click)="saveJobTitle()" [disabled]="!jobTitleModel.job_title_name || !jobTitleModel.department_id"
-                    >{{ editingJobTitleId ? "Update" : "Create" }} Job Title</ion-button>
-                  <ion-button class="primary-outline-btn" (click)="resetJobTitleForm()"
-                    >Reset</ion-button>
-               </div>  
-                  
+                  <ion-button class="primary-btn" (click)="saveJobTitle()" [disabled]="!jobTitleModel.job_title_name || !jobTitleModel.department_id">
+                    {{ editingJobTitleId ? "Update" : "Create" }} Job Title</ion-button>
+                  <ion-button class="primary-outline-btn" (click)="resetJobTitleForm()">Reset</ion-button>
+               </div>    
               </ion-col>
           </ion-row>
         </ion-grid>  
@@ -240,91 +281,59 @@
         <ion-item>
           <ion-label>Job Title</ion-label>
           <ion-select [(ngModel)]="jobTitleRoleModel.job_title_id">
-            <ion-select-option
-              *ngFor="let j of jobTitles"
-              [value]="j.job_title_id"
-              >{{ j.job_title_name }}</ion-select-option
-            >
+            <ion-select-option *ngFor="let j of jobTitles" [value]="j.job_title_id">
+              {{ j.job_title_name }} </ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>Role</ion-label>
           <ion-select [(ngModel)]="jobTitleRoleModel.role_id">
-            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{
-              r.role_name
-            }}</ion-select-option>
+            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{r.role_name}}</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="assignRoleToJobTitle()"
-          >Assign to Job Title</ion-button
-        >
-        <ion-button
-          expand="block"
-          color="danger"
-          (click)="removeRoleFromJobTitle()"
-          >Remove from Job Title</ion-button
-        >
+        <ion-button expand="block" (click)="assignRoleToJobTitle()">Assign to Job Title</ion-button>
+        <ion-button expand="block" color="danger" (click)="removeRoleFromJobTitle()">Remove from Job Title</ion-button>
       </ion-card-content>
     </ion-card>
 
     <ion-card>
       <ion-card-header
-        ><ion-card-title>Department ↔ Role</ion-card-title></ion-card-header
-      >
+        ><ion-card-title>Department ↔ Role</ion-card-title></ion-card-header>
       <ion-card-content>
         <ion-item>
           <ion-label>Department</ion-label>
           <ion-select [(ngModel)]="departmentRoleModel.department_id">
-            <ion-select-option
-              *ngFor="let d of departments"
-              [value]="d.department_id"
-              >{{ d.department_name }}</ion-select-option
-            >
+            <ion-select-option *ngFor="let d of departments" [value]="d.department_id">{{ d.department_name }}</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
           <ion-label>Role</ion-label>
           <ion-select [(ngModel)]="departmentRoleModel.role_id">
-            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{
-              r.role_name
-            }}</ion-select-option>
+            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{r.role_name}}</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="assignRoleToDepartment()"
-          >Assign to Department</ion-button
-        >
-        <ion-button
-          expand="block"
-          color="danger"
-          (click)="removeRoleFromDepartment()"
-          >Remove from Department</ion-button
-        >
+        <ion-button expand="block" (click)="assignRoleToDepartment()">Assign to Department</ion-button>
+        <ion-button expand="block" color="danger" (click)="removeRoleFromDepartment()">Remove from Department</ion-button>
       </ion-card-content>
     </ion-card>
 
     <ion-card>
-      <ion-card-header
-        ><ion-card-title>Employee ↔ Role</ion-card-title></ion-card-header
-      >
+      <ion-card-header>
+        <ion-card-title>Employee ↔ Role</ion-card-title></ion-card-header>
       <ion-card-content>
         <ion-item>
           <ion-label>Employee ID</ion-label>
-          <ion-input
-            type="number"
-            [(ngModel)]="employeeRoleModel.employee_id"
-          ></ion-input>
+          <ion-input type="number" [(ngModel)]="employeeRoleModel.employee_id"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>Role</ion-label>
           <ion-select [(ngModel)]="employeeRoleModel.role_id">
-            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{
-              r.role_name
-            }}</ion-select-option>
+            <ion-select-option *ngFor="let r of roles" [value]="r.role_id">{{r.role_name}}</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -333,15 +342,8 @@
           <ion-input [(ngModel)]="employeeRoleModel.assigned_by"></ion-input>
         </ion-item>
 
-        <ion-button expand="block" (click)="assignRoleToEmployee()"
-          >Assign to Employee</ion-button
-        >
-        <ion-button
-          expand="block"
-          color="danger"
-          (click)="removeRoleFromEmployee()"
-          >Remove from Employee</ion-button
-        >
+        <ion-button expand="block" (click)="assignRoleToEmployee()">Assign to Employee</ion-button>
+        <ion-button expand="block" color="danger" (click)="removeRoleFromEmployee()">Remove from Employee</ion-button>
       </ion-card-content>
     </ion-card>
   </div>
@@ -352,7 +354,7 @@
       <ion-grid class="ion-no-padding">
           <ion-row>
             <ion-col size="7" class="sigment-content-list mr-15">
-              <p class="header-title">Job Titles <span>{{shiftsData.length}}</span></p>
+              <p class="header-title">Shifts <span>{{shiftsData.length}}</span></p>
               <ion-grid class="table-block ion-no-padding">
                <ion-row class="table-header">
                  <ion-col size="3">
@@ -368,7 +370,7 @@
                           Clock Out
                         </ion-col>
                </ion-row>
-               <ion-row *ngFor="let d of shiftsData" class="table-list-row">
+               <ion-row *ngFor="let d of paginatedShifts" class="table-list-row">
                   <ion-col size="3">
                       <p>{{ d.shift_name }}</p>
                   </ion-col>
@@ -393,6 +395,21 @@
                       >
                        </ion-col>
                 </ion-row>   
+                                <div class="row-right mt-10">
+                <ion-button  fill="clear" (click)="prevShiftPage()" [disabled]="shiftPage === 1">
+                  <ion-icon name="chevron-back-circle-outline"></ion-icon>
+                </ion-button>
+
+                 <span style="padding: 0 12px;">Page {{ shiftPage }} of {{ getTotalPages(shiftsData.length) }}</span>
+
+                <ion-button
+                  fill="clear" 
+                  (click)="nextShiftPage()"
+                  [disabled]="shiftPage >= getTotalPages(shiftsData.length)">
+                  <ion-icon name="chevron-forward-circle-outline"></ion-icon>
+              
+                </ion-button>
+                </div>
               </ion-grid>
             </ion-col>
             <ion-col size="4" class="sigment-content-form">
@@ -463,7 +480,7 @@
                </ion-list>
 
                <div class="row-center">
-                  <ion-button class="primary-btn" (click)="saveShift()">
+                  <ion-button class="primary-btn" (click)="saveShift()" [disabled]="!shift.shift_name">
                     {{ shiftEditingId ? "Update" : "Create" }} Shift Policy</ion-button>
                 <ion-button class="primary-outline-btn" (click)="resetDeptForm()">Reset</ion-button>
                 

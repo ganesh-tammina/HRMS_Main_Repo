@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { Component, OnInit, Input } from '@angular/core';
+import { IonicModule, ToastController, IonPopover } from '@ionic/angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
 import { CandidateService } from '../../../services/pre-onboarding.service';
@@ -27,6 +27,8 @@ export class LeavesComponent implements OnInit {
   IsOpenleavePopup = false; // for "Apply Leave" form modal
   isPopupOpen = false;      // for "Cancel/View" popup
   selectedLeave: any = null;
+  selectedDateTo: string = ''; //for datepicker string To
+  selectedDateFrom: string = ''; //for datepicker string from
 
   leaveData: any = {
     casual_leave_taken: 0,
@@ -55,6 +57,23 @@ isWeekday = (dateIsoString: string) => {
   const day = date.getDay();
   // 0 = Sunday, 6 = Saturday → disable these
   return day !== 0 && day !== 6;
+};
+
+isDateEnabled = (dateIsoString: string) => {
+  const date = new Date(dateIsoString);
+  const day = date.getDay();
+
+  //  Disable weekends
+  if (day === 0 || day === 6) {
+    return false;
+  }
+
+  //  Disable already requested leave dates
+  if (this.isDateBlocked(dateIsoString)) {
+    return false;
+  }
+
+  return true;
 };
 
   constructor(
@@ -250,5 +269,39 @@ validateWordLimit(ev: any) {
     words = words.slice(0, 100);
     this.description = words.join(' ');
   }
+}
+
+  /** 📅 From Date picker handler */
+  onDateChangeFrom(event: any, popover: IonPopover) {
+    const value = event.detail.value; // ISO date
+    if (value) {
+      this.selectedDateFrom = value; // store as ISO
+      this.leaveForm.patchValue({ start_date: value });
+    }
+    popover.dismiss();
+  }
+  
+  onDateChangeTo(event: any, popover: IonPopover) {
+    const value = event.detail.value;
+    if (value) {
+      this.selectedDateTo = value;
+      this.leaveForm.patchValue({ end_date: value });
+    }
+    popover.dismiss();
+  }
+
+  isDateBlocked(dateIso: string): boolean {
+  const date = new Date(dateIso);
+  date.setHours(0, 0, 0, 0);
+
+  return this.leaveRequests.some(leave => {
+    const start = new Date(leave.start_date);
+    const end = new Date(leave.end_date);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    return date >= start && date <= end;
+  });
 }
 }

@@ -7,6 +7,7 @@ import { IonicModule, AlertController } from '@ionic/angular';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   standalone: true,
@@ -29,8 +30,8 @@ export class HomePage implements OnInit {
   employee_id: any;
   uploadedImageUrl: string | null = null;
   imageUrls: any;
-
-  backgroundImageUrl: string = '../../assets/holidays-pics/holidays-img.svg';
+  profileimg: string = environment.apiURL;
+  backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
 
   constructor(
     private candidateService: CandidateService,
@@ -65,7 +66,12 @@ export class HomePage implements OnInit {
             this.employee_id = this.one[0].employee_id;
             this.candidateService.getpayslips(this.employee_id).subscribe((response: any) => {
               console.log('PaySlips', response);
-            })  
+            })
+            if (this.one[0].image) {
+              this.imageUrls = `https://${this.profileimg}${this.one[0].image}`;
+            } else {
+              this.imageUrls = '../../../assets/user.svg';
+            }
             console.log('profile', this.imageUrls);
             localStorage.setItem('employee_id', this.employee_id);
             this.candidateService.setLoggedEmployeeId(this.employee_id);
