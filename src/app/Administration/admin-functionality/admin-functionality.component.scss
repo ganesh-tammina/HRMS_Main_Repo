@@ -137,7 +137,7 @@ ion-content {
        }
        ion-input {
         border: 1px solid #D1D5DB;
-        background: #EFEFEF;
+        background: #fff;
         border-radius: 8px;
         height: 37px;
         padding-left: 12px; 
@@ -145,7 +145,8 @@ ion-content {
      
        ion-textarea {
         border: 1px solid #D1D5DB;
-        background: #EFEFEF;
+        // background: #EFEFEF;
+        background: #fff;
         border-radius: 8px;
         height: 100px;       
         padding-left: 12px; 
