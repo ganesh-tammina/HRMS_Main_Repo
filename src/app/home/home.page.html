@@ -6,299 +6,299 @@
     <ion-row>
       <!-- Welcome first block -->
       <ion-col size="12" class="welcome-block">
-          <ion-card class="ion-padding">
-              <div class="card-pannel">
-                <ion-row class="actions-card row-space-between border-bottom">
-                  <ion-col size="12" size-sm="8" size-md="8" size-lg="8" size-xl="8" class="row-left ion-align-items-start">
-                      <ion-img [src]="imageUrls" class="profile-img"></ion-img>
-                      <div>
-                        <p class="greeting">Good morning</p>
-                        <p class="name">{{one[0].full_name}}</p>
-                        <p class="date"><span>Thursday, November 27, 2025. </span> <span>On-Site</span></p>
-                        <ion-buttons>
-                          <ion-button class=""><ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
-                            My Attendance</ion-button>
-                          <ion-button class=""><ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
-                            Apply Leave</ion-button>
-                          <ion-button class=""><ion-img src="../../assets/home-icons/Email-icon.svg"></ion-img>
-                            My Payslip</ion-button>
-                          <ion-button class=""><ion-img src="../../assets/home-icons/Users-icon.svg"></ion-img>
-                            My Team</ion-button>
-                        </ion-buttons>
-                      </div>
+        <ion-card class="ion-padding">
+          <div class="card-pannel">
+            <ion-row class="actions-card row-space-between border-bottom">
+              <ion-col size="12" size-sm="8" size-md="8" size-lg="8" size-xl="8" class="row-left ion-align-items-start">
+                <ion-img [src]="imageUrls" class="profile-img"></ion-img>
+                <div>
+                  <p class="greeting">Good morning</p>
+                  <p class="date"><span>Thursday, November 27, 2025. </span> <span>On-Site</span></p>
+                  <ion-buttons>
+                    <ion-button class=""><ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
+                      My Attendance</ion-button>
+                    <ion-button class=""><ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
+                      Apply Leave</ion-button>
+                    <ion-button class=""><ion-img src="../../assets/home-icons/Email-icon.svg"></ion-img>
+                      My Payslip</ion-button>
+                    <ion-button class=""><ion-img src="../../assets/home-icons/Users-icon.svg"></ion-img>
+                      My Team</ion-button>
+                  </ion-buttons>
+                </div>
 
-                  </ion-col>
-    
-                  <ion-col size="12" size-sm="4" size-md="4" size-lg="4" size-xl="4" class="time-block">
-                      <p class="clock mb-30">Current Time</p>
-                      <p class="time">{{currentTime }}</p>
-                    <app-clock-button></app-clock-button>
-    
-                    <ion-button id="popover-button">Others<img src="../../assets/Icons/chevron-down-outline.svg"
-                        width="20" /></ion-button>
-                    <ion-popover trigger="popover-button" [dismissOnSelect]="true">
-                      <ng-template>
-                        <ion-content>
-                          <ion-list>
-                            <ion-item [button]="true" [detail]="false">Remote Clock-in</ion-item>
-                            <ion-item [button]="true" [detail]="false">Work From Home</ion-item>
-                            <ion-item [button]="true" [detail]="false">Partial Day</ion-item>
-                          </ion-list>
-                        </ion-content>
-                      </ng-template>
-                    </ion-popover>
-                  </ion-col>
-                </ion-row>
-              </div>
-            </ion-card>
+              </ion-col>
+
+              <ion-col size="12" size-sm="4" size-md="4" size-lg="4" size-xl="4" class="time-block">
+                <p class="clock mb-30">Current Time</p>
+                <p class="time">{{currentTime }}</p>
+                <app-clock-button></app-clock-button>
+
+                <ion-button id="popover-button">Others<img src="../../assets/Icons/chevron-down-outline.svg"
+                    width="20" /></ion-button>
+                <ion-popover trigger="popover-button" [dismissOnSelect]="true">
+                  <ng-template>
+                    <ion-content>
+                      <ion-list>
+                        <ion-item [button]="true" [detail]="false">Remote Clock-in</ion-item>
+                        <ion-item [button]="true" [detail]="false">Work From Home</ion-item>
+                        <ion-item [button]="true" [detail]="false">Partial Day</ion-item>
+                      </ion-list>
+                    </ion-content>
+                  </ng-template>
+                </ion-popover>
+              </ion-col>
+            </ion-row>
+          </div>
+        </ion-card>
       </ion-col>
     </ion-row>
-    
+
     <ion-row>
       <ion-col size="6">
         <!-- Today Overview card -->
         <ion-card class="overview-block">
           <div class="row-space-between border-bottom">
-              <div>
-                  <h3 class="card-header">Today’s Overview</h3>
-                  <p class="card-dec">Your attendance, progress, and status at a glance</p>
+            <div>
+              <h3 class="card-header">Today’s Overview</h3>
+              <p class="card-dec">Your attendance, progress, and status at a glance</p>
+            </div>
+            <div class="label">
+              <p>On Time • 94% this month</p>
+            </div>
+          </div>
+
+          <div class="card-content">
+            <ion-row>
+              <ion-col size="7">
+                <div class="row-space-between">
+                  <p class="label-test">Clock In</p>
+                  <p class="time">09:04 AM</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Status</p>
+                  <p class="status">Active</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Gross Hours</p>
+                  <p class="time">3h 20min</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Effective Hours</p>
+                  <p class="time">68% of 8hrs</p>
                 </div>
                 <div class="label">
-                  <p>On Time • 94%  this month</p>
+                  <p class="w-auto">Mode: Remote</p>
                 </div>
+              </ion-col>
+              <ion-col size="5">
+                <div class="time-block">
+                  <div>
+                    <p>This Week</p>
+                    <p>18h 40m</p>
+                  </div>
+                  <ion-icon name="time-outline"></ion-icon>
+                </div>
+                <div class="time-block">
+                  <div>
+                    <p>Avg. Start Time</p>
+                    <p>09 : 07 AM</p>
+                  </div>
+                  <ion-icon name="time-outline"></ion-icon>
+                </div>
+              </ion-col>
+            </ion-row>
           </div>
-          
-           <div class="card-content">
-              <ion-row>
-                <ion-col size="7">
-                  <div class="row-space-between">
-                    <p class="label-test">Clock In</p>
-                    <p class="time">09:04 AM</p>
-                  </div>
-                  <div class="row-space-between">
-                      <p class="label-test">Status</p>
-                      <p class="status">Active</p>
-                    </div>
-                    <div class="row-space-between">
-                        <p class="label-test">Gross Hours</p>
-                        <p class="time">3h 20min</p>
-                      </div>
-                      <div class="row-space-between">
-                          <p class="label-test">Effective Hours</p>
-                          <p class="time">68% of 8hrs</p>
-                        </div>
-                        <div class="label">
-                          <p class="w-auto">Mode: Remote</p>
-                        </div>
-                </ion-col>
-                <ion-col size="5">
-                  <div class="time-block">
-                    <div>
-                        <p>This Week</p>
-                        <p>18h 40m</p>
-                    </div>
-                    <ion-icon name="time-outline"></ion-icon>
-                  </div>
-                  <div class="time-block">
-                      <div>
-                          <p>Avg. Start Time</p>
-                          <p>09 : 07 AM</p>
-                      </div>
-                      <ion-icon name="time-outline"></ion-icon>
-                    </div>
-                  </ion-col>
-              </ion-row>
-           </div>
         </ion-card>
-        
-         <ion-card class="overview-block">
-            <!-- Attendance Overview card -->
-            <div class="row-space-between border-bottom">
-                <div>
-                    <h3 class="card-header">Attendance overview</h3>
-                    <p class="card-dec">Last 7 working days hours logged</p>
-                  </div>
-                  <div class="label">
-                    <p>Stable : 96% presence</p>
-                  </div>
-            </div>
-            <div class="card-content"> 
-              <div class="row-space-between mt-8">
-                  <div class="row-left">
-                      <img src="../../assets/leave-icons/day.svg" width="28" class="mr-8">
-                      Shift : 09:00 AM - 06:00 PM
-                    </div>
-                <p>Week off : Sat & Sun</p>
-              </div>
 
-              <p class="note">You're consistently hitting 7.5-8.5 hours per day. Great balance.</p>
-                
+        <ion-card class="overview-block">
+          <!-- Attendance Overview card -->
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Attendance overview</h3>
+              <p class="card-dec">Last 7 working days hours logged</p>
             </div>
-          </ion-card>
-          
-         <ion-card class="overview-block">
-            <!-- Leave balance card -->
-            <div class="row-space-between border-bottom">
-                <div>
-                    <h3 class="card-header">Leave balance</h3>
-                    <p class="card-dec">Quick view of your available time off</p>
-                  </div>
-                  <div class="label">
-                    <p>Cycle : Mar - Feb</p>
-                  </div>
+            <div class="label">
+              <p>Stable : 96% presence</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="row-space-between mt-8">
+              <div class="row-left">
+                <img src="../../assets/leave-icons/day.svg" width="28" class="mr-8">
+                Shift : 09:00 AM - 06:00 PM
+              </div>
+              <p>Week off : Sat & Sun</p>
             </div>
 
-            <div class="p-8 card-content">
-                <ion-row lines="none" class="row-center">
-                  <ion-col size="4" class="ion-text-center">
-                   <img src="../../assets/leave-icons/CL.svg" width="60">
-                    <p class="text">Casual Leaves</p>
-                    <p class="number">12/12</p>
-                  </ion-col>
-                  <ion-col size="4" class="ion-text-center">
-                      <img src="../../assets/leave-icons/SL.svg" width="60">
-                    <p class="text">sick Leaves</p>
-                    <p class="number">06/06</p>
-                  </ion-col>
-                  <ion-col size="4" class="ion-text-center">
-                    <img src="../../assets/leave-icons/CO.svg" width="60">
-                    <p class="text">Comp Offs Leaves</p>
-                    <p class="number">03/03</p>
-                  </ion-col>
-                </ion-row>
-                <p class="note">Plan ahead: peak leave usage is expected during upcoming festival weeks.</p>
-              </div>
-          </ion-card>
-          
-         <ion-card class="overview-block">
-            <!-- Up Comming holidays card -->
-            <div class="row-space-between border-bottom">
-                <div>
-                    <h3 class="card-header">Upcoming holidays</h3>
-                    <p class="card-dec">Next few company and regional holidays</p>
-                  </div>
-                  <div class="label">
-                    <p>Location : Vizag</p>
-                  </div>
+            <p class="note">You're consistently hitting 7.5-8.5 hours per day. Great balance.</p>
+
+          </div>
+        </ion-card>
+
+        <ion-card class="overview-block">
+          <!-- Leave balance card -->
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Leave balance</h3>
+              <p class="card-dec">Quick view of your available time off</p>
             </div>
-            <div class="holidays-section" [style.backgroundImage]="'url(' + backgroundImageUrl + ')'">                 
-                <h2 class="card-main-header mb-30">Christmas</h2>
-                <p>Thu, 25 December, 2025</p>
-              </div>
-          </ion-card>
+            <div class="label">
+              <p>Cycle : Mar - Feb</p>
+            </div>
+          </div>
+
+          <div class="p-8 card-content">
+            <ion-row lines="none" class="row-center">
+              <ion-col size="4" class="ion-text-center">
+                <img src="../../assets/leave-icons/CL.svg" width="60">
+                <p class="text">Casual Leaves</p>
+                <p class="number">12/12</p>
+              </ion-col>
+              <ion-col size="4" class="ion-text-center">
+                <img src="../../assets/leave-icons/SL.svg" width="60">
+                <p class="text">sick Leaves</p>
+                <p class="number">06/06</p>
+              </ion-col>
+              <ion-col size="4" class="ion-text-center">
+                <img src="../../assets/leave-icons/CO.svg" width="60">
+                <p class="text">Comp Offs Leaves</p>
+                <p class="number">03/03</p>
+              </ion-col>
+            </ion-row>
+            <p class="note">Plan ahead: peak leave usage is expected during upcoming festival weeks.</p>
+          </div>
+        </ion-card>
+
+        <ion-card class="overview-block">
+          <!-- Up Comming holidays card -->
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Upcoming holidays</h3>
+              <p class="card-dec">Next few company and regional holidays</p>
+            </div>
+            <div class="label">
+              <p>Location : Vizag</p>
+            </div>
+          </div>
+          <div class="holidays-section" [style.backgroundImage]="'url(' + backgroundImageUrl + ')'">
+            <h2 class="card-main-header mb-30">Christmas</h2>
+            <p>Thu, 25 December, 2025</p>
+          </div>
+        </ion-card>
       </ion-col>
       <ion-col size="6">
-         <!-- Quick links card -->
-         <ion-card class="overview-block">
-                <div class="row-space-between border-bottom">
-                    <div>
-                        <h3 class="card-header">Quick links</h3>
-                        <p class="card-dec">Jump into the tools you use the most</p>
-                      </div>
-                      <div class="label">
-                        <p>Shortcusts</p>
-                      </div>
-                </div>
+        <!-- Quick links card -->
+        <ion-card class="overview-block">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Quick links</h3>
+              <p class="card-dec">Jump into the tools you use the most</p>
+            </div>
+            <div class="label">
+              <p>Shortcusts</p>
+            </div>
+          </div>
 
-                <div class="card-content leave-block">
-                    <ion-row class="row-left">
-                      <ion-col>
-                         <div class="card-box">
-                           <p><img src="../../assets/home-icons/WFH_request.svg" width="36" class="mr-8">
-                            WFH request</p>
-                            <p>Request remote work</p>                           
-                         </div>
-                      </ion-col>
-                      <ion-col>
-                          <div class="card-box">
-                              <p><img src="../../assets/home-icons/Documents.svg" width="36" class="mr-8">
-                                Documents</p>
-                               <p>Payslips, letters, policies</p>                           
-                            </div>
-                        </ion-col>
-                      <ion-col>
-                          <div class="card-box">
-                              <p><img src="../../assets/home-icons/Policies.svg" width="36" class="mr-8">
-                                Policies</p>
-                               <p>HR, IT & security</p>                           
-                            </div>
-                        </ion-col>
-                        <ion-col>
-                            <div class="card-box">
-                                <p><img src="../../assets/home-icons/Helpdesk.svg" width="36" class="mr-8">
-                                  Helpdesk</p>
-                                 <p>Raise a ticket</p>                           
-                              </div>
-                          </ion-col>
-                       <ion-col>
-                          <div class="card-box">
-                              <p><img src="../../assets/home-icons/Assets.svg" width="36" class="mr-8">
-                                Assets</p>
-                               <p>Assigned hardware & morek</p>                           
-                            </div>
-                        </ion-col>
-                    </ion-row>
+          <div class="card-content leave-block">
+            <ion-row class="row-left">
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/WFH_request.svg" width="36" class="mr-8">
+                    WFH request</p>
+                  <p>Request remote work</p>
                 </div>
-          </ion-card>
-          <!-- Announcements card -->
-         <ion-card class="overview-block">
-                <div class="row-space-between border-bottom">
-                    <div>
-                        <h3 class="card-header">Announcements</h3>
-                        <p class="card-dec">Your attendance, progress, and status at a glance</p>
-                      </div>
-                      <div class="label">
-                        <p>3 new</p>
-                      </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Documents.svg" width="36" class="mr-8">
+                    Documents</p>
+                  <p>Payslips, letters, policies</p>
                 </div>
-                <div class="card-content">
-                   <div class="Announcement-card">
-                      <img src="../../assets/home-icons/sample-announce.svg" width="50">
-                      <div>
-                        <p class="title">Happy Thanksgiving Day Holiday - 27th & 28th Nov</p>
-                        <p>May all the good things of life be yours, not only on this day 
-                          but throughout the coming year." "Wishing you a harvest of blessings, 
-                          good health and good times.</p>
-                        <div class="row-left comments-block">
-                         <p class="mr-15">5 hours ago</p>
-                         <p class="row-left"><img [src]="imageUrls" width="15" class="mr-8">Aswitha Anusha</p>
-                        </div>
-                        <div class="row-right">
-                          <p class="row-left mr-15"><img src="../../assets/home-icons/thumbsup.png" width="14" class="mr-8"> 24</p>
-                          <p class="row-left"><img src="../../assets/home-icons/message.png" width="14" class="mr-8"> 6</p>
-                        </div>
-                      </div>
-                   </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Policies.svg" width="36" class="mr-8">
+                    Policies</p>
+                  <p>HR, IT & security</p>
                 </div>
-              </ion-card>
-          <!-- Birthdays & work anniversaries card -->
-         <ion-card class="overview-block">
-                <div class="row-space-between border-bottom">
-                    <div>
-                        <h3 class="card-header">Birthdays & work anniversaries</h3>
-                        <p class="card-dec">Celebrate your teammates this week</p>
-                      </div>
-                      <div class="label">
-                        <p>Today + next 7 days</p>
-                      </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Helpdesk.svg" width="36" class="mr-8">
+                    Helpdesk</p>
+                  <p>Raise a ticket</p>
                 </div>
-                <div class="card-content">
-                    <div class="birthday-card">
-                      <div class="row-left">
-                          <div class="img-block">
-                              <img src="../../assets/user.svg" width="38"> 
-                          </div>
-                          <div>
-                              <p>Aswitha Anusha</p>
-                              <p>Birthday • Today </p>
-                          </div>                        
-                      </div>
-                      <ion-button class="primary-button">Send Wishes</ion-button>
-                      
-                    </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Assets.svg" width="36" class="mr-8">
+                    Assets</p>
+                  <p>Assigned hardware & morek</p>
                 </div>
-          </ion-card>
-        </ion-col>
+              </ion-col>
+            </ion-row>
+          </div>
+        </ion-card>
+        <!-- Announcements card -->
+        <ion-card class="overview-block">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Announcements</h3>
+              <p class="card-dec">Your attendance, progress, and status at a glance</p>
+            </div>
+            <div class="label">
+              <p>3 new</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="Announcement-card">
+              <img src="../../assets/home-icons/sample-announce.svg" width="50">
+              <div>
+                <p class="title">Happy Thanksgiving Day Holiday - 27th & 28th Nov</p>
+                <p>May all the good things of life be yours, not only on this day
+                  but throughout the coming year." "Wishing you a harvest of blessings,
+                  good health and good times.</p>
+                <div class="row-left comments-block">
+                  <p class="mr-15">5 hours ago</p>
+                  <p class="row-left"><img [src]="imageUrls" width="15" class="mr-8">Aswitha Anusha</p>
+                </div>
+                <div class="row-right">
+                  <p class="row-left mr-15"><img src="../../assets/home-icons/thumbsup.png" width="14" class="mr-8"> 24
+                  </p>
+                  <p class="row-left"><img src="../../assets/home-icons/message.png" width="14" class="mr-8"> 6</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-card>
+        <!-- Birthdays & work anniversaries card -->
+        <ion-card class="overview-block">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Birthdays & work anniversaries</h3>
+              <p class="card-dec">Celebrate your teammates this week</p>
+            </div>
+            <div class="label">
+              <p>Today + next 7 days</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="birthday-card">
+              <div class="row-left">
+                <div class="img-block">
+                  <img src="../../assets/user.svg" width="38">
+                </div>
+                <div>
+                  <p>Aswitha Anusha</p>
+                  <p>Birthday • Today </p>
+                </div>
+              </div>
+              <ion-button class="primary-button">Send Wishes</ion-button>
+
+            </div>
+          </div>
+        </ion-card>
+      </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>

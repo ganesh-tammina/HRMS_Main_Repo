@@ -1,29 +1,50 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { tap, map, switchMap } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { Observable, tap } from 'rxjs';
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  expiresIn?: number;
+  user?: {
+    id: number;
+    username: string;
+    role: string;
+  };
+}
 
 @Injectable({
   providedIn: 'root',
 })
-export class _LoginService {
-  private api: string = `https://${environment.apiURL}/api/v1/`;
+export class AuthService {
+  private readonly LOGIN_URL = 'http://localhost:3000/api/auth/login';
+
   constructor(private http: HttpClient) { }
 
-  public checkEmail(body: any) {
-    return this.http.post<any>(`${this.api}check-email`, body, {
-      withCredentials: true,
-    });
+  login(payload: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.LOGIN_URL, payload).pipe(
+      tap((res) => {
+        console.log('Login response:', res);
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+        }
+      })
+    );
   }
-  public employeePasswordGeneration(body: any) {
-    return this.http.post<any>(`${this.api}gen-password`, body, {
-      withCredentials: true,
-    });
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
-  public loginForAll(body: any) {
-    return this.http.post<any>(`${this.api}login`, body, {
-      withCredentials: true,
-    });
+
+  logout(): void {
+    localStorage.clear();
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
   }
 }

@@ -228,7 +228,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         next: (res: any) => {
           console.log('✅ Upload response:', res);
           let cacheBusted = '';
-            window.location.reload();
             this.navCtrl.navigateForward('/profile-page');
 
           // If backend returns image path

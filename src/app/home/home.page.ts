@@ -39,19 +39,7 @@ export class HomePage implements OnInit {
     private alertController: AlertController,
     private routeGuardService: RouteGuardService,
   ) {
-    const loggedInUserStr = localStorage.getItem('loggedInUser');
-    if (!loggedInUserStr) {
-      console.error('No logged-in user in localStorage');
-      return;
-    }
 
-    const loggedInUser = JSON.parse(loggedInUserStr);
-    const currentEmployeeId = loggedInUser?.employee_id;
-    if (!currentEmployeeId) {
-      console.error('No employee_id found for logged-in user');
-      return;
-    }
-    console.log('Current Employee ID:', currentEmployeeId);
   }
 
   ngOnInit() {
@@ -123,7 +111,6 @@ export class HomePage implements OnInit {
           handler: () => {
             // Instant seamless refresh without clearing localStorage
             setTimeout(() => {
-              window.location.reload();
             }, HomePage.REFRESH_DELAY_MS);
           }
         }

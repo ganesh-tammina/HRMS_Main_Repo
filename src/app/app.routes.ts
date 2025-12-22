@@ -36,20 +36,14 @@ export const routes: Routes = [
   {
     path: 'Home',
     component: HomePage,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'Me',
     component: MePage,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'MyTeam',
     component: MyTeamPage,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   { path: 'login', component: LoginPage },
   { path: 'settings', component: PostPage },
