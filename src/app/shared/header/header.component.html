@@ -30,8 +30,8 @@
                 </ng-template>
               </ion-popover> -->
 
-          <div style="margin-left: auto" class="candidate-name">
-            {{ fullName || "Loading..." }}
+          <div *ngIf="currentEmployee as emp" style="margin-left: auto" class="candidate-name">
+            {{ emp.FirstName || "Loading..." }}
           </div>
         </ion-col>
 

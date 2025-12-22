@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { EmployeeService } from '../../services/employee.service';
 @Component({
   standalone: true,
   selector: 'app-header',
@@ -26,6 +27,7 @@ export class HeaderComponent implements OnInit {
   // Search functionality
   searchQuery: string = '';
   searchResults: CandidateSearchResult[] = [];
+  currentEmployee: any;
   results: any;
   one: any;
   full_name: string = '';
@@ -39,14 +41,17 @@ export class HeaderComponent implements OnInit {
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
+  searchKeyword: string = '';
 
   profileimg: string = environment.apiURL;
+  employees: any;
 
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService,
     private router: Router,
+    private employeeService: EmployeeService,
     private navCtrl: NavController // ✅ add this
   ) { }
 
@@ -115,6 +120,27 @@ export class HeaderComponent implements OnInit {
 
       // Fallback: if page refreshed
     }
+
+    this.employeeService.getMyProfile().subscribe({
+      next: (res: any) => {
+        this.currentEmployee = res;
+        console.log(res, 'hello');
+      }
+    });
+  }
+
+  onSearch() {
+    const keyword = this.searchKeyword.trim();
+
+    // If empty → reload all
+
+    this.employeeService.searchEmployees(keyword).subscribe({
+      next: (res: any) => {
+        this.employees = res;
+        // this.TotalEmployees = res.length;
+      },
+      error: (err: any) => console.error(err)
+    });
   }
 
   // Logout method
@@ -127,28 +153,28 @@ export class HeaderComponent implements OnInit {
   }
 
   // Search employees by name
-  onSearch() {
-    if (!this.searchQuery || this.searchQuery.trim().length < 3) {
-      this.searchResults = [];
-      this.results = [];
-      return;
-    }
+  // onSearch() {
+  //   if (!this.searchQuery || this.searchQuery.trim().length < 3) {
+  //     this.searchResults = [];
+  //     this.results = [];
+  //     return;
+  //   }
 
-    this.candidateService.searchCandidates(this.searchQuery).subscribe({
-      next: (results) => {
-        this.searchResults = results;
-        this.employee = this.searchResults;
-        this.openEmployeeListModal(results);
-        this.results = this.searchResults.map(
-          (emp) => `${emp.first_name} ${emp.last_name}`
-        );
-      },
-    });
-    // this.results = JSON.stringify(this.searchResults)
-    // console.log(this.results)
+  //   this.candidateService.searchCandidates(this.searchQuery).subscribe({
+  //     next: (results) => {
+  //       this.searchResults = results;
+  //       this.employee = this.searchResults;
+  //       this.openEmployeeListModal(results);
+  //       this.results = this.searchResults.map(
+  //         (emp) => `${emp.first_name} ${emp.last_name}`
+  //       );
+  //     },
+  //   });
+  //   // this.results = JSON.stringify(this.searchResults)
+  //   // console.log(this.results)
 
-    console.log(this.results);
-  }
+  //   console.log(this.results);
+  // }
 
   // Get profile image URL with fallback
   getProfileImageUrl(): string {
@@ -173,3 +199,4 @@ export class HeaderComponent implements OnInit {
     await modal.present();
   }
 }
+
