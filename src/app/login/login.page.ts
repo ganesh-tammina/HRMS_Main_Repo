@@ -19,12 +19,13 @@ export class LoginPage implements OnInit {
   emailChecked = false;
   showPassword = false;
   showCreatePassword = false;
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -48,11 +49,9 @@ export class LoginPage implements OnInit {
         this.emailChecked = true;
 
         if (res.hasUserAccount) {
-          // Existing user
           this.showPassword = true;
           this.loginForm.get('password')?.setValidators(Validators.required);
         } else {
-          // New user
           this.showCreatePassword = true;
           this.loginForm.get('password')?.setValidators(Validators.required);
         }
@@ -66,26 +65,51 @@ export class LoginPage implements OnInit {
   /** STEP 2 – LOGIN OR CREATE PASSWORD */
   onSubmit(): void {
     const { email, password } = this.loginForm.value;
+    this.loading = true;
 
+    // 🔹 EXISTING USER LOGIN
     if (this.showPassword) {
-      // LOGIN
       this.authService.login({ username: email, password }).subscribe({
-        next: () => this.router.navigate(['/Home'], { replaceUrl: true }),
-        error: () => alert('Invalid credentials')
+        next: () => this.loadEmployeeAndNavigate(),
+        error: () => {
+          this.loading = false;
+          alert('Invalid credentials');
+        }
       });
     }
 
+    // 🔹 CREATE PASSWORD & AUTO LOGIN
     if (this.showCreatePassword) {
-      // CREATE PASSWORD
       this.authService.createUser(email, password).subscribe({
         next: () => {
-          // Auto login after creation
-          this.authService.login({ username: email, password }).subscribe(() => {
-            this.router.navigate(['/Home'], { replaceUrl: true });
+          this.authService.login({ username: email, password }).subscribe({
+            next: () => this.loadEmployeeAndNavigate(),
+            error: () => {
+              this.loading = false;
+              alert('Auto login failed');
+            }
           });
         },
-        error: () => alert('Failed to create password')
+        error: () => {
+          this.loading = false;
+          alert('Failed to create password');
+        }
       });
     }
+  }
+
+  /** 🔥 LOAD EMPLOYEE PROFILE AFTER LOGIN */
+  private loadEmployeeAndNavigate(): void {
+    this.employeeService.getMyProfile(true).subscribe({
+      next: (res) => {
+        console.log('Employee Profile:', res);
+        this.loading = false;
+        this.router.navigate(['/Home'], { replaceUrl: true });
+      },
+      error: () => {
+        this.loading = false;
+        alert('Failed to load employee profile');
+      }
+    });
   }
 }

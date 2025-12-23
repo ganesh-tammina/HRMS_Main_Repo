@@ -3,52 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-export interface Department {
-  department_id?: number;
-  department_name: string;
-  description?: string | null;
-  created_at?: string;
+export interface MasterPayload {
+  name: string;
 }
 
-export interface Role {
-  role_id?: number;
-  role_name: string;
-  description?: string | null;
-  created_at?: string;
-}
-
-export interface JobTitle {
-  job_title_id?: number;
-  job_title_name: string;
-  department_id?: number | null;
-  department_name?: string | null;
-  created_at?: string;
-}
-export type TimeFormat = `${number | string}:${number | string}:${
-  | number
-  | string}`;
-export interface Shift {
-  shift_id?: number;
-  shift_name: string;
-  check_in: TimeFormat;
-  check_out: TimeFormat;
-}
-export interface JobTitleRole {
-  job_title_id: number;
-  role_id: number;
-}
-
-export interface DepartmentRole {
-  department_id: number;
-  role_id: number;
-}
-
-export interface EmployeeRole {
-  employee_id: number;
-  role_id: number;
-  assigned_by?: string | null;
-  assigned_source?: 'manual' | 'job_title' | 'system';
-  assigned_at?: string;
+export interface ApiResponse {
+  message: string;
 }
 
 // week offs
@@ -68,140 +28,177 @@ export interface WeekOff {
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-  private base = `https://${environment.apiURL}/api/v1`;
+  private baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
-
-  // Departments
-  getDepartments(): Observable<any> {
-    return this.http.get(`${this.base}/departments`);
-  }
-  createDepartment(payload: Partial<Department>) {
-    return this.http.post(`${this.base}/departments`, payload);
-  }
-  updateDepartment(id: number, payload: Partial<Department>) {
-    return this.http.put(`${this.base}/departments/${id}`, payload);
-  }
-  deleteDepartment(id: number) {
-    return this.http.delete(`${this.base}/departments/${id}`);
-  }
-  getDepartmentById(id: number) {
-    return this.http.get(`${this.base}/departments/${id}`);
+createLocation(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/locations`, payload);
   }
 
-  // Roles
-  getRoles() {
-    return this.http.get(`${this.base}/roles`);
-  }
-  createRole(payload: Partial<Role>) {
-    return this.http.post(`${this.base}/roles`, payload);
-  }
-  updateRole(id: number, payload: Partial<Role>) {
-    return this.http.put(`${this.base}/roles/${id}`, payload);
-  }
-  deleteRole(id: number) {
-    return this.http.delete(`${this.base}/roles/${id}`);
-  }
-  getRoleById(id: number) {
-    return this.http.get(`${this.base}/roles/${id}`);
+  getLocations(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/locations`);
   }
 
-  // Job Titles
-  getJobTitles() {
-    return this.http.get(`${this.base}/job-titles`);
-  }
-  createJobTitle(payload: Partial<JobTitle>) {
-    return this.http.post(`${this.base}/job-titles`, payload);
-  }
-  updateJobTitle(id: number, payload: Partial<JobTitle>) {
-    return this.http.put(`${this.base}/job-titles/${id}`, payload);
-  }
-  deleteJobTitle(id: number) {
-    return this.http.delete(`${this.base}/job-titles/${id}`);
-  }
-  getJobTitleById(id: number) {
-    return this.http.get(`${this.base}/job-titles/${id}`);
+  updateLocation(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/locations/${id}`, payload);
   }
 
-  // JobTitleRoles
-  assignRoleToJobTitle(payload: JobTitleRole) {
-    return this.http.post(`${this.base}/job-title-roles`, payload);
-  }
-  getRolesByJobTitle(job_title_id: number) {
-    return this.http.get(
-      `${this.base}/job-title-roles/job-title/${job_title_id}`
-    );
-  }
-  getJobTitlesByRole(role_id: number) {
-    return this.http.get(`${this.base}/job-title-roles/role/${role_id}`);
-  }
-  removeRoleFromJobTitle(payload: JobTitleRole) {
-    // API expects DELETE with body
-    return this.http.request('delete', `${this.base}/job-title-roles`, {
-      body: payload,
-    });
+  deleteLocation(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/locations/${id}`);
   }
 
-  // DepartmentRole (department-roles)
-  assignRoleToDepartment(payload: DepartmentRole) {
-    return this.http.post(`${this.base}/department-roles`, payload);
-  }
-  getRolesByDepartment(department_id: number) {
-    return this.http.get(
-      `${this.base}/department-roles/department/${department_id}`
-    );
-  }
-  getDepartmentsByRole(role_id: number) {
-    return this.http.get(`${this.base}/department-roles/role/${role_id}`);
-  }
-  removeRoleFromDepartment(payload: DepartmentRole) {
-    return this.http.request('delete', `${this.base}/department-roles`, {
-      body: payload,
-    });
-  }
-  getAllDepartmentRoles() {
-    return this.http.get(`${this.base}/department-roles`);
+  /* ===================== DEPARTMENTS ===================== */
+  createDepartment(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/departments`, payload);
   }
 
-  // EmployeeRoles
-  assignRoleToEmployee(payload: EmployeeRole) {
-    return this.http.post(`${this.base}/employee-roles`, payload);
-  }
-  getRolesByEmployee(employee_id: number) {
-    return this.http.get(`${this.base}/employee-roles/employee/${employee_id}`);
-  }
-  getEmployeesByRole(role_id: number) {
-    return this.http.get(`${this.base}/employee-roles/role/${role_id}`);
-  }
-  removeRoleFromEmployee(payload: { employee_id: number; role_id: number }) {
-    return this.http.request('delete', `${this.base}/employee-roles`, {
-      body: payload,
-    });
+  getDepartments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/departments`);
   }
 
-  // shifts
-  upsertShift(payload: Partial<Shift>) {
-    return this.http.post(`${this.base}/shift-policy`, payload);
-  }
-  getShifts() {
-    return this.http.get(`${this.base}/get-all-shift-policy`);
-  }
-  deleteShift(id: number) {
-    return this.http.delete(`${this.base}/delete-shift-policy/${id}`);
+  updateDepartment(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/departments/${id}`, payload);
   }
 
-  // weekoff
+  deleteDepartment(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/departments/${id}`);
+  }
 
-  insertWeekOffPolicy(payload: WeekOff) {
-    return this.http.post(`${this.base}/weekoff`, payload);
+  /* ===================== DESIGNATIONS ===================== */
+  createDesignation(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/designations`, payload);
   }
-  updateWeekOffPolicy(id: number, payload: WeekOff) {
-    return this.http.put(`${this.base}/weekoff/${id}`, payload);
+
+  getDesignations(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/designations`);
   }
-  getWeekOffPolicies() {
-    return this.http.get<WeekOff[]>(`${this.base}/weekoff`);
+
+  updateDesignation(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/designations/${id}`, payload);
   }
-  deleteWeekOffPolicy(id: number) {
-    return this.http.delete(`${this.base}/weekoff/${id}`);
+
+  deleteDesignation(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/designations/${id}`);
   }
+
+  /* ===================== BUSINESS UNITS ===================== */
+  createBusinessUnit(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/business-units`, payload);
+  }
+
+  getBusinessUnits(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/business-units`);
+  }
+
+  updateBusinessUnit(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/business-units/${id}`, payload);
+  }
+
+  deleteBusinessUnit(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/business-units/${id}`);
+  }
+
+  /* ===================== LEAVE PLANS ===================== */
+  createLeavePlan(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/leave-plans`, payload);
+  }
+
+  getLeavePlans(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/leave-plans`);
+  }
+
+  updateLeavePlan(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/leave-plans/${id}`, payload);
+  }
+
+  deleteLeavePlan(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/leave-plans/${id}`);
+  }
+
+  /* ===================== SHIFT POLICIES ===================== */
+  createShiftPolicy(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/shift-policies`, payload);
+  }
+
+  getShiftPolicies(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/shift-policies`);
+  }
+
+  updateShiftPolicy(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/shift-policies/${id}`, payload);
+  }
+
+  deleteShiftPolicy(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/shift-policies/${id}`);
+  }
+
+  /* ===================== WEEKLY OFF POLICIES ===================== */
+  createWeeklyOffPolicy(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/weekly-off-policies`, payload);
+  }
+
+  getWeeklyOffPolicies(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/weekly-off-policies`);
+  }
+
+  updateWeeklyOffPolicy(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/weekly-off-policies/${id}`, payload);
+  }
+
+  deleteWeeklyOffPolicy(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/weekly-off-policies/${id}`);
+  }
+
+  /* ===================== ATTENDANCE POLICIES ===================== */
+  createAttendancePolicy(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/attendance-policies`, payload);
+  }
+
+  getAttendancePolicies(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/attendance-policies`);
+  }
+
+  updateAttendancePolicy(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/attendance-policies/${id}`, payload);
+  }
+
+  deleteAttendancePolicy(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/attendance-policies/${id}`);
+  }
+
+  /* ===================== ATTENDANCE CAPTURE SCHEMES ===================== */
+  createAttendanceCaptureScheme(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/attendance-capture-schemes`, payload);
+  }
+
+  getAttendanceCaptureSchemes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/attendance-capture-schemes`);
+  }
+
+  updateAttendanceCaptureScheme(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/attendance-capture-schemes/${id}`, payload);
+  }
+
+  deleteAttendanceCaptureScheme(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/attendance-capture-schemes/${id}`);
+  }
+
+  /* ===================== HOLIDAY LISTS ===================== */
+  createHolidayList(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}/holiday-lists`, payload);
+  }
+
+  getHolidayLists(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/holiday-lists`);
+  }
+
+  updateHolidayList(id: number, payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}/holiday-lists/${id}`, payload);
+  }
+
+  deleteHolidayList(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}/holiday-lists/${id}`);
+  }
+
+  
 }

@@ -113,17 +113,14 @@
             <!-- ///////////////////////////////////////////////// -->
 
             <!-- Admin -->
-            @if(isAdmin){
-            <ion-menu-toggle *ngIf="isAdmin" auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" detail="false"
-                routerLinkActive="selected" [ngClass]="(currentUrl=='/admin') ? 'selected':''">
+            <ion-menu-toggle auto-hide="false">
+              <ion-item routerLink="/admin" lines="none" detail="false">
                 <div class="text-center">
                   <img src="assets/Icons/Group 104.svg" width="24" height="24" />
                   <ion-label>Admin</ion-label>
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            }
             <!-- Admin -->
 
             <!-- ///////////////////////////////////////////////// -->

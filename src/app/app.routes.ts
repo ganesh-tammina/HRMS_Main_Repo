@@ -88,8 +88,6 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'ADMIN'] },
   },
   {
     path: 'organisation_info',
@@ -100,8 +98,6 @@ export const routes: Routes = [
   {
     path: 'admin-department',
     component: AdminFunctionalityComponent,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'ADMIN'] },
   },
   {
     path: 'payslip',
