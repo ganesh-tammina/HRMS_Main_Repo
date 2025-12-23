@@ -27,7 +27,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { salaryStaructureComponent } from './salary-staructure/salary-staructure.component';
 import { AuthGuard } from './services/route-guard/auth/single-guard.guard';
 import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-handler.guard';
-import { AdminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
+import { adminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 
@@ -97,7 +97,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin-department',
-    component: AdminFunctionalityComponent,
+    component: adminFunctionalityComponent,
   },
   {
     path: 'payslip',

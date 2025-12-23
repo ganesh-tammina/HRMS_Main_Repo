@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
 
 export interface MasterPayload {
   name: string;
@@ -10,28 +9,17 @@ export interface MasterPayload {
 export interface ApiResponse {
   message: string;
 }
-
-// week offs
-export type ofDay =
-  | 'SUNDAY'
-  | 'MONDAY'
-  | 'TUESDAY'
-  | 'WEDNESDAY'
-  | 'THURSDAY'
-  | 'FRIDAY'
-  | 'SATURDAY';
-export interface WeekOff {
-  week_off_policy_id?: number;
-  week_off_policy_name: string;
-  week_off_days: ofDay[];
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AdminService {
+
   private baseUrl = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
-createLocation(payload: MasterPayload): Observable<ApiResponse> {
+  constructor(private http: HttpClient) { }
+
+  /* ===================== LOCATIONS ===================== */
+  createLocation(payload: MasterPayload): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.baseUrl}/locations`, payload);
   }
 
@@ -199,6 +187,4 @@ createLocation(payload: MasterPayload): Observable<ApiResponse> {
   deleteHolidayList(id: number): Observable<ApiResponse> {
     return this.http.delete<ApiResponse>(`${this.baseUrl}/holiday-lists/${id}`);
   }
-
-  
 }
