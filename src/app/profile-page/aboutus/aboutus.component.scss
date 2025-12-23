@@ -14,25 +14,25 @@
     @include normal-text-unbold();
     color: $text-color;
     margin: 0;
-    margin-top: 2px;   
+    margin-top: 5px;   
   }
-  .profile-page {
-    margin: 24px;
-    padding: 0;
-     border: 0.5px solid $border-color;
-     border-radius: 12px;
-     .header-text { 
-      border-bottom: 0.5px solid $border-color;
+  .content-detail-block {
+    align-items: stretch;
+    margin-bottom: 12px;
+    .ion-card {
       padding: 16px;
-      margin-top: 0;
-      display: flex;
-      justify-content: space-between;
-      ion-icon {
-        fill:  var(--ion-color-primary);
-        font-size: 24px;
+      border: 1.25px solid #E4E4E7;
+      background: #fff;
+      --margin-end: var(--ion-margin, 16px);
+      width: 49.5%;
+      border-radius: 8px;
+      &:first-child {
+        margin-right: 1%;
       }
-     }
+    }
   }
+ 
+
 
 ion-button {
   float: right;
@@ -68,4 +68,11 @@ ion-item:has(ion-input), ion-item:has(ion-select) {
     .item-inner {
         padding-inline-end: 0 !important;
     }
+}
+
+.report-block {
+  .org-form {
+    border-bottom: 1px solid #E3E3E3;
+    padding-bottom: 15px;
+  }
 }
