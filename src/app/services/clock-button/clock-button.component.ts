@@ -20,14 +20,14 @@ import { AttendanceApiService } from '../attendance-api.service';
 
       <ion-button
         color="success"
-        *ngIf="!isClockedIn"
+      
         (click)="clockIn()">
         Web Clock-In
       </ion-button>
 
       <ion-button
         color="danger"
-        *ngIf="isClockedIn"
+    
         (click)="clockOut()">
         Web Clock-Out
       </ion-button>

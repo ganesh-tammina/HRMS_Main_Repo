@@ -58,6 +58,13 @@ export class AttendanceApiService {
       }
     );
   }
+  /** 📅 TODAY ATTENDANCE (NEW – AS PER CURL) */
+  getTodayAttendance(): Observable<any> {
+    return this.http.get(
+      `${this.BASE_URL}/today`,
+      { headers: this.getHeaders() }
+    );
+  }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || '';

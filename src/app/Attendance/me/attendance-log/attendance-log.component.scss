@@ -108,3 +108,9 @@ p.divider {
     }
   }
   
+.popover-content {
+  max-height: 70vh;     /* Important */
+  overflow-y: auto;     /* Enable scrolling */
+  padding: 15px;
+}
+

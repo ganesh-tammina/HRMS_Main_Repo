@@ -1,11 +1,7 @@
 <!-- Filters -->
 <div class="row-space-between">
   <div>
-    <p>
-      {{ selectedPeriod === '30DAYS'
-        ? 'Last 30 Days'
-        : getMonthName(selectedPeriod) }}
-    </p>
+    <p>Last 30 Days</p>
   </div>
 
   <div class="filters">
@@ -60,49 +56,57 @@
         name="information-circle-outline"
         color="primary"
         style="cursor:pointer"
-        (click)="openLogDetails($event, log)">
+        (click)="openLogDetails(log)">
       </ion-icon>
     </ion-col>
   </ion-row>
 
 </ion-grid>
 
-<!-- Popover -->
-<ion-popover
-  [isOpen]="showPopover"
-  [event]="popoverEvent"
-  side="end"
-  alignment="center"
-  showBackdrop="false"
-  (didDismiss)="closePopover()">
+<!-- ================= RIGHT SIDE SLIDER ================= -->
+<ion-modal
+  [isOpen]="showSlider"
+  cssClass="right-side-modal"
+  backdropDismiss="true"
+  (didDismiss)="closeSlider()">
 
   <ng-template>
-    <ion-content class="popover-content ion-padding">
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Attendance Log</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="closeSlider()">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
 
       <p class="card-title">
-        Attendance Log —
         {{ selectedLog?.attendance_date | date:'fullDate' }}
       </p>
 
       <p class="divider"></p>
 
       <div *ngIf="selectedLog?.records?.length; else noRecords">
+
         <ion-row
           class="ion-no-padding"
-          *ngFor="let rec of selectedLog.records.slice().reverse(); let i = index">
+          *ngFor="let rec of selectedLog.records.slice().reverse()">
 
           <ion-col size="6" class="clock-logs">
+            <strong>Check-In</strong>
             <p *ngIf="rec.check_in">
-              <strong>Check-In {{ selectedLog.records.length - i }}:</strong>
-              {{ rec.check_in }}
+              {{ rec.check_in | date:'shortTime' }}
               <img src="../../assets/Icons/clock-in.svg" width="12" />
             </p>
           </ion-col>
 
           <ion-col size="6" class="clock-logs">
+            <strong>Check-Out</strong>
             <p *ngIf="rec.check_out">
-              <strong>Check-Out {{ selectedLog.records.length - i }}:</strong>
-              {{ rec.check_out }}
+              {{ rec.check_out | date:'shortTime' }}
               <img src="../../assets/Icons/clock-out.svg" width="12" />
             </p>
           </ion-col>
@@ -114,10 +118,7 @@
         <p>No check-in / check-out records found.</p>
       </ng-template>
 
-      <ion-button expand="block" color="medium" (click)="closePopover()">
-        Close
-      </ion-button>
-
     </ion-content>
+
   </ng-template>
-</ion-popover>
+</ion-modal>

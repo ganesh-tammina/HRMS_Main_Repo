@@ -37,4 +37,7 @@ export class EmployeeService {
     const params = new HttpParams().set('q', keyword);
     return this.http.get<any[]>(`${this.API_URL}/search/query`, { params });
   }
+  clearEmployee(): void {
+    this.currentEmployeeSubject.next(null);
+  }
 }

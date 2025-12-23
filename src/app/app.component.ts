@@ -14,6 +14,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { HeaderComponent } from './shared/header/header.component';
 import { RouteGuardService } from './services/route-guard/route-service/route-guard.service';
 import { NavController } from '@ionic/angular';
+import { EmployeeService } from './services/employee.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -49,8 +50,9 @@ export class AppComponent implements OnInit {
     private router: Router,
     private candidateService: CandidateService,
     private routeGaurdService: RouteGuardService,
+    private employeeService: EmployeeService,
     private navCtrl: NavController // ✅ add this
-  ) {   
+  ) {
     this.currentUser = this.candidateService.currentCandidate$;
     // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
 
@@ -103,7 +105,7 @@ export class AppComponent implements OnInit {
       this.isAdmin = false
     }
 
-     
+
     // const role = this.routeGaurdService.userRole;
     // if (this.routeGaurdService.userRole) {
     //   this.routeGaurdService.userRole === 'ADMIN' || 'HR'
@@ -135,6 +137,7 @@ export class AppComponent implements OnInit {
 
   logout() {
     localStorage.clear();
+    this.employeeService.clearEmployee();
     sessionStorage.clear();
     this.router.navigate(['/login']);
   }
