@@ -1,44 +1,76 @@
 <div class="login-wrapper">
-  <!-- LEFT SECTION -->
-  <div class="login-left">
-    <img src="../../assets/login-image-background.svg" alt="Dashboard Illustration" />
-  </div>
-
-  <!-- RIGHT SECTION -->
   <div class="login-right">
     <div class="login-card">
-      <div class="logo">
-        <img src="../../assets/techtammina.webp" alt="Tech Tammina Logo" />
-      </div>
 
       <h2>Log into your account</h2>
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
 
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <!-- EMAIL -->
         <div class="form-group">
-          <label>Username</label>
-          <input type="text" formControlName="username" placeholder="Enter your username" />
-          <small class="error" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
-            Username is required
+          <label>Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            [disabled]="emailChecked"
+          />
+          <small class="error" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+            Email is required
           </small>
         </div>
 
-        <div class="form-group">
+        <!-- PASSWORD -->
+        <div class="form-group" *ngIf="showPassword">
           <label>Password</label>
-          <input type="password" formControlName="password" placeholder="Enter your password" />
-          <small class="error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-            Password is required
-          </small>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Enter password"
+          />
         </div>
 
-        <div class="forgot">
-          <a href="#">Forgot Password?</a>
+        <!-- CREATE PASSWORD -->
+        <div class="form-group" *ngIf="showCreatePassword">
+          <label>Create Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Create password"
+          />
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="loginForm.invalid">
+        <!-- NEXT -->
+        <button
+          type="button"
+          class="btn-primary"
+          *ngIf="!emailChecked"
+          (click)="onNext()"
+          [disabled]="loginForm.get('email')?.invalid"
+        >
+          Next
+        </button>
+
+        <!-- LOGIN -->
+        <button
+          type="submit"
+          class="btn-primary"
+          *ngIf="showPassword"
+        >
           Login
         </button>
 
+        <!-- CREATE ACCOUNT -->
+        <button
+          type="submit"
+          class="btn-primary"
+          *ngIf="showCreatePassword"
+        >
+          Create Password & Login
+        </button>
+
       </form>
+
     </div>
   </div>
 </div>

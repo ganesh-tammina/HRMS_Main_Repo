@@ -2,49 +2,43 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  expiresIn?: number;
-  user?: {
-    id: number;
-    username: string;
-    role: string;
-  };
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly LOGIN_URL = 'http://localhost:3000/api/auth/login';
+
+  private LOGIN_URL = 'http://localhost:3000/api/auth/login';
+  private CHECK_EMAIL_URL = 'http://localhost:3000/api/auth/employee/check';
+  private CREATE_USER_URL = 'http://localhost:3000/api/auth/user/create';
 
   constructor(private http: HttpClient) { }
 
-  login(payload: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(this.LOGIN_URL, payload).pipe(
-      tap((res) => {
-        console.log('Login response:', res);
-        if (res.token) {
+  /** CHECK EMAIL */
+  checkEmployee(email: string): Observable<any> {
+    return this.http.get(`${this.CHECK_EMAIL_URL}?email=${email}`);
+  }
+
+  /** LOGIN */
+  login(payload: { username: string; password: string }): Observable<any> {
+    return this.http.post<any>(this.LOGIN_URL, payload).pipe(
+      tap(res => {
+        if (res?.token) {
           localStorage.setItem('token', res.token);
         }
       })
     );
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  /** CREATE USER */
+  createUser(email: string, password: string): Observable<any> {
+    return this.http.post(this.CREATE_USER_URL, {
+      email,
+      password,
+      role: 'employee'
+    });
   }
 
   logout(): void {
     localStorage.clear();
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getToken();
   }
 }

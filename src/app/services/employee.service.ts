@@ -1,13 +1,18 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
   private readonly API_URL = 'http://localhost:3000/api/employees';
+  private readonly profileEndpoint = `${this.API_URL}/profile/me`;
   private currentEmployee: any | null = null;
+
+  private currentEmployeeSubject = new BehaviorSubject<any>(null);
+  currentEmployee$ = this.currentEmployeeSubject.asObservable();
+
 
   constructor(private http: HttpClient) { }
 
