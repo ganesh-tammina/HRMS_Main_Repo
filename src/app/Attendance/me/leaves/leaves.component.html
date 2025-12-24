@@ -30,12 +30,14 @@
           <div>
             <label>Leave Type</label>
             <ion-select formControlName="leave_type" placeholder="Select Leave Type">
-              <ion-select-option value="CASUAL">Casual Leaves</ion-select-option>
-              <ion-select-option value="MARRIAGE">Marriage Leaves</ion-select-option>
-              <ion-select-option value="COMP_OFF">Comp-Offs</ion-select-option>
-              <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
-              <ion-select-option value="PAID">Paid Leaves</ion-select-option>
-              <ion-select-option value="UNPAID">Unpaid Leaves</ion-select-option>
+
+              <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.code"
+                [disabled]="leave.available <= 0">
+
+                {{ leave.name }} ({{ leave.available }} available)
+
+              </ion-select-option>
+
             </ion-select>
           </div>
           <div class="row-left">
@@ -103,9 +105,17 @@
         <p class="card-header">{{ leave.title }}</p>
 
         <ion-img [src]="leave.icon"></ion-img>
+        <div>
+          <p> Used {{ leave.used }}</p>
+        </div>
 
-        <p class="number">
-          {{ leave.used }}/{{ leave.available }}
+        <p>
+          <span>Available</span>
+          {{ leave.available}}
+        </p>
+        <p>
+          <span>ANNUAL QUOTA</span>
+          {{ leave.allocated_days}}
         </p>
 
         <p class="label">days available</p>

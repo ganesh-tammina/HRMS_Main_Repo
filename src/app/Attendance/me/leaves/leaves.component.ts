@@ -31,7 +31,11 @@ export class LeavesComponent implements OnInit {
   selectedLeave: any = null;
   selectedDateTo: string = ''; //for datepicker string To
   selectedDateFrom: string = ''; //for datepicker string from
-
+  leaveTypes: {
+    code: string;
+    name: string;
+    available: number;
+  }[] = [];
   leaveData: any = {
     casual_leave_taken: 0,
     casual_leave_allocated: 0,
@@ -133,9 +137,15 @@ export class LeavesComponent implements OnInit {
       next: (res: any[]) => {
         this.leaveCards = res.map(item => ({
           title: item.type_name,
+          allocated_days: Number(item.allocated_days) || 0,
           used: Number(item.used_days) || 0,
           available: Number(item.available_days) || 0,
           icon: this.getLeaveIcon(item.type_code)
+        }));
+        this.leaveTypes = res.map(item => ({
+          code: item.type_code,        // ex: CL, SL, ML
+          name: item.type_name,        // ex: Casual Leave
+          available: Number(item.available_days) || 0
         }));
       },
       error: err => console.error(err)
