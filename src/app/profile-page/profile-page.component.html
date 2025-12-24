@@ -3,32 +3,32 @@
 
 <ion-content [fullscreen]="true" class="profile-block">
   <!-- <div class="profile-header"></div> -->
-  <ion-grid class="welcome-block ion-no-padding"  *ngFor="let currentemp of currentemp">
+  <ion-grid class="welcome-block ion-no-padding">
     <ion-row class="profile-header"><ion-col></ion-col></ion-row>
     <ion-row>
       <ion-col size="4">
           <div class="img-block">
-              <img [attr.alt]="currentemp.first_name" *ngIf="!currentemp.image" src="../../assets/user.svg" width="250"
+              <img [attr.alt]="currentEmployee.FullName" *ngIf="!currentEmployee.image" src="../../assets/user.svg" width="250"
                 height="250" />
-              <img [attr.alt]="currentemp.first_name" *ngIf="currentemp.image"
-                [src]="'https://'+ profileimg + currentemp.image" width="250" height="250" />
+              <img [attr.alt]="currentEmployee.FullName" *ngIf="currentEmployee.image"
+                [src]="'https://'+ profileimg + currentEmployee.image" width="250" height="250" />
             </div>
         </ion-col>
 
 
         <ion-col size="8">
             <div class="content-block">
-                  <p class="name">{{currentemp.full_name}}</p>
-                  <p class="des">{{currentemp.job_title}}<span>{{currentemp.employee_number}}</span></p>
+                  <p class="name">{{currentEmployee.FullName}}</p>
+                  <p class="des">{{currentEmployee.Designation}}<span>{{currentEmployee.EmployeeNumber}}</span></p>
       
                 <div class="info-block">
                     <div class="row-left">
                         <ion-icon name="location"></ion-icon>
-                        <p class="pl-5">{{currentemp.location}}</p>
+                        <p class="pl-5">{{currentEmployee.Location}}</p>
                       </div>
                   <div class="row-left">
                     <ion-icon name="mail"></ion-icon>
-                    <p class="pl-5">{{currentemp.work_email}}</p>
+                    <p class="pl-5">{{currentEmployee.WorkEmail}}</p>
                   </div>   
                 </div>
       
@@ -42,7 +42,7 @@
                     <div class="ion-padding">
                       <p class="popup-title">Upload profile photo</p>
                       <div class="img-border">
-                        <img [attr.alt]="currentemp.FirstName"
+                        <img [attr.alt]="currentEmployee.FirstName"
                           [src]="previewImageUrl || uploadedImageUrl || '../../assets/user.svg'" width="100" height="100" />
                         <p *ngIf="previewImageUrl" class="preview-text">Preview</p>
                       </div>
@@ -67,7 +67,7 @@
   </ion-grid>
 
 
-  <ion-grid class="tab-block" *ngFor="let currentemp of currentemp">
+  <ion-grid class="tab-block">
     <ion-row>
 
 
@@ -102,13 +102,13 @@
               </ion-tab-button>
             </ion-tab-bar>
             <ion-tab tab="about">
-              <app-aboutus [currentemp]="currentemp"></app-aboutus>
+              <app-aboutus [currentEmployee]="currentEmployee"></app-aboutus>
             </ion-tab>
             <ion-tab tab="profile">
-              <app-profile [currentemp]="currentemp"></app-profile>
+              <app-profile></app-profile>
             </ion-tab>
             <ion-tab tab="job">
-              <app-job-tab [currentemp]="currentemp"></app-job-tab>
+              <app-job-tab></app-job-tab>
             </ion-tab>
             <ion-tab tab="time">
               <app-leave-requests></app-leave-requests>

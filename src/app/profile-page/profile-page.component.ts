@@ -15,6 +15,7 @@ import { LeaveRequestsComponent } from '../leave-requests/leave-requests.compone
 import { Subject, takeUntil, interval, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { EmployeeService } from '../services/employee.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -32,11 +33,12 @@ import { NavController } from '@ionic/angular';
     DocumentTabComponent,
     AssetsTabComponent,
     HeaderComponent,
-    LeaveRequestsComponent,
+    LeaveRequestsComponent,    
   ],
 })
 export class ProfilePageComponent implements OnInit, OnDestroy {
   currentemp: any = []; // Single employee object (kept original type/shape)
+  currentEmployee: any= []; 
   selectedFile: File | null = null;
   uploadedImageUrl: string | null = null;
   previewImageUrl: string | null = null;
@@ -46,11 +48,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   private api = `https://${this.env.apiURL}/api/v1/`;
 
   private destroy$ = new Subject<void>();
-
+ 
   constructor(
     private candidateService: CandidateService,
     private routeGuardService: RouteGuardService,
     private popoverController: PopoverController,
+    private employeeService: EmployeeService,
     private router: Router,
         private navCtrl: NavController
   ) {}
@@ -58,6 +61,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   private currentEmployeeId: string | null = null;
 
   ngOnInit() {
+    this.employeeService.getMyProfile().subscribe({
+      next: (res: any) => {
+        this.currentEmployee = res;
+        console.log(res, 'hello');
+      }
+    });
     // Load existing image from localStorage
     this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
 

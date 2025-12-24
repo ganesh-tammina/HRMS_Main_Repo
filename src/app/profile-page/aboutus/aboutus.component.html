@@ -1,7 +1,7 @@
 
 <div class="row-left content-detail-block">
 <!-- Personal Details -->
-<div class="ion-card ion-padding" *ngIf="currentemp">
+<div class="ion-card ion-padding">
     <p class="header-text row-space-between">Personal Summary<img (click)="isEditSummary()" src="../../assets/Icons/pencil.svg" width="18"></p>
     
  
@@ -30,20 +30,20 @@
             <form class="org-form row-left">
             <div class="mr-15"> 
               <p>Business Unit</p>
-              <h6 *ngIf="!IsOrg">{{currentemp.business_unit}}</h6>
-              <ion-input [value]="currentemp.business_unit" *ngIf="IsOrg"></ion-input>
+              <h6 *ngIf="!IsOrg">{{currentEmployee.business_unit}}</h6>
+              <ion-input [value]="currentEmployee.business_unit" *ngIf="IsOrg"></ion-input>
             </div>
             <div>
               <p>Department</p>
-              <h6 *ngIf="!IsOrg">{{currentemp.department}}</h6>
-              <ion-input [value]="currentemp.department" *ngIf="IsOrg"></ion-input>
+              <h6 *ngIf="!IsOrg">{{currentEmployee.department}}</h6>
+              <ion-input [value]="currentEmployee.department" *ngIf="IsOrg"></ion-input>
             </div>
              </form>
             <div>
               <p class="mb-8">Reporting Manager</p>
-              <h6 class="row-left" *ngIf="!IsOrg"> <img [attr.alt]="currentemp.department" src="../../assets/user.svg"
-                  width="18" />{{currentemp.reporting_to}}</h6>
-                  <ion-input [value]="currentemp.reporting_to" *ngIf="IsOrg"></ion-input>   
+              <h6 class="row-left" *ngIf="!IsOrg"> <img [attr.alt]="currentEmployee.department" src="../../assets/user.svg"
+                  width="18" />{{currentEmployee.reporting_to}}</h6>
+                  <ion-input [value]="currentEmployee.reporting_to" *ngIf="IsOrg"></ion-input>   
             </div>
     </div> 
   </div>
@@ -57,7 +57,7 @@
               <ion-col>
                 <div>
                   <p>Employee ID</p>
-                  <h6>{{currentemp.employee_number}}</h6>                 
+                  <h6>{{currentEmployee.employee_number}}</h6>                 
                 </div>
         
               </ion-col>
@@ -70,7 +70,7 @@
                <ion-col>
                 <div>
                   <p>Gender</p>
-                  <h6>{{currentemp.gender}}</h6>
+                  <h6>{{currentEmployee.gender}}</h6>
                 </div>
               </ion-col>
             </ion-row>
@@ -78,19 +78,19 @@
               <ion-col>
                 <div>
                   <p>Nationality</p>
-                  <h6>{{currentemp.location_country}}</h6>
+                  <h6>{{currentEmployee.location_country}}</h6>
                 </div>
               </ion-col>
               <ion-col>
                 <div>
                   <p>Marital Status</p>
-                  <h6>{{currentemp.marital_status}}</h6>
+                  <h6>{{currentEmployee.marital_status}}</h6>
                 </div>
               </ion-col>
               <ion-col>
                   <div>
                     <p>Blood Group</p>
-                    <h6>{{currentemp.blood_group}}</h6>
+                    <h6>{{currentEmployee.blood_group}}</h6>
                   </div>
                 </ion-col>
             </ion-row>

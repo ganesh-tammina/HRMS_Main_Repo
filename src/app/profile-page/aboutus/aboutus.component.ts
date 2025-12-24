@@ -23,7 +23,7 @@ import { QuillModule } from 'ngx-quill';
   ]
 })
 export class AboutusComponent implements OnInit {
-  @Input() currentemp: any;
+  @Input() currentEmployee: any;
   aboutUs: any = [];
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
@@ -47,7 +47,7 @@ export class AboutusComponent implements OnInit {
 
   ngOnInit() {
 
-    this.aboutUs = this.currentemp;
+    this.aboutUs = this.currentEmployee;
 
     console.log('Current Employeesssgtanesh:', this.aboutUs);
 

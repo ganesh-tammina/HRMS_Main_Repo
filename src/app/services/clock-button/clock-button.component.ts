@@ -21,17 +21,16 @@ import { AttendanceApiService } from '../attendance-api.service';
       <ion-button
         color="success"
       
-        (click)="clockIn()">
+        (click)="clockIn()" *ngIf="!isClockedIn">
         Web Clock-In
       </ion-button>
 
       <ion-button
         color="danger"
     
-        (click)="clockOut()">
+        (click)="clockOut()"  *ngIf="isClockedIn">
         Web Clock-Out
       </ion-button>
-
     </div>
   `,
 })
@@ -57,7 +56,7 @@ export class ClockButtonComponent implements OnInit {
       location: 'Mumbai Office',
       notes: 'Morning shift',
     }).subscribe({
-      next: (res) => {
+      next: (res:any) => {
         if (res?.success) {
           this.isClockedIn = true;
           localStorage.setItem(this.STORAGE_KEY, 'IN');
@@ -65,7 +64,7 @@ export class ClockButtonComponent implements OnInit {
           this.statusChanged.emit(res);
         }
       },
-      error: (err) => {
+      error: (err:any) => {
         alert(err?.error?.message || 'Clock-In failed');
       },
     });
@@ -76,7 +75,7 @@ export class ClockButtonComponent implements OnInit {
     this.attendanceApi.apiPunchOut({
       notes: 'Going for lunch',
     }).subscribe({
-      next: (res) => {
+      next: (res:any) => {
         if (res?.success) {
           this.isClockedIn = false;
           localStorage.setItem(this.STORAGE_KEY, 'OUT');
