@@ -10,32 +10,60 @@ import { IonicModule } from '@ionic/angular';
 
 /* 🚨 IMPORTANT: ONLY THIS SERVICE */
 import { AttendanceApiService } from '../attendance-api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-clock-button',
+  styleUrls: ['clock-button.component.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule],
   template: `
-    <div class="ion-text-center">
+  <div class="ion-text-left">
+      <!-- Clock In Button -->
+      <div class="row-center" *ngIf="!isClockedIn && currentUrl !== '/Me'">
+      <ion-button
+      class="btn-clockin"      
+      (click)="clockIn()">
+      Web Clock-In
+    </ion-button></div>
+     
 
       <ion-button
-        color="success"
-      
-        (click)="clockIn()" *ngIf="!isClockedIn">
+        fill="clear"
+        class="clear"
+        *ngIf="!isClockedIn && currentUrl == '/Me'"
+        (click)="clockIn()"
+      >
+        <img
+          src="../../assets/Icons/attendance-icons/Web clockin.svg"
+          width="16"
+          height="16"
+        />
         Web Clock-In
       </ion-button>
 
+      <!-- Clock Out Button -->
+      <div class="row-center" *ngIf="isClockedIn && currentUrl !== '/Me'">
       <ion-button
-        color="danger"
-    
-        (click)="clockOut()"  *ngIf="isClockedIn">
+        class="btn-clockout"        
+        (click)="clockOut()">
+        Web Clock-Out
+      </ion-button></div>
+
+      <ion-button
+        class="btn-clockout me-clock-out"
+        *ngIf="isClockedIn && currentUrl == '/Me'"
+        (click)="clockOut()"
+      >
         Web Clock-Out
       </ion-button>
+
     </div>
+
   `,
 })
 export class ClockButtonComponent implements OnInit {
-
+  currentUrl: any;
   /* kept only to avoid template errors */
   @Input() record: any;
   @Output() statusChanged = new EventEmitter<any>();
@@ -43,9 +71,14 @@ export class ClockButtonComponent implements OnInit {
   isClockedIn = false;
   private readonly STORAGE_KEY = 'EMPLOYEE_CLOCK_STATUS';
 
-  constructor(private attendanceApi: AttendanceApiService) { }
+  constructor(
+    private router: Router,
+    private attendanceApi: AttendanceApiService
+    ) { }
 
   ngOnInit() {
+    this.currentUrl = this.router.url;
+    console.log(this.currentUrl);
     this.isClockedIn = localStorage.getItem(this.STORAGE_KEY) === 'IN';
   }
 
