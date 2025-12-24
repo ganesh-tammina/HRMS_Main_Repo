@@ -66,6 +66,13 @@ export class AttendanceApiService {
     );
   }
 
+  getAttendanceDetailsByDate(date: string): Observable<any> {
+    return this.http.get(
+      `${this.BASE_URL}/details/${date}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || '';
 

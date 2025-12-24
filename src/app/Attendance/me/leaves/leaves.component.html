@@ -30,53 +30,43 @@
           <div>
             <label>Leave Type</label>
             <ion-select formControlName="leave_type" placeholder="Select Leave Type">
-              <ion-select-option value="CASUAL">Casual Leaves</ion-select-option>
-              <ion-select-option value="MARRIAGE">Marriage Leaves</ion-select-option>
-              <ion-select-option value="COMP_OFF">Comp-Offs</ion-select-option>
-              <ion-select-option value="MEDICAL">Sick Leaves</ion-select-option>
-              <ion-select-option value="PAID">Paid Leaves</ion-select-option>
-              <ion-select-option value="UNPAID">Unpaid Leaves</ion-select-option>
-              </ion-select>
+
+              <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.code"
+                [disabled]="leave.available <= 0">
+
+                {{ leave.name }} ({{ leave.available }} available)
+
+              </ion-select-option>
+
+            </ion-select>
           </div>
           <div class="row-left">
-              <div class="from-input">
-                  <label>From</label>
-                  <ion-input id="from-input"
-                  readonly
-                  [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''"
-                ></ion-input>
-                  <ion-popover #datePopover trigger="from-input" show-backdrop="true">
-                      <ng-template>
-                        <ion-datetime
-                        [min]="minDate"
-                        formControlName="start_date"
-                        [isDateEnabled]="isDateEnabled"
-                        (ionChange)="onDateChangeFrom($event, datePopover)"
-                      ></ion-datetime>               
-                      </ng-template>
-                    </ion-popover>
-                  
-                </div>
-      
-                <div class="to-input">
-                  <label>To</label>            
-                  <ion-input id="to-input"
-                    readonly
-                    [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''"
-                  ></ion-input>
-                <ion-popover #datePopover1 trigger="to-input" show-backdrop="true">
-                  <ng-template>
-                      <ion-datetime
-                      formControlName="end_date"
-                      [min]="leaveForm.value.start_date || minDate"
-                      [isDateEnabled]="isDateEnabled"
-                      (ionChange)="onDateChangeTo($event, datePopover1)"
-                    ></ion-datetime>     
-                  </ng-template>
-                </ion-popover>
-                </div>
+            <div class="from-input">
+              <label>From</label>
+              <ion-input id="from-input" readonly
+                [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''"></ion-input>
+              <ion-popover #datePopover trigger="from-input" show-backdrop="true">
+                <ng-template>
+                  <ion-datetime [min]="minDate" formControlName="start_date" [isDateEnabled]="isDateEnabled"
+                    (ionChange)="onDateChangeFrom($event, datePopover)"></ion-datetime>
+                </ng-template>
+              </ion-popover>
+
+            </div>
+
+            <div class="to-input">
+              <label>To</label>
+              <ion-input id="to-input" readonly
+                [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''"></ion-input>
+              <ion-popover #datePopover1 trigger="to-input" show-backdrop="true">
+                <ng-template>
+                  <ion-datetime formControlName="end_date" [min]="leaveForm.value.start_date || minDate"
+                    [isDateEnabled]="isDateEnabled" (ionChange)="onDateChangeTo($event, datePopover1)"></ion-datetime>
+                </ng-template>
+              </ion-popover>
+            </div>
           </div>
-         
+
 
           <!-- Error Message for Date Validation -->
           <ion-item *ngIf="leaveForm.get('end_date')?.hasError('dateError')" lines="none">
@@ -89,7 +79,8 @@
 
           <div>
             <label>Leave Reason</label>
-            <ion-textarea [(ngModel)]="description" (ionInput)="validateWordLimit($event)" formControlName="remarks"></ion-textarea>
+            <ion-textarea [(ngModel)]="description" (ionInput)="validateWordLimit($event)"
+              formControlName="remarks"></ion-textarea>
             <p>{{ wordsCount }}/100 words</p>
           </div>
 
@@ -110,46 +101,23 @@
   <ion-grid class="card-tabs-block" *ngIf="leaveData">
     <p class="card-header">Leave Balances</p>
     <ion-row>
-      <ion-col size="2" class="card-block">
-        <p class="card-header">Casual Leaves</p>
-        <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
-        <p class="number">{{ leaveData?.casual_leave_taken || 0 }}/{{ leaveData?.casual_leave_allocated || 0 }}</p>
-        <p class="label">days available</p>
-      </ion-col>
+      <ion-col size="2" class="card-block" *ngFor="let leave of leaveCards">
+        <p class="card-header">{{ leave.title }}</p>
 
-      <ion-col size="2" class="card-block">
-        <p class="card-header">Marriage Leaves</p>
-        <ion-img src="../../../assets/leave-icons/ML.svg"></ion-img>
-        <p class="number">{{ leaveData?.marriage_leave_taken || 0 }}/{{ leaveData?.marriage_leave_allocated || 0 }}</p>
-        <p class="label">days available</p>
-      </ion-col>
+        <ion-img [src]="leave.icon"></ion-img>
+        <div>
+          <p> Used {{ leave.used }}</p>
+        </div>
 
-      <ion-col size="2" class="card-block">
-        <p class="card-header">Sick Leaves</p>
-        <ion-img src="../../../assets/leave-icons/SL.svg"></ion-img>
-        <p class="number">{{ leaveData?.medical_leave_taken || 0 }}/{{ leaveData?.medical_leave_allocated || 0 }}</p>
-        <p class="label">days available</p>
-      </ion-col>
+        <p>
+          <span>Available</span>
+          {{ leave.available}}
+        </p>
+        <p>
+          <span>ANNUAL QUOTA</span>
+          {{ leave.allocated_days}}
+        </p>
 
-      <ion-col size="2" class="card-block">
-        <p class="card-header">Comp Offs</p>
-        <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
-        <p class="number">{{ leaveData?.comp_offs_taken || 0 }}/{{ leaveData?.comp_offs_allocated || 0 }}</p>
-        <p class="label">days available</p>
-      </ion-col>
-
-      <ion-col size="2" class="card-block">
-        <p class="card-header">Paid Leaves</p>
-        <ion-img src="../../../assets/leave-icons/CO.svg"></ion-img>
-        <p class="number">{{ leaveData?.paid_leave_taken || 0 }}/{{ leaveData?.paid_leave_allocated || 0 }}</p>
-        <p class="label">days available</p>
-      </ion-col>
-
-
-      <ion-col size="2" class="card-block">
-        <p class="card-header">Unpaid</p>
-        <ion-img src="../../../assets/leave-icons/UL.svg"></ion-img>
-        <p class="number">{{ leaveData?.unpaid_leave_taken || 0 }}/&infin;</p>
         <p class="label">days available</p>
       </ion-col>
     </ion-row>
@@ -168,23 +136,45 @@
     <!-- Check if there are leaves -->
     <ng-container *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
       <ion-row class="table-header">
-        <ion-col size="2"><p>Period</p></ion-col>
-        <ion-col size="2"><p>Leave Type</p></ion-col>
-        <ion-col size="1"><p>Days</p></ion-col>
-        <ion-col size="2"><p>Reason</p></ion-col>
-        <ion-col size="2"><p>Submitted On</p></ion-col>
-        <ion-col size="2"><p>Status</p></ion-col>
-        <ion-col size="1"><p>Action</p></ion-col>
+        <ion-col size="2">
+          <p>Period</p>
+        </ion-col>
+        <ion-col size="2">
+          <p>Leave Type</p>
+        </ion-col>
+        <ion-col size="1">
+          <p>Days</p>
+        </ion-col>
+        <ion-col size="2">
+          <p>Reason</p>
+        </ion-col>
+        <ion-col size="2">
+          <p>Submitted On</p>
+        </ion-col>
+        <ion-col size="2">
+          <p>Status</p>
+        </ion-col>
+        <ion-col size="1">
+          <p>Action</p>
+        </ion-col>
       </ion-row>
 
       <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
         <ion-col size="2">
           <p>{{ leave.start_date | date:'MMM d' }} - {{ leave.end_date | date:'MMM d' }}</p>
         </ion-col>
-        <ion-col size="2"><p>{{ leave.leave_type }}</p></ion-col>
-        <ion-col size="1"><p>{{ leave.total_days }}</p></ion-col>
-        <ion-col size="2"><p>{{ leave.remarks }}</p></ion-col>
-        <ion-col size="2"><p>{{ leave.created_at | date:'dd MMM y' }}</p></ion-col>
+        <ion-col size="2">
+          <p>{{ leave.leave_type }}</p>
+        </ion-col>
+        <ion-col size="1">
+          <p>{{ leave.total_days }}</p>
+        </ion-col>
+        <ion-col size="2">
+          <p>{{ leave.remarks }}</p>
+        </ion-col>
+        <ion-col size="2">
+          <p>{{ leave.created_at | date:'dd MMM y' }}</p>
+        </ion-col>
         <ion-col size="2">
           <p [ngClass]="{
               'pending': leave.status === 'PENDING',
@@ -256,7 +246,8 @@
             </ion-item>
             <ion-item>
               <ion-label><strong>Period:</strong></ion-label>
-              <ion-text>{{ selectedLeave?.start_date | date:'MMM d' }} - {{ selectedLeave?.end_date | date:'MMM d' }}</ion-text>
+              <ion-text>{{ selectedLeave?.start_date | date:'MMM d' }} - {{ selectedLeave?.end_date | date:'MMM d'
+                }}</ion-text>
             </ion-item>
             <ion-item>
               <ion-label><strong>Reason:</strong></ion-label>

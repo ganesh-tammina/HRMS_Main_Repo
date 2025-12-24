@@ -50,8 +50,9 @@
             <ion-card-content>
               <ion-grid class="days-grid ion-no-padding mb-30">
                 <ion-row>
-                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center" [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
-                    <div class="day-container"  [ngClass]="{
+                  <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center"
+                    [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
+                    <div class="day-container" [ngClass]="{
                       'highlight-today': isToday(day),
                       'highlight-weekoff': isWeekOffDay(day)
                   }">
@@ -116,7 +117,7 @@
 
                 <ion-col size="6">
                   <!-- Pass record changes to parent component -->
-                  <app-clock-button [record]="record" class="clear" (statusChanged)="onClockStatusChanged($event)">
+                  <app-clock-button (statusChanged)="onClockStatusChanged($event)">
                   </app-clock-button>
                   <!-- 
                   <div class="info m-5 ion-text-center" *ngIf="record?.isClockedIn">
