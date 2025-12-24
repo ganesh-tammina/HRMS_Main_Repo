@@ -66,6 +66,14 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     }
   }
 
+  private formatDateOnly(date: string | Date): string {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   /* ================= CORE RELOAD ================= */
 
   private reloadAttendance(): void {
@@ -128,11 +136,13 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     const logDate = new Date(log.attendance_date).toDateString();
 
     if (today === logDate && this.todayPunches.length) {
+      // ✅ Use today punches (already loaded)
       this.selectedLog = {
         attendance_date: log.attendance_date,
         records: this.mapPunches(this.todayPunches),
       };
     } else {
+      // ✅ Load logs by date from API
       this.selectedLog = log;
       this.loadLogDetails(log);
     }
@@ -152,24 +162,28 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   /* ================= DATA ================= */
 
   private loadLogDetails(log: any): void {
-    const employeeId = this.routeGuard.employeeID;
-    if (!employeeId) return;
+    if (!log?.attendance_date) return;
 
-    this.attendanceService.getallattendace({
-      employee_id: employeeId,
-      date: log.attendance_date,
-    }).subscribe({
-      next: res => {
-        const data = res.attendance?.[0];
-        if (data?.attendance?.length) {
-          this.selectedLog = {
-            ...log,
-            records: data.attendance.map((r: any) => ({
-              check_in: r.check_in,
-              check_out: r.check_out,
-            }))
-          };
-        }
+    const formattedDate = this.formatDateOnly(log.attendance_date);
+
+    console.log('📅 Fetching logs for:', formattedDate);
+
+    this.attendanceApi.getAttendanceDetailsByDate(formattedDate).subscribe({
+      next: (res) => {
+        const punches = res?.punches || [];
+
+        this.selectedLog = {
+          ...log,
+          records: this.mapPunches(punches),
+        };
+      },
+      error: (err) => {
+        console.error('❌ Failed to load attendance details', err);
+
+        this.selectedLog = {
+          ...log,
+          records: [],
+        };
       }
     });
   }
@@ -182,7 +196,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
       if (p.punch_type === 'in') {
         current = {
           check_in: p.punch_time,
-          check_out: null
+          check_out: null,
         };
         records.push(current);
       }
