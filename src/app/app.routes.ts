@@ -30,6 +30,7 @@ import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-ha
 import { adminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
+import { LeaveRequestsComponent } from './leave-requests/leave-requests.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -102,5 +103,9 @@ export const routes: Routes = [
   {
     path: 'payslip',
     component: PayslipsComponent
+  },
+  {
+    path: 'approve-reject-leave',
+    component: LeaveRequestsComponent
   }
 ];

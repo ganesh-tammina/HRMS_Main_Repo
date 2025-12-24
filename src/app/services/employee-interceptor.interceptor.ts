@@ -3,16 +3,17 @@ import { HttpInterceptorFn } from '@angular/common/http';
 export const employeeInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
 
-  // If token exists, clone and add header
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+  };
+
   if (token) {
-    const authReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return next(authReq);
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // Otherwise, pass request as-is
-  return next(req);
+  const authReq = req.clone({
+    setHeaders: headers,
+  });
+
+  return next(authReq);
 };
