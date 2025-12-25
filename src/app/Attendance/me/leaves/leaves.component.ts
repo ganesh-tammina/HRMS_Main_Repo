@@ -48,6 +48,7 @@ export class LeavesComponent implements OnInit {
   /** DATA */
   leaveCards: any[] = [];
   leaveRequests: any[] = [];
+  leaveRequestsDeatils: any[] = [];
   leaveTypes: { code: string; name: string; available: number }[] = [];
 
   /** FORM */
@@ -82,6 +83,8 @@ export class LeavesComponent implements OnInit {
   getallLeaves() {
     this.leaveRequestService.getMyLeaves(this.currentYear).subscribe({
       next: (res: any[]) => {
+        this.leaveRequestsDeatils = res;
+        console.log(res);
         this.leaveRequests = res.map(item => ({
           id: item.id,
           leave_type: item.type_name,
@@ -92,7 +95,8 @@ export class LeavesComponent implements OnInit {
           applied_on: item.applied_at,
           reason: item.reason,
         }));
-        console.log(this.leaveRequests);
+        this.leaveRequestService.setLeaveRequests(this.leaveRequestsDeatils);
+        console.log(this.leaveRequestsDeatils);
       }
     });
   }
