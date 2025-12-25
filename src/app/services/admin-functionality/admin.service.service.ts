@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+/* ===================== COMMON INTERFACES ===================== */
+
 export interface MasterPayload {
   name: string;
 }
@@ -9,6 +11,19 @@ export interface MasterPayload {
 export interface ApiResponse {
   message: string;
 }
+
+/* ===================== SHIFT POLICY INTERFACE ===================== */
+export interface ShiftPolicyPayload {
+  name: string;
+  shift_type: string;
+  start_time: string;              // "10:00:00"
+  end_time: string;                // "19:00:00"
+  break_duration_minutes: number;  // 60
+  timezone: string;                // "Asia/Kolkata"
+  description?: string;
+  is_active: number;               // 1 | 0
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -103,21 +118,29 @@ export class AdminService {
     return this.http.delete<ApiResponse>(`${this.baseUrl}/leave-plans/${id}`);
   }
 
-  /* ===================== SHIFT POLICIES ===================== */
-  createShiftPolicy(payload: MasterPayload): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.baseUrl}/shift-policies`, payload);
+  /* ===================== SHIFT POLICIES (FIXED & SAFE) ===================== */
+
+  // ✅ CREATE SHIFT POLICY
+  createShiftPolicy(payload: ShiftPolicyPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.baseUrl}/shift-policies`,
+      payload
+    );
   }
 
+  // ✅ GET ALL SHIFT POLICIES
   getShiftPolicies(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/shift-policies`);
+    return this.http.get<any[]>(
+      `${this.baseUrl}/shift-policies`
+    );
   }
 
-  updateShiftPolicy(id: number, payload: MasterPayload): Observable<ApiResponse> {
-    return this.http.put<ApiResponse>(`${this.baseUrl}/shift-policies/${id}`, payload);
-  }
-
-  deleteShiftPolicy(id: number): Observable<ApiResponse> {
-    return this.http.delete<ApiResponse>(`${this.baseUrl}/shift-policies/${id}`);
+  // ✅ UPDATE SHIFT POLICY
+  updateShiftPolicy(id: number, payload: ShiftPolicyPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(
+      `${this.baseUrl}/shift-policies/${id}`,
+      payload
+    );
   }
 
   /* ===================== WEEKLY OFF POLICIES ===================== */

@@ -86,4 +86,21 @@ export class LeaverequestService {
   getLeaveRequests(): any[] {
     return this.leaveRequestsSource.value;
   }
+
+  /* ================= APPROVE LEAVE ================= */
+  approveLeave(leaveId: number, remarks: string): Observable<any> {
+    return this.http.put(
+      `${this.API_URL}/approve/${leaveId}`,
+      { remarks }
+    );
+  }
+
+  /* ================= REJECT LEAVE ================= */
+  rejectLeave(leaveId: number, rejection_reason: string): Observable<any> {
+    return this.http.put(
+      `${this.API_URL}/reject/${leaveId}`,
+      { rejection_reason }
+    );
+  }
+  
 }

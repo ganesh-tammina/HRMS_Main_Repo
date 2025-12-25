@@ -24,7 +24,8 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private leaveState: LeaverequestService
+    private leaveState: LeaverequestService,
+    private leaveService: LeaverequestService
   ) { }
 
   ngOnInit() {
@@ -32,11 +33,14 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
       status: ['', Validators.required],
       manager_comment: ['']
     });
+    this.reloadFromApi();
+  }
 
-    // ✅ SUBSCRIBE TO PERMANENT STATE
-    this.sub = this.leaveState.leaveRequests$.subscribe(requests => {
-      console.log('STATE RECEIVED:', requests);
-      this.leaveRequests = requests;
+  reloadFromApi() {
+    this.leaveService.getMyLeaves(new Date().getFullYear()).subscribe(res => {
+      this.leaveRequests = res;
+      console.log(res);
+
     });
   }
 
@@ -51,5 +55,56 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
 
   closeForm() {
     this.selectedRequest = null;
+  }
+
+
+  submitDecision() {
+    if (this.actionForm.invalid || !this.selectedRequest) {
+      this.actionForm.markAllAsTouched();
+      return;
+    }
+
+    const status = this.actionForm.value.status;
+    const comment = this.actionForm.value.manager_comment || '';
+    const leaveId = this.selectedRequest.id;
+
+    if (status === 'APPROVED') {
+
+      this.leaveService.approveLeave(leaveId, comment).subscribe({
+        next: () => {
+          alert('✅ Your leave request is approved');
+
+          this.updateStateLocally('APPROVED');
+        },
+        error: () => alert('Failed to approve leave')
+      });
+
+    } else if (status === 'REJECTED') {
+
+      this.leaveService.rejectLeave(leaveId, comment).subscribe({
+        next: () => {
+          alert('❌ Your leave request is rejected');
+
+          this.updateStateLocally('REJECTED');
+        },
+        error: () => alert('Failed to reject leave')
+      });
+
+    }
+  }
+  private updateStateLocally(newStatus: 'APPROVED' | 'REJECTED') {
+
+    const updated = this.leaveRequests.map(req =>
+      req.id === this.selectedRequest.id
+        ? { ...req, status: newStatus }
+        : req
+    );
+
+    // 🔥 update shared state
+    this.leaveService.setLeaveRequests(updated);
+
+    // cleanup
+    this.selectedRequest = null;
+    this.actionForm.reset();
   }
 }

@@ -85,7 +85,7 @@ export class LeavesComponent implements OnInit {
       next: (res: any[]) => {
         this.leaveRequestsDeatils = res;
         console.log(res);
-        this.leaveRequests = res.map(item => ({
+        const mappedleaves = res.map(item => ({
           id: item.id,
           leave_type: item.type_name,
           from_date: item.start_date,
@@ -95,8 +95,9 @@ export class LeavesComponent implements OnInit {
           applied_on: item.applied_at,
           reason: item.reason,
         }));
-        this.leaveRequestService.setLeaveRequests(this.leaveRequestsDeatils);
-        console.log(this.leaveRequestsDeatils);
+        this.leaveRequests = mappedleaves;
+        this.leaveRequestService.setLeaveRequests(mappedleaves);
+        console.log(this.leaveRequests);
       }
     });
   }
