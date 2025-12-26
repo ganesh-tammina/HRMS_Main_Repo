@@ -65,9 +65,9 @@
               <!-- display check-in time safely and formatted -->
               <p style="margin-bottom: 8px">
                 Today
-                <strong *ngIf="one; else noShift">
-                  <!-- {{ shift_policy }} : -->
-                  ( {{ shift_check_in }} - {{ shift_check_out }} )
+                <strong *ngIf="shift_policy; else noShift">
+                  {{ shift_policy.name }} :
+                  ( {{ shift_policy.start_time }} - {{ shift_policy.end_time }} )
                 </strong>
                 <ng-template #noShift>
                   <em>No shift configured</em>

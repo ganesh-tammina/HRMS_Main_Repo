@@ -73,6 +73,8 @@ export class MePage implements OnInit {
   progressValue = 0.85;
   activeTab = 'log';
 
+  shiftpolicy: any;
+
   currentMonth = new Date();
   days: Date[] = [];
   today: Date = new Date();
@@ -144,8 +146,8 @@ export class MePage implements OnInit {
       console.warn('No matching shift policy found');
       return;
     }
-
-    console.log('Matched Shift Policy:', this.matchedShiftPolicy);
+    this.shift_policy = this.matchedShiftPolicy
+    console.log('Matched Shift Policy:', this.shift_policy);
 
     this.shift_check_in = this.convertTo12Hour(this.matchedShiftPolicy.check_in);
     this.shift_check_out = this.convertTo12Hour(this.matchedShiftPolicy.check_out);
