@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -7,31 +7,23 @@ import { Observable } from 'rxjs';
 })
 export class UploadService {
 
-  private readonly apiUrl = 'http://localhost:3000/api/upload/employees';
+  private EMPLOYEE_UPLOAD_URL = 'http://localhost:3000/api/upload/employees';
+  private apiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Upload Employee Master Excel File
-   * @param file Excel file (.xlsx)
-   */
-  uploadEmployeeMaster(file: File): Observable<HttpEvent<any>> {
+  // ✅ Upload employee excel file
+  uploadEmployees(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
+    return this.http.post(this.EMPLOYEE_UPLOAD_URL, formData);
+  }
+    getEmployeeById(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/employees/${id}`);
+  }
 
-    // IMPORTANT:
-    // ❌ Do NOT set Content-Type manually for multipart
-    // ✔ Browser will handle boundary
-    const request = new HttpRequest(
-      'POST',
-      this.apiUrl,
-      formData,
-      {
-        reportProgress: true,
-        responseType: 'json'
-      }
-    );
-
-    return this.http.request(request);
+  // ================= NEW METHOD (ADD THIS ONLY) =================
+  getAllEmployees(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/employees`);
   }
 }
