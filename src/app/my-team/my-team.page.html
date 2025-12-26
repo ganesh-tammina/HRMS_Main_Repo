@@ -1,6 +1,62 @@
-<ion-header [translucent]="true">
-   <!-- <app-header></app-header> -->
+<ion-header>
+   <ion-toolbar>
+      <ion-title>My Team</ion-title>
+   </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true">
+
+<ion-content class="ion-padding">
+
+   <!-- 🔍 Search -->
+
+
+   <!-- ⏳ Loader -->
+
+   <!-- 🧑‍🤝‍🧑 Team Cards -->
+   <ion-grid *ngIf="!loading && filteredMembers.length">
+      <ion-row>
+
+         <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let member of filteredMembers">
+
+            <ion-card class="team-card">
+
+               <ion-card-content>
+
+                  <div class="profile">
+                     <img src="../../assets/user.svg" />
+                  </div>
+
+                  <h3>{{ member.FullName || 'N/A' }}</h3>
+                  <p class="role">{{ member.WorkEmail || 'Employee' }}</p>
+
+                  <div class="info">
+                     <span class="dept">{{ member.department || '—' }}</span>
+
+                     <span class="status" [ngClass]="{
+                  'active': member.status === 'Active',
+                  'leave': member.status === 'On Leave'
+                }">
+                        {{ member.status || 'Active' }}
+                     </span>
+                  </div>
+
+                  <p class="email">{{ member.email }}</p>
+
+                  <ion-button expand="block" fill="outline" size="small">
+                     View Profile
+                  </ion-button>
+
+               </ion-card-content>
+
+            </ion-card>
+
+         </ion-col>
+      </ion-row>
+   </ion-grid>
+
+   <!-- ❌ Empty -->
+   <div class="empty" *ngIf="!loading && !filteredMembers.length">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>No team members found</p>
+   </div>
 
 </ion-content>

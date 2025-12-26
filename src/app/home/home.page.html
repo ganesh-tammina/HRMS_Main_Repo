@@ -15,13 +15,16 @@
                   <p class="greeting">Good morning</p>
                   <p class="date"><span>Thursday, November 27, 2025. </span> <span>On-Site</span></p>
                   <ion-buttons>
-                    <ion-button class=""><ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
+                    <ion-button (click)="attendance()" class=""><ion-img
+                        src="../../assets/home-icons/attend-icon.svg"></ion-img>
                       My Attendance</ion-button>
-                    <ion-button class=""><ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
+                    <ion-button (click)="leaves()" class=""><ion-img
+                        src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
                       Apply Leave</ion-button>
-                    <ion-button class=""><ion-img src="../../assets/home-icons/Email-icon.svg"></ion-img>
-                      My Payslip</ion-button>
-                    <ion-button class=""><ion-img src="../../assets/home-icons/Users-icon.svg"></ion-img>
+                    <!-- <ion-button class=""><ion-img src="../../assets/home-icons/Email-icon.svg"></ion-img>
+                      My Payslip</ion-button> -->
+                    <ion-button class="" (click)="myteam()"><ion-img
+                        src="../../assets/home-icons/Users-icon.svg"></ion-img>
                       My Team</ion-button>
                   </ion-buttons>
                 </div>

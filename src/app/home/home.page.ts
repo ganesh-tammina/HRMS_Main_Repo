@@ -8,6 +8,7 @@ import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -38,6 +39,7 @@ export class HomePage implements OnInit {
     private cdr: ChangeDetectorRef,
     private alertController: AlertController,
     private routeGuardService: RouteGuardService,
+    private router: Router
   ) {
 
   }
@@ -118,5 +120,14 @@ export class HomePage implements OnInit {
       backdropDismiss: false
     });
     await alert.present();
+  }
+  attendance() {
+    this.router.navigate(['/Me']);
+  }
+  leaves() {
+    this.router.navigate(['/leaves']);
+  }
+  myteam() {
+    this.router.navigate(['/MyTeam']);
   }
 }
