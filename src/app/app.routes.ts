@@ -35,6 +35,7 @@ import { LeavesAdminDashboardComponent } from './Administration/leaves-admin-das
 import { LeavetypesComponent } from './Administration/leaves-admin-dashboard/leavetypes/leavetypes.component';
 import { LeaveplansComponent } from './Administration/leaves-admin-dashboard/leaveplans/leaveplans.component';
 import { LeavesAllocationComponent } from './Administration/leaves-admin-dashboard/leaves-allocation/leaves-allocation.component';
+import { EmployeeLeaveAllocationComponent } from './Administration/leaves-admin-dashboard/employee-leave-allocation/employee-leave-allocation.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -87,8 +88,6 @@ export const routes: Routes = [
   {
     path: 'workTrack',
     component: WorkTrackComponent,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'admin',
@@ -127,5 +126,9 @@ export const routes: Routes = [
   {
     path: 'leaves_allocation',
     component: LeavesAllocationComponent
+  },
+  {
+    path: 'employee_lEAVE_allocation',
+    component: EmployeeLeaveAllocationComponent
   }
 ];

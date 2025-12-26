@@ -65,5 +65,8 @@ export class LeavesAdminDashboardComponent {
   leavesallocation() {
     this.router.navigate(['/leaves_allocation']);
   }
+  employeeallocation() {
+    this.router.navigate(['/employee_lEAVE_allocation']);
+  }
 
 }
