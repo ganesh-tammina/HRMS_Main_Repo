@@ -34,6 +34,7 @@ import { LeaveRequestsComponent } from './leave-requests/leave-requests.componen
 import { LeavesAdminDashboardComponent } from './Administration/leaves-admin-dashboard/leaves-admin-dashboard.component';
 import { LeavetypesComponent } from './Administration/leaves-admin-dashboard/leavetypes/leavetypes.component';
 import { LeaveplansComponent } from './Administration/leaves-admin-dashboard/leaveplans/leaveplans.component';
+import { LeavesAllocationComponent } from './Administration/leaves-admin-dashboard/leaves-allocation/leaves-allocation.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -122,5 +123,9 @@ export const routes: Routes = [
   {
     path: 'leave-plans',
     component: LeaveplansComponent
+  },
+  {
+    path: 'leaves_allocation',
+    component: LeavesAllocationComponent
   }
 ];
