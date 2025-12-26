@@ -4,8 +4,7 @@ import { IonicModule, IonModal } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { CandidateService } from 'src/app/services/pre-onboarding.service';
-import { UploadService } from 'src/app/services/uploads.service';
+import { UploadService } from '../../services/uploads.service';
 
 @Component({
   selector: 'app-admin',
@@ -29,53 +28,18 @@ export class AdminComponent implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
 
   constructor(
-    private candidateService: CandidateService,
     private uploadService: UploadService,
     private router: Router
-  ) { }
+  ) {
+
+  }
 
   ngOnInit() {
-    this.loadEmployees();
+    this.uploadService.getAllEmployeeDeatils().subscribe((res: any) => {
+      console.log('All Employees:', res);
+    })
   }
 
-  // ================= LOAD EMPLOYEES (🔥 FIXED) =================
-  loadEmployees() {
-    this.candidateService.getEmployeeById('').subscribe((res: any) => {
-
-      const rawEmployees = res.candidates || res.data || [];
-
-      // 🔥 MAP API RESPONSE → UI STRUCTURE
-      this.allCandidates = rawEmployees.map((emp: any) => ({
-        id: emp.id || emp.employee_id,
-
-        personalDetails: {
-          FirstName:
-            emp.personalDetails?.FirstName ||
-            emp.first_name ||
-            emp.full_name ||
-            emp.name ||
-            '-'
-        },
-
-        Department:
-          emp.Department ||
-          emp.department ||
-          emp.department_name ||
-          '-',
-
-        Email:
-          emp.Email ||
-          emp.email ||
-          emp.work_email ||
-          '-'
-      }));
-
-      // Pagination (unchanged)
-      this.calculatePagination();
-      this.currentPage = 1;
-      this.updatePagedCandidates();
-    });
-  }
 
   // ================= FILE SELECT =================
   EmployeeSelected(event: any) {
@@ -94,7 +58,6 @@ export class AdminComponent implements OnInit {
         alert('Employees uploaded successfully');
         this.modal.dismiss();
         this.EmployeeselectedFile = null;
-        this.loadEmployees(); // 🔄 refresh table
       },
       error: () => {
         alert('Employee upload failed');
