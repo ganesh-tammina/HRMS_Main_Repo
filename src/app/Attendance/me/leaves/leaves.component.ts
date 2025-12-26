@@ -44,6 +44,7 @@ export class LeavesComponent implements OnInit {
   selectedLeave: any = null;
   selectedDateFrom = '';
   selectedDateTo = '';
+  leaveCodeIdMap: any = {};
 
   /** DATA */
   leaveCards: any[] = [];
@@ -135,6 +136,10 @@ export class LeavesComponent implements OnInit {
   loadLeaveBalance() {
     this.employeeLeaves.getLeaveBalance(this.currentYear).subscribe({
       next: (res: any[]) => {
+        this.leaveCodeIdMap = {};
+        res.forEach(item => {
+          this.leaveCodeIdMap[item.type_code] = item.leave_type_id || item.id;
+        });
         this.leaveCards = res.map(item => ({
           title: item.type_name,
           allocated_days: Number(item.allocated_days),
@@ -213,15 +218,13 @@ export class LeavesComponent implements OnInit {
 
   /* ===================== LEAVE TYPE → ID ===================== */
   private mapLeaveCodeToId(code: string): number {
-    const map: any = {
-      PL: 1,
-      SL: 2,
-      ML: 3,
-      CO: 4,
-      CL: 5,
-      UL: 6,
-    };
-    return map[code];
+    const id = this.leaveCodeIdMap[code];
+
+    if (!id) {
+      console.error('Leave type ID not found for code:', code);
+    }
+
+    return id;
   }
 
   /* ===================== MODALS ===================== */
