@@ -1,3 +1,105 @@
-<p>
-  leaves-allocation works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Update Leave Allocation</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Leave Plan Details</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="allocationForm">
+
+        <ion-item>
+          <ion-label position="stacked">Leave Plan</ion-label>
+          <ion-select placeholder="Select Leave Plan" [value]="selectedPlanId"
+            (ionChange)="onPlanChange($event.detail.value)">
+
+            <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
+              {{ plan.name }}
+            </ion-select-option>
+
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Description</ion-label>
+          <ion-textarea formControlName="description"></ion-textarea>
+        </ion-item>
+
+
+        <h3 class="section-title">Allocations</h3>
+
+  <div
+  formArrayName="allocations"
+  *ngFor="let alloc of allocations.controls; let i = index"
+  [formGroupName]="i"
+  class="allocation-card">
+
+  <ion-grid>
+    <ion-row>
+
+      <!-- LEAVE TYPE SELECT -->
+      <ion-col size="4">
+        <ion-label>Leave Type</ion-label>
+        <ion-select
+          placeholder="Select Leave Type"
+          formControlName="leave_type_id"
+          interface="popover">
+
+          <ion-select-option
+            *ngFor="let type of filteredLeaveTypes"
+            [value]="type.id">
+
+            {{ type.type_name }}
+
+          </ion-select-option>
+
+        </ion-select>
+      </ion-col>
+
+      <!-- DAYS -->
+      <ion-col size="4">
+        <ion-label>Days Allocated</ion-label>
+        <ion-input
+          type="number"
+          formControlName="days_allocated">
+        </ion-input>
+      </ion-col>
+
+      <!-- PRORATE -->
+      <ion-col size="4" class="toggle-col">
+        <ion-label>Prorate</ion-label>
+        <ion-toggle formControlName="prorate_on_joining"></ion-toggle>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <ion-button
+    type="button"
+    size="small"
+    color="danger"
+    fill="clear"
+    (click)="removeAllocation(i)">
+    Remove
+  </ion-button>
+
+</div>
+        <ion-button expand="block" fill="outline" color="primary" (click)="addAllocation()">
+          + Add Allocation
+        </ion-button>
+
+        <ion-button expand="block" class="mt-20" [disabled]="loading" (click)="submit()">
+          {{ loading ? 'Updating...' : 'Update Allocation' }}
+        </ion-button>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

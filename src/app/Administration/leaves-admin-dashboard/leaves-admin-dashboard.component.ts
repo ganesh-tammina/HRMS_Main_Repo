@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { LeavePlanService } from 'src/app/services/leave-plans.service';
+import { LeaveTypeService } from 'src/app/services/leavetype.service';
 
 @Component({
   selector: 'app-leaves-admin-dashboard',
@@ -13,14 +15,55 @@ import { Router } from '@angular/router';
 export class LeavesAdminDashboardComponent {
 
   /* 🔒 STATIC COUNTS */
-  totalLeaveTypes = 6;
-  totalLeavePlans = 2;
-  totalEmployees = 120;
+  totalLeaveTypes: number = 0;
+  totalLeavePlans: number = 0;
+  totalEmployees = 0;
+  loadingPlans: any;
+  leavePlans: any
+  listLoading: any;
+  leaveTypes: any;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private leavePlanService: LeavePlanService, private leaveTypesService: LeaveTypeService) { }
+
+  ngOnInit() {
+    this.loadLeavePlans();
+    this.loadLeaveTypes();
+  }
 
   goTo(path: string) {
     console.log(path);
     this.router.navigate([path]);
   }
+  loadLeavePlans(): void {
+    this.loadingPlans = true;
+
+    this.leavePlanService.getLeavePlans().subscribe({
+      next: (res) => {
+        this.leavePlans = res;
+        this.totalLeavePlans = res.length
+        this.loadingPlans = false;
+        console.log('Leave Plans:', res);
+      },
+      error: () => (this.loadingPlans = false),
+    });
+  }
+  loadLeaveTypes(): void {
+    this.listLoading = true;
+
+    this.leaveTypesService.getLeaveTypes().subscribe({
+      next: (res) => {
+        this.leaveTypes = res || [];
+        this.totalLeaveTypes = res.length
+        this.listLoading = false;
+      },
+      error: () => {
+        this.listLoading = false;
+      },
+    });
+  }
+
+  leavesallocation() {
+    this.router.navigate(['/leaves_allocation']);
+  }
+
 }
