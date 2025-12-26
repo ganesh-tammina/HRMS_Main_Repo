@@ -22,6 +22,6 @@ export class UploadService {
 
   // ================= NEW METHOD (ADD THIS ONLY) =================
   getAllEmployeeDeatils(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.employeeUrl}`);
+    return this.http.get<any[]>(`${this.employeeUrl}/employees`);
   }
 }
