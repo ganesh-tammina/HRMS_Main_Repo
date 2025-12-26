@@ -1,14 +1,13 @@
 import {
   Component,
-  Input,
   Output,
   EventEmitter,
   OnInit,
+  Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
-/* 🚨 IMPORTANT: ONLY THIS SERVICE */
 import { AttendanceApiService } from '../attendance-api.service';
 import { Router } from '@angular/router';
 
@@ -28,6 +27,7 @@ import { Router } from '@angular/router';
     </ion-button></div>
      
 
+      <!-- CLOCK IN -->
       <ion-button
         fill="clear"
         class="clear"
@@ -68,55 +68,79 @@ export class ClockButtonComponent implements OnInit {
   @Input() record: any;
   @Output() statusChanged = new EventEmitter<any>();
 
+  /** true → show Clock-Out */
   isClockedIn = false;
-  private readonly STORAGE_KEY = 'EMPLOYEE_CLOCK_STATUS';
+  loading = false;
 
   constructor(
     private router: Router,
     private attendanceApi: AttendanceApiService
-    ) { }
+  ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.loadLastPunch();
     this.currentUrl = this.router.url;
     console.log(this.currentUrl);
-    this.isClockedIn = localStorage.getItem(this.STORAGE_KEY) === 'IN';
+  }
+
+  /* ======================
+   * GET LAST PUNCH OBJECT
+   * ====================== */
+  private loadLastPunch(): void {
+    this.attendanceApi.getTodayAttendance().subscribe({
+      next: (res) => {
+        const punches = res?.punches || [];
+
+        if (!punches.length) {
+          this.isClockedIn = false;
+          return;
+        }
+
+        const lastPunch = punches[punches.length - 1];
+        this.isClockedIn = lastPunch.punch_type === 'in';
+      },
+      error: () => {
+        this.isClockedIn = false;
+      }
+    });
   }
 
   /* ================= CLOCK IN ================= */
-  clockIn() {
+  clockIn(): void {
+    this.loading = true;
+
     this.attendanceApi.apiPunchIn({
       work_mode: 'Office',
       location: 'Mumbai Office',
       notes: 'Morning shift',
     }).subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         if (res?.success) {
           this.isClockedIn = true;
-          localStorage.setItem(this.STORAGE_KEY, 'IN');
-          alert('✅ Clock-In successful');
           this.statusChanged.emit(res);
         }
       },
-      error: (err:any) => {
+      error: (err: any) => {
         alert(err?.error?.message || 'Clock-In failed');
       },
     });
   }
 
   /* ================= CLOCK OUT ================= */
-  clockOut() {
+  clockOut(): void {
+    this.loading = true;
+
     this.attendanceApi.apiPunchOut({
       notes: 'Going for lunch',
     }).subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         if (res?.success) {
           this.isClockedIn = false;
-          localStorage.setItem(this.STORAGE_KEY, 'OUT');
-          alert('✅ Clock-Out successful');
           this.statusChanged.emit(res);
         }
       },
       error: (err) => {
+        this.loading = false;
         alert(err?.error?.message || 'Clock-Out failed');
       },
     });

@@ -1,0 +1,33 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class EmployeeLeavesService {
+
+  private readonly API_URL = 'http://localhost:3000/api/leaves';
+
+  constructor(private http: HttpClient) { }
+
+  /**
+   * GET Employee Leave Balance (Dynamic Year)
+   * @param year leave year (ex: 2025)
+   */
+  getLeaveBalance(year: number): Observable<any> {
+    const token = localStorage.getItem('token');
+
+    const headers = new HttpHeaders({
+      accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+
+    const params = new HttpParams().set('leave_year', year.toString());
+
+    return this.http.get<any>(
+      `${this.API_URL}/balance`,
+      { headers, params }
+    );
+  }
+}
