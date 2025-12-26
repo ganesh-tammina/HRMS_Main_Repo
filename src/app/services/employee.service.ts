@@ -73,8 +73,14 @@ export class EmployeeService {
   setEmployeeId(id: number) {
     this.employeeIdSubject.next(id);
   }
+  setCurrentEmployeeId(id: number) {
+    this.currentEmployeeSubject.next(id);
+  }
 
   getEmployeeId(): number | null {
     return this.employeeIdSubject.value;
+  }
+  getCurrentEmployeeId(): number | null {
+    return this.currentEmployeeSubject.value;
   }
 }
