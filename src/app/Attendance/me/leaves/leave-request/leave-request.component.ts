@@ -1,30 +1,28 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule, ToastController, IonPopover } from '@ionic/angular';
-import { HeaderComponent } from '../../../shared/header/header.component';
-import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
-import { CandidateService } from '../../../services/pre-onboarding.service';
-import { LeaveService } from '../../../services/leave.service';
+import { HeaderComponent } from '../../../../shared/header/header.component';
+import { EmployeeHeaderComponent } from '../../employee-header/employee-header.component';
+import { CandidateService } from '../../../../services/pre-onboarding.service';
+import { LeaveService } from '../../../../services/leave.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
-import { LeaveRequestComponent } from './leave-request/leave-request.component';
 
 @Component({
-  selector: 'app-leaves',
-  templateUrl: './leaves.component.html',
-  styleUrls: ['./leaves.component.scss'],
+  selector: 'app-leave-request',
+  templateUrl: './leave-request.component.html',
+  styleUrls: ['./leave-request.component.scss'],
   standalone: true,
   imports: [
     IonicModule,
     CommonModule,
     HeaderComponent,
     EmployeeHeaderComponent,
-    ReactiveFormsModule,
-    LeaveRequestComponent
+    ReactiveFormsModule
   ]
 })
-export class LeavesComponent implements OnInit {
 
+export class LeaveRequestComponent  implements OnInit {
   currentCandidate: any;
   IsOpenleavePopup = false; // for "Apply Leave" form modal
   isPopupOpen = false;      // for "Cancel/View" popup
