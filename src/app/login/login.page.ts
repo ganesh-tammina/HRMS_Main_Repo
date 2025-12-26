@@ -20,6 +20,7 @@ export class LoginPage implements OnInit {
   showPassword = false;
   showCreatePassword = false;
   loading = false;
+  isAdmin = false;
 
   constructor(
     private fb: FormBuilder,
@@ -30,16 +31,32 @@ export class LoginPage implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ['', Validators.required],
+      email: ['', Validators.required],   // email OR admin
       password: ['']
     });
   }
 
-  /** STEP 1 – CHECK EMAIL */
-  onNext(): void {
-    const email = this.loginForm.value.email;
+  /** 🔍 ADMIN CHECK */
+  private isAdminLogin(value: string): boolean {
+    return value === 'admin';
+  }
 
-    this.authService.checkEmployee(email).subscribe({
+  /** STEP 1 */
+  onNext(): void {
+    const value = this.loginForm.value.email;
+    this.isAdmin = this.isAdminLogin(value);
+
+    /* 🔥 ADMIN FLOW */
+    if (this.isAdmin) {
+      this.emailChecked = true;
+      this.showPassword = true;
+      this.loginForm.get('password')?.setValidators(Validators.required);
+      this.loginForm.get('password')?.updateValueAndValidity();
+      return;
+    }
+
+    /* 🔹 EMPLOYEE FLOW */
+    this.authService.checkEmployee(value).subscribe({
       next: (res) => {
         if (!res.found) {
           alert('Email not found in employee records');
@@ -50,24 +67,38 @@ export class LoginPage implements OnInit {
 
         if (res.hasUserAccount) {
           this.showPassword = true;
-          this.loginForm.get('password')?.setValidators(Validators.required);
         } else {
           this.showCreatePassword = true;
-          this.loginForm.get('password')?.setValidators(Validators.required);
         }
 
+        this.loginForm.get('password')?.setValidators(Validators.required);
         this.loginForm.get('password')?.updateValueAndValidity();
       },
       error: () => alert('Failed to verify email')
     });
   }
 
-  /** STEP 2 – LOGIN OR CREATE PASSWORD */
+  /** STEP 2 */
   onSubmit(): void {
     const { email, password } = this.loginForm.value;
     this.loading = true;
 
-    // 🔹 EXISTING USER LOGIN
+    /* 🔥 ADMIN LOGIN */
+    if (this.isAdmin) {
+      this.authService.login({ username: email, password }).subscribe({
+        next: () => {
+          this.loading = false;
+          this.router.navigate(['/Home'], { replaceUrl: true });
+        },
+        error: () => {
+          this.loading = false;
+          alert('Invalid admin credentials');
+        }
+      });
+      return;
+    }
+
+    /* 🔹 EMPLOYEE LOGIN */
     if (this.showPassword) {
       this.authService.login({ username: email, password }).subscribe({
         next: () => this.loadEmployeeAndNavigate(),
@@ -78,7 +109,7 @@ export class LoginPage implements OnInit {
       });
     }
 
-    // 🔹 CREATE PASSWORD & AUTO LOGIN
+    /* 🔹 CREATE PASSWORD */
     if (this.showCreatePassword) {
       this.authService.createUser(email, password).subscribe({
         next: () => {
@@ -98,11 +129,10 @@ export class LoginPage implements OnInit {
     }
   }
 
-  /** 🔥 LOAD EMPLOYEE PROFILE AFTER LOGIN */
+  /** EMPLOYEE PROFILE */
   private loadEmployeeAndNavigate(): void {
     this.employeeService.getMyProfile(true).subscribe({
-      next: (res) => {
-        console.log('Employee Profile:', res);
+      next: () => {
         this.loading = false;
         this.router.navigate(['/Home'], { replaceUrl: true });
       },
