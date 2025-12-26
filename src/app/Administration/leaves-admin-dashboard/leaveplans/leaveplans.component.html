@@ -28,16 +28,22 @@
       <ion-textarea formControlName="description"></ion-textarea>
     </ion-item>
 
-    <!-- <ion-divider class="ion-margin-vertical"></ion-divider> -->
-
-    <h3>Leave Allocations</h3>
+    <h3 style="margin-top: 20px;">Leave Allocations</h3>
 
     <div formArrayName="allocations">
-      <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i">
+      <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i"
+        style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px;">
 
+        <!-- ✅ LEAVE TYPE SELECT -->
         <ion-item>
-          <ion-label position="stacked">Leave Type ID</ion-label>
-          <ion-input type="number" formControlName="leave_type_id"></ion-input>
+          <ion-label position="stacked">Leave Type</ion-label>
+          <ion-select formControlName="leave_type_id" placeholder="Select Leave Type" interface="popover">
+
+            <ion-select-option *ngFor="let type of filteredLeaveTypes" [value]="type.id">
+              {{ type.type_name }}
+            </ion-select-option>
+
+          </ion-select>
         </ion-item>
 
         <ion-item>
@@ -55,8 +61,6 @@
           Remove Allocation
         </ion-button>
 
-        <!-- <ion-divider class="ion-margin-vertical"></ion-divider> -->
-
       </div>
     </div>
 
@@ -69,7 +73,10 @@
     </ion-button>
 
   </form>
-  <h2>Leave Plans</h2>
+
+  <!-- ================= EXISTING PLANS ================= -->
+
+  <h2 style="margin-top: 30px;">Leave Plans</h2>
 
   <ion-spinner *ngIf="loadingPlans" name="crescent"></ion-spinner>
 
@@ -96,7 +103,4 @@
     </ion-card-content>
   </ion-card>
 
-  <p *ngIf="!loadingPlans && leavePlans.length === 0" class="ion-text-center">
-    No leave plans found
-  </p>
 </ion-content>

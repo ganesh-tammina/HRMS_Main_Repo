@@ -172,7 +172,22 @@ export class MePage implements OnInit {
       this.custom_do_not_change_until_you_have_solution();
       // Fallback: if page refreshed
     }
-    
+    this.attendanceApi.getTodayAttendance().subscribe({
+      next: (response: any) => {
+
+        if (response?.has_attendance && response?.attendance) {
+          this.status = response.attendance.status; // ✅ "present"
+        } else {
+          this.status = 'Absent';
+        }
+
+        console.log('Attendance Status:', this.status);
+      },
+      error: (error) => {
+        console.error(error);
+        this.status = 'Absent';
+      }
+    });
   }
 
   custom_do_not_change_until_you_have_solution() {

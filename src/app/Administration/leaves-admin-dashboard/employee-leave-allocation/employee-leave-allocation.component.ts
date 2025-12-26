@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { LeaveInitializeService } from 'src/app/services/leave-initialize.service';
+import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { EmployeeSelectPopoverComponent } from './employee-select-popover.component';
 
 @Component({
@@ -26,31 +27,46 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
   loading = false;
 
   employees: any[] = [];
+  leavePlans: any[] = [];
+
   selectedEmployeeLabel = '';
 
   constructor(
     private fb: FormBuilder,
     private leaveInitService: LeaveInitializeService,
+    private leavePlanService: LeavePlanService,
     private toastCtrl: ToastController,
     private popoverCtrl: PopoverController
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.allocationForm = this.fb.group({
       employee_id: ['', Validators.required],
-      leave_plan_id: [2, Validators.required],
+      leave_plan_id: [null, Validators.required],   // ✅ ID stored
       leave_year: [2025, Validators.required],
     });
 
     this.loadEmployees();
+    this.loadLeavePlans(); // ✅ SAME PATTERN AS LeavesAllocationComponent
   }
 
-  loadEmployees() {
+  /* ================= LOADERS ================= */
+
+  loadEmployees(): void {
     this.leaveInitService.getAllEmployees().subscribe({
       next: res => this.employees = res,
-      error: () => this.showToast('Failed to load employees')
+      error: () => this.showToast('Failed to load employees'),
     });
   }
+
+  loadLeavePlans(): void {
+    this.leavePlanService.getLeavePlans().subscribe({
+      next: res => this.leavePlans = res,
+      error: () => this.showToast('Failed to load leave plans'),
+    });
+  }
+
+  /* ================= EMPLOYEE POPOVER ================= */
 
   async openEmployeeDropdown(ev: any) {
     const popover = await this.popoverCtrl.create({
@@ -80,6 +96,8 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
     }
   }
 
+  /* ================= SUBMIT ================= */
+
   submitAllocation() {
     if (!this.applyForAll && this.allocationForm.invalid) return;
 
@@ -108,9 +126,7 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
 
     Promise.all(
       this.employees.map(emp =>
-        this.leaveInitService
-          .initializeForEmployee(emp.id, payload)
-          .toPromise()
+        this.leaveInitService.initializeForEmployee(emp.id, payload).toPromise()
       )
     )
       .then(() => {

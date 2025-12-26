@@ -14,23 +14,32 @@
       <ion-toggle (ionChange)="onToggleChange($event)"></ion-toggle>
     </ion-item>
 
-    <!-- Searchable Dropdown -->
+    <!-- Employee selector -->
     <ion-item
       *ngIf="!applyForAll"
       button
       (click)="openEmployeeDropdown($event)">
-
       <ion-label position="stacked">Employee</ion-label>
       <ion-text color="medium">
         {{ selectedEmployeeLabel || 'Select Employee' }}
       </ion-text>
-
     </ion-item>
 
-    <!-- Leave Plan -->
+    <!-- ✅ LEAVE PLAN SELECT (SAME PATTERN AS LEAVE TYPE) -->
     <ion-item>
-      <ion-label position="stacked">Leave Plan ID</ion-label>
-      <ion-input type="number" formControlName="leave_plan_id"></ion-input>
+      <ion-label position="stacked">Leave Plan</ion-label>
+      <ion-select
+        formControlName="leave_plan_id"
+        placeholder="Select Leave Plan"
+        interface="popover">
+
+        <ion-select-option
+          *ngFor="let plan of leavePlans"
+          [value]="plan.id">
+          {{ plan.name }}
+        </ion-select-option>
+
+      </ion-select>
     </ion-item>
 
     <!-- Leave Year -->
