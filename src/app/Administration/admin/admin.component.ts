@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { UploadService } from '../../services/uploads.service';
+import { CandidateService } from 'src/app/services/pre-onboarding.service';
 
 @Component({
   selector: 'app-admin',
@@ -15,11 +16,11 @@ import { UploadService } from '../../services/uploads.service';
 })
 export class AdminComponent implements OnInit {
 
-  // ================= EMPLOYEES =================
+  /* ================= EMPLOYEES ================= */
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
 
-  pageSize = 10;
+  pageSize = 5;        // 5 records per page
   currentPage = 1;
   totalPages = 1;
 
@@ -29,24 +30,35 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private uploadService: UploadService,
+    private employeeService: CandidateService,
     private router: Router
-  ) {
+  ) { }
 
-  }
-
+  /* ================= INIT ================= */
   ngOnInit() {
-    this.uploadService.getAllEmployeeDeatils().subscribe((res: any) => {
-      console.log('All Employees:', res);
-    })
+    this.loadEmployees(); // ✅ initial load
   }
 
+  /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
+  loadEmployees() {
+    this.employeeService.getAllEmployeeDeatils().subscribe((res: any[]) => {
+      this.allCandidates = res || [];
 
-  // ================= FILE SELECT =================
+      // reset pagination
+      this.currentPage = 1;
+      this.calculatePagination();
+      this.updatePagedCandidates();
+
+      console.log('Employees loaded:', this.allCandidates);
+    });
+  }
+
+  /* ================= FILE SELECT ================= */
   EmployeeSelected(event: any) {
     this.EmployeeselectedFile = event.target.files[0];
   }
 
-  // ================= UPLOAD EMPLOYEES =================
+  /* ================= UPLOAD EMPLOYEES ================= */
   EmployeesUpload() {
     if (!this.EmployeeselectedFile) {
       alert('Please select an Excel file');
@@ -56,8 +68,12 @@ export class AdminComponent implements OnInit {
     this.uploadService.uploadEmployees(this.EmployeeselectedFile).subscribe({
       next: () => {
         alert('Employees uploaded successfully');
+
         this.modal.dismiss();
         this.EmployeeselectedFile = null;
+
+        // ✅ IMMEDIATE REFRESH (NO PAGE RELOAD)
+        this.loadEmployees();
       },
       error: () => {
         alert('Employee upload failed');
@@ -65,10 +81,12 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  // ================= PAGINATION =================
+  /* ================= PAGINATION ================= */
   calculatePagination() {
     this.totalPages = Math.ceil(this.allCandidates.length / this.pageSize);
-    if (this.totalPages === 0) this.totalPages = 1;
+    if (this.totalPages === 0) {
+      this.totalPages = 1;
+    }
   }
 
   updatePagedCandidates() {

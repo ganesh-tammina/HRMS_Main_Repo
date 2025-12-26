@@ -1,137 +1,136 @@
 <ion-content [fullscreen]="true" class="admin-dashboard">
 
   <ion-grid>
-    <div>
-      <ion-row class="ion-no-padding">
+    <ion-row class="ion-no-padding">
 
-        <!-- ================= ADD EMPLOYEES ================= -->
-        <ion-col size="12">
-          <ion-card>
-            <ion-card-header class="row-space-between">
-              <ion-card-title>Total Employees</ion-card-title>
+      <!-- ================= EMPLOYEES ================= -->
+      <ion-col size="12">
+        <ion-card>
 
-              <ion-card-subtitle>
-                <div class="row-right">
-                  <ion-button class="primary-outline-btn" id="open-upload-modal">
-                    <ion-icon name="add-circle-outline"></ion-icon>
-                    Add Employees
-                  </ion-button>
-                </div>
+          <ion-card-header class="row-space-between">
+            <ion-card-title>Total Employees</ion-card-title>
 
-                <!-- Upload Modal -->
-                <ion-modal class="upload-main-block" trigger="open-upload-modal" #modal>
-                  <ng-template>
-                    <ion-content class="ion-padding">
-                      <div class="upload-block" (click)="EmployeeInput.click()">
-                        <ion-icon name="folder-open-outline" class="folder-icon"></ion-icon>
-                        <p><strong>Upload a file</strong></p>
-                        <p>Attach the file below</p>
-
-                        <div class="drag-drop-area">
-                          <ion-icon name="arrow-down-circle-outline" class="upload-icon"></ion-icon>
-                          <p>Drag file(s) here to upload.</p>
-                          <p>
-                            Alternatively, you can select a file by
-                            <label class="select-file-link">
-                              clicking here
-                              <input type="file" #EmployeeInput accept=".xlsx,.xls"
-                                (change)="EmployeeSelected($event)" />
-                            </label>
-                          </p>
-                        </div>
-                      </div>
-
-                      <div class="modal-actions">
-                        <ion-button fill="outline" color="medium" (click)="modal.dismiss()">Cancel</ion-button>
-
-                        <ion-button class="primary-btn" (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">
-                          Upload File
-                        </ion-button>
-                      </div>
-                    </ion-content>
-                  </ng-template>
-                </ion-modal>
-
-              </ion-card-subtitle>
-            </ion-card-header>
-
-            <!-- ================= EMPLOYEE TABLE ================= -->
-            <ion-card-content>
-              <ion-grid class="table-block">
-
-                <ion-row class="table-header">
-                  <ion-col size="1">Emp Id</ion-col>
-                  <ion-col size="3">Name / Job Role</ion-col>
-                  <ion-col size="2">Department</ion-col>
-                  <ion-col size="3">Location / Shift</ion-col>
-                  <ion-col size="2">Email</ion-col>
-                  <ion-col size="1">Actions</ion-col>
-                </ion-row>
-
-                <ion-row class="table-list-row" *ngFor="let candidate of pagedCandidates">
-                  <ion-col size="1">{{ candidate.id }}</ion-col>
-
-                  <ion-col size="3">
-                    <div class="row-left">
-                      <img src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-                      <p>{{ candidate.personalDetails?.FirstName }}</p>
-                    </div>
-                  </ion-col>
-
-                  <ion-col size="2">{{ candidate.Department }}</ion-col>
-                  <ion-col size="3">{{ candidate.Department }}</ion-col>
-                  <ion-col size="2">{{ candidate.Department }}</ion-col>
-
-                  <ion-col size="1"></ion-col>
-                </ion-row>
-
-              </ion-grid>
-
-              <!-- Pagination -->
-              <div class="row-center ion-padding">
-                <ion-button (click)="prevPage()" [disabled]="currentPage === 1" fill="clear">
-                  <ion-icon name="chevron-back-outline"></ion-icon>
-                </ion-button>
-
-                <ion-text>
-                  Page {{ currentPage }} of {{ totalPages }}
-                </ion-text>
-
-                <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0"
-                  fill="clear">
-                  <ion-icon name="chevron-forward-outline"></ion-icon>
-                </ion-button>
-
-                <ion-item lines="none" style="max-width: 100px; margin-left: 10px">
-                  <ion-select [(ngModel)]="pageSize"
-                    (ionChange)="calculatePagination(); updatePagedCandidates(); currentPage = 1">
-                    <ion-select-option [value]="5">5</ion-select-option>
-                    <ion-select-option [value]="10">10</ion-select-option>
-                    <ion-select-option [value]="20">20</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </div>
-
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-
-        <!-- ===== REMAINING UI (UNCHANGED) ===== -->
-        <ion-col size="12" class="manage-block">
-          <ion-card>
-            <ion-card-header class="row-space-between">
-              <div>
-                <ion-card-title>Organization Master Data</ion-card-title>
-                <p>Access and manage core organizational lists and settings.</p>
-              </div>
+            <ion-card-subtitle>
               <div class="row-right">
-                <ion-button class="primary-outline-btn" (click)="dep()">Manage Data Lists</ion-button>
+                <ion-button class="primary-outline-btn" id="open-upload-modal">
+                  <ion-icon name="add-circle-outline"></ion-icon>
+                  Add Employees
+                </ion-button>
               </div>
-            </ion-card-header>
-          </ion-card>
-        </ion-col>
 
-      </ion-row>
-    </div>
+              <!-- Upload Modal -->
+              <ion-modal class="upload-main-block" trigger="open-upload-modal" #modal>
+                <ng-template>
+                  <ion-content class="ion-padding">
+
+                    <div class="upload-block" (click)="EmployeeInput.click()">
+                      <ion-icon name="folder-open-outline" class="folder-icon"></ion-icon>
+                      <p><strong>Upload a file</strong></p>
+                      <p>Attach the file below</p>
+
+                      <div class="drag-drop-area">
+                        <ion-icon name="arrow-down-circle-outline" class="upload-icon"></ion-icon>
+                        <p>Drag file(s) here to upload.</p>
+                        <p>
+                          Alternatively, select a file by
+                          <label class="select-file-link">
+                            clicking here
+                            <input type="file" #EmployeeInput accept=".xlsx,.xls" (change)="EmployeeSelected($event)" />
+                          </label>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="modal-actions">
+                      <ion-button fill="outline" color="medium" (click)="modal.dismiss()">Cancel</ion-button>
+                      <ion-button class="primary-btn" (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">
+                        Upload File
+                      </ion-button>
+                    </div>
+
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <!-- ================= EMPLOYEE TABLE ================= -->
+          <ion-card-content>
+
+            <ion-grid class="table-block">
+
+              <!-- Header -->
+              <ion-row class="table-header">
+                <ion-col size="1">Emp Id</ion-col>
+                <ion-col size="2">Name</ion-col>
+                <ion-col size="3">Email</ion-col>
+                <ion-col size="2">Gender</ion-col>
+              </ion-row>
+
+              <!-- Rows -->
+              <ion-row class="table-list-row" *ngFor="let candidate of pagedCandidates">
+
+                <ion-col size="1">{{ candidate.id }}</ion-col>
+
+                <ion-col size="2">
+                  {{ candidate.FirstName || '-' }}
+                </ion-col>
+
+                <ion-col size="3">
+                  {{ candidate.WorkEmail || '-' }}
+                </ion-col>
+
+                <ion-col size="2">
+                  {{ candidate.Gender || '-' }}
+                </ion-col>
+              </ion-row>
+
+              <!-- No Records -->
+              <ion-row *ngIf="pagedCandidates.length === 0">
+                <ion-col size="12" class="ion-text-center">
+                  No employees found
+                </ion-col>
+              </ion-row>
+
+            </ion-grid>
+
+            <!-- ================= PAGINATION ================= -->
+            <div class="row-center ion-padding">
+
+              <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage === 1">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </ion-button>
+
+              <ion-text>
+                Page {{ currentPage }} of {{ totalPages }}
+              </ion-text>
+
+              <ion-button fill="clear" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </ion-button>
+
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- ================= OTHER UI ================= -->
+      <ion-col size="12" class="manage-block">
+        <ion-card>
+          <ion-card-header class="row-space-between">
+            <div>
+              <ion-card-title>Organization Master Data</ion-card-title>
+              <p>Access and manage core organizational lists and settings.</p>
+            </div>
+            <div class="row-right">
+              <ion-button class="primary-outline-btn" (click)="dep()">Manage Data Lists</ion-button>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
   </ion-grid>
+
 </ion-content>

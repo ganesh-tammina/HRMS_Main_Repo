@@ -171,7 +171,7 @@ export class CandidateService {
   private offerUrl = `${this.api}candidates/offer-details`;
   private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
   private getapiUrl = `https://${this.env.apiURL}/candidates`;
-  private getEmployees = `${this.api}employee`;
+  private getEmployees = "http://localhost:3000/api/employees";
   private forgotpwd = `${this.api}forgot-password-email`;
   private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
   private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';
@@ -226,6 +226,9 @@ export class CandidateService {
     return stored ? JSON.parse(stored) : null;
   }
 
+  getAllEmployeeDeatils(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.getEmployees}`);
+  }
   loadCandidates(): void {
     this.http.get<any>(this.getapiUrl).subscribe({
       next: (data: any) => {

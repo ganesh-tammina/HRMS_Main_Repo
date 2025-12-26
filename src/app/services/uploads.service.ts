@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class UploadService {
 
   private EMPLOYEE_UPLOAD_URL = 'http://localhost:3000/api/upload/employees';
-  private employeeUrl = 'http://localhost:3000/api';
+  private employeeUrl = 'http://localhost:3000/api/employees';
 
   constructor(private http: HttpClient) { }
 
@@ -22,6 +22,6 @@ export class UploadService {
 
   // ================= NEW METHOD (ADD THIS ONLY) =================
   getAllEmployeeDeatils(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.employeeUrl}/employees`);
+    return this.http.get<any[]>(`${this.employeeUrl}`);
   }
 }
