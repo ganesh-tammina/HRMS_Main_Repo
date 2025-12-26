@@ -16,9 +16,8 @@ import { LeaveTypeService } from 'src/app/services/leavetype.service';
   styleUrls: ['./leaves-allocation.component.scss'],
 })
 export class LeavesAllocationComponent implements OnInit {
-
-  planId = 2;
-  selectedPlanId!: number | null;
+  // Use selectedPlanId as the source of truth for the ID
+  selectedPlanId: number | null = null;
 
   allocationForm!: FormGroup;
   loading = false;
@@ -36,11 +35,11 @@ export class LeavesAllocationComponent implements OnInit {
     private toastCtrl: ToastController,
     private leavePlanService: LeavePlanService,
     private leaveTypesService: LeaveTypeService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.allocationForm = this.fb.group({
-      name: ['', Validators.required],
+      name: [''], // Removed Validators.required because it's not in HTML
       description: [''],
       allocations: this.fb.array([]),
     });
@@ -49,21 +48,15 @@ export class LeavesAllocationComponent implements OnInit {
     this.loadLeaveTypes();
   }
 
-  /* ================= FORM ARRAY ================= */
-
   get allocations(): FormArray {
     return this.allocationForm.get('allocations') as FormArray;
   }
 
-  addAllocation(
-    leaveTypeId: number | null = null,
-    days: number | null = null,
-    prorate = true
-  ): void {
+  addAllocation(leaveTypeId: any = null, days: any = null, prorate = true): void {
     this.allocations.push(
       this.fb.group({
         leave_type_id: [leaveTypeId, Validators.required],
-        days_allocated: [days, Validators.required],
+        days_allocated: [days, [Validators.required, Validators.min(1)]],
         prorate_on_joining: [prorate],
       })
     );
@@ -73,45 +66,51 @@ export class LeavesAllocationComponent implements OnInit {
     this.allocations.removeAt(index);
   }
 
-  /* ================= SUBMIT ================= */
+  async submitallocationLeaves(): Promise<void> {
+    // 1. Check if a plan is selected
+    if (!this.selectedPlanId) {
+      this.showToast('Please select a Leave Plan first', 'warning');
+      return;
+    }
 
-  submit(): void {
+    // 2. Check if form is valid (e.g., all leave types and days are filled)
     if (this.allocationForm.invalid) {
       this.allocationForm.markAllAsTouched();
+      this.showToast('Please fill all required fields in the allocations', 'danger');
       return;
     }
 
     this.loading = true;
 
+    // Send the ID and the form data
     this.updateAllocationService
-      .updateLeaveAllocation(this.planId, this.allocationForm.value)
+      .updateLeaveAllocation(this.selectedPlanId, this.allocationForm.value)
       .subscribe({
-        next: async () => {
+        next: () => {
           this.loading = false;
-          const toast = await this.toastCtrl.create({
-            message: 'Leave allocation updated successfully',
-            duration: 2000,
-            color: 'success',
-          });
-          toast.present();
+          this.showToast('Leave allocation updated successfully', 'success');
         },
-        error: async () => {
+        error: (err) => {
           this.loading = false;
-          const toast = await this.toastCtrl.create({
-            message: 'Failed to update leave allocation',
-            duration: 2000,
-            color: 'danger',
-          });
-          toast.present();
+          console.error('Submit Error:', err);
+          this.showToast('Failed to update leave allocation', 'danger');
         },
       });
   }
 
-  /* ================= LEAVE PLANS ================= */
+  async showToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color,
+    });
+    toast.present();
+  }
+
+  /* ================= LOAD DATA ================= */
 
   loadLeavePlans(): void {
     this.loadingPlans = true;
-
     this.leavePlanService.getLeavePlans().subscribe({
       next: (res: any[]) => {
         this.leavePlans = res;
@@ -121,51 +120,43 @@ export class LeavesAllocationComponent implements OnInit {
     });
   }
 
-  onPlanChange(planId: number): void {
-    const selectedPlan = this.leavePlans.find(p => p.id === planId);
+  loadLeaveTypes(): void {
+    this.listLoading = true;
+    this.leaveTypesService.getLeaveTypes().subscribe({
+      next: (res: any[]) => {
+        this.leaveTypes = res;
+        this.filteredLeaveTypes = res.map((t) => ({
+          id: t.id,
+          type_name: t.type_name,
+        }));
+        this.listLoading = false;
+      },
+      error: () => (this.listLoading = false),
+    });
+  }
+
+  onPlanChange(planId: any): void {
+    const selectedPlan = this.leavePlans.find((p) => p.id === planId);
     if (!selectedPlan) return;
 
-    this.planId = planId;
     this.selectedPlanId = planId;
 
+    // Update form top-level values
     this.allocationForm.patchValue({
       name: selectedPlan.name,
       description: selectedPlan.description,
     });
 
+    // Clear and refill the FormArray
     this.allocations.clear();
-
     if (selectedPlan.allocations?.length) {
       selectedPlan.allocations.forEach((alloc: any) => {
         this.addAllocation(
           alloc.leave_type_id,
           alloc.days_allocated,
-          alloc.prorate_on_joining
+          alloc.prorate_on_joining === 1 || alloc.prorate_on_joining === true
         );
       });
     }
-  }
-
-  /* ================= LEAVE TYPES ================= */
-
-  loadLeaveTypes(): void {
-    this.listLoading = true;
-
-    this.leaveTypesService.getLeaveTypes().subscribe({
-      next: (res: any[]) => {
-        this.leaveTypes = res;
-
-        // ✅ Filter only required fields (id + type_name)
-        this.filteredLeaveTypes = this.leaveTypes
-          .filter(t => t.type_name) // safety check
-          .map(t => ({
-            id: t.id,
-            type_name: t.type_name
-          }));
-
-        this.listLoading = false;
-      },
-      error: () => (this.listLoading = false),
-    });
   }
 }
