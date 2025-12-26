@@ -112,4 +112,7 @@ export class AdminComponent implements OnInit {
   dep() {
     this.router.navigate(['/admin-department']);
   }
+  adminleaves() {
+    this.router.navigate(['/admin-leaves']);
+  }
 }

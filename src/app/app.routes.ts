@@ -31,6 +31,9 @@ import { adminFunctionalityComponent } from './Administration/admin-functionalit
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 import { LeaveRequestsComponent } from './leave-requests/leave-requests.component';
+import { LeavesAdminDashboardComponent } from './Administration/leaves-admin-dashboard/leaves-admin-dashboard.component';
+import { LeavetypesComponent } from './Administration/leaves-admin-dashboard/leavetypes/leavetypes.component';
+import { LeaveplansComponent } from './Administration/leaves-admin-dashboard/leaveplans/leaveplans.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -107,5 +110,17 @@ export const routes: Routes = [
   {
     path: 'approve-reject-leave',
     component: LeaveRequestsComponent
+  },
+  {
+    path: 'admin-leaves',
+    component: LeavesAdminDashboardComponent
+  },
+  {
+    path: 'leave-types',
+    component: LeavetypesComponent
+  },
+  {
+    path: 'leave-plans',
+    component: LeaveplansComponent
   }
 ];

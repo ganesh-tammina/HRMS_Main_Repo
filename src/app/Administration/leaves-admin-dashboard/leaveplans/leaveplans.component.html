@@ -1,0 +1,102 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Leave Plan</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form [formGroup]="leavePlanForm">
+
+    <ion-item>
+      <ion-label position="stacked">Plan Name</ion-label>
+      <ion-input formControlName="name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Leave Year Start Month</ion-label>
+      <ion-input type="number" formControlName="leave_year_start_month"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Leave Year Start Day</ion-label>
+      <ion-input type="number" formControlName="leave_year_start_day"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Description</ion-label>
+      <ion-textarea formControlName="description"></ion-textarea>
+    </ion-item>
+
+    <!-- <ion-divider class="ion-margin-vertical"></ion-divider> -->
+
+    <h3>Leave Allocations</h3>
+
+    <div formArrayName="allocations">
+      <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i">
+
+        <ion-item>
+          <ion-label position="stacked">Leave Type ID</ion-label>
+          <ion-input type="number" formControlName="leave_type_id"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Days Allocated</ion-label>
+          <ion-input type="number" formControlName="days_allocated"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-checkbox slot="start" formControlName="prorate_on_joining"></ion-checkbox>
+          <ion-label>Prorate on Joining</ion-label>
+        </ion-item>
+
+        <ion-button color="danger" expand="block" fill="outline" (click)="removeAllocation(i)"
+          *ngIf="allocations.length > 1">
+          Remove Allocation
+        </ion-button>
+
+        <!-- <ion-divider class="ion-margin-vertical"></ion-divider> -->
+
+      </div>
+    </div>
+
+    <ion-button expand="block" fill="outline" (click)="addAllocation()">
+      Add Allocation
+    </ion-button>
+
+    <ion-button expand="block" color="primary" [disabled]="loading" (click)="submit()">
+      {{ loading ? 'Saving...' : 'Create Leave Plan' }}
+    </ion-button>
+
+  </form>
+  <h2>Leave Plans</h2>
+
+  <ion-spinner *ngIf="loadingPlans" name="crescent"></ion-spinner>
+
+  <ion-card *ngFor="let plan of leavePlans">
+    <ion-card-header>
+      <ion-card-title>{{ plan.name }}</ion-card-title>
+      <ion-card-subtitle>
+        Start: {{ plan.leave_year_start_month }}/{{ plan.leave_year_start_day }}
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p>{{ plan.description }}</p>
+
+      <ion-list>
+        <ion-item *ngFor="let alloc of plan.allocations">
+          <ion-label>
+            <h3>Leave Type ID: {{ alloc.leave_type_id }}</h3>
+            <p>Days: {{ alloc.days_allocated }}</p>
+            <p>Prorate: {{ alloc.prorate_on_joining ? 'Yes' : 'No' }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <p *ngIf="!loadingPlans && leavePlans.length === 0" class="ion-text-center">
+    No leave plans found
+  </p>
+</ion-content>

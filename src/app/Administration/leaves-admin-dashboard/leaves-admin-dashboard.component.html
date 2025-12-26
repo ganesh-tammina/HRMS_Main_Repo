@@ -1,0 +1,75 @@
+<ion-content class="ion-padding">
+
+  <h2 class="page-title">Leaves Admin Dashboard</h2>
+  <p class="sub-text">Leave management overview</p>
+
+  <!-- ================= SUMMARY CARDS ================= -->
+  <ion-grid>
+    <ion-row>
+
+      <ion-col size="4">
+        <ion-card class="summary-card">
+          <ion-card-header>
+            <ion-card-title>{{ totalLeaveTypes }}</ion-card-title>
+            <ion-card-subtitle>Leave Types</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="4">
+        <ion-card class="summary-card">
+          <ion-card-header>
+            <ion-card-title>{{ totalLeavePlans }}</ion-card-title>
+            <ion-card-subtitle>Leave Plans</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="4">
+        <ion-card class="summary-card">
+          <ion-card-header>
+            <ion-card-title>{{ totalEmployees }}</ion-card-title>
+            <ion-card-subtitle>Employees</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <!-- ================= QUICK ACTIONS ================= -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Leave Administration</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <!-- ✅ Leave Types -->
+      <ion-button expand="block" (click)="goTo('/leave-types')">
+        Manage Leave Types
+      </ion-button>
+
+      <!-- ✅ Leave Plans -->
+      <ion-button expand="block" (click)="goTo('/leave-plans')">
+        Manage Leave Plans
+      </ion-button>
+
+      <ion-button expand="block" (click)="goTo('/admin/initialize-leave-balance')">
+        Initialize Leave Balance
+      </ion-button>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= INFO ================= -->
+  <ion-card color="light">
+    <ion-card-content>
+      <p>
+        Configure leave types, create leave plans and initialize employee
+        leave balances for the selected leave year.
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
