@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class AdminSetup {
-    private env = environment;
+  private env = environment;
   private baseUrl = `http://${this.env.apiURL}/api/auth/users`;
 
   constructor(private http: HttpClient) { }
@@ -53,4 +53,21 @@ export class AdminSetup {
       this.getHeaders()
     );
   }
+  createUser(payload: {
+    email: string;
+    password: string;
+    role: string;
+  }) {
+    return this.http.post(
+      `http://${this.env.apiURL}/api/auth/user/create`,
+      payload,
+      {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+  }
+
 }

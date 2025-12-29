@@ -1,19 +1,64 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Admin Setup</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="toggleCreateUser()">
+        {{ showCreateUser ? 'Cancel' : 'Create User' }}
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
 
+  <!-- ================= CREATE USER FORM ================= -->
+  <ion-card *ngIf="showCreateUser">
+    <ion-card-header>
+      <ion-card-title>Create New User</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input type="email" [(ngModel)]="newUser.email" placeholder="john.doe@company.com">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Password</ion-label>
+        <ion-input type="password" [(ngModel)]="newUser.password" placeholder="SecurePass123!">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Role</ion-label>
+        <ion-select [(ngModel)]="newUser.role">
+          <ion-select-option value="employee">Employee</ion-select-option>
+          <ion-select-option value="hr">HR</ion-select-option>
+          <ion-select-option value="manager">Manager</ion-select-option>
+          <ion-select-option value="admin">Admin</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-button expand="block" color="success" class="ion-margin-top" (click)="createUser()">
+        Create User
+      </ion-button>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= LOADING ================= -->
   <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
 
+  <!-- ================= USERS LIST ================= -->
   <ion-card *ngFor="let user of users">
-    <!-- {{ user | json }} -->
     <ion-card-content>
 
       <h2>{{ user.full_name || 'User' }}</h2>
-      <h2>Employee ID {{ user.EmployeeNumber}}</h2>
+      <h2>Employee ID {{ user.EmployeeNumber }}</h2>
       <p>Email: {{ user.username }}</p>
       <p>Role: <strong>{{ user.role }}</strong></p>
 

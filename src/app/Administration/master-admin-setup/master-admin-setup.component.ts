@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { AdminSetup } from 'src/app/services/admin-setup.service';
 
 @Component({
   selector: 'app-master-admin-setup',
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule, FormsModule],
   templateUrl: './master-admin-setup.component.html',
   styleUrls: ['./master-admin-setup.component.scss'],
 })
@@ -14,6 +15,16 @@ export class MasterAdminSetupComponent implements OnInit {
 
   users: any[] = [];
   loading = false;
+
+  /** ✅ SHOW / HIDE CREATE USER FORM */
+  showCreateUser = false;
+
+  /** ✅ CREATE USER MODEL */
+  newUser = {
+    email: '',
+    password: '',
+    role: 'employee',
+  };
 
   constructor(
     private adminSetupService: AdminSetup,
@@ -24,37 +35,23 @@ export class MasterAdminSetupComponent implements OnInit {
     this.loadUsers();
   }
 
-  /** ✅ LOAD USERS */
+  /** ================= USERS ================= */
+
   loadUsers(): void {
     this.loading = true;
 
     this.adminSetupService.getUsers().subscribe({
       next: (res: any) => {
-        console.log('RAW API RESPONSE 👉', res);
-        console.log('IS ARRAY?', Array.isArray(res?.users));
-        console.log('USERS VALUE 👉', res?.users);
-
-        // 🔒 FORCE ARRAY — NO MATTER WHAT
-        if (Array.isArray(res?.users)) {
-          this.users = res.users;
-        } else {
-          this.users = [];
-        }
-
-        console.log('FINAL USERS 👉', this.users);
-        console.log('FINAL IS ARRAY?', Array.isArray(this.users));
-
+        this.users = Array.isArray(res?.users) ? res.users : [];
         this.loading = false;
       },
-      error: (err) => {
-        console.error('API ERROR 👉', err);
+      error: () => {
         this.users = [];
         this.loading = false;
       }
     });
   }
 
-  /** ✅ MAKE HR */
   makeHR(userId: number): void {
     this.adminSetupService.makeHR(userId).subscribe({
       next: () => {
@@ -65,7 +62,6 @@ export class MasterAdminSetupComponent implements OnInit {
     });
   }
 
-  /** ✅ MAKE MANAGER */
   makeManager(userId: number): void {
     this.adminSetupService.makeManager(userId).subscribe({
       next: () => {
@@ -76,7 +72,6 @@ export class MasterAdminSetupComponent implements OnInit {
     });
   }
 
-  /** ✅ MAKE ADMIN */
   makeAdmin(userId: number): void {
     this.adminSetupService.makeAdmin(userId).subscribe({
       next: () => {
@@ -85,6 +80,39 @@ export class MasterAdminSetupComponent implements OnInit {
       },
       error: () => this.presentToast('Failed to promote to Admin'),
     });
+  }
+
+  /** ================= CREATE USER ================= */
+
+  toggleCreateUser() {
+    this.showCreateUser = !this.showCreateUser;
+  }
+
+  createUser() {
+    if (!this.newUser.email || !this.newUser.password) {
+      this.presentToast('Email and Password are required');
+      return;
+    }
+
+    this.adminSetupService.createUser(this.newUser).subscribe({
+      next: () => {
+        this.presentToast('User created successfully');
+        this.resetCreateUserForm();
+        this.showCreateUser = false;
+        this.loadUsers();
+      },
+      error: () => {
+        this.presentToast('Failed to create user');
+      }
+    });
+  }
+
+  resetCreateUserForm() {
+    this.newUser = {
+      email: '',
+      password: '',
+      role: 'employee',
+    };
   }
 
   async presentToast(message: string) {
