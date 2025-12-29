@@ -1,10 +1,33 @@
-ion-card {
+.create-card {
+  border-left: 4px solid #2dd36f;
+}
+
+.filter-card {
   margin-bottom: 16px;
 }
 
-ion-modal {
-  --height: auto;
-}
-ion-card {
+.user-card {
   margin-bottom: 16px;
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+ion-badge[color="admin"] {
+  background: #3b82f6;
+}
+
+ion-badge[color="hr"] {
+  background: #10b981;
+}
+
+ion-badge[color="manager"] {
+  background: #f59e0b;
+}
+
+ion-badge[color="employee"] {
+  background: #6b7280;
 }

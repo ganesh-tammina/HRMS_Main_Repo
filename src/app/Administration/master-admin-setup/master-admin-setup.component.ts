@@ -14,12 +14,15 @@ import { AdminSetup } from 'src/app/services/admin-setup.service';
 export class MasterAdminSetupComponent implements OnInit {
 
   users: any[] = [];
+  filteredUsers: any[] = [];
   loading = false;
 
-  /** ✅ SHOW / HIDE CREATE USER FORM */
+  /** UI STATES */
   showCreateUser = false;
+  searchText = '';
+  selectedRole = 'all';
 
-  /** ✅ CREATE USER MODEL */
+  /** CREATE USER MODEL */
   newUser = {
     email: '',
     password: '',
@@ -43,14 +46,34 @@ export class MasterAdminSetupComponent implements OnInit {
     this.adminSetupService.getUsers().subscribe({
       next: (res: any) => {
         this.users = Array.isArray(res?.users) ? res.users : [];
+        this.filteredUsers = [...this.users];
         this.loading = false;
       },
       error: () => {
         this.users = [];
+        this.filteredUsers = [];
         this.loading = false;
       }
     });
   }
+
+  /** ================= FILTER ================= */
+
+  applyFilter() {
+    this.filteredUsers = this.users.filter(user => {
+      const matchesText =
+        (user.full_name || '').toLowerCase().includes(this.searchText.toLowerCase()) ||
+        (user.username || '').toLowerCase().includes(this.searchText.toLowerCase()) ||
+        (user.EmployeeNumber || '').toString().includes(this.searchText);
+
+      const matchesRole =
+        this.selectedRole === 'all' || user.role === this.selectedRole;
+
+      return matchesText && matchesRole;
+    });
+  }
+
+  /** ================= ROLE ACTIONS ================= */
 
   makeHR(userId: number): void {
     this.adminSetupService.makeHR(userId).subscribe({
@@ -101,9 +124,7 @@ export class MasterAdminSetupComponent implements OnInit {
         this.showCreateUser = false;
         this.loadUsers();
       },
-      error: () => {
-        this.presentToast('Failed to create user');
-      }
+      error: () => this.presentToast('Failed to create user'),
     });
   }
 

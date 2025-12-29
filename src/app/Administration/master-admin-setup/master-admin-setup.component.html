@@ -7,79 +7,114 @@
         {{ showCreateUser ? 'Cancel' : 'Create User' }}
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
 
-  <!-- ================= CREATE USER FORM ================= -->
-  <ion-card *ngIf="showCreateUser">
+  <!-- ================= CREATE USER ================= -->
+  <ion-card *ngIf="showCreateUser" class="create-card">
     <ion-card-header>
       <ion-card-title>Create New User</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-input label="Email" labelPlacement="stacked"
+              [(ngModel)]="newUser.email"></ion-input>
+          </ion-col>
 
-      <ion-item>
-        <ion-label position="stacked">Email</ion-label>
-        <ion-input type="email" [(ngModel)]="newUser.email" placeholder="john.doe@company.com">
-        </ion-input>
-      </ion-item>
+          <ion-col size="12" size-md="4">
+            <ion-input label="Password" labelPlacement="stacked" type="password"
+              [(ngModel)]="newUser.password"></ion-input>
+          </ion-col>
 
-      <ion-item>
-        <ion-label position="stacked">Password</ion-label>
-        <ion-input type="password" [(ngModel)]="newUser.password" placeholder="SecurePass123!">
-        </ion-input>
-      </ion-item>
+          <ion-col size="12" size-md="4">
+            <ion-select label="Role" labelPlacement="stacked"
+              [(ngModel)]="newUser.role">
+              <ion-select-option value="employee">Employee</ion-select-option>
+              <ion-select-option value="hr">HR</ion-select-option>
+              <ion-select-option value="manager">Manager</ion-select-option>
+              <ion-select-option value="admin">Admin</ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
 
-      <ion-item>
-        <ion-label position="stacked">Role</ion-label>
-        <ion-select [(ngModel)]="newUser.role">
-          <ion-select-option value="employee">Employee</ion-select-option>
-          <ion-select-option value="hr">HR</ion-select-option>
-          <ion-select-option value="manager">Manager</ion-select-option>
-          <ion-select-option value="admin">Admin</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-button expand="block" color="success" class="ion-margin-top" (click)="createUser()">
-        Create User
-      </ion-button>
-
+        <ion-button expand="block" color="success" class="ion-margin-top"
+          (click)="createUser()">
+          Create User
+        </ion-button>
+      </ion-grid>
     </ion-card-content>
   </ion-card>
 
-  <!-- ================= LOADING ================= -->
-  <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+  <!-- ================= FILTER BAR ================= -->
+  <ion-card class="filter-card">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="8">
+          <ion-searchbar
+            placeholder="Search by name, email, employee ID"
+            [(ngModel)]="searchText"
+            (ionInput)="applyFilter()">
+          </ion-searchbar>
+        </ion-col>
 
-  <!-- ================= USERS LIST ================= -->
-  <ion-card *ngFor="let user of users">
+        <ion-col size="12" size-md="4">
+          <ion-select
+            [(ngModel)]="selectedRole"
+            (ionChange)="applyFilter()"
+            placeholder="Filter by role">
+            <ion-select-option value="all">All Roles</ion-select-option>
+            <ion-select-option value="employee">Employee</ion-select-option>
+            <ion-select-option value="hr">HR</ion-select-option>
+            <ion-select-option value="manager">Manager</ion-select-option>
+            <ion-select-option value="admin">Admin</ion-select-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+  <!-- ================= USERS ================= -->
+  <ion-spinner *ngIf="loading"></ion-spinner>
+
+  <ion-card *ngFor="let user of filteredUsers" class="user-card">
     <ion-card-content>
 
-      <h2>{{ user.full_name || 'User' }}</h2>
-      <h2>Employee ID {{ user.EmployeeNumber }}</h2>
-      <p>Email: {{ user.username }}</p>
-      <p>Role: <strong>{{ user.role }}</strong></p>
+      <div class="user-header">
+        <div>
+          <h2>{{ user.full_name || 'User' }}</h2>
+          <p>ID: {{ user.EmployeeNumber }} • {{ user.username }}</p>
+        </div>
+
+        <ion-badge [color]="user.role">
+          {{ user.role | uppercase }}
+        </ion-badge>
+      </div>
 
       <ion-grid>
         <ion-row>
           <ion-col size="4">
-            <ion-button expand="block" color="success" (click)="makeHR(user.id)" [disabled]="user.role === 'hr'">
-              Make HR
+            <ion-button expand="block" color="success"
+              (click)="makeHR(user.id)" [disabled]="user.role === 'hr'">
+              HR
             </ion-button>
           </ion-col>
 
           <ion-col size="4">
-            <ion-button expand="block" color="warning" (click)="makeManager(user.id)"
-              [disabled]="user.role === 'manager'">
-              Make Manager
+            <ion-button expand="block" color="warning"
+              (click)="makeManager(user.id)" [disabled]="user.role === 'manager'">
+              Manager
             </ion-button>
           </ion-col>
 
           <ion-col size="4">
-            <ion-button expand="block" color="primary" (click)="makeAdmin(user.id)" [disabled]="user.role === 'admin'">
-              Make Admin
+            <ion-button expand="block" color="primary"
+              (click)="makeAdmin(user.id)" [disabled]="user.role === 'admin'">
+              Admin
             </ion-button>
           </ion-col>
         </ion-row>
