@@ -205,6 +205,22 @@ ion-modal {
     &.start-preboarding-modal {
         --height: calc(100vh - 200px);
     }
+    &.side-custom-popup {
+        --width: 630px;
+        --height: 100vh;
+        --max-height: 100vh;
+        --border-radius: 0;
+        justify-content: right;
+        &.checkinInfo-popup {
+            --width: 400px;
+        }
+        ion-header {
+            box-shadow: none;   
+            ion-title {
+                @include card-header-title();
+            }         
+        }
+    }
 }
 .custom-popup {
     ion-header {
@@ -402,5 +418,9 @@ ion-popover ion-content::-webkit-scrollbar {
     --height: fit-content; 
     --backdrop-opacity: 0.35 !important;
     }
+}
+
+.side-custom-popup {
+
 }
   

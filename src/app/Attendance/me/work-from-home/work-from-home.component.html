@@ -33,7 +33,7 @@
   </div>
 
   <!-- CUSTOM CALENDAR -->
-  <div class="calendar" *ngIf="pickerOpen">
+  <div class="calendar-block" *ngIf="pickerOpen">
 
     <div class="calendar-header">
       <ion-icon name="chevron-back" (click)="prevMonth()"></ion-icon>
@@ -46,13 +46,22 @@
     </div>
 
     <div class="calendar-grid">
-      <span *ngFor="let d of blankDays"></span>
-
       <span *ngFor="let day of monthDays" (click)="selectDate(day)" [class.selected]="isSelected(day)">
         {{ day }}
       </span>
     </div>
 
+  </div>
+
+  <p class="request-info mt-12">
+    You are requesting : 
+    <span>{{ totalDays }}  {{ totalDays === 1 ? 'day' : 'days' }}</span>   
+  </p>
+
+  <!-- NOTE -->
+  <div class="input-block">
+    <label class="mb-15">Work Reason *</label>
+    <ion-textarea rows="4" [(ngModel)]="note"></ion-textarea>
   </div>
 
   <!-- FULL / CUSTOM -->
@@ -83,28 +92,15 @@
     </div>
 
   </div>
-
-  <p class="request-info">
-    You are requesting
-    <b>{{ totalDays }}</b>
-    {{ totalDays === 1 ? 'day' : 'days' }}
-  </p>
-
-  <!-- NOTE -->
-  <div class="input-block">
-    <label>Note *</label>
-    <textarea rows="4" [(ngModel)]="note"></textarea>
-  </div>
-
   <!-- NOTIFY -->
-  <div class="input-block">
-    <label>Notify</label>
-    <input type="text" [(ngModel)]="notifyEmployee" placeholder="Search employee" />
+  <div class="input-block mt-30">
+    <label class="mb-15">Notify</label>
+    <ion-input type="text" [(ngModel)]="notifyEmployee" placeholder="Search employee" ></ion-input>
   </div>
 
 </ion-content>
 
-<div class="footer">
+<div class="footer row-right mr-15">
   <ion-button class="primary-outline-btn" (click)="close()">
     Cancel
   </ion-button>

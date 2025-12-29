@@ -210,7 +210,7 @@ export class MePage implements OnInit {
   async wfh() {
     const modal = await this.modalCtrl.create({
       component: WorkFromHomeComponent,
-      cssClass: 'wfh-modal',
+      cssClass: 'side-custom-popup',
       backdropDismiss: false,
     });
     await modal.present();
