@@ -164,7 +164,7 @@ export interface weekOff {
 export class CandidateService {
   private currentLoggedEmployeeId: number | null = null;
   private env = environment;
-  private getEmployees = `http://${this.env.apiURL}api/employees`;
+  private getEmployees = `http://${this.env.apiURL}/api/employees`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
