@@ -14,6 +14,7 @@
     <li [class.active]="activeTab==='businessUnits'" (click)="setTab('businessUnits')">Business Units</li>
     <li [class.active]="activeTab==='legalEntities'" (click)="setTab('legalEntities')">Legal Entities</li>
     <li [class.active]="activeTab==='costCenters'" (click)="setTab('costCenters')">Cost Centers</li>
+    <li [class.active]="activeTab==='shifts'" (click)="setTab('shifts')">Shifts</li>
   </ul>
 
   <!-- ========== LOCATIONS ========== -->
@@ -123,6 +124,44 @@
         <td>
           <button (click)="editBusinessUnit(item)">✏️</button>
           <button (click)="deleteBusinessUnit(item.id)">🗑️</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- ================= SHIFTS ================= -->
+  <div class="tab-card" *ngIf="activeTab==='shifts'">
+    <div class="tab-header">
+      <h3>Shift Policies</h3>
+      <button class="btn-primary" (click)="openAddShift()">+ Add Shift</button>
+    </div>
+
+    <div class="create-box" *ngIf="showShiftForm">
+      <input [(ngModel)]="shiftForm.name" placeholder="Shift name">
+      <input type="time" [(ngModel)]="shiftForm.start_time">
+      <input type="time" [(ngModel)]="shiftForm.end_time">
+      <input type="number" [(ngModel)]="shiftForm.break_duration_minutes" placeholder="Break minutes">
+      <textarea [(ngModel)]="shiftForm.description" placeholder="Description"></textarea>
+
+      <div class="actions">
+        <button class="btn-primary" *ngIf="!editingShiftId" (click)="saveShift()">Save</button>
+        <button class="btn-primary" *ngIf="editingShiftId" (click)="updateShift()">Update</button>
+        <button class="btn-secondary" (click)="cancelShift()">Cancel</button>
+      </div>
+    </div>
+
+    <table class="masters-table" *ngIf="!showShiftForm">
+      <tr>
+        <th>Name</th>
+        <th>Time</th>
+        <th>Break</th>
+        <th>Actions</th>
+      </tr>
+      <tr *ngFor="let item of shiftPolicies">
+        <td>{{item.name}}</td>
+        <td>{{item.start_time}} - {{item.end_time}}</td>
+        <td>{{item.break_duration_minutes}} mins</td>
+        <td>
+          <button (click)="editShift(item)">✏️</button>
         </td>
       </tr>
     </table>

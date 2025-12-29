@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Employee Leave Allocation</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form [formGroup]="allocationForm">
+
+    <!-- Toggle -->
+    <ion-item>
+      <ion-label>Apply for all employees</ion-label>
+      <ion-toggle (ionChange)="onToggleChange($event)"></ion-toggle>
+    </ion-item>
+
+    <!-- Employee selector -->
+    <ion-item
+      *ngIf="!applyForAll"
+      button
+      (click)="openEmployeeDropdown($event)">
+      <ion-label position="stacked">Employee</ion-label>
+      <ion-text color="medium">
+        {{ selectedEmployeeLabel || 'Select Employee' }}
+      </ion-text>
+    </ion-item>
+
+    <!-- ✅ LEAVE PLAN SELECT (SAME PATTERN AS LEAVE TYPE) -->
+    <ion-item>
+      <ion-label position="stacked">Leave Plan</ion-label>
+      <ion-select
+        formControlName="leave_plan_id"
+        placeholder="Select Leave Plan"
+        interface="popover">
+
+        <ion-select-option
+          *ngFor="let plan of leavePlans"
+          [value]="plan.id">
+          {{ plan.name }}
+        </ion-select-option>
+
+      </ion-select>
+    </ion-item>
+
+    <!-- Leave Year -->
+    <ion-item>
+      <ion-label position="stacked">Leave Year</ion-label>
+      <ion-input type="number" formControlName="leave_year"></ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="ion-margin-top"
+      [disabled]="loading"
+      (click)="submitAllocation()">
+
+      {{ loading ? 'Initializing...' : 'Initialize Leave Balance' }}
+
+    </ion-button>
+
+  </form>
+
+</ion-content>

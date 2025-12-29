@@ -1,0 +1,162 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { UpdatealloctionleaveService } from 'src/app/services/updatealloctionleave.service';
+import { LeavePlanService } from 'src/app/services/leave-plans.service';
+import { LeaveTypeService } from 'src/app/services/leavetype.service';
+
+@Component({
+  selector: 'app-leaves-allocation',
+  standalone: true,
+  imports: [IonicModule, CommonModule, ReactiveFormsModule],
+  templateUrl: './leaves-allocation.component.html',
+  styleUrls: ['./leaves-allocation.component.scss'],
+})
+export class LeavesAllocationComponent implements OnInit {
+  // Use selectedPlanId as the source of truth for the ID
+  selectedPlanId: number | null = null;
+
+  allocationForm!: FormGroup;
+  loading = false;
+
+  leavePlans: any[] = [];
+  leaveTypes: any[] = [];
+  filteredLeaveTypes: any[] = [];
+
+  loadingPlans = false;
+  listLoading = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private updateAllocationService: UpdatealloctionleaveService,
+    private toastCtrl: ToastController,
+    private leavePlanService: LeavePlanService,
+    private leaveTypesService: LeaveTypeService
+  ) {}
+
+  ngOnInit(): void {
+    this.allocationForm = this.fb.group({
+      name: [''], // Removed Validators.required because it's not in HTML
+      description: [''],
+      allocations: this.fb.array([]),
+    });
+
+    this.loadLeavePlans();
+    this.loadLeaveTypes();
+  }
+
+  get allocations(): FormArray {
+    return this.allocationForm.get('allocations') as FormArray;
+  }
+
+  addAllocation(leaveTypeId: any = null, days: any = null, prorate = true): void {
+    this.allocations.push(
+      this.fb.group({
+        leave_type_id: [leaveTypeId, Validators.required],
+        days_allocated: [days, [Validators.required, Validators.min(1)]],
+        prorate_on_joining: [prorate],
+      })
+    );
+  }
+
+  removeAllocation(index: number): void {
+    this.allocations.removeAt(index);
+  }
+
+  async submitallocationLeaves(): Promise<void> {
+    // 1. Check if a plan is selected
+    if (!this.selectedPlanId) {
+      this.showToast('Please select a Leave Plan first', 'warning');
+      return;
+    }
+
+    // 2. Check if form is valid (e.g., all leave types and days are filled)
+    if (this.allocationForm.invalid) {
+      this.allocationForm.markAllAsTouched();
+      this.showToast('Please fill all required fields in the allocations', 'danger');
+      return;
+    }
+
+    this.loading = true;
+
+    // Send the ID and the form data
+    this.updateAllocationService
+      .updateLeaveAllocation(this.selectedPlanId, this.allocationForm.value)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.showToast('Leave allocation updated successfully', 'success');
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Submit Error:', err);
+          this.showToast('Failed to update leave allocation', 'danger');
+        },
+      });
+  }
+
+  async showToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color,
+    });
+    toast.present();
+  }
+
+  /* ================= LOAD DATA ================= */
+
+  loadLeavePlans(): void {
+    this.loadingPlans = true;
+    this.leavePlanService.getLeavePlans().subscribe({
+      next: (res: any[]) => {
+        this.leavePlans = res;
+        this.loadingPlans = false;
+      },
+      error: () => (this.loadingPlans = false),
+    });
+  }
+
+  loadLeaveTypes(): void {
+    this.listLoading = true;
+    this.leaveTypesService.getLeaveTypes().subscribe({
+      next: (res: any[]) => {
+        this.leaveTypes = res;
+        this.filteredLeaveTypes = res.map((t) => ({
+          id: t.id,
+          type_name: t.type_name,
+        }));
+        this.listLoading = false;
+      },
+      error: () => (this.listLoading = false),
+    });
+  }
+
+  onPlanChange(planId: any): void {
+    const selectedPlan = this.leavePlans.find((p) => p.id === planId);
+    if (!selectedPlan) return;
+
+    this.selectedPlanId = planId;
+
+    // Update form top-level values
+    this.allocationForm.patchValue({
+      name: selectedPlan.name,
+      description: selectedPlan.description,
+    });
+
+    // Clear and refill the FormArray
+    this.allocations.clear();
+    if (selectedPlan.allocations?.length) {
+      selectedPlan.allocations.forEach((alloc: any) => {
+        this.addAllocation(
+          alloc.leave_type_id,
+          alloc.days_allocated,
+          alloc.prorate_on_joining === 1 || alloc.prorate_on_joining === true
+        );
+      });
+    }
+  }
+}

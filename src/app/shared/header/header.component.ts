@@ -124,6 +124,14 @@ export class HeaderComponent implements OnInit {
     this.employeeService.getMyProfile().subscribe({
       next: (res: any) => {
         this.currentEmployee = res;
+
+        if (res?.id) {
+          this.employeeService.setEmployeeId(res.reporting_manager_id);
+          this.employeeService.setCurrentEmployeeId(res.shift_policy_id);
+          console.log('✅ Employee ID set globally:', res.shift_policy_id);
+
+          console.log('✅ Employee ID set globally:', res.reporting_manager_id);
+        }
         console.log(res, 'hello');
       }
     });

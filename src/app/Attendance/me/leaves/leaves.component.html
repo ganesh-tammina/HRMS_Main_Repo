@@ -9,6 +9,10 @@
     <ion-button (click)="openLeaveModal()">
       Request Leave
     </ion-button>
+
+    <ion-button (click)="openApproveReject()">
+      Request Approve or reject
+    </ion-button>
   </div>
 
   <!-- Apply Leave Modal -->
@@ -26,13 +30,13 @@
       </ion-header>
 
       <ion-content class="ion-padding">
-   <app-leave-request></app-leave-request>        
+   <app-leave-request></app-leave-request>     
       </ion-content>
     </ng-template>
   </ion-modal>
 
   <!-- Leave Balance Cards -->
-  <ion-grid class="card-tabs-block" *ngIf="leaveData">
+  <ion-grid class="card-tabs-block">
     <p class="card-header">Leave Balances</p>
     <ion-row>
       <ion-col size="2" class="card-block" *ngFor="let leave of leaveCards">
@@ -95,19 +99,19 @@
 
       <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
         <ion-col size="2">
-          <p>{{ leave.start_date | date:'MMM d' }} - {{ leave.end_date | date:'MMM d' }}</p>
+          <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
         </ion-col>
         <ion-col size="2">
           <p>{{ leave.leave_type }}</p>
         </ion-col>
         <ion-col size="1">
-          <p>{{ leave.total_days }}</p>
+          <p>{{ leave.days }}</p>
         </ion-col>
         <ion-col size="2">
-          <p>{{ leave.remarks }}</p>
+          <p>{{ leave.reason }}</p>
         </ion-col>
         <ion-col size="2">
-          <p>{{ leave.created_at | date:'dd MMM y' }}</p>
+          <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
         </ion-col>
         <ion-col size="2">
           <p [ngClass]="{
@@ -120,7 +124,7 @@
         </ion-col>
 
         <!-- Action Buttons -->
-        <ion-col size="1">
+        <!-- <ion-col size="1">
           <ng-container *ngIf="leave.status === 'PENDING'; else viewTemplate">
             <ion-button fill="clear" color="danger" (click)="openPopup(leave)">
               <ion-icon name="close-circle-outline"></ion-icon>
@@ -133,7 +137,7 @@
               View
             </ion-button>
           </ng-template>
-        </ion-col>
+        </ion-col> -->
       </ion-row>
     </ng-container>
 
@@ -165,11 +169,6 @@
 
       <ion-content class="ion-padding">
         <!-- Cancel Leave -->
-        <ng-container *ngIf="selectedLeave?.status === 'PENDING'; else viewContent">
-          <p>Are you sure you want to cancel this leave request?</p>
-          <ion-button expand="block" color="danger" (click)="confirmCancel()">Confirm Cancel</ion-button>
-        </ng-container>
-
         <!-- View Leave Details -->
         <ng-template #viewContent>
           <h3>Leave Details</h3>

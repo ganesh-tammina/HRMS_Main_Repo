@@ -109,7 +109,6 @@ textarea {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 78%;
     max-width: 100%;
     display: block;
     }
@@ -126,7 +125,6 @@ textarea {
   z-index: 10;
   bottom: 125%;
   left: 50%;
-  transform: translateX(-50%);
   white-space: nowrap;
 
   opacity: 0;

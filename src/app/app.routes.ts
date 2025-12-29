@@ -30,6 +30,12 @@ import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-ha
 import { adminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
+import { LeaveRequestsComponent } from './leave-requests/leave-requests.component';
+import { LeavesAdminDashboardComponent } from './Administration/leaves-admin-dashboard/leaves-admin-dashboard.component';
+import { LeavetypesComponent } from './Administration/leaves-admin-dashboard/leavetypes/leavetypes.component';
+import { LeaveplansComponent } from './Administration/leaves-admin-dashboard/leaveplans/leaveplans.component';
+import { LeavesAllocationComponent } from './Administration/leaves-admin-dashboard/leaves-allocation/leaves-allocation.component';
+import { EmployeeLeaveAllocationComponent } from './Administration/leaves-admin-dashboard/employee-leave-allocation/employee-leave-allocation.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -82,8 +88,6 @@ export const routes: Routes = [
   {
     path: 'workTrack',
     component: WorkTrackComponent,
-    canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['HR', 'USER', 'ADMIN'] },
   },
   {
     path: 'admin',
@@ -102,5 +106,29 @@ export const routes: Routes = [
   {
     path: 'payslip',
     component: PayslipsComponent
+  },
+  {
+    path: 'approve-reject-leave',
+    component: LeaveRequestsComponent
+  },
+  {
+    path: 'admin-leaves',
+    component: LeavesAdminDashboardComponent
+  },
+  {
+    path: 'leave-types',
+    component: LeavetypesComponent
+  },
+  {
+    path: 'leave-plans',
+    component: LeaveplansComponent
+  },
+  {
+    path: 'leaves_allocation',
+    component: LeavesAllocationComponent
+  },
+  {
+    path: 'employee_lEAVE_allocation',
+    component: EmployeeLeaveAllocationComponent
   }
 ];

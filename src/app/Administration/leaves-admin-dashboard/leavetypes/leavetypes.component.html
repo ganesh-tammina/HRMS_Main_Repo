@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Leave Types</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- ================= CREATE FORM ================= -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Create Leave Type</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="leaveTypeForm">
+
+        <ion-item>
+          <ion-label position="stacked">Type Name</ion-label>
+          <ion-input formControlName="type_name"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Type Code</ion-label>
+          <ion-input formControlName="type_code"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Paid Leave</ion-label>
+          <ion-toggle formControlName="is_paid"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Requires Approval</ion-label>
+          <ion-toggle formControlName="requires_approval"></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Carry Forward</ion-label>
+          <ion-toggle formControlName="can_carry_forward"></ion-toggle>
+        </ion-item>
+
+        <ion-item *ngIf="leaveTypeForm.value.can_carry_forward">
+          <ion-label position="stacked">Max Carry Forward Days</ion-label>
+          <ion-input
+            type="number"
+            formControlName="max_carry_forward_days">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Description</ion-label>
+          <ion-textarea formControlName="description"></ion-textarea>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          class="mt-20"
+          [disabled]="loading"
+          (click)="submit()">
+          {{ loading ? 'Creating...' : 'Create Leave Type' }}
+        </ion-button>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= LIST ================= -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Leave Types List</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-spinner *ngIf="listLoading" name="crescent"></ion-spinner>
+
+      <ion-grid *ngIf="!listLoading && leaveTypes.length">
+        <ion-row class="table-header">
+          <ion-col size="3">Name</ion-col>
+          <ion-col size="2">Code</ion-col>
+          <ion-col size="2">Paid</ion-col>
+          <ion-col size="2">Approval</ion-col>
+          <ion-col size="3">Carry Forward</ion-col>
+        </ion-row>
+
+        <ion-row *ngFor="let type of leaveTypes">
+          <ion-col size="3">{{ type.type_name }}</ion-col>
+          <ion-col size="2">{{ type.type_code }}</ion-col>
+          <ion-col size="2">{{ type.is_paid ? 'Yes' : 'No' }}</ion-col>
+          <ion-col size="2">{{ type.requires_approval ? 'Yes' : 'No' }}</ion-col>
+          <ion-col size="3">
+            {{ type.can_carry_forward ? type.max_carry_forward_days + ' days' : 'No' }}
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <p *ngIf="!listLoading && !leaveTypes.length" class="empty-text">
+        No leave types found
+      </p>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
