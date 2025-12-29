@@ -49,6 +49,7 @@ export class MePage implements OnInit {
   shift_policy: any;
 
   shift_id: any;
+  weekend_id: any;
   allShiftPolicies: any[] = [];
   matchedShiftPolicy: any = null;
 
@@ -110,9 +111,16 @@ export class MePage implements OnInit {
       this.matchEmployeeShift(); // try matching when policies arrive
     });
 
+    this.adminService.getWeeklyOffPolicies().subscribe((res: any[]) => {
+      console.log('Week Off Policies:', res);
+      this.week_off_days = res.map((item: any) => item.day);
+    });
+
     // ✅ FIX 2: SHIFT ID ARRIVES HERE
     this.employeeService.getMyProfile().subscribe((rs: any) => {
       this.shift_id = rs.shift_policy_id;
+      this.weekend_id = rs.weekly_off_policy_id;
+      console.log('Weekend ID:', this.weekend_id);
       console.log('Employee Shift Policy ID:', this.shift_id);
       this.matchEmployeeShift(); // try matching when id arrives
     });

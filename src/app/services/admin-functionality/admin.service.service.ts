@@ -210,4 +210,21 @@ export class AdminService {
   deleteHolidayList(id: number): Observable<ApiResponse> {
     return this.http.delete<ApiResponse>(`${this.baseUrl}/holiday-lists/${id}`);
   }
+
+  /* ===================== WEEKLY OFF POLICIES ===================== */
+
+  // ✅ POST: Create Weekly Off Policy
+  createWeeklyOffPolicys(payload: MasterPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.baseUrl}/weekly-off-policies`,
+      payload
+    );
+  }
+
+  // ✅ GET: Get All Weekly Off Policies
+  getWeeklyOffPolicy(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/weekly-off-policies`
+    );
+  }
 }
