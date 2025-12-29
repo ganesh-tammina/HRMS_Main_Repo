@@ -46,20 +46,20 @@ export class CandidateStatusComponent implements OnInit {
     }
 
     // ✅ Get candidate ID from route if available
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.candidateService.getCandidateById(id).subscribe({
-          next: (res: any) => {
-            this.candidate = res.candidate;
-            console.log('✅ Candidate fetched from backend:', this.candidate);
-          },
-          error: (err) => {
-            console.error('❌ Error fetching candidate:', err);
-          }
-        });
-      }
-    });
+    // this.route.paramMap.subscribe(params => {
+    //   const id = params.get('id');
+    //   if (id) {
+    //     this.candidateService.getCandidateById(id).subscribe({
+    //       next: (res: any) => {
+    //         this.candidate = res.candidate;
+    //         console.log('✅ Candidate fetched from backend:', this.candidate);
+    //       },
+    //       error: (err) => {
+    //         console.error('❌ Error fetching candidate:', err);
+    //       }
+    //     });
+    //   }
+    // });
 
 
      

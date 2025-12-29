@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class UploadService {
 
-  private EMPLOYEE_UPLOAD_URL = 'http://localhost:3000/api/upload/employees';
-  private employeeUrl = 'http://localhost:3000/api/employees';
+  private EMPLOYEE_UPLOAD_URL = 'http://${this.env.apiURL}/api/upload/employees';
+  private employeeUrl = 'http://${this.env.apiURL}/api/employees';
 
   constructor(private http: HttpClient) { }
 

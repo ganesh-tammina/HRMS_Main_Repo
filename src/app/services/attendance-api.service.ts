@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AttendanceApiService {
-  private readonly BASE_URL = 'http://localhost:3000/api/attendance';
+  private readonly BASE_URL = 'http://${this.env.apiURL}/api/attendance';
 
   constructor(private http: HttpClient) { }
 

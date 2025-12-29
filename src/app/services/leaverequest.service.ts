@@ -17,7 +17,7 @@ export interface MyLeave {
 })
 export class LeaverequestService {
 
-  private readonly API_URL = 'http://localhost:3000/api/leaves';
+  private readonly API_URL = 'http://${this.env.apiURL}/api/leaves';
 
   /** 🔹 STATE MANAGEMENT */
   private myLeavesSubject = new BehaviorSubject<MyLeave[]>([]);

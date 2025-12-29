@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-
+ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-
-  private LOGIN_URL = 'http://localhost:3000/api/auth/login';
-  private CHECK_EMAIL_URL = 'http://localhost:3000/api/auth/employee/check';
-  private CREATE_USER_URL = 'http://localhost:3000/api/auth/user/create';
+   private env = environment;
+  private LOGIN_URL = `http://${this.env.apiURL}/api/auth/login`;
+  private CHECK_EMAIL_URL = `http://${this.env.apiURL}/api/auth/employee/check`;
+  private CREATE_USER_URL = `http://${this.env.apiURL}/api/auth/user/create`;
 
   constructor(private http: HttpClient) { }
 

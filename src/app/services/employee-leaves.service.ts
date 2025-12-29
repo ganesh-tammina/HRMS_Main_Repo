@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class EmployeeLeavesService {
 
-  private readonly API_URL = 'http://localhost:3000/api/leaves';
+  private readonly API_URL = 'http://${this.env.apiURL}/api/leaves';
 
   constructor(private http: HttpClient) { }
 

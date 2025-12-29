@@ -51,34 +51,7 @@ export class CandidateOfferLetterComponent implements OnInit {
     }
 
     // Fetch candidate by route param (if not passed through navigation)
-  this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.candidateService.getCandidateById(id).subscribe({
-          next: (res: any) => {
-            this.candidate = res.candidate;
-            console.log('✅ Candidate fetched from backend:', this.candidate);
-          },
-          error: (err) => {
-            console.error('❌ Error fetching candidate:', err);
-          }
-        });
-      }
-    });
 
-        this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
-          if (this.allEmployees.length > 0) {
-            this.one = this.allEmployees[0];
-            this.fullName = this.one[0].full_name;
-            console.log(this.one);
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching all employees:', err);
-        },
-      });
   }
 
   // 🔹 Load candidate details by ID from backend

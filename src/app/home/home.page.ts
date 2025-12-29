@@ -46,41 +46,6 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
 
-    if (this.routeGuardService.employeeID) {
-      this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
-          if (this.allEmployees.length > 0) {
-            this.one = this.allEmployees[0];
-            this.fullName = this.one[0].reporting_to;
-            this.employee_id = this.one[0].employee_id;
-            this.candidateService.getpayslips(this.employee_id).subscribe((response: any) => {
-              console.log('PaySlips', response);
-            })
-            if (this.one[0].image) {
-              this.imageUrls = `https://${this.profileimg}${this.one[0].image}`;
-            } else {
-              this.imageUrls = '../../../assets/user.svg';
-            }
-            console.log('profile', this.imageUrls);
-            localStorage.setItem('employee_id', this.employee_id);
-            this.candidateService.setLoggedEmployeeId(this.employee_id);
-            console.log(this.fullName);
-            this.currentemp = this.one[0];
-
-            console.log(this.currentemp);
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching all employees:', err);
-        },
-      });
-      // Subscribe to current candidate observable
-
-      // Fallback: if page refreshed
-    }
-
-    // Check if we should show login success popup
     const showLoginSuccess = localStorage.getItem('showLoginSuccess');
     if (showLoginSuccess === 'true') {
       localStorage.removeItem('showLoginSuccess');

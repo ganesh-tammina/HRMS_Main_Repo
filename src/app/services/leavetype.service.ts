@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class LeaveTypeService {
 
-  private API_URL = 'http://localhost:3000/api/leaves/types';
+  private API_URL = 'http://${this.env.apiURL}/api/leaves/types';
 
   constructor(private http: HttpClient) { }
 

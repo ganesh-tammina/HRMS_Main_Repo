@@ -1,13 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
-
-  private readonly API_URL = 'http://localhost:3000/api/employees';
+  private env = environment;
+  private  readonly API_URL = `http://${this.env.apiURL}api/employees`;
+  //  private readonly API_URL = 'http://localhost:3000/api/employees';
   private readonly profileEndpoint = `${this.API_URL}/profile/me`;
 
   /* ✅ NEW ENDPOINT */

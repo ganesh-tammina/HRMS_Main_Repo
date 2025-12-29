@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class LeaveInitializeService {
 
-  private baseUrl = 'http://localhost:3000/api';
+  private baseUrl = 'http://${this.env.apiURL}/api';
 
   constructor(private http: HttpClient) { }
 

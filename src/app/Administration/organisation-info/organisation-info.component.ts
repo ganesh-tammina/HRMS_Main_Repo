@@ -32,17 +32,5 @@ export class OrganisationInfoComponent implements OnInit {
       return;
     }
 
-    this.candidateService.uploadImage(this.selectedFile).subscribe({
-      next: (res) => {
-        console.log('Uploaded successfully:', res);
-        this.imageUrl = res.imageUrl; // URL from server
-        this.candidateService.getImages().subscribe(images => {
-          console.log('Images:', images);
-        })
-      },
-      error: (err) => {
-        console.error('Upload failed:', err);
-      }
-    });
   }
 }

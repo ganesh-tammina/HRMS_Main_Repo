@@ -4,6 +4,6 @@ const local =
 
 export const environment = {
   production: false,
-  apiURL: local ? '30.0.0.121:4201' : 'tamminademoapps.com:9295',
+  apiURL: local ? '30.0.0.128:4201' : 'tamminademoapps.com:9295',
   candidateURL: local ? '30.0.0.78:4200' : 'tamminademoapps.com:9292',
 };

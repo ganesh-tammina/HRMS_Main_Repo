@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class TimesheetService {
 
-  private baseUrl = 'http://localhost:3000/api/timesheets';
+  private baseUrl = 'http://${this.env.apiURL}/api/timesheets';
 
   constructor(private http: HttpClient) { }
 

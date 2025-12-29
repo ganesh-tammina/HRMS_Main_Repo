@@ -29,7 +29,7 @@ export interface ShiftPolicyPayload {
 })
 export class AdminService {
 
-  private baseUrl = 'http://localhost:3000/api';
+  private baseUrl = 'http://${this.env.apiURL}/api';
 
   constructor(private http: HttpClient) { }
 

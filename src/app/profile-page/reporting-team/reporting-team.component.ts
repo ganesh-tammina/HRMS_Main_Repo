@@ -26,38 +26,38 @@ export class ReportingTEamComponent implements OnInit {
 
     if (this.routeGuardService.employeeID) {
 
-      this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
+      // this.candidateService.getEmpDet().subscribe({
+      //   next: (response: any) => {
+      //     this.allEmployees = response.data || [];
 
-          if (this.allEmployees.length > 0) {
-            const emp = Array.isArray(this.allEmployees[0])
-              ? this.allEmployees[0][0]
-              : this.allEmployees[0];
+      //     if (this.allEmployees.length > 0) {
+      //       const emp = Array.isArray(this.allEmployees[0])
+      //         ? this.allEmployees[0][0]
+      //         : this.allEmployees[0];
 
-            this.employee_id = emp.employee_id;
+      //       this.employee_id = emp.employee_id;
 
-            console.log("Employee ID Loaded:", this.employee_id);
+      //       console.log("Employee ID Loaded:", this.employee_id);
 
-            // ✅ CALL HERE (AFTER LOADING employee_id)
-            this.loadReportingTeam(this.employee_id);
-          }
-        }
-      });
+      //       // ✅ CALL HERE (AFTER LOADING employee_id)
+      //       this.loadReportingTeam(this.employee_id);
+      //     }
+      //   }
+      // });
     }
   }
 
-  loadReportingTeam(id: number) {
-    this.candidateService.getReportingTeam(id).subscribe({
-      next: (res) => {
-        this.team = res.data;
-        this.value = this.team.length;
-        console.log("Team Length:", this.value);
-        console.log("Reporting Team:", this.team);
-      },
-      error: (err) => console.log("Error:", err),
-    });
-  }
+  // loadReportingTeam(id: number) {
+  //   this.candidateService.getReportingTeam(id).subscribe({
+  //     next: (res) => {
+  //       this.team = res.data;
+  //       this.value = this.team.length;
+  //       console.log("Team Length:", this.value);
+  //       console.log("Reporting Team:", this.team);
+  //     },
+  //     error: (err) => console.log("Error:", err),
+  //   });
+  // }
 
   p: number = 1;
 }

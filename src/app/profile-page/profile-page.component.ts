@@ -148,49 +148,49 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.candidateService
-      .getEmpDet()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response: any) => {
-          if (response?.data?.length > 0) {
-            this.currentemp = response.data[0];
-            console.log('🔁 Employee Details refreshed:', this.currentemp);
+    // this.candidateService
+    //   //.getEmpDet()
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe({
+    //     next: (response: any) => {
+    //       if (response?.data?.length > 0) {
+    //         this.currentemp = response.data[0];
+    //         console.log('🔁 Employee Details refreshed:', this.currentemp);
 
-            // If backend provides profile image path, create a full URL & cache-bust
-            if (this.currentemp.profile_image) {
-              const ipBase = 'https://30.0.0.78:3562';
-              const prefix = /^https?:\/\//i.test(this.currentemp.profile_image)
-                ? ''
-                : ipBase;
-              const fullImageUrl = `${prefix}${this.currentemp.profile_image}`;
-              const cacheBusted = `${fullImageUrl}${
-                fullImageUrl.includes('?') ? '&' : '?'
-              }t=${Date.now()}`;
-              this.uploadedImageUrl = cacheBusted;
-              localStorage.setItem('uploadedImageUrl', cacheBusted);
-              try {
-                localStorage.setItem('uploadedImageUrl', cacheBusted);
-                console.log(
-                  '💾 Image URL saved to localStorage (from refresh):',
-                  cacheBusted
-                );
-              } catch (err) {
-                console.warn(
-                  '⚠️ Could not save uploadedImageUrl to localStorage:',
-                  err
-                );
-              }
-            }
-          } else {
-            console.warn('⚠️ No employee data found in response');
-            this.currentemp = [];
-          }
-        },
-        error: (err) => {
-          console.error('❌ Error fetching employee details:', err);
-        },
-      });
+    //         // If backend provides profile image path, create a full URL & cache-bust
+    //         if (this.currentemp.profile_image) {
+    //           const ipBase = 'https://30.0.0.78:3562';
+    //           const prefix = /^https?:\/\//i.test(this.currentemp.profile_image)
+    //             ? ''
+    //             : ipBase;
+    //           const fullImageUrl = `${prefix}${this.currentemp.profile_image}`;
+    //           const cacheBusted = `${fullImageUrl}${
+    //             fullImageUrl.includes('?') ? '&' : '?'
+    //           }t=${Date.now()}`;
+    //           this.uploadedImageUrl = cacheBusted;
+    //           localStorage.setItem('uploadedImageUrl', cacheBusted);
+    //           try {
+    //             localStorage.setItem('uploadedImageUrl', cacheBusted);
+    //             console.log(
+    //               '💾 Image URL saved to localStorage (from refresh):',
+    //               cacheBusted
+    //             );
+    //           } catch (err) {
+    //             console.warn(
+    //               '⚠️ Could not save uploadedImageUrl to localStorage:',
+    //               err
+    //             );
+    //           }
+    //         }
+    //       } else {
+    //         console.warn('⚠️ No employee data found in response');
+    //         this.currentemp = [];
+    //       }
+    //     },
+    //     // error: (err) => {
+    //     //   console.error('❌ Error fetching employee details:', err);
+    //     // },
+    //   });
   }
 
   onFileSelected($event: any) {
@@ -231,80 +231,80 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     console.log('Uploading image for empId ->', empId);
 
     this.candidateService
-      .uploadImage(formData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: any) => {
-          console.log('✅ Upload response:', res);
-          let cacheBusted = '';
-            this.navCtrl.navigateForward('/profile-page');
+      //.uploadImage(formData)
+      // .pipe(takeUntil(this.destroy$))
+      // .subscribe({
+      //   next: (res: any) => {
+      //     console.log('✅ Upload response:', res);
+      //     let cacheBusted = '';
+      //       this.navCtrl.navigateForward('/profile-page');
 
-          // If backend returns image path
-          if (res && res.image) {
-            const ipBase = 'https://30.0.0.78:3562';
-            const fullImageUrl = `${ipBase}${res.image}`;
-            cacheBusted = `${fullImageUrl}${
-              fullImageUrl.includes('?') ? '&' : '?'
-            }t=${Date.now()}`;
-            this.uploadedImageUrl = cacheBusted;
+      //     // If backend returns image path
+      //     if (res && res.image) {
+      //       const ipBase = 'https://30.0.0.78:3562';
+      //       const fullImageUrl = `${ipBase}${res.image}`;
+      //       cacheBusted = `${fullImageUrl}${
+      //         fullImageUrl.includes('?') ? '&' : '?'
+      //       }t=${Date.now()}`;
+      //       this.uploadedImageUrl = cacheBusted;
 
-            try {
-              localStorage.setItem('uploadedImageUrl', cacheBusted);
-              console.log('💾 Image URL saved to localStorage:', cacheBusted);
-            } catch (err) {
-              console.warn('⚠️ Could not save image URL to localStorage:', err);
-            }
-          } else if (res && res.employee) {
-            // If backend returns updated employee object
-            this.currentemp = res.employee;
-            if (res.employee.profile_image) {
-              const prefix = /^https?:\/\//i.test(res.employee.profile_image)
-                ? ''
-                : 'https://30.0.0.78:3562';
-              const fullImageUrl = `${prefix}${res.employee.profile_image}`;
-              cacheBusted = `${fullImageUrl}${
-                fullImageUrl.includes('?') ? '&' : '?'
-              }t=${Date.now()}`;
-              this.uploadedImageUrl = cacheBusted;
-              try {
-                localStorage.setItem('uploadedImageUrl', cacheBusted);
-              } catch {}
-            }
-          } else {
-            console.log(
-              'ℹ️ Upload response did not contain `.image` or `.employee` field; response:',
-              res
-            );
-          }
+      //       try {
+      //         localStorage.setItem('uploadedImageUrl', cacheBusted);
+      //         console.log('💾 Image URL saved to localStorage:', cacheBusted);
+      //       } catch (err) {
+      //         console.warn('⚠️ Could not save image URL to localStorage:', err);
+      //       }
+      //     } else if (res && res.employee) {
+      //       // If backend returns updated employee object
+      //       this.currentemp = res.employee;
+      //       if (res.employee.profile_image) {
+      //         const prefix = /^https?:\/\//i.test(res.employee.profile_image)
+      //           ? ''
+      //           : 'https://30.0.0.78:3562';
+      //         const fullImageUrl = `${prefix}${res.employee.profile_image}`;
+      //         cacheBusted = `${fullImageUrl}${
+      //           fullImageUrl.includes('?') ? '&' : '?'
+      //         }t=${Date.now()}`;
+      //         this.uploadedImageUrl = cacheBusted;
+      //         try {
+      //           localStorage.setItem('uploadedImageUrl', cacheBusted);
+      //         } catch {}
+      //       }
+      //     } else {
+      //       console.log(
+      //         'ℹ️ Upload response did not contain `.image` or `.employee` field; response:',
+      //         res
+      //       );
+      //     }
 
-          // Refresh employee details from server to keep everything in sync
-          this.refreshEmployee();
+      //     // Refresh employee details from server to keep everything in sync
+      //     this.refreshEmployee();
 
-          // Notify header to update profile image if we have a valid URL
-          if (cacheBusted) {
-            this.candidateService.notifyProfileImageUpdate(cacheBusted);
-          }
+      //     // Notify header to update profile image if we have a valid URL
+      //     if (cacheBusted) {
+      //       this.candidateService.notifyProfileImageUpdate(cacheBusted);
+      //     }
 
-          // Close the popover overlay (top-most)
-          this.popoverController.dismiss().catch((err) => {
-            // ignore errors if no popover is open
-            console.debug('Popover dismiss error (ignored):', err);
-          });
+      //     // Close the popover overlay (top-most)
+      //     this.popoverController.dismiss().catch((err) => {
+      //       // ignore errors if no popover is open
+      //       console.debug('Popover dismiss error (ignored):', err);
+      //     });
 
-          // Clear selection, preview, and uploading flag
-          this.selectedFile = null;
-          this.previewImageUrl = null;
-          this.isUploading = false;
-        },
-        error: (err: any) => {
-          console.error('❌ Image upload failed:', err);
+      //     // Clear selection, preview, and uploading flag
+      //     this.selectedFile = null;
+      //     this.previewImageUrl = null;
+      //     this.isUploading = false;
+      //   },
+      //   error: (err: any) => {
+      //     console.error('❌ Image upload failed:', err);
 
-          // Optionally close the popover on failure (comment/uncomment as desired)
-          // this.popoverController.dismiss().catch(() => {});
+      //     // Optionally close the popover on failure (comment/uncomment as desired)
+      //     // this.popoverController.dismiss().catch(() => {});
 
-          this.isUploading = false;
-        },
-      });
+      //     this.isUploading = false;
+      //   },
+      // });
   }
 
   edit() {

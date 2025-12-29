@@ -133,7 +133,7 @@ export class PreonboardingComponent implements OnInit {
       WorkType: candidate.jobDetailsForm.WorkType,
       BusinessUnit: candidate.jobDetailsForm.BussinessUnit,
     };
-    this.candidateService.createEmployee(settingData).subscribe();
+   // this.candidateService.createEmployee(settingData).subscribe();
   }
   Rejectedemployee(candidate: any) {
     const settingData = {
