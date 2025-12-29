@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface MyLeave {
   id: number;
@@ -16,8 +17,8 @@ export interface MyLeave {
   providedIn: 'root',
 })
 export class LeaverequestService {
-
-  private readonly API_URL = 'http://${this.env.apiURL}/api/leaves';
+private env = environment;
+  private readonly API_URL = `http://${this.env.apiURL}/api/leaves`;
 
   /** 🔹 STATE MANAGEMENT */
   private myLeavesSubject = new BehaviorSubject<MyLeave[]>([]);

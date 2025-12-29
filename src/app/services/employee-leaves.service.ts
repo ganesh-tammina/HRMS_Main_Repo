@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeLeavesService {
-
-  private readonly API_URL = 'http://${this.env.apiURL}/api/leaves';
+private env = environment;
+  private readonly API_URL = `http://${this.env.apiURL}/api/leaves`;
 
   constructor(private http: HttpClient) { }
 
