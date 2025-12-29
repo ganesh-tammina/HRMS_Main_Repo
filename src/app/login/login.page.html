@@ -1,5 +1,9 @@
 <div class="login-wrapper">
-  <div class="login-right">
+  <div class = "img">
+    <img src="assets/login-image-background.svg"/>
+
+  </div>
+    <div class="login-right">
     <div class="login-card">
 
       <h2>Log into your account</h2>
@@ -8,15 +12,15 @@
 
         <!-- EMAIL -->
         <div class="form-group">
-          <label>Email</label>
+          <label>Username</label>
           <input
             type="email"
             formControlName="email"
-            placeholder="Enter your email"
+            placeholder="Enter your Username"
             [disabled]="emailChecked"
           />
           <small class="error" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
-            Email is required
+            Username is required
           </small>
         </div>
 

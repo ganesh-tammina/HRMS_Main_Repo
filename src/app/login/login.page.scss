@@ -6,12 +6,14 @@ $text-light: #64748b;
 $radius: 14px;
 
 
-
-
+.img{
+  margin: 40px 0;
+}
 
 .login-wrapper {
   display: flex;
   height: 100vh;
+  width: auto;
   background: linear-gradient(135deg, #0f2b42, #133b5c);
 }
 
@@ -30,10 +32,10 @@ $radius: 14px;
 
 /* RIGHT SIDE */
 .login-right {
-  flex: 0.8;
+  flex: 0.9;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
 }
 
 /* LOGIN CARD */
@@ -102,6 +104,9 @@ $radius: 14px;
       text-decoration: underline;
     }
   }
+}
+.error{
+  color: #d32729;
 }
 
 /* BUTTON */
