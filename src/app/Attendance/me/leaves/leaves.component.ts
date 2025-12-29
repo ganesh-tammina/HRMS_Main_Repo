@@ -4,7 +4,7 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
 import {
   IonicModule,
@@ -14,6 +14,7 @@ import {
 
 import { CandidateService } from '../../../services/pre-onboarding.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+import { LeaveRequestComponent } from './leave-request/leave-request.component';
 import { EmployeeLeavesService } from 'src/app/services/employee-leaves.service';
 import { LeaverequestService } from '../../../services/leaverequest.service';
 
@@ -32,7 +33,9 @@ import { Router } from '@angular/router';
     ReactiveFormsModule,
     HeaderComponent,
     EmployeeHeaderComponent,
-  ],
+    ReactiveFormsModule,
+    LeaveRequestComponent
+  ]
 })
 export class LeavesComponent implements OnInit {
   currentYear = new Date().getFullYear();

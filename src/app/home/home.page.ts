@@ -8,14 +8,14 @@ import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
   standalone: true,
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  imports: [CommonModule, FormsModule, IonicModule, ClockButtonComponent],
+  imports: [CommonModule, FormsModule, IonicModule, ClockButtonComponent, RouterLink],
 })
 export class HomePage implements OnInit {
   private static readonly REFRESH_DELAY_MS = 10; // Virtually instant refresh delay
