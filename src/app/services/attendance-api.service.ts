@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AttendanceApiService {
-  private readonly BASE_URL = 'http://${this.env.apiURL}/api/attendance';
+   private env = environment;
+  private readonly BASE_URL = `http://${this.env.apiURL}/api/attendance`;
 
   constructor(private http: HttpClient) { }
 

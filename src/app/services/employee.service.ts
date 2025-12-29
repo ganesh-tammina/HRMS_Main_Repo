@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class EmployeeService {
   private env = environment;
-  private  readonly API_URL = `http://${this.env.apiURL}api/employees`;
+  private  readonly API_URL = `http://${this.env.apiURL}/api/employees`;
   //  private readonly API_URL = 'http://localhost:3000/api/employees';
   private readonly profileEndpoint = `${this.API_URL}/profile/me`;
 
