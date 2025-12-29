@@ -1,8 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CandidateService, Employee } from '../../services/pre-onboarding.service';
-import { Observable } from 'rxjs';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ReportingTEamComponent } from '../reporting-team/reporting-team.component';
 import { QuillModule } from 'ngx-quill';
@@ -17,47 +15,52 @@ import { QuillModule } from 'ngx-quill';
     IonicModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
     ReportingTEamComponent,
     QuillModule
   ]
 })
-export class AboutusComponent implements OnInit {
-  @Input() currentEmployee: any;
-  aboutUs: any = [];
-  currentCandidate$!: Observable<any>;
-  currentEmployee$!: Observable<Employee | null>;
-  IsSummary: boolean = false;
-  IsOrg: boolean = false;
-  viewEditor: boolean = false;
-  // Reactive Forms control for Quill editor
+export class AboutusComponent implements OnChanges {
 
+  /* ✅ Input from parent (Profile Page) */
+  @Input() currentEmployee: any | null = null;
+
+  /* UI States */
+  IsSummary = false;
+  IsOrg = false;
+  viewEditor = false;
+
+  /* Quill Editor Toolbar */
   modules = {
     toolbar: [
-      [{ 'header': [1, 2, false] }],
+      [{ header: [1, 2, false] }],
       ['bold', 'italic', 'underline'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
       ['link', 'image'],
       ['clean']
     ]
   };
 
-  constructor(private candidateService: CandidateService) { }
+  constructor() {}
 
-  ngOnInit() {
-
-    this.aboutUs = this.currentEmployee;
-
-    console.log('Current Employeesssgtanesh:', this.aboutUs);
-
-
+  /* ✅ Called whenever Input changes (TAB switch / API response) */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentEmployee']?.currentValue) {
+      console.log(
+        '✅ AboutusComponent received employee:',
+        this.currentEmployee
+      );
+    }
   }
-  isEditSummary() {
+
+  /* Toggle summary edit */
+  isEditSummary(): void {
     this.IsSummary = !this.IsSummary;
+    this.viewEditor = this.IsSummary;
   }
-  isEditOrg() {
+
+  /* Toggle organization edit */
+  isEditOrg(): void {
     this.IsOrg = !this.IsOrg;
   }
-  
 }

@@ -24,14 +24,14 @@
           <div class="info-block">
             <div class="row-left">
               <ion-icon name="location"></ion-icon>
-              <p class="pl-5">{{currentEmployee.Location}}</p>
+              <p class="pl-5">{{currentEmployee.location_name}}</p>
             </div>
             <div class="row-left">
               <ion-icon name="mail"></ion-icon>
               <p class="pl-5">{{currentEmployee.WorkEmail}}</p>
-              <label>Reporting to </label>
+              <!-- <label>Reporting to </label>
               <p class="pl-5"> {{currentEmployee.manager_first_name}} {{currentEmployee.manager_last_name}}
-              </p>
+              </p> -->
 
             </div>
           </div>
@@ -110,10 +110,10 @@
             <app-aboutus [currentEmployee]="currentEmployee"></app-aboutus>
           </ion-tab>
           <ion-tab tab="profile">
-            <app-profile></app-profile>
+            <app-profile [currentEmployee]="currentEmployee"></app-profile>
           </ion-tab>
           <ion-tab tab="job">
-            <app-job-tab></app-job-tab>
+            <app-job-tab [currentEmployee]="currentEmployee"></app-job-tab>
           </ion-tab>
           <ion-tab tab="time">
             <app-leave-requests></app-leave-requests>

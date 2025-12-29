@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CandidateService, Employee } from '../../services/pre-onboarding.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -18,16 +18,21 @@ import { IonicModule } from '@ionic/angular';
     CommonModule,
   ]
 })
-export class JobTabComponent implements OnInit {
-  @Input() currentemp: any;
+export class JobTabComponent implements OnChanges {
 
+  @Input() currentEmployee: any | null = null;
   currentCandidate$!: Observable<any>;
   currentEmployee$!: Observable<Employee | null>;
   IseditJob: boolean = false;
   constructor(private candidateService: CandidateService) { }
 
-  ngOnInit() {
-
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentEmployee']?.currentValue) {
+      console.log(
+        '✅ AboutusComponent received employee:',
+        this.currentEmployee
+      );
+    }
   }
   IseditJobJob() {
     this.IseditJob = !this.IseditJob;
