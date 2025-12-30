@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -8,12 +8,12 @@ import { environment } from 'src/environments/environment';
 })
 export class EmployeeService {
   private env = environment;
-  private  readonly API_URL = `http://${this.env.apiURL}/api/employees`;
+  private readonly API_URL = `http://${this.env.apiURL}/api/employees`;
   //  private readonly API_URL = 'http://localhost:3000/api/employees';
   private readonly profileEndpoint = `${this.API_URL}/profile/me`;
-
   /* ✅ NEW ENDPOINT */
   private readonly reportingEndpoint = `${this.API_URL}/reporting`;
+  private readonly uploadProfileImageUrl = `${this.API_URL}/profile/image`;
 
   private currentEmployee: any | null = null;
 
@@ -35,6 +35,21 @@ export class EmployeeService {
         headers: { Authorization: `Bearer ${token}` },
       })
       .pipe(tap((emp) => (this.currentEmployee = emp)));
+  }
+
+  /* ================= UPLOAD PROFILE IMAGE ================= */
+  uploadProfileImage(file: File): Observable<any> {
+    const token = localStorage.getItem('token');
+
+    const formData = new FormData();
+    formData.append('image', file); // ⚠️ key must match backend (usually "image" or "file")
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      // ❌ DO NOT set Content-Type for FormData
+    });
+
+    return this.http.post(this.uploadProfileImageUrl, formData, { headers });
   }
 
   getCurrentEmployee() {
