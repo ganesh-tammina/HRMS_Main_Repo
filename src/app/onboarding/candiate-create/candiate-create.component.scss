@@ -9,11 +9,14 @@ ion-content {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
+    margin-top: 0;
   }
-  
+  .modal-header{
+    margin-bottom: 0;
+  }
   p {
     color: #666;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   
   .required {
@@ -26,11 +29,12 @@ ion-content {
     align-items: center;
     background-color: #E6F1FF; // Light blue background
     color: #000; // Dark text
-    font-size: 1.1rem;
+    font-size: 1.08rem;
     font-weight: 500;
     border-radius:8px;
-    margin-bottom: 1rem;
-    margin-top: 1rem;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    padding: 12px;
   
     ion-icon {
       font-size: 1.4rem;
@@ -94,3 +98,33 @@ ion-content {
     font-weight: 600;
   }
 }
+
+.pos-rel{
+  position: relative;
+  overflow: visible !important;
+}
+
+.validation-span{
+    position: absolute;
+    left: 3rem;
+    background-color: #bb4b72;
+    color: #fff;
+    padding: 3px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    z-index: 99;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    bottom: -21px;
+}
+
+.validation-span::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 16px;
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent #bb4b72 transparent;
+}
+
