@@ -50,17 +50,12 @@ ion-menu {
       }
     }
     ion-label {
-       @include body-text();
+       @include normal-text-unbold();
        margin-left: 8px;
     }
   }
 }
-.menu-dropdown {    
-  &.menu-drop1 {
-    top: 54px;
-  } 
-  left: 107px;
-  top: -54px;
+.menu-dropdown {     
   --backdrop-opacity: 0;
   --width: 170px;
   --border-radius: 0px !important;

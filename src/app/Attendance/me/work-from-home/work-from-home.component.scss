@@ -12,7 +12,6 @@
 }
 
 .calendar-block {
-    margin-top: 15px;
     padding: 12px;
     border-radius: 15px;
     background: white;
@@ -52,36 +51,33 @@
   .date-header {
     display: flex;
     justify-content: space-between;
-    border: 0.5px solid #ababaa;   
-    border-radius: 8px;
-  }
-  
-  .date-box {
-    display: flex;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    background: white;
-  }
-  
-  .date-box.active {
-    border-color: #2563eb;
-    background: #eff6ff;
-  }
-  
-  .date-box span {
-    font-size: 12px;
-    color: gray;
-  }
-  
-  .day-count {
-    padding: 6px 14px;
-    border-radius: 10px;
-    font-weight: bold;
-    display: flex;
     align-items: center;
+    .date-box {
+      label {
+        margin-bottom: 8px;
+      }
+      p {
+        border: 1px solid #C4C4C4;
+        height: 40px;
+        border-radius: 4px;
+        padding: 8px 16px !important;
+        margin: 11px 0px;
+        text-align: left;
+        width: 210px;
+        cursor: pointer;
+      }
+    }
+   .day-count {
+    background: #1f74bb;
+    border-radius: 12px;
+    padding: 8px 16px;
+    color: #fff;
+    height: max-content;
+    margin-top: 21px;
+   }
   }
   
+
  
   
   
@@ -114,15 +110,19 @@
   }
   
   .request-info {
+    background: var(--ion-bg-color);
     margin-top: 15px;
-    @include normal-text-unbold();
-    span {
-      background: var(--ion-bg-color);
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-weight: 600;
+    @include normal-text();
+    color: $secondry-color;
+    border: 1px solid #1F74BB;
+    border-radius: 12px;
+    padding: 15px 12px;
+    display: flex;
+    img {
+      margin-right: 8px;
     }
-  }
+}
+  
   
   .input-block {
     margin-top: 10px;

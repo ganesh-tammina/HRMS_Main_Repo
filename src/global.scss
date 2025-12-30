@@ -53,7 +53,7 @@ html, body {
 
 ion-split-pane{
     --side-min-width: 70px !important;
-    --side-max-width: 120px !important;
+    --side-max-width: 150px !important;
 }
 
 ion-list{
@@ -419,8 +419,3 @@ ion-popover ion-content::-webkit-scrollbar {
     --backdrop-opacity: 0.35 !important;
     }
 }
-
-.side-custom-popup {
-
-}
-  

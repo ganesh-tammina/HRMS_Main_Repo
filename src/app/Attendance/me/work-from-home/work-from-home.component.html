@@ -14,10 +14,10 @@
 
   <!-- DATE SECTION -->
   <div class="date-header">
-
-    <div class="date-box" [class.active]="pickerOpen==='from'" (click)="openPicker('from')">
-      <p class="pr-5">From </p>
-      <p><strong>{{ displayFromDate }}</strong></p>
+    
+    <div class="date-box">
+      <label>From</label>
+      <p [class.active]="pickerOpen==='from'" (click)="openPicker('from')">{{ displayFromDate }}</p>
     </div>
 
     <div class="day-count">
@@ -25,9 +25,9 @@
     </div>
 
     
-    <div class="date-box" [class.active]="pickerOpen==='to'" (click)="openPicker('to')">
-        <p class="pr-5">To </p>
-        <p><strong>{{ displayToDate }}</strong></p>
+    <div class="date-box">
+        <label>To</label>
+        <p  [class.active]="pickerOpen==='to'" (click)="openPicker('to')">{{ displayToDate }}</p>
       </div>
 
   </div>
@@ -54,8 +54,7 @@
   </div>
 
   <p class="request-info mt-12">
-    You are requesting : 
-    <span>{{ totalDays }}  {{ totalDays === 1 ? 'day' : 'days' }}</span>   
+     <img src="../../../../assets/icon/note.svg" width="18"> Clock -in necessary on work from home to avoid being marked absent
   </p>
 
   <!-- NOTE -->

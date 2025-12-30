@@ -40,7 +40,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown">
+            <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown" side="right">
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
@@ -145,7 +145,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-menu-toggle auto-hide="false" id="menu-buttons">
+            <ion-menu-toggle auto-hide="false" id="menu-buttons1">
               <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -155,7 +155,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-popover trigger="menu-buttons" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown menu-drop1">
+            <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown menu-drop1" side="right">
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
@@ -165,7 +165,6 @@
                       <ion-label>Pay Slips</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
-
                 </ion-content>
               </ng-template>
             </ion-popover>
