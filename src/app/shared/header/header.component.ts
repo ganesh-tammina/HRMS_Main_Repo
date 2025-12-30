@@ -137,19 +137,19 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  onSearch() {
-    const keyword = this.searchKeyword.trim();
+  // onSearch() {
+  //   const keyword = this.searchKeyword.trim();
 
-    // If empty → reload all
+  //   // If empty → reload all
 
-    this.employeeService.searchEmployees(keyword).subscribe({
-      next: (res: any) => {
-        this.employees = res;
-        // this.TotalEmployees = res.length;
-      },
-      error: (err: any) => console.error(err)
-    });
-  }
+  //   this.employeeService.searchEmployees(keyword).subscribe({
+  //     next: (res: any) => {
+  //       this.employees = res;
+  //       // this.TotalEmployees = res.length;
+  //     },
+  //     error: (err: any) => console.error(err)
+  //   });
+  // }
 
   // Logout method
   logout() {
@@ -161,28 +161,41 @@ export class HeaderComponent implements OnInit {
   }
 
   // Search employees by name
-  // onSearch() {
-  //   if (!this.searchQuery || this.searchQuery.trim().length < 3) {
-  //     this.searchResults = [];
-  //     this.results = [];
-  //     return;
-  //   }
+  onSearch() {
+    // const keyword = this.searchKeyword.trim();
 
-  //   this.candidateService.searchCandidates(this.searchQuery).subscribe({
-  //     next: (results) => {
-  //       this.searchResults = results;
-  //       this.employee = this.searchResults;
-  //       this.openEmployeeListModal(results);
-  //       this.results = this.searchResults.map(
-  //         (emp) => `${emp.first_name} ${emp.last_name}`
-  //       );
-  //     },
-  //   });
-  //   // this.results = JSON.stringify(this.searchResults)
-  //   // console.log(this.results)
+    // If empty → reload all
 
-  //   console.log(this.results);
-  // }
+    // this.employeeService.searchEmployees(keyword).subscribe({
+    //   next: (res: any) => {
+    //     this.employees = res;
+    //     // this.TotalEmployees = res.length;
+    //   },
+    //   error: (err: any) => console.error(err)
+    // });
+
+
+    if (!this.searchQuery || this.searchQuery.trim().length < 3) {
+      this.searchResults = [];
+      this.results = [];
+      return;
+    }
+
+    this.employeeService.searchEmployees(this.searchQuery).subscribe({
+      next: (results:any) => {
+        this.searchResults = results;
+        this.employee = this.searchResults;
+        this.openEmployeeListModal(results);
+        this.results = this.searchResults.map(
+          (emp) => `${emp.first_name} ${emp.last_name}`
+        );
+      },
+    });
+    this.results = JSON.stringify(this.searchResults)
+    // console.log(this.results)
+
+    console.log(this.results);
+  }
 
   // Get profile image URL with fallback
   getProfileImageUrl(): string {

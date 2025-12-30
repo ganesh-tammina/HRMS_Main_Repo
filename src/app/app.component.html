@@ -9,8 +9,9 @@
           <ion-list class="side-menu-list">
             <ion-menu-toggle auto-hide="false">
               <ion-item routerLink="/Home" lines="none" detail="false">
-                <div class="text-center">
-                  <img src="assets/Icons/home-05.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/home.svg" width="24" height="24" class="inactive-menu"/>
+                    <img src="../assets/icon/home-active.svg" width="24" height="24" class="active-menu"/>
                   <ion-label>Home</ion-label>
                 </div>
               </ion-item>
@@ -19,8 +20,9 @@
             <ion-menu-toggle auto-hide="false">
               <ion-item [routerLink]="['/leaves']" lines="none" detail="false"
                 [ngClass]="(currentUrl=='/leaves') ? 'selected':''">
-                <div class="text-center">
-                  <img src="assets/Icons/user-01.svg" width="24" height="24" />
+                <div class="row-left">
+                  <img src="../assets/icon/Me.svg" width="24" height="24" class="inactive-menu" title="Leave"/>
+                  <img src="../assets/icon/Me-active.svg" width="24" height="24" class="active-menu" title="Leave"/>
                   <ion-label>Leave</ion-label>
                 </div>
               </ion-item>
@@ -31,8 +33,9 @@
             <ion-menu-toggle auto-hide="false" id="menu-button">
               <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards"
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
-                <div class="text-center">
-                  <img src="assets/Icons/building-07.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu" title="My Team"/>
+                    <img src="../assets/icon/oraganization-active.svg" width="24" height="24" class="active-menu" title="My Team"/>
                   <ion-label>Org</ion-label>
                 </div>
               </ion-item>
@@ -46,13 +49,7 @@
                       [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected':''">
                       <ion-label>Pre Onboarding</ion-label>
                     </ion-item>
-                  </ion-menu-toggle>
-                  <!-- <ion-menu-toggle auto-hide="false">
-                    <ion-item routerLink="/pre_onboarding" (click)="preonboard()"
-                      *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" lines="none" detail="false">
-                      <ion-label>Pre Onboarding</ion-label>
-                    </ion-item>
-                  </ion-menu-toggle> -->
+                  </ion-menu-toggle>                  
                   <ion-menu-toggle auto-hide="false">
                     <ion-item routerLink="/post-onboarding" lines="none" detail="false">
                       <ion-label>Post Onboarding</ion-label>
@@ -90,8 +87,9 @@
             <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
                 routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected':''">
-                <div class="text-center">
-                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu" title="My Team"/>
+                    <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu"  title="My Team"/>
                   <ion-label>My Team</ion-label>
                 </div>
               </ion-item>
@@ -99,7 +97,7 @@
             <!-- <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/organisation_info']" lines="none" detail="false"
                 routerLinkActive="selected">
-                <div class="text-center">
+                <div class="row-left">
                   <img src="assets/Icons/Group 104.svg" width="24" height="24">
                   <ion-label>Org Info</ion-label>
                 </div>
@@ -115,8 +113,9 @@
             <!-- Admin -->
             <ion-menu-toggle auto-hide="false">
               <ion-item routerLink="/admin" lines="none" detail="false">
-                <div class="text-center">
-                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu"/>
+                    <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu"/>
                   <ion-label>Admin</ion-label>
                 </div>
               </ion-item>
@@ -130,16 +129,18 @@
             <!-- Inbox -->
             <ion-menu-toggle auto-hide="false">
               <ion-item lines="none" detail="false" routerLinkActive="selected">
-                <div class="text-center">
-                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/inbox.svg" width="24" height="24" class="inactive-menu"/>
+                    <img src="../assets/icon/inbox-active.svg" width="24" height="24" class="active-menu"/>
                   <ion-label>Inbox</ion-label>
                 </div>
               </ion-item>
             </ion-menu-toggle>
             <ion-menu-toggle auto-hide="false">
               <ion-item lines="none" detail="false" routerLinkActive="selected" [routerLink]="['/workTrack']">
-                <div class="text-center">
-                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/work-track.svg" width="24" height="24" class="inactive-menu"/>
+                    <img src="../assets/icon/work-track-active.svg" width="24" height="24" class="active-menu"/>
                   <ion-label>Work Track</ion-label>
                 </div>
               </ion-item>
@@ -147,13 +148,14 @@
             <ion-menu-toggle auto-hide="false" id="menu-buttons">
               <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
-                <div class="text-center">
-                  <img src="assets/Icons/building-07.svg" width="24" height="24" />
-                  <ion-label>My Fanance</ion-label>
+                <div class="row-left">
+                    <img src="../assets/icon/myfinance.svg" width="24" height="24" class="inactive-menu" title="This is a simple tooltip"/>
+                    <img src="../assets/icon/myfinance-active.svg" width="24" height="24" class="active-menu"/>
+                  <ion-label>My Finances</ion-label>
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-popover trigger="menu-buttons" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdowns">
+            <ion-popover trigger="menu-buttons" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown menu-drop1">
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
@@ -175,8 +177,9 @@
             <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
                 routerLinkActive="selected">
-                <div class="text-center">
-                  <img src="assets/Icons/logout_duoline 1.svg" width="24" height="24" />
+                <div class="row-left">
+                    <img src="../assets/icon/logout.svg" width="24" height="24" class="inactive-menu"/>
+                    <img src="../assets/icon/logout-active.svg" width="24" height="24" class="active-menu"/>
                   <ion-label>Log out</ion-label>
                 </div>
               </ion-item>

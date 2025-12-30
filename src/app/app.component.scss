@@ -9,12 +9,14 @@ ion-menu {
   .sidenav-content {
     --background: #122E44 !important;
     ion-item {
-      --min-height: 63px;
+       --min-height: 63px;
       --background: #122E44 !important;
       --color: #CFCFCF !important;
-      text-align: center;
       align-items: center;
       &.selected.ion-activatable {
+        .active-menu {
+          direction: block;
+        }
         --background: #00568F !important; 
         --color: #ffffff !important;    
       }
@@ -22,7 +24,12 @@ ion-menu {
         --background: #00568F !important; 
         --color: #ffffff !important; 
         --transition: unset; 
-        
+        .active-menu {
+          display: block;
+        }
+        .inactive-menu {
+          display: none;
+        }
       }
       &:hover, &:focus, &:active {
         --background-activated: transparent !important;
@@ -34,18 +41,25 @@ ion-menu {
     --transition: unset;
 
       }
-      .text-center {
-        text-align: center;
-        width: 100%;
+   
+      .active-menu {
+        display: none;
+      }
+      .inactive-menu {
+        display: block;
       }
     }
     ion-label {
-    @include normal-text-unbold();
+       @include body-text();
+       margin-left: 8px;
     }
   }
 }
-.menu-dropdown {     
-  left: 87px;
+.menu-dropdown {    
+  &.menu-drop1 {
+    top: 54px;
+  } 
+  left: 107px;
   top: -54px;
   --backdrop-opacity: 0;
   --width: 170px;

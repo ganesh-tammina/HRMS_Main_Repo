@@ -11,24 +11,24 @@
           </ion-searchbar>
           <!-- <ion-button
             *ngIf="searchResults.length > 0"
-            (click)="openEmployeeListModal()"
+            (click)="openEmployeeListModal(searchResults.length)"
           >
             {{ results.join(", ") }}
           </ion-button> -->
-          <!-- <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal()">
+          <!-- <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal(results.FirstName)">
               Show {{ results.FirstName }} Employee(s)
             </ion-button> -->
-          <!-- <ion-popover   [id]="(searchResults.length > 0) ? 'popover-button':'' " [dismissOnSelect]="true">
+          <ion-popover   [id]="(searchResults.length > 0) ? 'popover-button':'' " [dismissOnSelect]="true">
                 <ng-template>
                   <ion-content>
                     <ion-list>
-                        <ion-button  (click)="openEmployeeListModal()">
+                        <ion-button  (click)="openEmployeeListModal(results.join(', '))">
                             {{ results.join(', ') }}
                           </ion-button>
                     </ion-list>
                   </ion-content>
                 </ng-template>
-              </ion-popover> -->
+              </ion-popover>
 
           <div *ngIf="currentEmployee as emp" style="margin-left: auto" class="candidate-name">
             {{ emp.FirstName || "Loading..." }}
@@ -40,7 +40,8 @@
           <div class="row-right">
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
             <ion-button id="popover-dropdown" fill="clear">
-              <img class="pl-5" [src]="imageUrls" width="46" alt="Profile" />
+              <img class="pl-5" [src]="imageUrls" width="46" alt="Profile"  *ngIf='imageUrls'/>
+              <img src="../../../assets/icon/Default-user.svg" width="46" alt="Profile"  *ngIf='!imageUrls'/>
             </ion-button>
             <ion-popover class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
               <ng-template>

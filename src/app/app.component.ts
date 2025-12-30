@@ -90,6 +90,8 @@ export class AppComponent implements OnInit {
         }
       }
     });
+    this.currentUrl = this.router.url;
+    console.log("URL", this.currentUrl);
   }
 
   toggleDropdown() {
@@ -97,7 +99,7 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     this.isAdmin = false;
-    this.currentUrl = this.router.url;
+   
     const role = this.routeGaurdService.userRole?.trim().toUpperCase() || '';
     if (role === 'ADMIN' || role === 'HR') {
       this.isAdmin = true;

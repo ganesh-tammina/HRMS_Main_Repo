@@ -10,7 +10,9 @@
           <div class="card-pannel">
             <ion-row class="actions-card row-space-between border-bottom">
               <ion-col size="12" size-sm="8" size-md="8" size-lg="8" size-xl="8" class="row-left ion-align-items-start">
-                <ion-img [src]="imageUrls" class="profile-img"></ion-img>
+                <ion-img [src]="imageUrls" class="profile-img" *ngIf='imageUrls'></ion-img>
+                <ion-img  class="profile-img" src="../../../assets/icon/Default-user.svg" width="46" alt="Profile"  *ngIf='!imageUrls'></ion-img>
+        
                 <div>
                   <p class="greeting">Good morning</p>
                   <p class="date"><span>Thursday, November 27, 2025. </span> <span>On-Site</span></p>
