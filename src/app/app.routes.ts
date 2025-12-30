@@ -37,6 +37,7 @@ import { LeaveplansComponent } from './Administration/leaves-admin-dashboard/lea
 import { LeavesAllocationComponent } from './Administration/leaves-admin-dashboard/leaves-allocation/leaves-allocation.component';
 import { EmployeeLeaveAllocationComponent } from './Administration/leaves-admin-dashboard/employee-leave-allocation/employee-leave-allocation.component';
 import { MasterAdminSetupComponent } from './Administration/master-admin-setup/master-admin-setup.component';
+import { PreonboardSubItemsComponent } from './onboarding/preonboard-sub-items/preonboard-sub-items.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -135,6 +136,10 @@ export const routes: Routes = [
   {
     path: 'admin-setup',
     component: MasterAdminSetupComponent
+  },
+   {
+    path: 'preonboarding-setup',
+    component: PreonboardSubItemsComponent
   }
 
 ];

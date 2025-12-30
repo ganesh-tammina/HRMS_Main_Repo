@@ -1,6 +1,26 @@
-<ion-header [translucent]="true">
-  <!-- <app-header></app-header> -->
-</ion-header>
+<!-- <ion-toolbar color="light" class="top-nav">
+  <ion-buttons slot="start" class="nav-links">
+    <ion-button fill="clear">Dashboard</ion-button>
+    <ion-button fill="clear">Employees</ion-button>
+    <ion-button fill="clear">Org Structure</ion-button>
+    <ion-button fill="clear" class="active">Onboarding</ion-button>
+    <ion-button fill="clear">Exits</ion-button>
+    <ion-button fill="clear">Expenses & Travel</ion-button>
+    <ion-button fill="clear">Documents</ion-button>
+    <ion-button fill="clear">Engage</ion-button>
+    <ion-button fill="clear">Assets</ion-button>
+    <ion-button fill="clear">Helpdesk</ion-button>
+    <ion-button fill="clear">Settings</ion-button>
+  </ion-buttons>
+</ion-toolbar> -->
+
+
+
+
+
+
+
+
 <ion-content class="container" [fullscreen]="true">
 <ion-row class="row-left">
   <ion-col>
@@ -10,8 +30,8 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Dashboard</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
+              <h2>SetUp</h2>      
+              <ion-button class="primary-btn" (click)="Setup()">View more</ion-button>
           </ion-card-content>
         </ion-card>
   </ion-col>
@@ -22,8 +42,8 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Employees</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
+              <h2>PreOnboarding</h2>      
+              <ion-button class="primary-btn" (click)="Preonboard()">View more</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -35,8 +55,8 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Org Structure</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
+              <h2>New Joiners</h2>      
+              <ion-button class="primary-btn" (click)="newJoiner()">View more</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -48,8 +68,8 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Onboarding</h2>      
-              <ion-button class="primary-btn" routerLink="/preonboarding-setup" (click)="preonboard()">View more</ion-button>
+              <h2>Past Offers</h2>      
+              <ion-button class="primary-btn" (click)="PastOffers()">View more</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -61,8 +81,8 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Exits</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
+              <h2>Onboarding Tasks</h2>      
+              <ion-button class="primary-btn"  (click)="Onboardingtasks()">View more</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -74,8 +94,8 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Expenses & Travel</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
+              <h2>Task Templates</h2>      
+              <ion-button class="primary-btn" (click)="Tasktemplate()">View more</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -87,7 +107,7 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Documents</h2>      
+              <h2>Background Verification</h2>      
               <ion-button class="primary-btn">View more</ion-button>
           </ion-card-content>
         </ion-card>
@@ -100,7 +120,7 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Engage</h2>      
+              <h2>Archieved</h2>      
               <ion-button class="primary-btn">View more</ion-button>
           </ion-card-content>
         </ion-card>
@@ -113,38 +133,14 @@
           </ion-card-header>
         
           <ion-card-content class="contentBx">
-              <h2>Assets</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
+              <h2>Seetings</h2>      
+              <ion-button class="primary-btn" (click)="Settings()">View more</ion-button>
           </ion-card-content>
         </ion-card>
 
   </ion-col>
-  <ion-col>
-      <ion-card class="card">
-          <ion-card-header class="imgBx">
-            <ion-img class="pb-8" src="../../../assets/pre onboarding cards/customer-support-or-HR-helpdesk-removebg-preview.png"></ion-img>
-          </ion-card-header>
-        
-          <ion-card-content class="contentBx">
-              <h2>Helpdesk</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
-          </ion-card-content>
-        </ion-card>
+  
 
-  </ion-col>
-  <ion-col>
-      <ion-card class="card">
-          <ion-card-header class="imgBx">
-            <ion-img class="pb-8" src="../../../assets/pre onboarding cards/settings-and-customization-gear__80697-removebg-preview.png"></ion-img>
-          </ion-card-header>
-        
-          <ion-card-content class="contentBx">
-              <h2>Settings</h2>      
-              <ion-button class="primary-btn">View more</ion-button>
-          </ion-card-content>
-        </ion-card>
-
-  </ion-col>
 </ion-row>
     
 
