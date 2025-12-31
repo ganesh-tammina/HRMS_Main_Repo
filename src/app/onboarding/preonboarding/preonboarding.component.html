@@ -97,30 +97,71 @@
 
   <!-- Table Header -->
   <div class="table">
-    <ion-row class="table-header">
-
-      <ion-col size="2" class="row-left">
+    <ion-row class="table-header header-table">
+        <ion-col size="2" class="row-left">
         <ion-checkbox class="pr-15"></ion-checkbox>
         <p>Candidate Name</p>
       </ion-col>
-      <ion-col size="1">
+      <ion-col size="2">
         <p>Offer Status</p>
       </ion-col>
-            <ion-col size="1">
+ 
+            <ion-col size="2">
   <p>Business Unit</p>
 </ion-col>
-      <ion-col size="1">
+
+      <ion-col size="2">
         <p>Department</p>
       </ion-col>
+
       <ion-col size="2">
         <p>Location</p>
       </ion-col>
+
       <ion-col size="2">
         <p>Joining Date</p>
       </ion-col>
-      <ion-col size="3">
+
+      <ion-col size="2">
         <p>Actions</p>
       </ion-col>
+      <!-- <div class="header-table">
+           <ion-col size="2" class="row-left">
+        <ion-checkbox class="pr-15"></ion-checkbox>
+        <p>Candidate Name</p>
+      </ion-col>
+      </div>
+      <div class="header-table">
+      <ion-col size="1">
+        <p>Offer Status</p>
+      </ion-col>
+      </div>
+      <div class="header-table">
+            <ion-col size="1">
+  <p>Business Unit</p>
+</ion-col>
+      </div>
+      <div class="header-table">
+      <ion-col size="1">
+        <p>Department</p>
+      </ion-col>
+      </div>
+      <div class="header-table">
+      <ion-col size="2">
+        <p>Location</p>
+      </ion-col>
+      </div>
+      <div class="header-table">
+      <ion-col size="2">
+        <p>Joining Date</p>
+      </ion-col>
+      </div>
+      <div class="header-table">
+      <ion-col size="3">
+        <p>Actions</p>
+      </ion-col> -->
+<!-- </div> -->
+ 
     </ion-row>
     <div class="table-list">
       <ion-grid *ngFor="let candidate of candidates">

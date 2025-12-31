@@ -30,6 +30,7 @@ ion-item.ion-no-border {
   --padding-end: 16px;
   --background: var(--ion-bg-color);
   
+
 .page-header {
   @include text-style-normal();
   margin-top: 15px; 
@@ -77,6 +78,7 @@ ion-item.ion-no-border {
       height: 60px;
       @include normal-text-unbold();
       font-weight: 500;
+
      }
      .table-list {
       background: var(--ion-white-color);
@@ -188,4 +190,20 @@ ion-item.ion-no-border {
 .clearbtn{
     margin: 0;
     height: 40px;
+}
+@media(max-width:992px){
+  .header-table{
+    ion-col{
+        display: flex;
+        width: 185px !important;
+        max-width: 175px !important;
+    }
+
+  }
+   .table {  
+    overflow-x: scroll;
+    .table-header {
+      width: max-content;
+    }
+   }
 }
