@@ -48,7 +48,12 @@
             </ion-card-header>
 
             <ion-card-content>
-              <ion-grid class="days-grid ion-no-padding mb-30">
+                <div class="row-left mb-15">
+                    <img src="../../../assets/leave-icons/day.svg" width="28" class="mr-8">
+                    {{ shift_policy.name }} :
+                    ( {{ shift_policy.start_time }} - {{ shift_policy.end_time }} )
+                  </div>
+              <ion-grid class="days-grid ion-no-padding mb-15">
                 <ion-row>
                   <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center"
                     [attr.aria-label]="'Day ' + (day | date:'EEEE')" title="{{ day | date:'fullDate' }}">
@@ -63,10 +68,9 @@
               </ion-grid>
 
               <!-- display check-in time safely and formatted -->
-              <p style="margin-bottom: 8px">
+              <p class="mb-8">
                 Today
                 <strong *ngIf="shift_policy; else noShift">
-                  {{ shift_policy.name }} :
                   ( {{ shift_policy.start_time }} - {{ shift_policy.end_time }} )
                 </strong>
                 <ng-template #noShift>
