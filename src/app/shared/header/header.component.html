@@ -40,8 +40,11 @@
           <div class="row-right">
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
             <ion-button id="popover-dropdown" fill="clear">
-              <img class="pl-5" [src]="imageUrls" width="46" alt="Profile"  *ngIf='imageUrls'/>
-              <img src="../../../assets/icon/Default-user.svg" width="46" alt="Profile"  *ngIf='!imageUrls'/>
+              <img class="profilePic" *ngIf="currentEmployee" [attr.alt]="currentEmployee.FullName" [src]="currentEmployee.profile_image
+          ? (env + currentEmployee.profile_image)
+          : 'assets/user.svg'" width="50" height="50" />
+              <!-- <img *ngIf="currentEmployee as emp" class="pl-5"
+                [src]="this.env + currentEmployee.profile_image || ../../assets/user.svg" width="46" alt="Profile" /> -->
             </ion-button>
             <ion-popover class="profile-dropdown" trigger="popover-dropdown" [dismissOnSelect]="true">
               <ng-template>
@@ -60,10 +63,6 @@
                 </ion-content>
               </ng-template>
             </ion-popover>
-
-            <ion-buttons slot="start">
-              <ion-menu-button></ion-menu-button>
-            </ion-buttons>
           </div>
         </ion-col>
       </ion-row>

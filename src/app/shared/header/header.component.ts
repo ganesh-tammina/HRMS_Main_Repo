@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit {
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
   searchKeyword: string = '';
-
+  env:any;
   profileimg: string = environment.apiURL;
   employees: any;
 
@@ -56,6 +56,8 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
+    console.log(this.env);
     this.candidateService.Employee$.subscribe((employees) => {
       console.log('👀 Employee$ value:', employees);
     });
