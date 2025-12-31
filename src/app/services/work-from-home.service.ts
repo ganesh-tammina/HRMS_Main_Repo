@@ -11,7 +11,7 @@ export class WorkFromHomeService {
   private env = environment;
   private readonly API_URL = `http://${this.env.apiURL}/api/leaves`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /* ================= COMMON HEADERS ================= */
   private getHeaders(): HttpHeaders {
@@ -59,6 +59,28 @@ export class WorkFromHomeService {
     return this.http.get<any>(
       `${this.API_URL}/wfh-requests/pending`,
       { headers: this.getHeaders() }
+    );
+  }
+
+  /* ================= APPROVE WFH ================= */
+  approveWFHRequest(
+    id: number,
+    remarks: string = 'Approved'
+  ): Observable<any> {
+    return this.http.put<any>(
+      `${this.API_URL}/approve/${id}`,
+      { remarks },
+    );
+  }
+
+  /* ================= REJECT WFH ================= */
+  rejectWFHRequest(
+    id: number,
+    remarks: string = 'Rejected'
+  ): Observable<any> {
+    return this.http.put<any>(
+      `${this.API_URL}/reject/${id}`,
+      { remarks },
     );
   }
 }

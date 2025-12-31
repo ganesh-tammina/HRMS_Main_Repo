@@ -24,7 +24,6 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
   selectedRequest: any = null;
 
   loadingWFH = false;
-
   private sub!: Subscription;
 
   constructor(
@@ -45,10 +44,10 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
   }
 
   reloadFromApi() {
-    this.leaveService.getMyLeaves(new Date().getFullYear()).subscribe(res => {
-      this.leaveRequests = res;
-      console.log('Leaves:', res);
-    });
+    this.leaveService.getMyLeaves(new Date().getFullYear())
+      .subscribe(res => {
+        this.leaveRequests = res;
+      });
   }
 
   loadPendingWFHRequests() {
@@ -57,11 +56,9 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     this.wfhService.getPendingWFHRequests().subscribe({
       next: (res) => {
         this.pendingWFHRequests = res;
-        console.log('Pending WFH:', res);
         this.loadingWFH = false;
       },
-      error: (err) => {
-        console.error('WFH API error', err);
+      error: () => {
         this.loadingWFH = false;
       }
     });
@@ -78,22 +75,27 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
 
   closeForm() {
     this.selectedRequest = null;
+    this.actionForm.reset();
   }
 
   submitDecision() {
-    if (this.actionForm.invalid || !this.selectedRequest) {
-      this.actionForm.markAllAsTouched();
-      return;
-    }
+    if (!this.selectedRequest) return;
 
     const status = this.actionForm.value.status;
     const comment = this.actionForm.value.manager_comment || '';
     const leaveId = this.selectedRequest.id;
 
+    // Reject requires comment
+    if (status === 'REJECTED' && !comment.trim()) {
+      this.actionForm.get('manager_comment')?.setErrors({ required: true });
+      this.actionForm.markAllAsTouched();
+      return;
+    }
+
     if (status === 'APPROVED') {
       this.leaveService.approveLeave(leaveId, comment).subscribe({
         next: () => {
-          alert('✅ Your leave request is approved');
+          alert('✅ Leave approved');
           this.updateStateLocally('APPROVED');
         },
         error: () => alert('Failed to approve leave')
@@ -103,7 +105,7 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     if (status === 'REJECTED') {
       this.leaveService.rejectLeave(leaveId, comment).subscribe({
         next: () => {
-          alert('❌ Your leave request is rejected');
+          alert('❌ Leave rejected');
           this.updateStateLocally('REJECTED');
         },
         error: () => alert('Failed to reject leave')
@@ -112,15 +114,44 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
   }
 
   private updateStateLocally(newStatus: 'APPROVED' | 'REJECTED') {
-    const updated = this.leaveRequests.map(req =>
+    this.leaveRequests = this.leaveRequests.map(req =>
       req.id === this.selectedRequest.id
         ? { ...req, status: newStatus }
         : req
     );
 
-    this.leaveService.setLeaveRequests(updated);
+    this.leaveService.setLeaveRequests(this.leaveRequests);
 
     this.selectedRequest = null;
     this.actionForm.reset();
+  }
+
+  /* ================= WFH ACTIONS ================= */
+
+  approveWFH(wfh: any) {
+    this.wfhService.approveWFHRequest(wfh.id, 'Approved by manager')
+      .subscribe({
+        next: () => {
+          alert('✅ WFH Approved');
+          this.pendingWFHRequests =
+            this.pendingWFHRequests.filter(r => r.id !== wfh.id);
+        },
+        error: () => alert('Failed to approve WFH')
+      });
+  }
+
+  rejectWFH(wfh: any) {
+    const comment = prompt('Enter rejection reason');
+    if (!comment) return;
+
+    this.wfhService.rejectWFHRequest(wfh.id, comment)
+      .subscribe({
+        next: () => {
+          alert('❌ WFH Rejected');
+          this.pendingWFHRequests =
+            this.pendingWFHRequests.filter(r => r.id !== wfh.id);
+        },
+        error: () => alert('Failed to reject WFH')
+      });
   }
 }
