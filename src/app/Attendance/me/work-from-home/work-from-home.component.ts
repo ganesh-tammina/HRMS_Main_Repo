@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { WorkFromHomeService } from 'src/app/services/work-from-home.service';
 
 @Component({
   selector: 'app-work-from-home',
@@ -13,6 +14,7 @@ import { IonicModule } from '@ionic/angular';
 })
 export class WorkFromHomeComponent implements OnInit {
 
+  /* ================= DATE PICKER ================= */
   pickerOpen: 'from' | 'to' | null = null;
 
   fromDate = new Date();
@@ -23,13 +25,16 @@ export class WorkFromHomeComponent implements OnInit {
 
   totalDays = 1;
 
+  /* ================= REQUEST TYPE ================= */
   requestType: 'full' | 'custom' = 'full';
   fromSession: 'full' | 'first' | 'second' = 'full';
   toSession: 'full' | 'first' | 'second' = 'full';
 
+  /* ================= FORM DATA ================= */
   note = '';
   notifyEmployee = '';
 
+  /* ================= CALENDAR ================= */
   currentMonth = new Date().getMonth();
   currentYear = new Date().getFullYear();
 
@@ -37,20 +42,30 @@ export class WorkFromHomeComponent implements OnInit {
   monthDays: number[] = [];
 
   weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
-  constructor(private modalCtrl: ModalController) { }
+  constructor(
+    private modalCtrl: ModalController,
+    private wfhService: WorkFromHomeService,
+    private toastCtrl: ToastController
+  ) { }
 
+  /* ================= INIT ================= */
   ngOnInit() {
     this.updateDisplayDates();
     this.generateCalendar();
     this.calculateDays();
   }
 
+  /* ================= MODAL ================= */
   close() {
     this.modalCtrl.dismiss();
   }
 
+  /* ================= CALENDAR ================= */
   openPicker(type: 'from' | 'to') {
     this.pickerOpen = this.pickerOpen === type ? null : type;
   }
@@ -110,11 +125,17 @@ export class WorkFromHomeComponent implements OnInit {
   }
 
   updateDisplayDates() {
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    };
+
     this.displayFromDate = this.fromDate.toLocaleDateString('en-GB', options);
     this.displayToDate = this.toDate.toLocaleDateString('en-GB', options);
   }
 
+  /* ================= TYPE ================= */
   setType(type: 'full' | 'custom') {
     this.requestType = type;
 
@@ -131,9 +152,10 @@ export class WorkFromHomeComponent implements OnInit {
 
   calculateDays() {
     const oneDay = 1000 * 60 * 60 * 24;
-    let diff = Math.floor(
-      (this.toDate.getTime() - this.fromDate.getTime()) / oneDay
-    ) + 1;
+    let diff =
+      Math.floor(
+        (this.toDate.getTime() - this.fromDate.getTime()) / oneDay
+      ) + 1;
 
     if (diff <= 0) diff = 1;
 
@@ -144,30 +166,51 @@ export class WorkFromHomeComponent implements OnInit {
 
     let total = diff;
 
-    if (this.fromSession !== 'full') {
-      total -= 0.5;
-    }
-
-    if (this.toSession !== 'full') {
-      total -= 0.5;
-    }
+    if (this.fromSession !== 'full') total -= 0.5;
+    if (this.toSession !== 'full') total -= 0.5;
 
     this.totalDays = total;
   }
 
+  /* ================= SUBMIT ================= */
   submit() {
-    const payload = {
-      from_date: this.fromDate,
-      to_date: this.toDate,
-      type: this.requestType,
-      from_session: this.fromSession,
-      to_session: this.toSession,
-      total_days: this.totalDays,
-      note: this.note,
-      notify: this.notifyEmployee,
+    if (!this.note) return;
+
+    const payload: any = {
+      date: this.formatDate(this.fromDate),
+      work_mode: 'WFH',
+      reason: this.note,
     };
 
-    console.log('WFH Request ==> ', payload);
-    this.modalCtrl.dismiss(payload);
+    this.wfhService.createWFHRequest(payload).subscribe({
+      next: async (res) => {
+        const toast = await this.toastCtrl.create({
+          message: 'Work From Home request submitted successfully',
+          duration: 2000,
+          color: 'success',
+          position: 'top',
+        });
+        await toast.present();
+
+        this.modalCtrl.dismiss(res, 'success');
+      },
+      error: async (err) => {
+        const toast = await this.toastCtrl.create({
+          message: err?.error?.message || 'Failed to submit WFH request',
+          duration: 2000,
+          color: 'danger',
+          position: 'top',
+        });
+        await toast.present();
+      },
+    });
+  }
+
+  /* ================= UTIL ================= */
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    const month = `${d.getMonth() + 1}`.padStart(2, '0');
+    const day = `${d.getDate()}`.padStart(2, '0');
+    return `${d.getFullYear()}-${month}-${day}`;
   }
 }
