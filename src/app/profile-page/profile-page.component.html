@@ -8,11 +8,11 @@
     <ion-row>
       <ion-col size="4">
         <div class="img-block">
-          <img [attr.alt]="currentEmployee.FullName"
-            [src]="this.env + currentEmployee.profile_image ||  '../../assets/user.svg'" width="250" height="250" />
-          <img [attr.alt]="currentEmployee.FullName" *ngIf="currentEmployee.image"
-            [src]="'https://'+ profileimg + currentEmployee.image" width="250" height="250" />
+          <img class="profilePic" *ngIf="currentEmployee" [attr.alt]="currentEmployee.FullName" [src]="currentEmployee.profile_image
+          ? (env + currentEmployee.profile_image)
+          : 'assets/user.svg'" width="250" height="250" />
         </div>
+
       </ion-col>
 
 
