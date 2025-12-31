@@ -208,7 +208,8 @@
       color: #fff;
     }
   }
-  .Announcement-card {
+
+  .Announcement-card {  
     border: 1px solid #ABABAB80;
     display: flex;
     align-items: flex-start;
@@ -221,6 +222,7 @@
     p.title {
       @include text-style-bold();
       margin-top: 0;
+      
     }
     p:nth-child(2) {
       white-space: nowrap;
@@ -287,4 +289,17 @@
   }
 }
 
+}
+
+
+//Media queries below 768px screen
+@media screen and (max-width: 768px) {
+  .Announcement-card {
+  display: block !important;
+  p {
+    white-space: normal !important;
+    overflow: auto !important;
+    width: auto !important;
+  }
+  }
 }
