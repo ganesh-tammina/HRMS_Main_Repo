@@ -7,11 +7,22 @@
 @import "../../global.scss";
 
 .img{
-  margin: 40px 0;
+  position: fixed;
+  left: 10%;
+  top: 50%;
+  transform: translateY(-50%); /* acceptable here */
+  pointer-events: none
+}
+
+.img img {
+  width: 80%;
+  max-width: 100%;
+  display: block;
 }
 
 .login-wrapper {
   display: flex;
+  position: relative;
   height: 100vh;
   width: auto;
   background: linear-gradient(135deg, #0f2b42, #133b5c);
@@ -32,7 +43,7 @@
 
 /* RIGHT SIDE */
 .login-right {
-  flex: 0.9;
+  flex: 0.95;
   display: flex;
   align-items: center;
   justify-content: right;
