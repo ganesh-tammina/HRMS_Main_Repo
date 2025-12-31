@@ -88,42 +88,34 @@
 }
 
 .day-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-  width: 30px;
+ 
+  &::before {
+    content: "";
+    transition: background-color 0.3s ease;
+    width: 40px;
+    position: absolute;
+    background: linear-gradient(180deg, #3498DB 0%, #7FCAFD 100%);
+    top: -8px;
+    height: 12px;
+    left: 5px;
+    border-radius: 12px;
+  }
 
   .day-of-week {
     font-weight: bold;
     font-size: 1em;
     margin: 0;
     text-overflow: initial;
-    width: 18px;
     overflow: hidden;
     white-space: nowrap;
-    letter-spacing: 10px;
     padding: 4px;
   }
   
 }
 
 .highlight-today {
-  background-color: #3498DB;
-  color: #fff;
-  border-color: var(--ion-color-primary);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -6px;
-  margin-left: -6px;
-  .day-of-week {
-    color: #fff;
+  &::before {
+    background: linear-gradient(180deg, #FF4B4B 0%, #FFCCCC 100%);
   }
 }
 
