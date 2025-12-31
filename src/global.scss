@@ -42,13 +42,16 @@
 
 html.md {
 --ion-default-font: 'Open Sans';
+@include normal-text-unbold();
 }
 
 html, body {
      font-family: 'Open Sans';
+     @include normal-text-unbold();
 }
 :host {
     font-family: 'Open Sans';
+    @include normal-text-unbold();
 }
 
 ion-split-pane{
@@ -419,3 +422,4 @@ ion-popover ion-content::-webkit-scrollbar {
     --backdrop-opacity: 0.35 !important;
     }
 }
+

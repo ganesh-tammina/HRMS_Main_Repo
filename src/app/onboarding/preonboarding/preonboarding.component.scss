@@ -1,13 +1,4 @@
 @import '../../../global.scss';
-:host {
-  // --bg: #f7f8fb;
-  --bg: var(--ion-bg-color);
-  --card: #ffffff;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --green: #6cc17a;
-}
-
 
   ion-item {
         color: #000 !important;
