@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, PopoverController } from '@ionic/angular';
+import { IonicModule, PopoverController, ToastController } from '@ionic/angular';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { AboutusComponent } from './aboutus/aboutus.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -56,7 +56,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     private popoverController: PopoverController,
     private employeeService: EmployeeService,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private toastController: ToastController,
   ) { }
 
   private currentEmployeeId: string | null = null;
@@ -216,7 +217,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
   uploadProfilePic() {
     if (!this.selectedFile) {
-      alert('⚠️ Please select a profile picture first!');
+      this.showToast('Please select an image first', 'warning');
       return;
     }
 
@@ -225,21 +226,33 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     this.employeeService.uploadProfileImage(this.selectedFile)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: any) => {
+        next: async (res: any) => {
           this.updateimage = res.imagePath;
-          this.profileimg = this.env + this.updateimage;
-          console.log('✅ Image path:', this.updateimage);
-          console.log('✅ Full URL:',);
 
-
-          this.currentEmployee.image =
+          // ✅ Update UI immediately
+          this.currentEmployee.profile_image =
             this.updateimage + '?t=' + Date.now();
 
+          // Reset states
+          this.previewImageUrl = null;
+          this.selectedFile = null;
           this.isUploading = false;
+
+          // ✅ Close popover
+          await this.popoverController.dismiss();
+
+          // ✅ Success toast
+          this.showToast('Profile picture updated successfully', 'success');
         },
-        error: (err) => {
+        error: async (err) => {
           console.error('❌ Image upload failed:', err);
           this.isUploading = false;
+
+          // Close popover (optional)
+          await this.popoverController.dismiss();
+
+          // ❌ Error toast
+          this.showToast('Failed to upload profile picture', 'danger');
         }
       });
   }
@@ -251,6 +264,17 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   // Expose a public method to force refresh externally if needed
   public forceRefresh() {
     this.refreshEmployee();
+  }
+
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color,
+      icon: color === 'success' ? 'checkmark-circle' : 'alert-circle'
+    });
+    await toast.present();
   }
 
   ngOnDestroy() {
