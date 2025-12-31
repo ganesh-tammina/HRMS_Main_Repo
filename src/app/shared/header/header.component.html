@@ -1,10 +1,10 @@
 <ion-header [translucent]="true" class="keka-navbar">
   <ion-toolbar class="navbar-toolbar">
-    <ion-grid [fixed]="true">
+    <ion-grid [fixed]="true" class="p-0">
       <ion-row class="ion-align-items-center ion-justify-content-between">
         <!-- Left: Company Name -->
         <ion-col size="10" class="row-left">
-          <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo" />
+          <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo" width="100px" />
 
           <ion-searchbar placeholder="Search employee by name" [(ngModel)]="searchQuery" (ionInput)="onSearch()"
             showCancelButton="never">
@@ -18,26 +18,27 @@
           <!-- <ion-button *ngIf="searchResults.length > 0" (click)="openEmployeeListModal(results.FirstName)">
               Show {{ results.FirstName }} Employee(s)
             </ion-button> -->
-          <ion-popover   [id]="(searchResults.length > 0) ? 'popover-button':'' " [dismissOnSelect]="true">
-                <ng-template>
-                  <ion-content>
-                    <ion-list>
-                        <ion-button  (click)="openEmployeeListModal(results.join(', '))">
-                            {{ results.join(', ') }}
-                          </ion-button>
-                    </ion-list>
-                  </ion-content>
-                </ng-template>
-              </ion-popover>
+          <ion-popover [id]="(searchResults.length > 0) ? 'popover-button':'' " [dismissOnSelect]="true">
+            <ng-template>
+              <ion-content>
+                <ion-list>
+                  <ion-button (click)="openEmployeeListModal(results.join(', '))">
+                    {{ results.join(', ') }}
+                  </ion-button>
+                </ion-list>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
 
-          <div *ngIf="currentEmployee as emp" style="margin-left: auto" class="candidate-name">
-            {{ emp.FirstName || "Loading..." }}
-          </div>
+
         </ion-col>
 
         <!-- Right: Notifications + Candidate Info -->
         <ion-col size="2" class="ion-text-end">
           <div class="row-right">
+            <div *ngIf="currentEmployee as emp" class="candidate-name">
+              {{ emp.FirstName || "Loading..." }}
+            </div>
             <ion-icon name="notifications-outline" class="nav-icon"></ion-icon>
             <ion-button id="popover-dropdown" fill="clear">
               <img class="profilePic" *ngIf="currentEmployee" [attr.alt]="currentEmployee.FullName" [src]="currentEmployee.profile_image
