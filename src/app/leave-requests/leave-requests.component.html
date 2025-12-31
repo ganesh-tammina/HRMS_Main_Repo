@@ -86,4 +86,15 @@
 
     </div>
   </div>
+  <ion-card *ngFor="let wfh of pendingWFHRequests">
+    <ion-card-header>
+      <ion-card-title>WFH Request</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      Date: {{ wfh.date }} <br />
+      Reason: {{ wfh.reason }} <br />
+      Status: {{ wfh.status }}
+    </ion-card-content>
+  </ion-card>
 </div>

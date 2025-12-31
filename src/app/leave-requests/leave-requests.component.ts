@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { LeaverequestService } from '../services/leaverequest.service';
+import { WorkFromHomeService } from '../services/work-from-home.service';
 
 @Component({
   selector: 'app-leave-requests',
@@ -17,15 +18,20 @@ import { LeaverequestService } from '../services/leaverequest.service';
 export class LeaveRequestsComponent implements OnInit, OnDestroy {
 
   leaveRequests: any[] = [];
+  pendingWFHRequests: any[] = [];
+
   actionForm!: FormGroup;
   selectedRequest: any = null;
+
+  loadingWFH = false;
 
   private sub!: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private leaveState: LeaverequestService,
-    private leaveService: LeaverequestService
+    private leaveService: LeaverequestService,
+    private wfhService: WorkFromHomeService
   ) { }
 
   ngOnInit() {
@@ -33,14 +39,31 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
       status: ['', Validators.required],
       manager_comment: ['']
     });
+
     this.reloadFromApi();
+    this.loadPendingWFHRequests();
   }
 
   reloadFromApi() {
     this.leaveService.getMyLeaves(new Date().getFullYear()).subscribe(res => {
       this.leaveRequests = res;
-      console.log(res);
+      console.log('Leaves:', res);
+    });
+  }
 
+  loadPendingWFHRequests() {
+    this.loadingWFH = true;
+
+    this.wfhService.getPendingWFHRequests().subscribe({
+      next: (res) => {
+        this.pendingWFHRequests = res;
+        console.log('Pending WFH:', res);
+        this.loadingWFH = false;
+      },
+      error: (err) => {
+        console.error('WFH API error', err);
+        this.loadingWFH = false;
+      }
     });
   }
 
@@ -57,7 +80,6 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     this.selectedRequest = null;
   }
 
-
   submitDecision() {
     if (this.actionForm.invalid || !this.selectedRequest) {
       this.actionForm.markAllAsTouched();
@@ -69,41 +91,35 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     const leaveId = this.selectedRequest.id;
 
     if (status === 'APPROVED') {
-
       this.leaveService.approveLeave(leaveId, comment).subscribe({
         next: () => {
           alert('✅ Your leave request is approved');
-
           this.updateStateLocally('APPROVED');
         },
         error: () => alert('Failed to approve leave')
       });
+    }
 
-    } else if (status === 'REJECTED') {
-
+    if (status === 'REJECTED') {
       this.leaveService.rejectLeave(leaveId, comment).subscribe({
         next: () => {
           alert('❌ Your leave request is rejected');
-
           this.updateStateLocally('REJECTED');
         },
         error: () => alert('Failed to reject leave')
       });
-
     }
   }
-  private updateStateLocally(newStatus: 'APPROVED' | 'REJECTED') {
 
+  private updateStateLocally(newStatus: 'APPROVED' | 'REJECTED') {
     const updated = this.leaveRequests.map(req =>
       req.id === this.selectedRequest.id
         ? { ...req, status: newStatus }
         : req
     );
 
-    // 🔥 update shared state
     this.leaveService.setLeaveRequests(updated);
 
-    // cleanup
     this.selectedRequest = null;
     this.actionForm.reset();
   }
