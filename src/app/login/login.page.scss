@@ -6,34 +6,26 @@
 // $radius: 14px;
 @import "../../global.scss";
 
-.img{
-  position: fixed;
-  left: 10%;
-  top: 50%;
-  transform: translateY(-50%); /* acceptable here */
-  pointer-events: none
-}
-
-.img img {
-  width: 80%;
-  max-width: 100%;
-  display: block;
-}
+// .img{
+//   margin: 40px 0;
+// }
 
 .login-wrapper {
   display: flex;
-  position: relative;
+  align-items: center;
+  justify-content: center;
   height: 100vh;
-  width: auto;
+  width: 100%;
   background: linear-gradient(135deg, #0f2b42, #133b5c);
 }
 
 /* LEFT SIDE */
 .login-left {
-  flex: 1.2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  // flex: 1.2;
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
+  width: 50%;
 
   img {
     max-width: 80%;
@@ -43,11 +35,12 @@
 
 /* RIGHT SIDE */
 .login-right {
-  flex: 0.95;
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  margin-right: 10px;
+  // flex: 0.9;
+  // display: flex;
+  // align-items: center;
+  // justify-content: right;
+  // margin-right: 10px;
+  // width: 50%;
 }
 
 /* LOGIN CARD */
