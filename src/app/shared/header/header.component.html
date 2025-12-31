@@ -3,7 +3,7 @@
     <ion-grid [fixed]="true" class="p-0">
       <ion-row class="ion-align-items-center ion-justify-content-between">
         <!-- Left: Company Name -->
-        <ion-col size="10" class="row-left">
+        <ion-col size="9" class="row-left">
           <img src="./../assets/techlogo.png" alt="Tech Tammina" class="logo" width="100px" />
 
           <ion-searchbar placeholder="Search employee by name" [(ngModel)]="searchQuery" (ionInput)="onSearch()"
@@ -34,7 +34,7 @@
         </ion-col>
 
         <!-- Right: Notifications + Candidate Info -->
-        <ion-col size="2" class="ion-text-end">
+        <ion-col size="3" class="ion-text-end">
           <div class="row-right">
             <div *ngIf="currentEmployee as emp" class="candidate-name">
               {{ emp.FirstName || "Loading..." }}
