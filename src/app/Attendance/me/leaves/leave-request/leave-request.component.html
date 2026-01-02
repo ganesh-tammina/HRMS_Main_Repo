@@ -3,8 +3,7 @@
     <label>Leave Type</label>
     <ion-select formControlName="leave_type" placeholder="Select Leave Type">
 
-      <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.code"
-        [disabled]="leave.available <= 0">
+      <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.code" [disabled]="leave.available <= 0">
 
         {{ leave.name }} ({{ leave.available }} available)
 
