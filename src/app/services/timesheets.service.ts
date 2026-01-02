@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment'
 
 @Injectable({
   providedIn: 'root',
 })
 export class TimesheetService {
-
-  private baseUrl = 'http://${this.env.apiURL}/api/timesheets';
+  
+  private env = environment; 
+  private baseUrl = `http://${this.env.apiURL}/api/timesheets`;
 
   constructor(private http: HttpClient) { }
 

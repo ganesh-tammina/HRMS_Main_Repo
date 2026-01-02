@@ -29,6 +29,7 @@ import { AuthGuard } from './services/route-guard/auth/single-guard.guard';
 import { roleHandlerGuard } from './services/route-guard/role-handler.ts/role-handler.guard';
 import { adminFunctionalityComponent } from './Administration/admin-functionality/admin-functionality.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
+import { ClientWorkTrackComponent } from './Today_@_Work/client-work-track/client-work-track.component';
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 import { LeaveRequestsComponent } from './leave-requests/leave-requests.component';
 import { LeavesAdminDashboardComponent } from './Administration/leaves-admin-dashboard/leaves-admin-dashboard.component';
@@ -90,7 +91,12 @@ export const routes: Routes = [
   {
     path: 'workTrack',
     component: WorkTrackComponent,
+  }, 
+  {
+    path: 'ClientWorkTrack',
+    component: ClientWorkTrackComponent,
   },
+  
   {
     path: 'admin',
     component: AdminComponent,

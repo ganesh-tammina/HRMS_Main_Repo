@@ -30,6 +30,22 @@ export class WorkTrackComponent implements OnInit {
   /* ================= LIST ================= */
   myTimesheets: any[] = [];
   loadingList = false;
+  now = new Date();
+ 
+  // current year & month
+  year = this.now.getFullYear();
+  month = this.now.getMonth() + 1; // JS months are 0-based
+   
+  // first day of current month
+  startDate = new Date(this.year, this.now.getMonth(), 1);
+   
+  // last day of current month
+  endDate = new Date(this.year, this.now.getMonth() + 1, 0);
+   
+  // format YYYY-MM-DD
+  formatDate = (date: Date): string =>
+    date.toISOString().split('T')[0];
+
 
   constructor(
     private fb: FormBuilder,
@@ -118,12 +134,12 @@ export class WorkTrackComponent implements OnInit {
     this.loadingList = true;
 
     this.timesheetService.getMyRegularTimesheets({
-      start_date: '2025-12-01',
-      end_date: '2025-12-31',
-      month: 12,
-      year: 2025,
+      start_date: this.formatDate(this.startDate),
+      end_date: this.formatDate(this.endDate),
+      month: this.month,
+      year: this.year,
     }).subscribe({
-      next: (res) => {
+      next: (res:any) => {
         this.myTimesheets = res?.data || res || [];
         this.loadingList = false;
       },

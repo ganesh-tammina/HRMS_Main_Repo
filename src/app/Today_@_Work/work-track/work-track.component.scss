@@ -323,13 +323,6 @@ ion-accordion-group {
 }
 }
 
-
-.breakdown-card {
-  margin-bottom: 14px;
-  border-radius: 14px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-}
-
 .total-row {
   margin-top: 16px;
   font-weight: 600;
@@ -341,4 +334,82 @@ ion-accordion-group {
   text-align: center;
   color: #888;
   padding: 12px;
+}
+
+
+
+//new styles for my worksheet
+h1 {
+  @include card-header();
+  margin-top: 5px;
+    padding-left: 12px;
+}
+.worklog-block {
+.date-block {
+  ion-input {
+    border: 1px solid #ABABAB;
+    border-radius: 8px;
+    width: auto;
+    margin-left: 8px;
+    padding: 0px 12px !important; 
+  }
+  
+  label {
+    @include normal-text();
+  }
+}   
+.table-block {
+  border: 1px solid #ABABAB;
+  border-radius: 8px;
+  margin-top: 15px;
+  .table-header {
+    border-bottom: 0.99px solid #ABABAB99;
+    height: 43px;
+  }
+  .table-list-row {
+    border-bottom: 0.99px solid #ABABAB99;
+    height: fit-content;
+    min-height: 43px;
+  }
+  ion-row {
+    align-items: center;
+    ion-col {
+      padding: 5px 8px;
+    }
+  }
+}
+.primary-outline-btn, .primary-btn {
+  height: 36px;
+  min-height: 33px;
+  border-radius: 22px;
+  margin: 15px;
+}
+.total-row {
+  --background: #3B82F60D !important;
+  border: 1px solid #3B82F633;
+  border-radius: 8px !important;
+  ion-img {
+    width: 18px;
+    margin-right: 8px; 
+  }
+  ion-badge {
+    --color: var(--ion-color-primary);
+    --background: transparent;
+    @include card-header();
+  }
+}
+.note-block {
+  margin-top: 15px;
+  ion-textarea {
+    border: 1px solid #ABABAB;
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 0px 12px !important;
+    margin-bottom: 25px;
+  } 
+}
+ion-label {
+  @include normal-text-unbold();
+  transform: none;
+}
 }

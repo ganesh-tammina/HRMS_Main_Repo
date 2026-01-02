@@ -136,8 +136,8 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-menu-toggle auto-hide="false">
-              <ion-item lines="none" detail="false" routerLinkActive="selected" [routerLink]="['/workTrack']">
+            <ion-menu-toggle auto-hide="false" id='menu-buttons2'>
+              <ion-item lines="none" detail="false">
                 <div class="row-left">
                     <img src="../assets/icon/work-track.svg" width="24" height="24" class="inactive-menu"/>
                     <img src="../assets/icon/work-track-active.svg" width="24" height="24" class="active-menu"/>
@@ -145,6 +145,26 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
+            <ion-popover trigger="menu-buttons2" [dismissOnSelect]="true" class="menu-dropdown" side="right">
+              <ng-template>
+                <ion-content>
+                  <ion-menu-toggle auto-hide="false">
+                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+                    <ion-item routerLinkActive="selected" [routerLink]="['/workTrack']" lines="none" detail="false">
+                      <ion-label>My Work Track</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                  <ion-menu-toggle auto-hide="false">
+                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+                    <ion-item routerLinkActive="selected" [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
+                      <ion-label>Client Work Track </ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+
+
             <ion-menu-toggle auto-hide="false" id="menu-buttons1">
               <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
@@ -155,7 +175,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown menu-drop1" side="right">
+            <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" class="menu-dropdown menu-drop1" side="right">
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">

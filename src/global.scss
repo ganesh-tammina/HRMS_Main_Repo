@@ -114,7 +114,7 @@ ion-list-header, ion-item{
     padding-bottom: 0.2rem !important;
 }
 .page-containerOn{
-        --background: #f9fafc;
+        --background: var(--ion-bg-color);
 }
 .row-left {
    display: flex;
