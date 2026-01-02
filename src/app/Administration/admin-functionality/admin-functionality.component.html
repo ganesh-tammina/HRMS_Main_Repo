@@ -8,13 +8,12 @@
 
   <!-- TABS -->
   <ul class="masters-tabs">
-    <li [class.active]="activeTab==='locations'" (click)="setTab('locations')">Locationsss</li>
+    <li [class.active]="activeTab==='locations'" (click)="setTab('locations')">Locations</li>
     <li [class.active]="activeTab==='departments'" (click)="setTab('departments')">Departments</li>
     <li [class.active]="activeTab==='designations'" (click)="setTab('designations')">Designations</li>
     <li [class.active]="activeTab==='businessUnits'" (click)="setTab('businessUnits')">Business Units</li>
-    <li [class.active]="activeTab==='legalEntities'" (click)="setTab('legalEntities')">Legal Entities</li>
-    <li [class.active]="activeTab==='costCenters'" (click)="setTab('costCenters')">Cost Centers</li>
     <li [class.active]="activeTab==='shifts'" (click)="setTab('shifts')">Shifts</li>
+    <li [class.active]="activeTab==='announcements'" (click)="setTab('announcements')">Announcements</li>
   </ul>
 
   <!-- ========== LOCATIONS ========== -->
@@ -36,7 +35,6 @@
     <table class="masters-table" *ngIf="!showLocationForm">
       <tr *ngFor="let item of locations">
         <td>{{item.name}}</td>
-        <td>Active</td>
         <td>
           <button (click)="editLocation(item)">✏️</button>
           <button (click)="deleteLocation(item.id)">🗑️</button>
@@ -64,7 +62,6 @@
     <table class="masters-table" *ngIf="!showDepartmentForm">
       <tr *ngFor="let item of departments">
         <td>{{item.name}}</td>
-        <td>Active</td>
         <td>
           <button (click)="editDepartment(item)">✏️</button>
           <button (click)="deleteDepartment(item.id)">🗑️</button>
@@ -73,62 +70,7 @@
     </table>
   </div>
 
-  <!-- ========== DESIGNATIONS ========== -->
-  <div class="tab-card" *ngIf="activeTab==='designations'">
-    <div class="tab-header">
-      <h3>Designations</h3>
-      <button class="btn-primary" (click)="openAddDesignation()">+ Add Designation</button>
-    </div>
-
-    <div class="create-box" *ngIf="showDesignationForm">
-      <input [(ngModel)]="designationName" placeholder="Designation name">
-      <div class="actions">
-        <button class="btn-primary" *ngIf="!editingDesignationId" (click)="saveDesignation()">Save</button>
-        <button class="btn-primary" *ngIf="editingDesignationId" (click)="updateDesignation()">Update</button>
-        <button class="btn-secondary" (click)="cancelDesignation()">Cancel</button>
-      </div>
-    </div>
-
-    <table class="masters-table" *ngIf="!showDesignationForm">
-      <tr *ngFor="let item of designations">
-        <td>{{item.name}}</td>
-        <td>Active</td>
-        <td>
-          <button (click)="editDesignation(item)">✏️</button>
-          <button (click)="deleteDesignation(item.id)">🗑️</button>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- ========== BUSINESS UNITS ========== -->
-  <div class="tab-card" *ngIf="activeTab==='businessUnits'">
-    <div class="tab-header">
-      <h3>Business Units</h3>
-      <button class="btn-primary" (click)="openAddBusinessUnit()">+ Add Business Unit</button>
-    </div>
-
-    <div class="create-box" *ngIf="showBusinessUnitForm">
-      <input [(ngModel)]="businessUnitName" placeholder="Business unit name">
-      <div class="actions">
-        <button class="btn-primary" *ngIf="!editingBusinessUnitId" (click)="saveBusinessUnit()">Save</button>
-        <button class="btn-primary" *ngIf="editingBusinessUnitId" (click)="updateBusinessUnit()">Update</button>
-        <button class="btn-secondary" (click)="cancelBusinessUnit()">Cancel</button>
-      </div>
-    </div>
-
-    <table class="masters-table" *ngIf="!showBusinessUnitForm">
-      <tr *ngFor="let item of businessUnits">
-        <td>{{item.name}}</td>
-        <td>Active</td>
-        <td>
-          <button (click)="editBusinessUnit(item)">✏️</button>
-          <button (click)="deleteBusinessUnit(item.id)">🗑️</button>
-        </td>
-      </tr>
-    </table>
-  </div>
-  <!-- ================= SHIFTS ================= -->
+  <!-- ========== SHIFTS ========== -->
   <div class="tab-card" *ngIf="activeTab==='shifts'">
     <div class="tab-header">
       <h3>Shift Policies</h3>
@@ -150,18 +92,44 @@
     </div>
 
     <table class="masters-table" *ngIf="!showShiftForm">
-      <tr>
-        <th>Name</th>
-        <th>Time</th>
-        <th>Break</th>
-        <th>Actions</th>
-      </tr>
       <tr *ngFor="let item of shiftPolicies">
         <td>{{item.name}}</td>
         <td>{{item.start_time}} - {{item.end_time}}</td>
-        <td>{{item.break_duration_minutes}} mins</td>
         <td>
           <button (click)="editShift(item)">✏️</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ========== ANNOUNCEMENTS ========== -->
+  <div class="tab-card" *ngIf="activeTab==='announcements'">
+    <div class="tab-header">
+      <h3>Announcements</h3>
+      <button class="btn-primary" (click)="openAddAnnouncement()">+ Add Announcement</button>
+    </div>
+
+    <div class="create-box" *ngIf="showAnnouncementForm">
+      <input [(ngModel)]="announcementForm.title" placeholder="Title">
+      <textarea [(ngModel)]="announcementForm.body" placeholder="Message"></textarea>
+
+      <input type="datetime-local" [(ngModel)]="announcementForm.starts_at">
+      <input type="datetime-local" [(ngModel)]="announcementForm.ends_at">
+
+      <div class="actions">
+        <button class="btn-primary" *ngIf="!editingAnnouncementId" (click)="saveAnnouncement()">Save</button>
+        <button class="btn-primary" *ngIf="editingAnnouncementId" (click)="updateAnnouncement()">Update</button>
+        <button class="btn-secondary" (click)="cancelAnnouncement()">Cancel</button>
+      </div>
+    </div>
+
+    <table class="masters-table" *ngIf="!showAnnouncementForm">
+      <tr *ngFor="let item of announcements">
+        <td>{{item.title}}</td>
+        <td>{{item.created_at | date}} - {{item.ends_at | date}}</td>
+        <td>
+          <button (click)="editAnnouncement(item)">✏️</button>
+          <button (click)="deleteAnnouncement(item.id)">🗑️</button>
         </td>
       </tr>
     </table>

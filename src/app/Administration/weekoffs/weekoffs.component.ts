@@ -49,10 +49,10 @@ export class WeekoffsComponent implements OnInit {
       week_off_policy_name: this.weekOffForm.value.week_off_policy_name,
       week_off_days: this.selectedDays.join(",")   // <-- ARRAY → STRING
     };
-    this.candidateService.getWeekOffPolicies(formData).subscribe((res: any) => {
-      alert('Week Off Policy Saved Successfully!');
-      console.log(res);
-    });
+    // this.candidateService.getWeekOffPolicies(formData).subscribe((res: any) => {
+    //   alert('Week Off Policy Saved Successfully!');
+    //   console.log(res);
+    // });
     this.weekOffForm.reset();
     this.selectedDays = [];
   }

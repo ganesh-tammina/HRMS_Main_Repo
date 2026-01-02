@@ -43,7 +43,9 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     private routeGuard: RouteGuardService,
     private attendanceApi: AttendanceApiService,
     private router: Router
-  ) { }
+  ) {
+    this.reloadAttendance();
+  }
 
   /* =================================================
    * 🔄 THIS IS THE KEY FIX

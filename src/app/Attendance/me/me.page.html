@@ -48,11 +48,11 @@
             </ion-card-header>
 
             <ion-card-content>
-                <div class="row-left mb-15">
-                    <img src="../../../assets/leave-icons/day.svg" width="28" class="mr-8">
-                    {{ shift_policy.name }} :
-                    ( {{ shift_policy.start_time }} - {{ shift_policy.end_time }} )
-                  </div>
+              <div class="row-left mb-15">
+                <img src="../../../assets/leave-icons/day.svg" width="28" class="mr-8">
+                {{ shift_policy?.name }} :
+                ( {{ shift_policy?.start_time }} - {{ shift_policy?.end_time }} )
+              </div>
               <ion-grid class="days-grid ion-no-padding mb-15">
                 <ion-row>
                   <ion-col *ngFor="let day of days; trackBy: trackByDate" class="ion-text-center"
