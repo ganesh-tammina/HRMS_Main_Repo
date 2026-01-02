@@ -26,11 +26,19 @@ export interface ShiftPolicyPayload {
   is_active: number;               // 1 | 0
 }
 
+/* ===================== ANNOUNCEMENTS ===================== */
+export interface AnnouncementPayload {
+  title: string;
+  body: string;
+  starts_at: string; // ISO string "2025-12-23T00:00:00Z"
+  ends_at: string;   // ISO string "2025-12-26T23:59:59Z"
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
-     private env = environment;
+  private env = environment;
   private baseUrl = `http://${this.env.apiURL}/api`;
 
   constructor(private http: HttpClient) { }
@@ -227,6 +235,35 @@ export class AdminService {
   getWeeklyOffPolicy(): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.baseUrl}/weekly-off-policies`
+    );
+  }
+
+  // ✅ CREATE ANNOUNCEMENT
+  createAnnouncement(payload: AnnouncementPayload): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.baseUrl}/announcements`,
+      payload
+    );
+  }
+
+  // ✅ GET ALL ANNOUNCEMENTS
+  getAnnouncements(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/announcements`
+    );
+  }
+  // ✅ UPDATE ANNOUNCEMENT
+  updateAnnouncement(id: number, payload: AnnouncementPayload): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(
+      `${this.baseUrl}/announcements/${id}`,
+      payload
+    );
+  }
+
+  // ✅ DELETE ANNOUNCEMENT
+  deleteAnnouncement(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(
+      `${this.baseUrl}/announcements/${id}`
     );
   }
 }
