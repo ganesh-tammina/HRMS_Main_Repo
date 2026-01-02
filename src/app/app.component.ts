@@ -15,6 +15,7 @@ import { HeaderComponent } from './shared/header/header.component';
 import { RouteGuardService } from './services/route-guard/route-service/route-guard.service';
 import { NavController } from '@ionic/angular';
 import { EmployeeService } from './services/employee.service';
+import { AdminService } from './services/admin-functionality/admin.service.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -51,6 +52,7 @@ export class AppComponent implements OnInit {
     private candidateService: CandidateService,
     private routeGaurdService: RouteGuardService,
     private employeeService: EmployeeService,
+    private service: AdminService,
     private navCtrl: NavController // ✅ add this
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
@@ -99,7 +101,7 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     this.isAdmin = false;
-   
+
     const role = this.routeGaurdService.userRole?.trim().toUpperCase() || '';
     if (role === 'ADMIN' || role === 'HR') {
       this.isAdmin = true;
@@ -114,6 +116,7 @@ export class AppComponent implements OnInit {
     //     ? (this.isAdmin = true)
     //     : (this.isAdmin = false);
     // }
+    this.service.getAnnouncements().subscribe(r => console.log(r));
   }
 
   // ionViewDidEnter() {

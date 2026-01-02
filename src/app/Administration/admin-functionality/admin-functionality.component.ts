@@ -5,10 +5,10 @@ import { AdminService, ShiftPolicyPayload } from 'src/app/services/admin-functio
 
 @Component({
   selector: 'app-admin-functionality',
-  templateUrl: './admin-functionality.component.html',
-  styleUrls: ['./admin-functionality.component.scss'],
   standalone: true,
   imports: [FormsModule, CommonModule],
+  templateUrl: './admin-functionality.component.html',
+  styleUrls: ['./admin-functionality.component.scss']
 })
 export class adminFunctionalityComponent implements OnInit {
 
@@ -16,30 +16,21 @@ export class adminFunctionalityComponent implements OnInit {
 
   locations: any[] = [];
   departments: any[] = [];
-  designations: any[] = [];
-  businessUnits: any[] = [];
-  legalEntities: any[] = [];
-  costCenters: any[] = [];
+  shiftPolicies: any[] = [];
+  announcements: any[] = [];
 
   showLocationForm = false;
   showDepartmentForm = false;
-  showDesignationForm = false;
-  showBusinessUnitForm = false;
+  showShiftForm = false;
+  showAnnouncementForm = false;
 
   locationName = '';
   departmentName = '';
-  designationName = '';
-  businessUnitName = '';
 
-  editingLocationId: any = null;
-  editingDepartmentId: any = null;
-  editingDesignationId: any = null;
-  editingBusinessUnitId: any = null;
-
-  /* ===================== SHIFTS (NEW) ===================== */
-  shiftPolicies: any[] = [];
-  showShiftForm = false;
+  editingLocationId: number | null = null;
+  editingDepartmentId: number | null = null;
   editingShiftId: number | null = null;
+  editingAnnouncementId: number | null = null;
 
   shiftForm: ShiftPolicyPayload = {
     name: '',
@@ -52,6 +43,13 @@ export class adminFunctionalityComponent implements OnInit {
     is_active: 1
   };
 
+  announcementForm = {
+    title: '',
+    body: '',
+    starts_at: '',
+    ends_at: ''
+  };
+
   constructor(private service: AdminService) { }
 
   ngOnInit() {
@@ -62,88 +60,42 @@ export class adminFunctionalityComponent implements OnInit {
     this.activeTab = tab;
     if (tab === 'locations') this.loadLocations();
     if (tab === 'departments') this.loadDepartments();
-    if (tab === 'designations') this.loadDesignations();
-    if (tab === 'businessUnits') this.loadBusinessUnits();
-    if (tab === 'shifts') this.loadShiftPolicies(); // ✅ added
+    if (tab === 'shifts') this.loadShiftPolicies();
+    if (tab === 'announcements') this.loadAnnouncements();
   }
 
-  /* ===================== LOCATIONS ===================== */
+  /* LOCATIONS */
   loadLocations() { this.service.getLocations().subscribe(r => this.locations = r); }
   openAddLocation() { this.showLocationForm = true; this.editingLocationId = null; this.locationName = ''; }
   saveLocation() { this.service.createLocation({ name: this.locationName }).subscribe(() => { this.loadLocations(); this.cancelLocation(); }); }
   editLocation(i: any) { this.showLocationForm = true; this.locationName = i.name; this.editingLocationId = i.id; }
-  updateLocation() { this.service.updateLocation(this.editingLocationId, { name: this.locationName }).subscribe(() => { this.loadLocations(); this.cancelLocation(); }); }
+  updateLocation() { this.service.updateLocation(this.editingLocationId!, { name: this.locationName }).subscribe(() => { this.loadLocations(); this.cancelLocation(); }); }
   deleteLocation(id: number) { this.service.deleteLocation(id).subscribe(() => this.loadLocations()); }
   cancelLocation() { this.showLocationForm = false; }
 
-  /* ===================== DEPARTMENTS ===================== */
+  /* DEPARTMENTS */
   loadDepartments() { this.service.getDepartments().subscribe(r => this.departments = r); }
   openAddDepartment() { this.showDepartmentForm = true; this.editingDepartmentId = null; this.departmentName = ''; }
   saveDepartment() { this.service.createDepartment({ name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.cancelDepartment(); }); }
   editDepartment(i: any) { this.showDepartmentForm = true; this.departmentName = i.name; this.editingDepartmentId = i.id; }
-  updateDepartment() { this.service.updateDepartment(this.editingDepartmentId, { name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.cancelDepartment(); }); }
+  updateDepartment() { this.service.updateDepartment(this.editingDepartmentId!, { name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.cancelDepartment(); }); }
   deleteDepartment(id: number) { this.service.deleteDepartment(id).subscribe(() => this.loadDepartments()); }
   cancelDepartment() { this.showDepartmentForm = false; }
 
-  /* ===================== DESIGNATIONS ===================== */
-  loadDesignations() { this.service.getDesignations().subscribe(r => this.designations = r); }
-  openAddDesignation() { this.showDesignationForm = true; this.editingDesignationId = null; this.designationName = ''; }
-  saveDesignation() { this.service.createDesignation({ name: this.designationName }).subscribe(() => { this.loadDesignations(); this.cancelDesignation(); }); }
-  editDesignation(i: any) { this.showDesignationForm = true; this.designationName = i.name; this.editingDesignationId = i.id; }
-  updateDesignation() { this.service.updateDesignation(this.editingDesignationId, { name: this.designationName }).subscribe(() => { this.loadDesignations(); this.cancelDesignation(); }); }
-  deleteDesignation(id: number) { this.service.deleteDesignation(id).subscribe(() => this.loadDesignations()); }
-  cancelDesignation() { this.showDesignationForm = false; }
+  /* SHIFTS */
+  loadShiftPolicies() { this.service.getShiftPolicies().subscribe(r => this.shiftPolicies = r); }
+  openAddShift() { this.showShiftForm = true; this.editingShiftId = null; }
+  saveShift() { this.service.createShiftPolicy(this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.cancelShift(); }); }
+  editShift(item: any) { this.showShiftForm = true; this.editingShiftId = item.id; this.shiftForm = { ...item }; }
+  updateShift() { this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.cancelShift(); }); }
+  cancelShift() { this.showShiftForm = false; }
 
-  /* ===================== BUSINESS UNITS ===================== */
-  loadBusinessUnits() { this.service.getBusinessUnits().subscribe(r => this.businessUnits = r); }
-  openAddBusinessUnit() { this.showBusinessUnitForm = true; this.editingBusinessUnitId = null; this.businessUnitName = ''; }
-  saveBusinessUnit() { this.service.createBusinessUnit({ name: this.businessUnitName }).subscribe(() => { this.loadBusinessUnits(); this.cancelBusinessUnit(); }); }
-  editBusinessUnit(i: any) { this.showBusinessUnitForm = true; this.businessUnitName = i.name; this.editingBusinessUnitId = i.id; }
-  updateBusinessUnit() { this.service.updateBusinessUnit(this.editingBusinessUnitId, { name: this.businessUnitName }).subscribe(() => { this.loadBusinessUnits(); this.cancelBusinessUnit(); }); }
-  deleteBusinessUnit(id: number) { this.service.deleteBusinessUnit(id).subscribe(() => this.loadBusinessUnits()); }
-  cancelBusinessUnit() { this.showBusinessUnitForm = false; }
-
-  /* ===================== SHIFTS (NEW) ===================== */
-  loadShiftPolicies() {
-    this.service.getShiftPolicies().subscribe(r => this.shiftPolicies = r);
-  }
-
-  openAddShift() {
-    this.showShiftForm = true;
-    this.editingShiftId = null;
-    this.shiftForm = {
-      name: '',
-      shift_type: 'general',
-      start_time: '',
-      end_time: '',
-      break_duration_minutes: 60,
-      timezone: 'Asia/Kolkata',
-      description: '',
-      is_active: 1
-    };
-  }
-
-  saveShift() {
-    this.service.createShiftPolicy(this.shiftForm).subscribe(() => {
-      this.loadShiftPolicies();
-      this.cancelShift();
-    });
-  }
-
-  editShift(item: any) {
-    this.showShiftForm = true;
-    this.editingShiftId = item.id;
-    this.shiftForm = { ...item };
-  }
-
-  updateShift() {
-    this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe(() => {
-      this.loadShiftPolicies();
-      this.cancelShift();
-    });
-  }
-
-  cancelShift() {
-    this.showShiftForm = false;
-  }
+  /* ANNOUNCEMENTS */
+  loadAnnouncements() { this.service.getAnnouncements().subscribe(r => this.announcements = r); }
+  openAddAnnouncement() { this.showAnnouncementForm = true; this.editingAnnouncementId = null; this.announcementForm = { title: '', body: '', starts_at: '', ends_at: '' }; }
+  saveAnnouncement() { this.service.createAnnouncement(this.announcementForm).subscribe(() => { this.loadAnnouncements(); this.cancelAnnouncement(); }); }
+  editAnnouncement(i: any) { this.showAnnouncementForm = true; this.editingAnnouncementId = i.id; this.announcementForm = { ...i }; }
+  updateAnnouncement() { this.service.updateAnnouncement(this.editingAnnouncementId!, this.announcementForm).subscribe(() => { this.loadAnnouncements(); this.cancelAnnouncement(); }); }
+  deleteAnnouncement(id: number) { this.service.deleteAnnouncement(id).subscribe(() => this.loadAnnouncements()); }
+  cancelAnnouncement() { this.showAnnouncementForm = false; }
 }
