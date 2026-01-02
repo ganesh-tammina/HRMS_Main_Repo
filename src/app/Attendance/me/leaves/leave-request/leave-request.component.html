@@ -1,66 +1,68 @@
 <form class="form-block" [formGroup]="leaveForm">
+
+  <!-- Leave Type -->
   <div>
     <label>Leave Type</label>
     <ion-select formControlName="leave_type" placeholder="Select Leave Type">
-
-      <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.code" [disabled]="leave.available <= 0">
+      <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.id" [disabled]="leave.available <= 0">
 
         {{ leave.name }} ({{ leave.available }} available)
-
       </ion-select-option>
-
     </ion-select>
   </div>
+
+  <!-- Dates -->
   <div class="row-left">
     <div class="from-input">
       <label>From</label>
-      <ion-input id="from-input" readonly
-        [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''"></ion-input>
-      <ion-popover #datePopover trigger="from-input" show-backdrop="true">
+      <ion-input id="from-input" readonly [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''">
+      </ion-input>
+
+      <ion-popover #fromPopover trigger="from-input">
         <ng-template>
-          <ion-datetime [min]="minDate" formControlName="start_date"
-            (ionChange)="onDateChangeFrom($event, datePopover)"></ion-datetime>
+          <ion-datetime [min]="minDate" (ionChange)="onDateChangeFrom($event, fromPopover)">
+          </ion-datetime>
         </ng-template>
       </ion-popover>
-
     </div>
 
     <div class="to-input">
       <label>To</label>
-      <ion-input id="to-input" readonly
-        [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''"></ion-input>
-      <ion-popover #datePopover1 trigger="to-input" show-backdrop="true">
+      <ion-input id="to-input" readonly [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''">
+      </ion-input>
+
+      <ion-popover #toPopover trigger="to-input">
         <ng-template>
-          <ion-datetime formControlName="end_date" [min]="leaveForm.value.start_date || minDate"
-            (ionChange)="onDateChangeTo($event, datePopover1)"></ion-datetime>
+          <ion-datetime [min]="leaveForm.value.start_date || minDate" (ionChange)="onDateChangeTo($event, toPopover)">
+          </ion-datetime>
         </ng-template>
       </ion-popover>
     </div>
   </div>
 
-
-  <!-- Error Message for Date Validation -->
-  <ion-item *ngIf="leaveForm.get('end_date')?.hasError('dateError')" lines="none">
-    <ion-label color="danger">End date cannot be before start date.</ion-label>
-  </ion-item>
-
+  <!-- Total Days -->
   <div *ngIf="total_days > 0" class="totalDays">
-    <p class="mt-0" color="medium">Total Days: {{ total_days }}</p>
+    <p>Total Days: {{ total_days }}</p>
   </div>
 
+  <!-- Reason -->
   <div>
     <label>Leave Reason</label>
-    <ion-textarea [(ngModel)]="description" (ionInput)="validateWordLimit($event)"
-      formControlName="remarks"></ion-textarea>
+    <ion-textarea formControlName="remarks" (ionInput)="validateWordLimit($event)">
+    </ion-textarea>
     <p>{{ wordsCount }}/100 words</p>
   </div>
 
+  <!-- Notify -->
   <div>
     <label>Notify</label>
-    <ion-input formControlName="notify" placeholder="Search employee"></ion-input>
+    <ion-input formControlName="notify"></ion-input>
   </div>
 
+  <!-- Submit -->
   <ion-button expand="block" (click)="submitRequest()" [disabled]="leaveForm.invalid || total_days <= 0">
+
     Request Leave
   </ion-button>
+
 </form>

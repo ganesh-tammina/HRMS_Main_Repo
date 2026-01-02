@@ -5,8 +5,6 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 
 import { HeaderComponent } from '../../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../../employee-header/employee-header.component';
-import { CandidateService } from '../../../../services/pre-onboarding.service';
-import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { EmployeeLeavesService } from 'src/app/services/employee-leaves.service';
 import { LeaverequestService } from 'src/app/services/leaverequest.service';
 
@@ -26,11 +24,10 @@ import { LeaverequestService } from 'src/app/services/leaverequest.service';
 export class LeaveRequestComponent implements OnInit {
 
   currentYear = new Date().getFullYear();
-  leaveCards: any[] = [];
-  leaveRequests: any[] = [];
-  leaveTypes: any[] = [];
 
+  leaveTypes: any[] = [];
   leaveForm!: FormGroup;
+
   total_days = 0;
   wordsCount = 0;
 
@@ -38,21 +35,16 @@ export class LeaveRequestComponent implements OnInit {
   selectedDateTo = '';
   minDate = new Date().toISOString().split('T')[0];
 
-  IsOpenleavePopup = false;
-
   constructor(
     private fb: FormBuilder,
-    private candidateService: CandidateService,
-    private routerGuard: RouteGuardService,
     private employeeLeaves: EmployeeLeavesService,
     private leaveRequestService: LeaverequestService,
     private toastController: ToastController
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.buildForm();
     this.loadLeaveBalance();
-    this.loadMyLeaves();
     this.handleDateChanges();
   }
 
@@ -60,7 +52,7 @@ export class LeaveRequestComponent implements OnInit {
 
   buildForm() {
     this.leaveForm = this.fb.group({
-      leave_type: ['', Validators.required],
+      leave_type: ['', Validators.required], // leave_type_id
       start_date: ['', Validators.required],
       end_date: ['', Validators.required],
       remarks: ['', Validators.required],
@@ -89,17 +81,12 @@ export class LeaveRequestComponent implements OnInit {
     this.employeeLeaves.getLeaveBalance(this.currentYear).subscribe({
       next: (res: any[]) => {
         this.leaveTypes = res.map(item => ({
-          code: item.type_code,
+          id: item.leave_type_id,        // ✅ REAL BACKEND ID
           name: item.type_name,
+          code: item.type_code,
           available: Number(item.available_days) || 0
         }));
       }
-    });
-  }
-
-  loadMyLeaves() {
-    this.leaveRequestService.getMyLeaves(this.currentYear).subscribe({
-      next: res => (this.leaveRequests = res)
     });
   }
 
@@ -107,59 +94,66 @@ export class LeaveRequestComponent implements OnInit {
 
   submitRequest() {
     if (this.leaveForm.invalid || this.total_days <= 0) {
-      this.leaveForm.markAllAsTouched();
       this.presentToast('Please fill all required fields', 'warning');
       return;
     }
 
     const form = this.leaveForm.value;
 
+    const selectedLeave = this.leaveTypes.find(
+      l => l.id === form.leave_type
+    );
+
+    if (!selectedLeave) {
+      this.presentToast('Invalid leave type', 'danger');
+      return;
+    }
+
+    if (this.total_days > selectedLeave.available) {
+      this.presentToast(
+        `Only ${selectedLeave.available} days available`,
+        'warning'
+      );
+      return;
+    }
+
     const payload = {
-      leave_type_id: this.getLeaveTypeId(form.leave_type),
+      leave_type_id: form.leave_type,
       start_date: form.start_date,
       end_date: form.end_date,
       total_days: this.total_days,
       reason: form.remarks
     };
 
-    console.log('Submitting Leave Payload:', payload);
-
     this.leaveRequestService.applyLeave(payload).subscribe({
       next: () => {
         this.leaveForm.reset();
         this.total_days = 0;
-        this.IsOpenleavePopup = false;
-        this.loadMyLeaves();
+        this.selectedDateFrom = '';
+        this.selectedDateTo = '';
         this.presentToast('Leave request submitted successfully', 'success');
       },
-      error: () => {
-        this.presentToast('Failed to submit leave request', 'danger');
+      error: (err) => {
+        this.presentToast(
+          err?.error?.error || 'Failed to submit leave',
+          'danger'
+        );
       }
     });
   }
 
   /* ================= HELPERS ================= */
 
-  getLeaveTypeId(code: string): number {
-    const map: any = {
-      CL: 1,
-      SL: 2,
-      ML: 3,
-      PL: 4,
-      CO: 5,
-      UL: 6
-    };
-    return map[code];
-  }
-
   validateWordLimit(ev: any) {
     const value = ev.target.value || '';
-    const words = value.trim().split(/\s+/);
+    const words = value.trim() ? value.trim().split(/\s+/) : [];
     this.wordsCount = words.length;
 
     if (words.length > 100) {
-      const trimmed = words.slice(0, 100).join(' ');
-      this.leaveForm.patchValue({ remarks: trimmed });
+      this.leaveForm.patchValue({
+        remarks: words.slice(0, 100).join(' ')
+      });
+      this.wordsCount = 100;
     }
   }
 

@@ -17,7 +17,7 @@ export interface MyLeave {
   providedIn: 'root',
 })
 export class LeaverequestService {
-private env = environment;
+  private env = environment;
   private readonly API_URL = `http://${this.env.apiURL}/api/leaves`;
 
   /** 🔹 STATE MANAGEMENT */
@@ -103,5 +103,16 @@ private env = environment;
       { rejection_reason }
     );
   }
-  
+
+  getPendingLeaveRequests(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.API_URL}/pending`
+    ).pipe(
+      tap((requests) => {
+        // Optional: keep in shared state if needed
+        this.leaveRequestsSource.next(requests);
+      })
+    );
+  }
+
 }

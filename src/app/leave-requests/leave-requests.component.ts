@@ -40,6 +40,7 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
     });
 
     this.reloadFromApi();
+    this.loadPendingLeaveRequests();
     this.loadPendingWFHRequests();
   }
 
@@ -60,6 +61,16 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.loadingWFH = false;
+      }
+    });
+  }
+  loadPendingLeaveRequests() {
+    this.leaveService.getPendingLeaveRequests().subscribe({
+      next: (res) => {
+        this.leaveRequests = res;
+      },
+      error: () => {
+        alert('Failed to load pending leave requests');
       }
     });
   }
