@@ -1,9 +1,10 @@
 <ion-content class="ion-padding custom-popup">
 
+  <!-- HEADER -->
   <div class="row-space-between">
     <div>
       <h2>Add New Candidate</h2>
-      <p>Fill candidate details</p>
+      <p>Fill candidate personal details</p>
     </div>
     <ion-button fill="clear" (click)="close()">
       <ion-icon name="close-outline"></ion-icon>
@@ -17,7 +18,7 @@
       <ion-row>
         <ion-col size="4">
           <ion-item>
-            <ion-label position="floating">First Name</ion-label>
+            <ion-label position="floating">First Name *</ion-label>
             <ion-input formControlName="first_name"></ion-input>
           </ion-item>
         </ion-col>
@@ -31,7 +32,7 @@
 
         <ion-col size="4">
           <ion-item>
-            <ion-label position="floating">Last Name</ion-label>
+            <ion-label position="floating">Last Name *</ion-label>
             <ion-input formControlName="last_name"></ion-input>
           </ion-item>
         </ion-col>
@@ -47,7 +48,7 @@
 
         <ion-col size="6">
           <ion-item>
-            <ion-label position="floating">Email</ion-label>
+            <ion-label position="floating">Email *</ion-label>
             <ion-input type="email" formControlName="email"></ion-input>
           </ion-item>
         </ion-col>
@@ -59,7 +60,7 @@
       <ion-row>
         <ion-col size="6">
           <ion-item>
-            <ion-label position="floating">Phone</ion-label>
+            <ion-label position="floating">Phone *</ion-label>
             <ion-input formControlName="phone"></ion-input>
           </ion-item>
         </ion-col>
@@ -73,12 +74,35 @@
       </ion-row>
     </ion-grid>
 
-    <!-- JOB -->
+    <!-- DOB & GENDER -->
     <ion-grid>
       <ion-row>
         <ion-col size="6">
           <ion-item>
-            <ion-label>Gender</ion-label>
+            <ion-label position="stacked">Date of Birth *</ion-label>
+
+            <ion-input
+              id="dob-input"
+              readonly
+              placeholder="Select Date of Birth"
+              [value]="candidateForm.value.date_of_birth | date:'yyyy-MM-dd'">
+            </ion-input>
+
+            <ion-popover trigger="dob-input">
+              <ng-template>
+                <ion-datetime
+                  presentation="date"
+                  [max]="maxDOB"
+                  formControlName="date_of_birth">
+                </ion-datetime>
+              </ng-template>
+            </ion-popover>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="6">
+          <ion-item>
+            <ion-label>Gender *</ion-label>
             <ion-select formControlName="gender">
               <ion-select-option value="Male">Male</ion-select-option>
               <ion-select-option value="Female">Female</ion-select-option>
@@ -86,51 +110,23 @@
             </ion-select>
           </ion-item>
         </ion-col>
-
-        <ion-col size="6">
-          <ion-item>
-            <ion-label>Recruitment Source</ion-label>
-            <ion-select formControlName="recruitment_source">
-              <ion-select-option value="LinkedIn">LinkedIn</ion-select-option>
-              <ion-select-option value="Naukri">Naukri</ion-select-option>
-              <ion-select-option value="Indeed">Indeed</ion-select-option>
-              <ion-select-option value="Referral">Referral</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
       </ion-row>
     </ion-grid>
 
-    <!-- MASTERS -->
+    <!-- RECRUITMENT SOURCE -->
     <ion-item>
-      <ion-label>Designation</ion-label>
-      <ion-select formControlName="designation_id">
-        <ion-select-option *ngFor="let d of designations" [value]="d.id">
-          {{ d.name }}
-        </ion-select-option>
+      <ion-label>Recruitment Source</ion-label>
+      <ion-select formControlName="recruitment_source">
+        <ion-select-option value="LinkedIn">LinkedIn</ion-select-option>
+        <ion-select-option value="Naukri">Naukri</ion-select-option>
+        <ion-select-option value="Indeed">Indeed</ion-select-option>
+        <ion-select-option value="Referral">Referral</ion-select-option>
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Department</ion-label>
-      <ion-select formControlName="department_id">
-        <ion-select-option *ngFor="let d of departments" [value]="d.id">
-          {{ d.name }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Location</ion-label>
-      <ion-select formControlName="location_id">
-        <ion-select-option *ngFor="let l of locations" [value]="l.id">
-          {{ l.name }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-
+    <!-- SAVE -->
     <ion-button expand="block" type="submit" [disabled]="submitting">
-      {{ submitting ? 'Saving...' : 'Create Candidate' }}
+      {{ submitting ? 'Saving...' : 'Save & Continue' }}
     </ion-button>
 
   </form>

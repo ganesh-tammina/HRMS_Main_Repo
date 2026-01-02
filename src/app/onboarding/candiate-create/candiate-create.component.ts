@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
-import { Candidate_Create_Service } from 'src/app/services/Candidate/candidate.service';
-import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
 
 @Component({
   selector: 'app-candiate-create',
@@ -20,31 +22,29 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
   candidateForm!: FormGroup;
   submitting = false;
 
-  designations: any[] = [];
-  departments: any[] = [];
-  locations: any[] = [];
+  maxDOB = new Date().toISOString();
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private modalCtrl: ModalController,
-    private candidateService: Candidate_Create_Service,
-    private adminService: AdminService
+    private toastCtrl: ToastController
   ) { }
 
   ngOnInit(): void {
     this.initForm();
-    this.loadMasters();
     this.autoFullName();
+    this.loadSavedData();
   }
 
+  /* ================= FORM ================= */
   initForm() {
     this.candidateForm = this.fb.group({
       first_name: ['', Validators.required],
       middle_name: [''],
       last_name: ['', Validators.required],
-      full_name: [{ value: '', disabled: true }, Validators.required],
+      full_name: [{ value: '', disabled: true }],
 
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
@@ -52,27 +52,12 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
 
       date_of_birth: ['', Validators.required],
       gender: ['', Validators.required],
-      position: ['', Validators.required],
 
-      designation_id: [null, Validators.required],
-      department_id: [null, Validators.required],
-      location_id: [null, Validators.required],
-
-      offered_ctc: [null, Validators.required],
-      joining_date: ['', Validators.required],
-      reporting_manager_id: [null, Validators.required],
-      recruiter_name: ['', Validators.required],
-
-      recruitment_source: ['LinkedIn', Validators.required],
+      recruitment_source: ['LinkedIn']
     });
   }
 
-  loadMasters() {
-    this.adminService.getDesignations().subscribe(r => this.designations = r);
-    this.adminService.getDepartments().subscribe(r => this.departments = r);
-    this.adminService.getLocations().subscribe(r => this.locations = r);
-  }
-
+  /* ================= AUTO FULL NAME ================= */
   autoFullName() {
     this.candidateForm.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -80,31 +65,57 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
         const fullName = [val.first_name, val.middle_name, val.last_name]
           .filter(Boolean)
           .join(' ');
-        this.candidateForm.get('full_name')?.setValue(fullName, { emitEvent: false });
+        this.candidateForm.get('full_name')
+          ?.setValue(fullName, { emitEvent: false });
       });
   }
 
+  /* ================= LOAD SAVED (IF BACK) ================= */
+  loadSavedData() {
+    const saved = localStorage.getItem('candidate_personal_details');
+    if (saved) {
+      this.candidateForm.patchValue(JSON.parse(saved));
+    }
+  }
+
+  /* ================= SUBMIT ================= */
   submitForm() {
     if (this.candidateForm.invalid) {
       this.candidateForm.markAllAsTouched();
+      this.showToast('Please fill all required fields', 'danger');
       return;
     }
 
     this.submitting = true;
 
-    const payload = {
+    const personalDetails = {
       ...this.candidateForm.getRawValue()
     };
 
-    this.candidateService.createCandidate(payload).subscribe({
-      next: res => {
-        this.submitting = false;
-        this.modalCtrl.dismiss({ created: true, data: res });
-      },
-      error: () => {
-        this.submitting = false;
-      }
+    localStorage.setItem(
+      'candidate_personal_details',
+      JSON.stringify(personalDetails)
+    );
+
+    this.submitting = false;
+
+    this.showToast('Personal details saved successfully', 'success');
+
+    this.modalCtrl.dismiss({
+      step: 'personal',
+      data: personalDetails
     });
+  }
+
+  /* ================= TOAST ================= */
+  async showToast(message: string, color: 'success' | 'danger' | 'warning') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2500,
+      position: 'top',
+      color
+    });
+    await toast.present();
   }
 
   close() {
