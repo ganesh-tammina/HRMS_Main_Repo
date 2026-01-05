@@ -167,7 +167,7 @@ export class LeavesComponent implements OnInit {
       SL: 'SL.svg',
       ML: 'ML.svg',
       CO: 'CO.svg',
-      PL: 'PL.svg',
+      PL: 'CL.svg',
       UL: 'UL.svg',
     };
     return `../../../assets/leave-icons/${map[code] || 'CL.svg'}`;
