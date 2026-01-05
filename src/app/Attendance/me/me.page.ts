@@ -134,17 +134,43 @@ export class MePage implements OnInit {
   }
 
   matchEmployeeWeekend() {
-    if (!this.weekend_id || !this.allWeekendPolicies.length) return;
+    if (!this.weekend_id || !this.allWeekendPolicies.length) {
+      console.log('Weekend match skipped:', {
+        weekend_id: this.weekend_id,
+        policies: this.allWeekendPolicies.length,
+      });
+      return;
+    }
 
     const policy = this.allWeekendPolicies.find(
       (p: any) => p.id === this.weekend_id
     );
 
-    if (policy?.days) {
-      this.serverWeekOff = policy.days
-        .split(',')
-        .map((d: string) => d.trim().toLowerCase());
+    console.log('Matched Weekend Policy 👉', policy);
+
+    if (!policy) {
+      console.warn('No weekend policy found for weekend_id:', this.weekend_id);
+      return;
     }
+
+    const weekMap = [
+      { key: 'sunday_off', label: 'sunday' },
+      { key: 'monday_off', label: 'monday' },
+      { key: 'tuesday_off', label: 'tuesday' },
+      { key: 'wednesday_off', label: 'wednesday' },
+      { key: 'thursday_off', label: 'thursday' },
+      { key: 'friday_off', label: 'friday' },
+      { key: 'saturday_off', label: 'saturday' },
+    ];
+
+    this.serverWeekOff = weekMap
+      .filter(day => policy[day.key] === 1)
+      .map(day => day.label);
+
+    console.log('Server Week Off Days 👉', this.serverWeekOff);
+  }
+  trackByDate(index: number, day: Date): string {
+    return day.toDateString();
   }
 
   // ================= WFH CLOCK-IN =================
