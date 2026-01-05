@@ -8,20 +8,28 @@ ion-menu {
   --overflow: hidden;
   .sidenav-content {
     --background: #122E44 !important;
+    ion-list {
+      background: #122E44 !important;
+      padding-left: 8px !important;
+      padding-top: 8px !important;
+    }
     ion-item {
        --min-height: 55px;
       --background: #122E44 !important;
       --color: #CFCFCF !important;
       align-items: center;
+      --padding-start: 16px;
       &.selected.ion-activatable {
         .active-menu {
           direction: block;
         }
-        --background: #00568F !important; 
+        --background: #1F74BB !important; 
         --color: #ffffff !important;    
+        border-top-left-radius: 50px !important;
+        border-bottom-left-radius: 50px !important;
       }
       &.selected.ion-activated {
-        --background: #00568F !important; 
+        --background: #1F74BB !important; 
         --color: #ffffff !important; 
         --transition: unset; 
         .active-menu {

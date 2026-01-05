@@ -94,18 +94,18 @@
           <ion-grid class="table-block ion-no-padding" *ngIf="!loadingList && myTimesheets.length">
               <ion-row class="table-header">           
                 <ion-col size="2">Date</ion-col>
-                <ion-col size="7">Note</ion-col>
-                <ion-col size="1">Total Hours</ion-col>
+                <ion-col size="6">Note</ion-col>
+                <ion-col size="2">Total Hours</ion-col>
                 <ion-col size="2">Actions</ion-col>
               </ion-row>
                   <ion-row class="table-list-row" *ngFor="let t of myTimesheets">           
                       <ion-col size="2">
                           {{ t.date | date }}
                       </ion-col>
-                      <ion-col size="7">
+                      <ion-col size="6">
                           {{ t.notes || 'No notes' }} 
                       </ion-col>
-                      <ion-col size="1">
+                      <ion-col size="2">
                          {{ t.total_hours }}
                       </ion-col>
                       <ion-col size="2">

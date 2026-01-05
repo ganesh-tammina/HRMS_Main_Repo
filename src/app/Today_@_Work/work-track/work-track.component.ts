@@ -123,6 +123,7 @@ export class WorkTrackComponent implements OnInit {
   async openPreview(timesheet: any) {
     const modal = await this.modalCtrl.create({
       component: TimesheetPreviewComponent,
+      cssClass: 'side-custom-popup view-work-log',
       componentProps: { data: timesheet },
     });
     await modal.present();

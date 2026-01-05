@@ -32,7 +32,7 @@
             <!-- <div class="dropdown-wrapper"> -->
             <!-- Org Parent Item -->
             <ion-menu-toggle auto-hide="false" id="menu-button">
-              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards"
+              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu" title="My Team"/>
@@ -87,7 +87,7 @@
 
             <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
-                routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected':''">
+                routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu" title="My Team"/>
                     <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu"  title="My Team"/>
@@ -113,7 +113,8 @@
 
             <!-- Admin -->
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerLink="/admin" lines="none" detail="false">
+              <ion-item routerLink="/admin" lines="none" detail="false" 
+              routerLinkActive="selected" [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu"/>
                     <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu"/>
@@ -129,7 +130,8 @@
 
             <!-- Inbox -->
             <ion-menu-toggle auto-hide="false">
-              <ion-item lines="none" detail="false" routerLinkActive="selected">
+              <ion-item lines="none" detail="false" routerLinkActive="selected"
+               [ngClass]="(currentUrl=='/inbox') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/inbox.svg" width="24" height="24" class="inactive-menu"/>
                     <img src="../assets/icon/inbox-active.svg" width="24" height="24" class="active-menu"/>
@@ -138,7 +140,8 @@
               </ion-item>
             </ion-menu-toggle>
             <ion-menu-toggle auto-hide="false" id='menu-buttons2'>
-              <ion-item lines="none" detail="false">
+              <ion-item lines="none" detail="false" routerLinkActive="selected"
+              [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/work-track.svg" width="24" height="24" class="inactive-menu"/>
                     <img src="../assets/icon/work-track-active.svg" width="24" height="24" class="active-menu"/>
@@ -151,13 +154,13 @@
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
                     <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item routerLinkActive="selected" [routerLink]="['/workTrack']" lines="none" detail="false">
+                    <ion-item [routerLink]="['/workTrack']" lines="none" detail="false">
                       <ion-label>My Work Track</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
                   <ion-menu-toggle auto-hide="false">
                     <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item routerLinkActive="selected" [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
+                    <ion-item [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
                       <ion-label>Client Work Track </ion-label>
                     </ion-item>
                   </ion-menu-toggle>
@@ -167,7 +170,8 @@
 
 
             <ion-menu-toggle auto-hide="false" id="menu-buttons1">
-              <ion-item lines="none" detail="false" routerLinkActive="selected">
+              <ion-item lines="none" detail="false" routerLinkActive="selected"
+              [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/myfinance.svg" width="24" height="24" class="inactive-menu" title="This is a simple tooltip"/>
                     <img src="../assets/icon/myfinance-active.svg" width="24" height="24" class="active-menu"/>
@@ -180,8 +184,7 @@
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
                     <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item routerLink="/payslip" lines="none" detail="false"
-                      [ngClass]="(currentUrl=='/payslip') ? 'selected':''">
+                    <ion-item routerLink="/payslip" lines="none" detail="false">
                       <ion-label>Pay Slips</ion-label>
                     </ion-item>
                   </ion-menu-toggle>

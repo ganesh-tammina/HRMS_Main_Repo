@@ -8,38 +8,46 @@ import { CommonModule } from '@angular/common';
     imports: [IonicModule, CommonModule],
     template: `
     <ion-header>
-      <ion-toolbar>
-        <ion-title>Work Log Preview</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="close()">Close</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <ion-toolbar>
+      <ion-title>Work Log</ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="close()">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  
+    <div class="date-strip">
+    <p>{{ data.date | date }}</p> <p>Total Hours: {{ data.total_hours }} hrs</p>
+    </div>
+  </ion-header>
 
-    <ion-content class="ion-padding">
-      <p><strong>Date:</strong> {{ data.date | date }}</p>
+    <ion-content class="work-log-content">
 
-      <ion-list>
-        <ion-item *ngFor="let b of data.hours_breakdown">
-          <ion-label>
-            <h3>{{ b.hour }}</h3>
-            <p>{{ b.task }}</p>
-          </ion-label>
-          <ion-badge slot="end">{{ b.hours }}h</ion-badge>
+      <ion-list class="timeline" lines="none">
+        <ion-item class="log-item" *ngFor="let b of data.hours_breakdown">
+        <div class="timeline-col">
+          <span class="dot"></span>
+          <span class="line"></span>
+        </div>
+
+        <div class="log-card">
+        <div class="log-header">
+          <span class="time">{{ b.hour }}</span>
+          <span class="badge">{{ b.hours }}h</span>
+        </div>
+
+        <div class="desc">{{ b.task }}</div>
+      </div>
+        
         </ion-item>
       </ion-list>
 
-      <ion-item lines="none">
-        <ion-label>
-          <strong>Notes</strong>
-          <p>{{ data.notes || '—' }}</p>
-        </ion-label>
-      </ion-item>
-
-      <ion-item lines="none">
-        <ion-label>Total Hours</ion-label>
-        <ion-badge color="primary">{{ data.total_hours }} hrs</ion-badge>
-      </ion-item>
+      <div class="note-block">
+        <label>Notes</label>
+        <p>{{ data.notes || '—' }}</p>
+       
+      </div>
     </ion-content>
   `,
 })

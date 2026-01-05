@@ -56,7 +56,7 @@ html, body {
 
 ion-split-pane{
     --side-min-width: 70px !important;
-    --side-max-width: 150px !important;
+    --side-max-width: 160px !important;
 }
 
 ion-list{
@@ -423,3 +423,128 @@ ion-popover ion-content::-webkit-scrollbar {
     }
 }
 
+
+
+
+
+
+
+.view-work-log {
+.date-strip {
+    padding: 12px 33px;
+    font-size: 13px;
+    color: #374151;
+    background: #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+  }
+  
+  .work-log-content {
+    --background: #f9fafb;
+    padding: 16px;
+  }
+  
+  /* Timeline Layout */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .log-item {
+    display: flex;
+    gap: 16px;
+  }
+  
+  /* Timeline Column */
+  .timeline-col {
+    width: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    .dot {
+        width: 8px;
+        height: 8px;
+        background: #2563eb;
+        border-radius: 50%;
+        position: relative;
+        top: 20%;
+        z-index: 9;
+      }
+      
+      .line {
+        width: 1px;
+        flex: 1;
+        background: #e5e7eb;
+        height: 100vh;
+        position: absolute;
+        min-height: 100vh;
+      }
+  }
+  
+ 
+  
+  /* Card */
+  .log-card {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 12px;
+  }
+  
+  /* Card Header */
+  .log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  
+  .time {
+    font-size: 13px;
+    color: #6b7280;
+  }
+  
+  .badge {
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  
+  /* Content */
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+  }
+  
+  .desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 18px;
+  }
+  .note-block {
+      padding: 12px 24px;
+      label {
+          font-weight: 600;
+      }
+  }
+  
+  /* Mobile */
+  @media (max-width: 480px) {
+    .log-item {
+      gap: 12px;
+    }
+  
+    .log-card {
+      padding: 14px;
+    }
+  }
+}
