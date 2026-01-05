@@ -114,16 +114,21 @@ ion-buttons {
       width: 42%;
       height: 50%;
       z-index: 1;
-      background: linear-gradient(109.02deg, #1F74BB 36.64%, #0E3555 57.25%);
+      // background: #1F74BB;
+       background: linear-gradient(109.02deg, #1F74BB 36.64%, #0E3555 57.25%);
       clip-path: circle(147px at 48% -11%);
       transform: scale(1);
       transform-origin: 50% 50%;
-      transition: transform 3s ease-out;
+      transition: transform 1s ease-out;
       border-radius: 0 0 138px;
       color: #fff;
-    
     }
     &:hover {
+      // &::before{
+      //   background: linear-gradient(109.02deg, #1F74BB 36.64%, #0E3555 57.25%);
+      // }
+      //   background: linear-gradient(109.02deg, #1F74BB 36.64%, #0E3555 57.25%);
+
       .imgBx{
         ion-img{
           width: 40px;
@@ -234,7 +239,6 @@ ion-buttons {
     }
   }
   .card:hover::before{
-    // width: 100%;
    transform: scale(21);
   }
 
