@@ -15,7 +15,8 @@
   <div class="row-left">
     <div class="from-input">
       <label>From</label>
-      <ion-input id="from-input" readonly [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''">
+      <ion-input id="from-input" placeholder="Select Start Date" readonly [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''">
+          <ion-img slot="end" src="../../../../../assets/Icons/calender.svg"  class="calendar-img"></ion-img>
       </ion-input>
 
       <ion-popover #fromPopover trigger="from-input">
@@ -28,7 +29,8 @@
 
     <div class="to-input">
       <label>To</label>
-      <ion-input id="to-input" readonly [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''">
+      <ion-input id="to-input" placeholder="Select End Date" readonly [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''">
+         <ion-img slot="end" src="../../../../../assets/Icons/calender.svg"  class="calendar-img"></ion-img>
       </ion-input>
 
       <ion-popover #toPopover trigger="to-input">
@@ -48,7 +50,7 @@
   <!-- Reason -->
   <div>
     <label>Leave Reason</label>
-    <ion-textarea formControlName="remarks" (ionInput)="validateWordLimit($event)">
+    <ion-textarea  placeholder="State your reason for leave"  formControlName="remarks" (ionInput)="validateWordLimit($event)">
     </ion-textarea>
     <p>{{ wordsCount }}/100 words</p>
   </div>
@@ -56,12 +58,11 @@
   <!-- Notify -->
   <div>
     <label>Notify</label>
-    <ion-input formControlName="notify"></ion-input>
+    <ion-input  placeholder="Search Employee"  formControlName="notify"></ion-input>
   </div>
 
   <!-- Submit -->
-  <ion-button expand="block" (click)="submitRequest()" [disabled]="leaveForm.invalid || total_days <= 0">
-
+  <ion-button class="request-btn" expand="block" (click)="submitRequest()" [disabled]="leaveForm.invalid || total_days <= 0">
     Request Leave
   </ion-button>
 

@@ -4,30 +4,43 @@
 <ion-content [fullscreen]="true">
   <ion-grid class="ion-margin main-block">
     <ion-row>
-      <!-- Welcome first block -->
       <ion-col size="12" class="welcome-block">
         <ion-card class="ion-padding">
           <div class="card-pannel">
             <ion-row class="actions-card row-space-between border-bottom">
+
               <ion-col size="12" size-sm="8" size-md="8" size-lg="8" size-xl="8" class="row-left ion-align-items-start">
-                <ion-img [src]="imageUrls" class="profile-img" *ngIf='imageUrls'></ion-img>
-                <ion-img  class="profile-img" src="../../../assets/icon/Default-user.svg" width="46" alt="Profile"  *ngIf='!imageUrls'></ion-img>
-        
+
+                <ion-img [src]="imageUrls" class="profile-img" *ngIf="imageUrls"></ion-img>
+                <ion-img class="profile-img" src="../../../assets/icon/Default-user.svg" width="46" alt="Profile"
+                  *ngIf="!imageUrls">
+                </ion-img>
+
                 <div>
-                  <p class="greeting">Good morning</p>
-                  <p class="date"><span>Thursday, November 27, 2025. </span> <span>On-Site</span></p>
+                  <!-- ✅ DYNAMIC GREETING -->
+                  <p class="greeting">{{ greeting }}</p>
+
+                  <!-- ✅ DYNAMIC DATE -->
+                  <p class="date">
+                    <span>{{ todayDate }}. </span>
+                    <span>{{ workMode }}</span>
+                  </p>
+
                   <ion-buttons>
-                    <ion-button (click)="attendance()" class=""><ion-img
-                        src="../../assets/home-icons/attend-icon.svg"></ion-img>
-                      My Attendance</ion-button>
-                    <ion-button (click)="leaves()" class=""><ion-img
-                        src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
-                      Apply Leave</ion-button>
-                    <!-- <ion-button class=""><ion-img src="../../assets/home-icons/Email-icon.svg"></ion-img>
-                      My Payslip</ion-button> -->
-                    <ion-button class="" (click)="myteam()"><ion-img
-                        src="../../assets/home-icons/Users-icon.svg"></ion-img>
-                      My Team</ion-button>
+                    <ion-button (click)="attendance()">
+                      <ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
+                      My Attendance
+                    </ion-button>
+
+                    <ion-button (click)="leaves()">
+                      <ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
+                      Apply Leave
+                    </ion-button>
+
+                    <ion-button (click)="myteam()">
+                      <ion-img src="../../assets/home-icons/Users-icon.svg"></ion-img>
+                      My Team
+                    </ion-button>
                   </ion-buttons>
                 </div>
 
@@ -35,23 +48,10 @@
 
               <ion-col size="12" size-sm="4" size-md="4" size-lg="4" size-xl="4" class="time-block">
                 <p class="clock mb-30">Current Time</p>
-                <p class="time">{{currentTime }}</p>
+                <p class="time">{{ currentTime }}</p>
                 <app-clock-button></app-clock-button>
-
-                <!-- <ion-button id="popover-button">Others<img src="../../assets/Icons/chevron-down-outline.svg"
-                    width="20" /></ion-button>
-                <ion-popover trigger="popover-button" [dismissOnSelect]="true">
-                  <ng-template>
-                    <ion-content>
-                      <ion-list>
-                        <ion-item [button]="true" [detail]="false">Remote Clock-in</ion-item>
-                        <ion-item [button]="true" [detail]="false">Work From Home</ion-item>
-                        <ion-item [button]="true" [detail]="false">Partial Day</ion-item>
-                      </ion-list>
-                    </ion-content>
-                  </ng-template>
-                </ion-popover> -->
               </ion-col>
+
             </ion-row>
           </div>
         </ion-card>

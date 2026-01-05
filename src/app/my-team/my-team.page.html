@@ -12,7 +12,7 @@
    <!-- ⏳ Loader -->
 
    <!-- 🧑‍🤝‍🧑 Team Cards -->
-   <ion-grid *ngIf="!loading && filteredMembers.length">
+   <!-- <ion-grid *ngIf="!loading && filteredMembers.length">
       <ion-row>
 
          <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let member of filteredMembers">
@@ -51,12 +51,46 @@
 
          </ion-col>
       </ion-row>
-   </ion-grid>
+   </ion-grid> -->
 
    <!-- ❌ Empty -->
-   <div class="empty" *ngIf="!loading && !filteredMembers.length">
+   <!-- <div class="empty" *ngIf="!loading && !filteredMembers.length">
       <ion-icon name="people-outline"></ion-icon>
       <p>No team members found</p>
+   </div> -->
+
+
+   <ion-list class="team-list-view" *ngIf="!loading && teamMembers.length">
+
+      <!-- DEBUG (keep for now) -->
+      <!-- {{ teamMembers | json }} -->
+
+      <ion-item *ngFor="let member of teamMembers" lines="full">
+
+         <ion-avatar slot="start">
+            <img [src]="getProfileImage(member)" />
+         </ion-avatar>
+
+         <ion-label>
+            <h2>{{ member.FullName || member.full_name || 'N/A' }}</h2>
+            <p>{{ member.WorkEmail || member.work_email || '—' }}</p>
+            <p class="sub-text">
+               {{ member.department || member.department_name || '—' }}
+            </p>
+         </ion-label>
+
+         <ion-badge slot="end" [color]="member.status === 'On Leave' ? 'warning' : 'success'">
+            {{ member.status || 'Active' }}
+         </ion-badge>
+
+      </ion-item>
+
+   </ion-list>
+
+   <!-- ❌ Empty State for Team Members -->
+   <div class="empty" *ngIf="!loading && !teamMembers.length">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>No team members foundsss</p>
    </div>
 
 </ion-content>

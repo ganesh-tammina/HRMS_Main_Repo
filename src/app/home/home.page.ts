@@ -18,12 +18,14 @@ import { RouterLink, Router } from '@angular/router';
   imports: [CommonModule, FormsModule, IonicModule, ClockButtonComponent, RouterLink],
 })
 export class HomePage implements OnInit {
-  private static readonly REFRESH_DELAY_MS = 10; // Virtually instant refresh delay
 
+  private static readonly REFRESH_DELAY_MS = 10;
+
+  /* ================= EXISTING ================= */
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
   currentEmployee: any;
   one: any;
-  full_name: string = ""
+  full_name: string = '';
   currentTime: string = '';
   allEmployees: any[] = [];
   fullName: any;
@@ -34,15 +36,18 @@ export class HomePage implements OnInit {
   profileimg: string = environment.apiURL;
   backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
 
+  /* ================= NEW (ONLY REQUIRED) ================= */
+  greeting: string = '';
+  todayDate: string = '';
+  workMode: string = 'On-Site';
+
   constructor(
     private candidateService: CandidateService,
     private cdr: ChangeDetectorRef,
     private alertController: AlertController,
     private routeGuardService: RouteGuardService,
     private router: Router
-  ) {
-
-  }
+  ) { }
 
   ngOnInit() {
 
@@ -52,6 +57,13 @@ export class HomePage implements OnInit {
       this.showLoginSuccessAlert();
     }
 
+    /* ✅ SET GREETING */
+    this.setGreeting();
+
+    /* ✅ SET DATE */
+    this.todayDate = moment().format('dddd, MMMM DD, YYYY');
+
+    /* ================= EXISTING LOGIC ================= */
     const today = moment();
     this.days = Array.from({ length: 7 }, (_, i) => {
       const day = today.clone().add(i, 'days');
@@ -60,12 +72,25 @@ export class HomePage implements OnInit {
         : 'Remaining';
       return { date: day.format('ddd'), status };
     });
+
     setInterval(() => {
       this.currentTime = new Date().toLocaleTimeString('en-US', {
         hour12: true,
       });
     }, 1000);
+  }
 
+  /* ================= GREETING LOGIC ================= */
+  setGreeting() {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      this.greeting = 'Good Morning';
+    } else if (hour < 17) {
+      this.greeting = 'Good Afternoon';
+    } else {
+      this.greeting = 'Good Evening';
+    }
   }
 
   async showLoginSuccessAlert() {
@@ -76,9 +101,7 @@ export class HomePage implements OnInit {
         {
           text: 'OK',
           handler: () => {
-            // Instant seamless refresh without clearing localStorage
-            setTimeout(() => {
-            }, HomePage.REFRESH_DELAY_MS);
+            setTimeout(() => { }, HomePage.REFRESH_DELAY_MS);
           }
         }
       ],
@@ -86,12 +109,15 @@ export class HomePage implements OnInit {
     });
     await alert.present();
   }
+
   attendance() {
     this.router.navigate(['/Me']);
   }
+
   leaves() {
     this.router.navigate(['/leaves']);
   }
+
   myteam() {
     this.router.navigate(['/MyTeam']);
   }

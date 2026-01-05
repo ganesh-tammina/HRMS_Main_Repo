@@ -105,6 +105,80 @@
         color: #626262;
     }
   }
+.side-by-side-grids {
+  display: flex;
+  gap: 16px;
+  margin: 16px;
+
+  .card-leaves-block {
+    flex: 1;              // equal width
+    background: #fff;
+    padding: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+      .card-header{
+        font-weight: 600;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+
+        h4{
+          margin-bottom: 0px;
+        }
+    }
+       .Approved{
+          background: #C7FFEA;
+          padding: 5px 15px;
+          border-radius: 25px;
+          margin-bottom: 0;
+          margin-top: 10px;
+          font-size: 13px;
+          font-weight: 500;
+          color: #057F52;
+        }
+  }
+    .upcomingholidays-block {
+    flex: 1;              // equal width
+    background: #fff;
+    padding: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+      .card-header{
+        font-weight: 600;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        p{
+          background-color: #ccc;
+          padding: 5px 15px;
+          border-radius: 25px;
+          margin-bottom: 0;
+          margin-top: 10px;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        h4{
+          margin-bottom: 0px;
+          font-weight:600;
+        }
+    }
+        .holiday{
+        h6{
+          font-weight: 600;
+          margin-bottom: 0;
+        }
+        ion-text{
+        margin: 0;
+        font-size: 10px;
+        }
+        }
+  }
+
+}
 }
 
 ion-popover {
