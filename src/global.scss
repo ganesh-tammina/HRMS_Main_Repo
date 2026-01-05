@@ -398,10 +398,10 @@ ion-popover ion-content::-webkit-scrollbar {
       }
   }
   .employee-list-modal {
-    --width: 350px;
+--width: calc(100% - 40%);
     --height: 400px;
     justify-content: left;
-    padding-left: 236px;
+    padding-left: 264px;
     align-items: baseline;
     padding-top: 65px;
     &::part(backdrop){

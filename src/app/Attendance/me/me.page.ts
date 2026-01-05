@@ -1,23 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from '../../shared/header/header.component';
+
 import {
   CandidateService,
   Candidate,
 } from '../../services/pre-onboarding.service';
+
 import {
   AttendanceService,
   AttendanceRecord,
   AttendanceEvent,
 } from '../../services/attendance.service';
+
 import { EmployeeHeaderComponent } from './employee-header/employee-header.component';
 import { ClockButtonComponent } from '../../services/clock-button/clock-button.component';
 import { AttendanceLogComponent } from './attendance-log/attendance-log.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { RadialTimeGraphComponent } from './radial-time-graph/radial-time-graph.component';
-import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+
 import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
 import { AttendanceApiService } from '../../services/attendance-api.service';
 import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
@@ -30,10 +32,9 @@ import { EmployeeService } from 'src/app/services/employee.service';
   standalone: true,
   imports: [
     IonicModule,
-    ClockButtonComponent,
-    HeaderComponent,
-    EmployeeHeaderComponent,
     CommonModule,
+    ClockButtonComponent,
+    EmployeeHeaderComponent,
     AttendanceLogComponent,
     CalendarComponent,
     AttendanceRequestComponent,
@@ -48,36 +49,24 @@ export class MePage implements OnInit {
   // ================= SHIFT =================
   shift_id: any;
   allShiftPolicies: any[] = [];
-  matchedShiftPolicy: any = null;
   shift_policy: any;
-
-  shift_check_in = '';
-  shift_check_out = '';
 
   // ================= WEEKEND =================
   weekend_id: any;
   allWeekendPolicies: any[] = [];
-  matchedWeekendPolicy: any = null;
+  serverWeekOff: string[] = [];
 
-  serverWeekOff: string[] = []; // final matched weekend days
-
-  // ================= UI / ATTENDANCE =================
+  // ================= UI =================
   shiftDuration = '9h 0m';
   breakMinutes = 60;
   effectiveHours = '0h 0m';
   grossHours = '0h 0m';
-  timeSinceLastLogin = '0h 0m 0s';
   status = 'Absent';
 
-  currentTime = '';
-  currentDate = '';
   history: AttendanceEvent[] = [];
-  selectedRange: 'TODAY' | 'WEEK' | 'MONTH' | 'ALL' = 'TODAY';
-
-  progressValue = 0.85;
   activeTab = 'log';
+  progressValue = 0.85;
 
-  currentMonth = new Date();
   days: Date[] = [];
   today: Date = new Date();
 
@@ -85,152 +74,146 @@ export class MePage implements OnInit {
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
     private modalCtrl: ModalController,
-    private routeGuardService: RouteGuardService,
     private attendanceApi: AttendanceApiService,
     private adminService: AdminService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private toastCtrl: ToastController
   ) {
     this.generateDays();
   }
 
-  // ---------------------------------------------------------
-  ionViewWillEnter() {
-    this.initializePage();
+  // ================= INIT =================
+  ngOnInit() {
+    this.loadShiftPolicies();
+    this.loadWeekendPolicies();
+    this.loadEmployeeProfile();
+    this.loadTodayAttendance();
   }
 
-  // ---------------------------------------------------------
-  ngOnInit() {
+  // ================= DATA LOADERS =================
 
-    /* ================= SHIFT POLICIES ================= */
-    this.adminService.getShiftPolicies().subscribe((res: any[]) => {
+  loadShiftPolicies() {
+    this.adminService.getShiftPolicies().subscribe(res => {
       this.allShiftPolicies = res || [];
-      console.log('All Shift Policies:', this.allShiftPolicies);
       this.matchEmployeeShift();
     });
+  }
 
-    /* ================= WEEKEND POLICIES ================= */
-    this.adminService.getWeeklyOffPolicies().subscribe((res: any[]) => {
+  loadWeekendPolicies() {
+    this.adminService.getWeeklyOffPolicies().subscribe(res => {
       this.allWeekendPolicies = res || [];
-      console.log('All Weekend Policies:', this.allWeekendPolicies);
       this.matchEmployeeWeekend();
     });
+  }
 
-    /* ================= EMPLOYEE PROFILE ================= */
-    this.employeeService.getMyProfile().subscribe((rs: any) => {
-      this.shift_id = rs.shift_policy_id;
-      this.weekend_id = rs.weekly_off_policy_id;
-
-      console.log('Employee Shift ID:', this.shift_id);
-      console.log('Employee Weekend ID:', this.weekend_id);
-
+  loadEmployeeProfile() {
+    this.employeeService.getMyProfile().subscribe(profile => {
+      this.shift_id = profile.shift_policy_id;
+      this.weekend_id = profile.weekly_off_policy_id;
       this.matchEmployeeShift();
       this.matchEmployeeWeekend();
     });
+  }
 
-    /* ================= ATTENDANCE STATUS ================= */
+  loadTodayAttendance() {
     this.attendanceApi.getTodayAttendance().subscribe({
-      next: (response: any) => {
-        if (response?.has_attendance && response?.attendance) {
-          this.status = response.attendance.status;
-        } else {
-          this.status = 'Absent';
-        }
+      next: (res: any) => {
+        this.status = res?.attendance?.status || 'Absent';
       },
       error: () => (this.status = 'Absent'),
     });
   }
 
-  // ---------------------------------------------------------
-  // MATCH SHIFT POLICY
-  // ---------------------------------------------------------
+  // ================= MATCHERS =================
+
   matchEmployeeShift() {
     if (!this.shift_id || !this.allShiftPolicies.length) return;
-
-    this.matchedShiftPolicy = this.allShiftPolicies.find(
-      (policy: any) => policy.id === this.shift_id
-    );
-
-    if (!this.matchedShiftPolicy) {
-      console.warn('No matching shift policy found');
-      return;
-    }
-
-    this.shift_policy = this.matchedShiftPolicy;
-    console.log('Matched Shift Policy:', this.shift_policy);
-
-    this.shift_check_in = this.convertTo12Hour(
-      this.matchedShiftPolicy.check_in
-    );
-    this.shift_check_out = this.convertTo12Hour(
-      this.matchedShiftPolicy.check_out
+    this.shift_policy = this.allShiftPolicies.find(
+      (p: any) => p.id === this.shift_id
     );
   }
 
-  // ---------------------------------------------------------
-  // MATCH WEEKEND POLICY ✅
-  // ---------------------------------------------------------
   matchEmployeeWeekend() {
-    if (!this.weekend_id || !this.allWeekendPolicies.length) return;
-
-    this.matchedWeekendPolicy = this.allWeekendPolicies.find(
-      (policy: any) => policy.id === this.weekend_id
-    );
-
-    if (!this.matchedWeekendPolicy) {
-      console.warn('No matching weekend policy found');
+    if (!this.weekend_id || !this.allWeekendPolicies.length) {
+      console.log('Weekend match skipped:', {
+        weekend_id: this.weekend_id,
+        policies: this.allWeekendPolicies.length,
+      });
       return;
     }
 
-    console.log('Matched Weekend Policy:', this.matchedWeekendPolicy);
+    const policy = this.allWeekendPolicies.find(
+      (p: any) => p.id === this.weekend_id
+    );
 
-    /**
-     * API supports both formats safely
-     * 1) days: "Saturday,Sunday"
-     * 2) week_off_days: ["Saturday","Sunday"]
-     */
+    console.log('Matched Weekend Policy 👉', policy);
 
-    if (this.matchedWeekendPolicy.days) {
-      this.serverWeekOff = this.matchedWeekendPolicy.days
-        .split(',')
-        .map((d: string) => d.trim().toLowerCase());
+    if (!policy) {
+      console.warn('No weekend policy found for weekend_id:', this.weekend_id);
+      return;
     }
 
-    if (Array.isArray(this.matchedWeekendPolicy.week_off_days)) {
-      this.serverWeekOff = this.matchedWeekendPolicy.week_off_days.map(
-        (d: string) => d.toLowerCase()
-      );
-    }
+    const weekMap = [
+      { key: 'sunday_off', label: 'sunday' },
+      { key: 'monday_off', label: 'monday' },
+      { key: 'tuesday_off', label: 'tuesday' },
+      { key: 'wednesday_off', label: 'wednesday' },
+      { key: 'thursday_off', label: 'thursday' },
+      { key: 'friday_off', label: 'friday' },
+      { key: 'saturday_off', label: 'saturday' },
+    ];
 
-    console.log('Final Employee Week Off Days:', this.serverWeekOff);
+    this.serverWeekOff = weekMap
+      .filter(day => policy[day.key] === 1)
+      .map(day => day.label);
+
+    console.log('Server Week Off Days 👉', this.serverWeekOff);
+  }
+  trackByDate(index: number, day: Date): string {
+    return day.toDateString();
   }
 
-  // ---------------------------------------------------------
-  // HELPERS (UNCHANGED)
-  // ---------------------------------------------------------
-  convertTo12Hour(time: string): string {
-    if (!time) return '';
-    const [h, m, s] = time.split(':').map(Number);
-    const d = new Date();
-    d.setHours(h, m, s || 0);
-    return d.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
+  // ================= WFH CLOCK-IN =================
+
+  wfhClockIn() {
+    this.attendanceApi.checkTodayWFH().subscribe({
+      next: (res: any) => {
+        if (!res?.isWFH) {
+          this.showToast('WFH not approved for today', 'warning');
+          return;
+        }
+
+        this.attendanceApi.apiPunchIn({
+          work_mode: 'WFH',
+          location: 'Home',
+          notes: 'WFH Clock-In',
+        }).subscribe({
+          next: () => {
+            this.showToast('WFH Clock-In successful', 'success');
+            this.loadTodayAttendance();
+          },
+          error: err => {
+            this.showToast(err?.error?.message || 'WFH Clock-In failed', 'danger');
+          },
+        });
+      },
+      error: () => this.showToast('WFH check failed', 'danger'),
     });
   }
+
+  // ================= HELPERS =================
 
   generateDays() {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const diff =
-      today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    const firstDayOfWeek = new Date(today.setDate(diff));
+    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    const start = new Date(today.setDate(diff));
 
     this.days = [];
     for (let i = 0; i < 7; i++) {
-      const date = new Date(firstDayOfWeek);
-      date.setDate(firstDayOfWeek.getDate() + i);
-      this.days.push(date);
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      this.days.push(d);
     }
   }
 
@@ -239,15 +222,10 @@ export class MePage implements OnInit {
   }
 
   isWeekOffDay(day: Date): boolean {
-    if (!day || !this.serverWeekOff.length) return false;
-    const weekday = day
-      .toLocaleDateString('en-US', { weekday: 'long' })
-      .toLowerCase();
+    const weekday = day.toLocaleDateString('en-US', {
+      weekday: 'long',
+    }).toLowerCase();
     return this.serverWeekOff.includes(weekday);
-  }
-
-  initializePage() {
-    // untouched attendance logic
   }
 
   onClockStatusChanged(record: AttendanceRecord) {
@@ -267,7 +245,16 @@ export class MePage implements OnInit {
     await modal.present();
   }
 
-  trackByDate(index: number, day: Date) {
-    return day ? day.toDateString() : index;
+  async showToast(
+    message: string,
+    color: 'success' | 'warning' | 'danger'
+  ) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2500,
+      position: 'top',
+      color,
+    });
+    await toast.present();
   }
 }
