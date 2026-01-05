@@ -15,6 +15,8 @@ export class EmployeeService {
   private readonly reportingEndpoint = `${this.API_URL}/reporting`;
   private readonly uploadProfileImageUrl = `${this.API_URL}/profile/image`;
 
+   private readonly myTeamEndpoint = `${this.API_URL}/my-team/list`;
+
   private currentEmployee: any | null = null;
 
   private currentEmployeeSubject = new BehaviorSubject<any>(null);
@@ -82,6 +84,21 @@ export class EmployeeService {
         },
       }
     );
+  }
+
+    /* ================= ✅ NEW METHOD: MY TEAM LIST ================= */
+
+  /**
+   * Get logged-in employee's team members
+   */
+  getMyTeamList(): Observable<any[]> {
+    const token = localStorage.getItem('token');
+
+    return this.http.get<any[]>(this.myTeamEndpoint, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   }
 
   private employeeIdSubject = new BehaviorSubject<number | null>(null);
