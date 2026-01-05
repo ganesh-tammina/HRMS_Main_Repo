@@ -1,5 +1,7 @@
 <ion-content class="ion-padding page-containerOn">
-<h1>Work Track</h1>
+
+  <h1>Work Track</h1>
+
   <!-- ================= CREATE TIMESHEET ================= -->
   <ion-card class="worklog-block">
     <ion-card-header>
@@ -10,8 +12,12 @@
     <ion-card-content>
       <form [formGroup]="workTrackForm">
           <ion-item class="row-left date-block" lines="none">
-              <label>Date</label>
-              <ion-input type="date" formControlName="date"></ion-input>
+              <label>Date</label>             
+              <ion-input
+                    type="date"
+                    formControlName="date"
+                    [max]="today">
+                  </ion-input>
             </ion-item>
             <ion-grid class="table-block ion-no-padding">
               <ion-row class="table-header">           
@@ -50,18 +56,23 @@
               </ion-row>
               </ion-grid>
 
-              <ion-item lines="none" class="total-row">                  
-                  <ion-label class="row-left"><ion-img src="../../../assets/Icons/clock-blue.svg"></ion-img>Total Hours</ion-label>
-                  <ion-badge>{{ calculateTotalHours() }} hrs</ion-badge>
-                </ion-item>
-         
-                <ion-item class="note-block" lines="none">
-                    <ion-label position="stacked">Notes</ion-label>
-                    <ion-textarea formControlName="notes"></ion-textarea>
-                  </ion-item>
-        
+       
 
-        <ion-button class="primary-btn" expand="block" (click)="submit()" [disabled]="loading">
+        <!-- TOTAL -->
+        <ion-item lines="none" class="total-row">
+          <ion-label class="row-left"> <ion-img src="../../../assets/Icons/clock-blue.svg"></ion-img>Total Hours</ion-label>
+          <ion-badge>{{ calculateTotalHours() }} hrs</ion-badge>
+        </ion-item>
+
+        <!-- NOTES -->
+        <ion-item lines="none" class="note-block">
+          <ion-label position="stacked">Notes</ion-label>
+          <ion-textarea formControlName="notes"></ion-textarea>
+        </ion-item>
+
+        <!-- SUBMIT -->
+        <ion-button expand="block" class="primary-btn"
+          (click)="submit()" [disabled]="loading">
           {{ loading ? 'Submitting...' : 'Submit Work Log' }}
         </ion-button>
 
@@ -70,12 +81,11 @@
   </ion-card>
 
   <!-- ================= MY TIMESHEETS ================= -->
-
   <ion-card class="worklog-block">
-      <ion-card-header>
-          <ion-card-title>My Timesheets</ion-card-title>
-          <p>View and manage your submitted work logs</p>
-        </ion-card-header>    
+    <ion-card-header>
+      <ion-card-title>My Timesheets</ion-card-title>
+      <p>View and manage your submitted work logs</p>
+    </ion-card-header>
 
     <ion-card-content>
 
@@ -99,17 +109,22 @@
                          {{ t.total_hours }}
                       </ion-col>
                       <ion-col size="2">
-                          <ion-button fill="clear">
-                              <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
-                            </ion-button>
-                          <ion-button fill="clear" (click)="downloadExcel(t)">
-                              <ion-img src="../../../assets/Icons/dowload-blue.svg"></ion-img>
-                            </ion-button>
+                          <ion-button fill="clear"
+                          (click)="openPreview(t)">
+                          <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
+                        </ion-button>
+            
+                        <!-- EXCEL -->
+                        <ion-button fill="clear"
+                          (click)="downloadExcel(t)">
+                          <ion-img src="../../../assets/Icons/dowload-blue.svg"></ion-img>
+                        </ion-button>
                       </ion-col>
                     </ion-row>
-              </ion-grid>
+    
+      </ion-grid>
 
-      <p *ngIf="!loadingList && !myTimesheets.length" class="empty-text">
+      <p *ngIf="!loadingList && !myTimesheets.length">
         No timesheets found
       </p>
 

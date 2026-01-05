@@ -7,10 +7,15 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
-import { TimesheetService } from 'src/app/services/timesheets.service';
+import {
+  IonicModule,
+  ToastController,
+  ModalController,
+} from '@ionic/angular';
 
-/* ✅ FRONTEND EXCEL */
+import { TimesheetService } from 'src/app/services/timesheets.service';
+import { TimesheetPreviewComponent } from './timesheet-preview.component';
+
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -23,37 +28,22 @@ import { saveAs } from 'file-saver';
 })
 export class WorkTrackComponent implements OnInit {
 
-  /* ================= CREATE ================= */
   workTrackForm!: FormGroup;
   loading = false;
 
-  /* ================= LIST ================= */
   myTimesheets: any[] = [];
   loadingList = false;
-  now = new Date();
- 
-  // current year & month
-  year = this.now.getFullYear();
-  month = this.now.getMonth() + 1; // JS months are 0-based
-   
-  // first day of current month
-  startDate = new Date(this.year, this.now.getMonth(), 1);
-   
-  // last day of current month
-  endDate = new Date(this.year, this.now.getMonth() + 1, 0);
-   
-  // format YYYY-MM-DD
-  formatDate = (date: Date): string =>
-    date.toISOString().split('T')[0];
 
+  today = this.formatDate(new Date());
 
   constructor(
     private fb: FormBuilder,
     private timesheetService: TimesheetService,
-    private toastCtrl: ToastController
-  ) {}
+    private toastCtrl: ToastController,
+    private modalCtrl: ModalController
+  ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.initForm();
     this.loadMyTimesheets();
   }
@@ -62,7 +52,7 @@ export class WorkTrackComponent implements OnInit {
 
   initForm() {
     this.workTrackForm = this.fb.group({
-      date: ['', Validators.required],
+      date: [this.today, Validators.required], // ✅ AUTO TODAY
       hours_breakdown: this.fb.array([]),
       notes: [''],
     });
@@ -84,8 +74,10 @@ export class WorkTrackComponent implements OnInit {
     );
   }
 
-  removeRow(index: number) {
-    this.breakdowns.removeAt(index);
+  removeRow(i: number) {
+    if (this.breakdowns.length > 1) {
+      this.breakdowns.removeAt(i);
+    }
   }
 
   calculateTotalHours(): number {
@@ -104,10 +96,8 @@ export class WorkTrackComponent implements OnInit {
     }
 
     const payload = {
-      date: this.workTrackForm.value.date,
-      hours_breakdown: this.workTrackForm.value.hours_breakdown,
+      ...this.workTrackForm.value,
       total_hours: this.calculateTotalHours(),
-      notes: this.workTrackForm.value.notes,
     };
 
     this.loading = true;
@@ -116,7 +106,7 @@ export class WorkTrackComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.showToast('Timesheet submitted successfully');
-        this.workTrackForm.reset();
+        this.workTrackForm.reset({ date: this.today });
         this.breakdowns.clear();
         this.addRow();
         this.loadMyTimesheets();
@@ -128,18 +118,23 @@ export class WorkTrackComponent implements OnInit {
     });
   }
 
+  /* ================= PREVIEW ================= */
+
+  async openPreview(timesheet: any) {
+    const modal = await this.modalCtrl.create({
+      component: TimesheetPreviewComponent,
+      componentProps: { data: timesheet },
+    });
+    await modal.present();
+  }
+
   /* ================= LOAD LIST ================= */
 
   loadMyTimesheets() {
     this.loadingList = true;
 
-    this.timesheetService.getMyRegularTimesheets({
-      start_date: this.formatDate(this.startDate),
-      end_date: this.formatDate(this.endDate),
-      month: this.month,
-      year: this.year,
-    }).subscribe({
-      next: (res:any) => {
+    this.timesheetService.getMyRegularTimesheets({}).subscribe({
+      next: (res: any) => {
         this.myTimesheets = res?.data || res || [];
         this.loadingList = false;
       },
@@ -150,56 +145,35 @@ export class WorkTrackComponent implements OnInit {
     });
   }
 
-  /* ================= FRONTEND EXCEL DOWNLOAD ================= */
+  /* ================= EXCEL ================= */
 
   downloadExcel(timesheet: any) {
+    const rows = timesheet.hours_breakdown.map((b: any) => ({
+      Date: timesheet.date,
+      Time: b.hour,
+      Task: b.task,
+      Hours: b.hours,
+      Notes: timesheet.notes,
+      Total: timesheet.total_hours,
+    }));
 
-    if (!timesheet.hours_breakdown || !timesheet.hours_breakdown.length) {
-      this.showToast('No data to download');
-      return;
-    }
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = { Sheets: { Data: ws }, SheetNames: ['Data'] };
+    const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
-    const rows: any[] = [];
-
-    timesheet.hours_breakdown.forEach((item: any) => {
-      rows.push({
-        Date: timesheet.date,
-        Time_Slot: item.hour,
-        Task: item.task,
-        Hours: item.hours,
-        Notes: timesheet.notes || '',
-        Total_Hours: timesheet.total_hours,
-      });
-    });
-
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(rows);
-
-    const workbook: XLSX.WorkBook = {
-      Sheets: { Timesheet: worksheet },
-      SheetNames: ['Timesheet'],
-    };
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
-    const blob = new Blob([excelBuffer], {
-      type:
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-
-    const date = timesheet.date?.split('T')[0] || 'Timesheet';
-    saveAs(blob, `Timesheet_${date}.xlsx`);
+    saveAs(new Blob([buffer]), `Timesheet_${timesheet.date}.xlsx`);
   }
 
-  /* ================= TOAST ================= */
+  /* ================= UTILS ================= */
 
-  private async showToast(message: string) {
+  formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  async showToast(msg: string) {
     const toast = await this.toastCtrl.create({
-      message,
+      message: msg,
       duration: 2000,
-      position: 'bottom',
     });
     toast.present();
   }
