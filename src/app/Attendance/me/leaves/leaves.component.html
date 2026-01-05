@@ -43,18 +43,21 @@
         <p class="card-header">{{ leave.title }}</p>
 
         <ion-img [src]="leave.icon"></ion-img>
-        <div>
+        <div class="txt-color">
+          <p>{{ leave.used }}/ {{ leave.available}}</p>
+        </div>
+        <!-- <div>
           <p> Used {{ leave.used }}</p>
         </div>
 
         <p>
           <span>Available</span>
           {{ leave.available}}
-        </p>
-        <p>
+        </p> -->
+        <!-- <p>
           <span>ANNUAL QUOTA</span>
           {{ leave.allocated_days}}
-        </p>
+        </p> -->
 
         <p class="label">days available</p>
       </ion-col>
