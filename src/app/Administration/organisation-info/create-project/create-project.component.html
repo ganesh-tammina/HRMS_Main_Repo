@@ -1,132 +1,150 @@
-<ion-content class="project-wrapper">
+<ion-content class="page-containerOn project-wrapper ion-padding">
 
-  <!-- ======= TOP BAR ======= -->
-  <div class="top-bar">
-    <div>
-      <h1>Projects</h1>
-      <p>Track and manage organizational projects</p>
-    </div>
-
-    <ion-button shape="round" color="primary" (click)="openCreateForm()" *ngIf="!showCreateForm">
-      <ion-icon name="add" slot="start"></ion-icon>
-      New Project
-    </ion-button>
-  </div>
-
-  <!-- ======= CREATE PROJECT FORM ======= -->
-  <div class="overlay" *ngIf="showCreateForm"></div>
-
-  <ion-card class="create-card" *ngIf="showCreateForm">
-    <ion-card-header>
-      <ion-card-title>Create Project</ion-card-title>
-      <ion-icon name="close-outline" (click)="cancelCreate()"></ion-icon>
-    </ion-card-header>
-
-    <ion-card-content>
-      <form [formGroup]="projectForm" (ngSubmit)="submit()">
-
-        <div class="form-grid">
-          <ion-item>
-            <ion-label position="floating">Project Code</ion-label>
-            <ion-input formControlName="project_code"></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="floating">Project Name</ion-label>
-            <ion-input formControlName="project_name"></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="floating">Client Name</ion-label>
-            <ion-input formControlName="client_name"></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>Start Date</ion-label>
-            <ion-input type="date" formControlName="start_date"></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>End Date</ion-label>
-            <ion-input type="date" formControlName="end_date"></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>Status</ion-label>
-            <ion-select formControlName="status">
-              <ion-select-option value="Active">Active</ion-select-option>
-              <ion-select-option value="OnHold">On Hold</ion-select-option>
-              <ion-select-option value="Completed">Completed</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="floating">Project Manager ID</ion-label>
-            <ion-input type="number" formControlName="project_manager_id"></ion-input>
-          </ion-item>
-
-          <ion-item class="full">
-            <ion-label position="floating">Description</ion-label>
-            <ion-textarea rows="3" formControlName="description"></ion-textarea>
-          </ion-item>
-        </div>
-
-        <div class="actions">
-          <ion-button fill="clear" color="medium" (click)="cancelCreate()" type="button">
-            Cancel
-          </ion-button>
-
-          <ion-button type="submit" color="primary" [disabled]="submitting">
-            {{ submitting ? 'Creating…' : 'Create Project' }}
-          </ion-button>
-        </div>
-      </form>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- ======= PROJECT LIST ======= -->
-  <ion-card class="list-card">
-    <ion-card-header>
-      <ion-card-title>Project List</ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-
-      <ion-spinner *ngIf="loadingProjects"></ion-spinner>
-
-      <div class="project-table" *ngIf="!loadingProjects && projects.length">
-
-        <div class="table-header">
-          <span>Project</span>
-          <span>Client</span>
-          <span>Status</span>
-          <span>Duration</span>
-        </div>
-
-        <div class="table-row" *ngFor="let project of projects">
-          <span class="name">
-            {{ project.project_name }}
-            <small>{{ project.project_code }}</small>
-          </span>
-
-          <span>{{ project.client_name }}</span>
-
-          <span class="badge" [ngClass]="project.status.toLowerCase()">
-            {{ project.status }}
-          </span>
-
-          <span class="dates">
-            {{ project.start_date | date }} → {{ project.end_date | date }}
-          </span>
-        </div>
-
+    <!-- ======= TOP BAR ======= -->
+    <div class="top-bar">
+      <div>
+        <h1>Projects</h1>
+        <p>Track and manage organizational projects</p>
       </div>
-
-      <p class="empty" *ngIf="!loadingProjects && !projects.length">
-        No projects created yet.
-      </p>
-
-    </ion-card-content>
-  </ion-card>
-
-</ion-content>
+  
+      <ion-button
+        shape="round"
+        color="primary"
+        (click)="openCreateForm()"
+      >
+        <ion-icon name="add" slot="start"></ion-icon>
+        New Project
+      </ion-button>
+    </div>
+  
+    <!-- ======= CREATE PROJECT MODAL ======= -->
+    <ion-modal
+      [isOpen]="showCreateForm"
+      cssClass="create-project-modal side-custom-popup"
+      backdropDismiss="false"
+    >
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Create Project</ion-title>
+  
+            <ion-buttons slot="end">
+              <ion-button fill="clear" (click)="cancelCreate()">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+  
+        <ion-content class="ion-padding form-block ">
+          <form [formGroup]="projectForm" (ngSubmit)="submit()">
+  
+            <div lines="none" class="form-grid">
+              <div>
+                <label>Project Code</label>
+                <ion-input formControlName="project_code"></ion-input>
+              </div>
+  
+              <div>
+                <ion-label>Project Name</ion-label>
+                <ion-input formControlName="project_name"></ion-input>
+              </div>
+  
+              <div>
+                <ion-label>Client Name</ion-label>
+                <ion-input formControlName="client_name"></ion-input>
+              </div>
+              <div class="row-left pr-15">
+                  <div>
+                      <ion-label>Start Date</ion-label>
+                      <ion-input type="date" formControlName="start_date"></ion-input>
+                    </div>
+        
+                    <div>
+                      <ion-label>End Date</ion-label>
+                      <ion-input type="date" formControlName="end_date"></ion-input>
+                    </div>
+              </div>
+             
+  
+              <div>
+                <ion-label>Status</ion-label>
+                <ion-select formControlName="status" toggleIcon="chevron-down"
+                expandedIcon="chevron-up">
+                  <ion-select-option value="Active">Active</ion-select-option>
+                  <ion-select-option value="OnHold">On Hold</ion-select-option>
+                  <ion-select-option value="Completed">Completed</ion-select-option>
+                </ion-select>
+              </div>
+  
+              <div>
+                <ion-label>Project Manager ID</ion-label>
+                <ion-input type="number" formControlName="project_manager_id"></ion-input>
+              </div>
+  
+              <div class="full">
+                <ion-label>Description</ion-label>
+                <ion-textarea rows="3" formControlName="description"></ion-textarea>
+              </div>
+            </div>
+  
+            <div class="row-right">
+              <ion-button class="primary-outline-btn" (click)="cancelCreate()">
+                Cancel
+              </ion-button>
+  
+              <ion-button class="primary-btn" [disabled]="submitting">
+                {{ submitting ? 'Creating…' : 'Create Project' }}
+              </ion-button>
+            </div>
+          </form>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  
+    <!-- ======= PROJECT LIST ======= -->
+    <ion-card class="list-card">
+      <ion-card-header>
+        <ion-card-title>Project List</ion-card-title>
+      </ion-card-header>
+  
+      <ion-card-content>
+  
+        <ion-spinner *ngIf="loadingProjects"></ion-spinner>
+  
+        <ion-grid class="table-block" *ngIf="!loadingProjects && projects.length">
+          <ion-row class="table-header">
+            <ion-col size="3"><p>Project</p></ion-col>
+            <ion-col size="3"><p>Client</p></ion-col>
+            <ion-col size="3"><p>Status</p></ion-col>
+            <ion-col size="3"><p>Duration</p></ion-col>
+          </ion-row>
+  
+          <ion-row class="table-row-list" *ngFor="let project of projects">
+            <ion-col size="3"><p> {{ project.project_name }}
+                (<small>({{ project.project_code }})</small>)</p>
+             
+            </ion-col>
+  
+            <ion-col size="3"><p>{{ project.client_name }}</p></ion-col>
+  
+            <ion-col size="3"  class="status">
+              <p [ngClass]="project.status.toLowerCase()">
+                {{ project.status }}</p>              
+            </ion-col>
+  
+            <ion-col size="3">
+              <p>{{ project.start_date | date }} - {{ project.end_date | date }}</p>              
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+  
+        <p *ngIf="!loadingProjects && !projects.length" class="empty">
+          No projects created yet.
+        </p>
+  
+      </ion-card-content>
+    </ion-card>
+  
+  </ion-content>
+  

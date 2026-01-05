@@ -252,7 +252,7 @@ ion-modal {
         height: auto;
         border-radius: 4px;
         padding: 0px 12px !important;
-       margin: 11px 0px;
+        margin: 11px 0px;
       }
       ion-button {
         --background: #122F44;
@@ -545,6 +545,42 @@ ion-popover ion-content::-webkit-scrollbar {
   
     .log-card {
       padding: 14px;
+    }
+  }
+}
+
+//custom-table
+.table-block {
+  border: 0.5px solid #ABABAB;
+  border-radius: 8px;
+  padding: 0;
+  ion-col {
+    padding-left: 8px;
+  }
+  .table-header {
+    height: 44px;
+    border-bottom: 0.5px solid #ABABAB;
+    align-items: center;
+    ion-col {
+      @include normal-text();
+      p {
+        @include normal-text();
+      }
+    }
+  }
+  .table-row-list {
+    height: 48px;
+    border-bottom: 0.5px solid #ABABAB;
+    @include normal-text-unbold();
+    align-items: center;
+    &:nth-child(odd) {
+      background: #f4f6ff;
+
+    }
+    &:last-child {
+      border-bottom: 0;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
     }
   }
 }
