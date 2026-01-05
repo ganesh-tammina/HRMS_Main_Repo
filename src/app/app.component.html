@@ -8,7 +8,8 @@
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerLink="/Home" lines="none" detail="false">
+              <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
+              [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable':''">
                 <div class="row-left">
                     <img src="../assets/icon/home.svg" width="24" height="24" class="inactive-menu"/>
                     <img src="../assets/icon/home-active.svg" width="24" height="24" class="active-menu"/>
@@ -18,8 +19,8 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item [routerLink]="['/leaves']" lines="none" detail="false"
-                [ngClass]="(currentUrl=='/leaves') ? 'selected':''">
+              <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                 <div class="row-left">
                   <img src="../assets/icon/Me.svg" width="24" height="24" class="inactive-menu" title="Leave"/>
                   <img src="../assets/icon/Me-active.svg" width="24" height="24" class="active-menu" title="Leave"/>
@@ -166,8 +167,7 @@
 
 
             <ion-menu-toggle auto-hide="false" id="menu-buttons1">
-              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
+              <ion-item lines="none" detail="false" routerLinkActive="selected">
                 <div class="row-left">
                     <img src="../assets/icon/myfinance.svg" width="24" height="24" class="inactive-menu" title="This is a simple tooltip"/>
                     <img src="../assets/icon/myfinance-active.svg" width="24" height="24" class="active-menu"/>
