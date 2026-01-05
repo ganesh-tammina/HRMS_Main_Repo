@@ -9,6 +9,7 @@ import { ClockButtonComponent } from '../services/clock-button/clock-button.comp
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
 import { RouterLink, Router } from '@angular/router';
+import { EmployeeService } from '../services/employee.service';
 
 @Component({
   standalone: true,
@@ -35,7 +36,6 @@ export class HomePage implements OnInit {
   imageUrls: any;
   profileimg: string = environment.apiURL;
   backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
-
   /* ================= NEW (ONLY REQUIRED) ================= */
   greeting: string = '';
   todayDate: string = '';
@@ -46,7 +46,8 @@ export class HomePage implements OnInit {
     private cdr: ChangeDetectorRef,
     private alertController: AlertController,
     private routeGuardService: RouteGuardService,
-    private router: Router
+    private router: Router,
+    private employeeService: EmployeeService,
   ) { }
 
   ngOnInit() {
@@ -78,6 +79,13 @@ export class HomePage implements OnInit {
         hour12: true,
       });
     }, 1000);
+
+    this.employeeService.getMyProfile().subscribe({
+      next: (res: any) => {
+        this.currentEmployee = res;
+        console.log("list", this.currentEmployee);
+      }
+    });
   }
 
   /* ================= GREETING LOGIC ================= */

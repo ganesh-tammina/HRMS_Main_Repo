@@ -19,7 +19,9 @@
                 <div>
                   <!-- ✅ DYNAMIC GREETING -->
                   <p class="greeting">{{ greeting }}</p>
-
+                  <p class="name"  *ngIf="currentEmployee as emp">
+                      {{ emp.FullName }}
+                  </p>
                   <!-- ✅ DYNAMIC DATE -->
                   <p class="date">
                     <span>{{ todayDate }}. </span>

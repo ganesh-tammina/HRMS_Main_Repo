@@ -149,20 +149,94 @@ export class WorkTrackComponent implements OnInit {
   /* ================= EXCEL ================= */
 
   downloadExcel(timesheet: any) {
-    const rows = timesheet.hours_breakdown.map((b: any) => ({
-      Date: timesheet.date,
-      Time: b.hour,
-      Task: b.task,
-      Hours: b.hours,
-      Notes: timesheet.notes,
-      Total: timesheet.total_hours,
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = { Sheets: { Data: ws }, SheetNames: ['Data'] };
-    const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-    saveAs(new Blob([buffer]), `Timesheet_${timesheet.date}.xlsx`);
+    if (!timesheet || !timesheet.hours_breakdown?.length) {
+      return;
+    }
+  
+    let tableRows = '';
+  
+    timesheet.hours_breakdown.forEach((b: any, index: number) => {
+      tableRows += `
+        <tr>
+          <td>${index + 1}</td>         
+          <td>${b.hour || '-'}</td>
+          <td>${b.task || '-'}</td>
+          <td>${b.hours || '-'}</td>
+        </tr>
+      `;
+    });
+  
+    const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel">
+    <head>
+      <meta charset="UTF-8" />
+      <style>
+        table {
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
+          font-size: 18px;
+          width: 100%;
+        }
+        td {
+          border: 1px solid #000;
+          padding: 6px;
+          vertical-align: middle;
+          text-align: left;
+          width: 150px;
+        }
+        .label {
+          background-color: #00568F;
+          color: #ffffff;
+          font-weight: bold;
+          text-align: center;
+        }
+        .label-text {
+          background-color: #00568F;
+          color: #ffffff;
+          font-weight: bold;
+          text-align: left;
+        }
+      </style>
+    </head>
+  
+    <body>
+      <table>
+        <!-- HEADER -->
+        <tr>
+        <td class="label-text">Date</td> <td  colspan="3">${timesheet.date || '-'}</td>
+        </tr>
+        <tr><td colspan="4"></td></tr>
+        <tr>
+          <td class="label">S.No</td>
+          <td class="label">Time</td>
+          <td class="label">Task</td>
+          <td class="label">Hours</td>
+        </tr>
+  
+        <!-- DATA -->
+        ${tableRows}
+        <tr><td colspan="4"></td></tr>
+        <tr>
+        <td class="label-text">Note</td><td colspan="3">${timesheet.notes || '-'}</td></tr><tr>
+        <td class="label-text">Total Hours</td><td colspan="3">${timesheet.total_hours || '-'}</td>
+       </tr>
+      </table>
+    </body>
+    </html>
+    `;
+  
+    const blob = new Blob([html], {
+      type: 'application/vnd.ms-excel;charset=utf-8;'
+    });
+  
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Timesheet_${timesheet.date}.xls`; // HTML-based Excel
+    link.click();
+  
+    URL.revokeObjectURL(url);
   }
 
   /* ================= UTILS ================= */
