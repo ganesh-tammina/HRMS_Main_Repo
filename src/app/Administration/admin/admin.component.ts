@@ -115,7 +115,10 @@ export class AdminComponent implements OnInit {
   adminleaves() {
     this.router.navigate(['/admin-leaves']);
   }
-  adminsetup(){
+  adminsetup() {
     this.router.navigate(['/admin-setup']);
+  }
+  projectsetup() {
+    this.router.navigate(['/CreateProject']);
   }
 }
