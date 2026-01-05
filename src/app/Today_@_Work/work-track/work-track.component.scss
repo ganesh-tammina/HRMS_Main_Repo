@@ -375,6 +375,14 @@ h1 {
     align-items: center;
     ion-col {
       padding: 5px 8px;
+      ion-button {
+        --padding-end: 0;
+        --padding-start: 0;
+        margin-right: 8px;
+        ion-img {
+          width: 24px;
+        }
+      }
     }
   }
 }
