@@ -1,16 +1,39 @@
-<ion-content>
-  <ion-list>
-    <ion-item *ngFor="let emp of employeeList.data" (click)="openEmployeeProfile(emp)" button detail>
-      <ion-label>
-        <h2>{{ emp.full_name }}</h2>
-        <p>{{ emp.work_email }}</p>
-      </ion-label>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Employees</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content>
+
+  <!-- EMPLOYEE LIST -->
+  <ion-list *ngIf="employeeList.length > 0; else noEmployees">
+
+    <ion-item *ngFor="let emp of employeeList" (click)="openEmployeeProfile(emp)" button detail>
+      <!-- PROFILE IMAGE -->
+      <ion-avatar slot="start">
+        <img [src]="getEmployeeImage(emp)" alt="Profile" onerror="this.src='assets/icon/Default-user.svg'" />
+      </ion-avatar>
+
+      <!-- EMPLOYEE DETAILS -->
+      <ion-label>
+        <h2>{{ emp.FullName }}</h2>
+        <p>{{ emp.workEmail }}</p>
+      </ion-label>
     </ion-item>
+
   </ion-list>
 
-  <div *ngIf="employeeList.length > 0" class="no-results">
-    <ion-text color="danger">No employees found.</ion-text>
-  </div>
+  <!-- NO DATA -->
+  <ng-template #noEmployees>
+    <div class="no-results ion-text-center ion-padding">
+      <ion-text color="medium">
+        No employees found
+      </ion-text>
+    </div>
+  </ng-template>
 
 </ion-content>
