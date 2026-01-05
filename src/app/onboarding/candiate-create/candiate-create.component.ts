@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
+import { Candidate_Create_Service } from 'src/app/services/Candidate/candidate.service';
+import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
 
 @Component({
   selector: 'app-candiate-create',
@@ -21,21 +19,25 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
 
   candidateForm!: FormGroup;
   submitting = false;
-
   maxDOB = new Date().toISOString();
+  designations: any[] = [];
+  departments: any[] = [];
+  locations: any[] = [];
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private modalCtrl: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private candidateService: Candidate_Create_Service,
+    private adminService: AdminService
   ) { }
 
   ngOnInit(): void {
     this.initForm();
+    this.loadMasters();
     this.autoFullName();
-    this.loadSavedData();
   }
 
   /* ================= FORM ================= */
@@ -50,11 +52,38 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
       phone: ['', Validators.required],
       alternate_phone: [''],
 
-      date_of_birth: ['', Validators.required],
       gender: ['', Validators.required],
+
+      designation_id: [null, Validators.required],
+      department_id: [null, Validators.required],
+      location_id: [null, Validators.required],
+
+      // 🔽 NEXT STEP FIELDS (NOT REQUIRED NOW)
+      date_of_birth: [''],
+      position: [''],
+      reporting_manager_id: null,
+      recruiter_name: '',
+
+      offered_ctc: null,
+      joining_date: '',
 
       recruitment_source: ['LinkedIn']
     });
+  }
+
+  /* ================= LOAD MASTERS ================= */
+  loadMasters() {
+    this.adminService.getDesignations()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => this.designations = res);
+
+    this.adminService.getDepartments()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => this.departments = res);
+
+    this.adminService.getLocations()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => this.locations = res);
   }
 
   /* ================= AUTO FULL NAME ================= */
@@ -70,14 +99,6 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
       });
   }
 
-  /* ================= LOAD SAVED (IF BACK) ================= */
-  loadSavedData() {
-    const saved = localStorage.getItem('candidate_personal_details');
-    if (saved) {
-      this.candidateForm.patchValue(JSON.parse(saved));
-    }
-  }
-
   /* ================= SUBMIT ================= */
   submitForm() {
     if (this.candidateForm.invalid) {
@@ -88,22 +109,31 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
 
     this.submitting = true;
 
-    const personalDetails = {
-      ...this.candidateForm.getRawValue()
-    };
+    const payload = this.candidateForm.getRawValue();
 
+    // ✅ Save locally for pre-onboarding
     localStorage.setItem(
-      'candidate_personal_details',
-      JSON.stringify(personalDetails)
+      'candidate_preonboarding',
+      JSON.stringify(payload)
     );
 
-    this.submitting = false;
+    this.candidateService.createCandidate(payload).subscribe({
+      next: async (res) => {
+        this.submitting = false;
+        await this.showToast('Candidate saved successfully', 'success');
 
-    this.showToast('Personal details saved successfully', 'success');
-
-    this.modalCtrl.dismiss({
-      step: 'personal',
-      data: personalDetails
+        this.modalCtrl.dismiss({
+          created: true,
+          data: res
+        });
+      },
+      error: async (err) => {
+        this.submitting = false;
+        await this.showToast(
+          err?.error?.message || 'Failed to save candidate',
+          'danger'
+        );
+      }
     });
   }
 
