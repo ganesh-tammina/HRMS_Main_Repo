@@ -12,7 +12,7 @@
    <!-- ⏳ Loader -->
 
    <!-- 🧑‍🤝‍🧑 Team Cards -->
-   <!-- <ion-grid *ngIf="!loading && filteredMembers.length">
+   <ion-grid *ngIf="!loading && filteredMembers.length">
       <ion-row>
 
          <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let member of filteredMembers">
@@ -51,13 +51,13 @@
 
          </ion-col>
       </ion-row>
-   </ion-grid> -->
+   </ion-grid>
 
    <!-- ❌ Empty -->
-   <!-- <div class="empty" *ngIf="!loading && !filteredMembers.length">
+   <div class="empty" *ngIf="!loading && !filteredMembers.length">
       <ion-icon name="people-outline"></ion-icon>
       <p>No team members found</p>
-   </div> -->
+   </div>
 
 
    <ion-list class="team-list-view" *ngIf="!loading && teamMembers.length">

@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class AttendanceApiService {
-   private env = environment;
+  private env = environment;
   private readonly BASE_URL = `http://${this.env.apiURL}/api/attendance`;
 
   constructor(private http: HttpClient) { }
@@ -71,6 +71,14 @@ export class AttendanceApiService {
   getAttendanceDetailsByDate(date: string): Observable<any> {
     return this.http.get(
       `${this.BASE_URL}/details/${date}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /** 🏠 WORK FROM HOME – CHECK TODAY */
+  checkTodayWFH(): Observable<any> {
+    return this.http.get(
+      `http://${this.env.apiURL}/api/leaves/wfh-check-today`,
       { headers: this.getHeaders() }
     );
   }
