@@ -22,15 +22,20 @@
     ion-row {
       flex-wrap: nowrap;
       ion-col {
-        min-width: 15% !important;
-        max-width: 15% !important;
-        margin-right: 15px;
+        // min-width: 15% !important;
+        // max-width: 15% !important;
+        // margin-right: 15px;
+        min-width: 210px !important;
+        max-width: 238px !important;
+        margin-right: 52px;
+
         &:last-child {
           margin-left: 0px;
         }
       }
     }
     .card-header {
+      font-size: 16px  !important;
       @include card-header();
       color: #1C1C1C !important;
       margin-bottom: 15px;
@@ -39,7 +44,7 @@
     .card-block {
       border: 1px solid #C9C9C9;
       padding: 10px;
-      border-radius: 4px;
+      border-radius: 16px;
       text-align: center;
       .card-header {
         @include card-sub-title();
@@ -53,10 +58,16 @@
       .label {
         @include text-style-normal();
         color: #626262;
+        line-height: 0px !important;
       }
       ion-img {
         width: 90px;
         margin: auto;
+      }
+      .txt-color{
+        color: #1870B9;
+        font-weight: 600;
+        font-size: 20px;
       }
     }
     &.table-block {
