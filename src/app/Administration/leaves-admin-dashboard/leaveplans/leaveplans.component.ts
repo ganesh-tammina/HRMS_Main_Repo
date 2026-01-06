@@ -21,6 +21,7 @@ export class LeaveplansComponent implements OnInit {
   loading = false;
   loadingPlans = false;
   listLoading = false;
+    showCreateForm = false;
 
   leavePlans: any[] = [];
 
@@ -45,6 +46,13 @@ export class LeaveplansComponent implements OnInit {
     this.addAllocation();       // default row
     this.loadLeavePlans();      // existing plans
     this.loadLeaveTypes();      // 🔥 same logic as allocation component
+  }
+      openCreateForm(): void {
+    this.showCreateForm = true;
+  }
+    cancelCreate(): void {
+    this.showCreateForm = false;
+    this.leavePlanForm.reset({ status: 'Active' });
   }
 
   /* ================= FORM ARRAY ================= */
@@ -87,6 +95,7 @@ export class LeaveplansComponent implements OnInit {
         this.allocations.clear();
         this.addAllocation();
         this.loadLeavePlans();
+        this.showCreateForm = false;
       },
       error: (err) => {
         console.error('Create error:', err);
