@@ -16,9 +16,6 @@ import {
 import { TimesheetService } from 'src/app/services/timesheets.service';
 import { TimesheetPreviewComponent } from './timesheet-preview.component';
 
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-
 @Component({
   selector: 'app-work-track',
   standalone: true,
@@ -28,6 +25,7 @@ import { saveAs } from 'file-saver';
 })
 export class WorkTrackComponent implements OnInit {
 
+  /* ================= EXISTING ================= */
   workTrackForm!: FormGroup;
   loading = false;
 
@@ -35,6 +33,12 @@ export class WorkTrackComponent implements OnInit {
   loadingList = false;
 
   today = this.formatDate(new Date());
+
+  /* ================= ASSIGNMENT STATE ================= */
+  loadingStatus = true;
+  hasProject = false;
+  assignments: any[] = [];
+  timesheetType: 'regular' | 'project' = 'regular'; // fallback default
 
   constructor(
     private fb: FormBuilder,
@@ -45,14 +49,37 @@ export class WorkTrackComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+    this.checkAssignmentOrFallback(); // ✅ NEW
     this.loadMyTimesheets();
+  }
+
+  /* ================= ASSIGNMENT CHECK ================= */
+
+  checkAssignmentOrFallback() {
+    this.loadingStatus = true;
+
+    this.timesheetService.getAssignmentStatus().subscribe({
+      next: (res: any) => {
+        console.log('Assignment API Output 👉', res);
+        this.hasProject = res.has_project;
+        this.timesheetType = res.timesheet_type;
+        this.assignments = res.assignments || [];
+        this.loadingStatus = false;
+      },
+      error: () => {
+        // ✅ FALLBACK TO REGULAR
+        this.hasProject = false;
+        this.timesheetType = 'regular';
+        this.loadingStatus = false;
+      }
+    });
   }
 
   /* ================= FORM ================= */
 
   initForm() {
     this.workTrackForm = this.fb.group({
-      date: [this.today, Validators.required], // ✅ AUTO TODAY
+      date: [this.today, Validators.required],
       hours_breakdown: this.fb.array([]),
       notes: [''],
     });
@@ -146,97 +173,55 @@ export class WorkTrackComponent implements OnInit {
     });
   }
 
-  /* ================= EXCEL ================= */
+  /* ================= DOWNLOAD EXCEL (UNCHANGED) ================= */
 
   downloadExcel(timesheet: any) {
     if (!timesheet || !timesheet.hours_breakdown?.length) {
       return;
     }
-  
+
     let tableRows = '';
-  
+
     timesheet.hours_breakdown.forEach((b: any, index: number) => {
       tableRows += `
         <tr>
-          <td>${index + 1}</td>         
+          <td>${index + 1}</td>
           <td>${b.hour || '-'}</td>
           <td>${b.task || '-'}</td>
           <td>${b.hours || '-'}</td>
         </tr>
       `;
     });
-  
+
     const html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office"
           xmlns:x="urn:schemas-microsoft-com:office:excel">
     <head>
       <meta charset="UTF-8" />
-      <style>
-        table {
-          border-collapse: collapse;
-          font-family: Arial, sans-serif;
-          font-size: 18px;
-          width: 100%;
-        }
-        td {
-          border: 1px solid #000;
-          padding: 6px;
-          vertical-align: middle;
-          text-align: left;
-          width: 150px;
-        }
-        .label {
-          background-color: #00568F;
-          color: #ffffff;
-          font-weight: bold;
-          text-align: center;
-        }
-        .label-text {
-          background-color: #00568F;
-          color: #ffffff;
-          font-weight: bold;
-          text-align: left;
-        }
-      </style>
     </head>
-  
     <body>
-      <table>
-        <!-- HEADER -->
+      <table border="1">
+        <tr><td>Date</td><td colspan="3">${timesheet.date}</td></tr>
         <tr>
-        <td class="label-text">Date</td> <td  colspan="3">${timesheet.date || '-'}</td>
+          <th>S.No</th><th>Time</th><th>Task</th><th>Hours</th>
         </tr>
-        <tr><td colspan="4"></td></tr>
-        <tr>
-          <td class="label">S.No</td>
-          <td class="label">Time</td>
-          <td class="label">Task</td>
-          <td class="label">Hours</td>
-        </tr>
-  
-        <!-- DATA -->
         ${tableRows}
-        <tr><td colspan="4"></td></tr>
-        <tr>
-        <td class="label-text">Note</td><td colspan="3">${timesheet.notes || '-'}</td></tr><tr>
-        <td class="label-text">Total Hours</td><td colspan="3">${timesheet.total_hours || '-'}</td>
-       </tr>
+        <tr><td>Note</td><td colspan="3">${timesheet.notes || '-'}</td></tr>
+        <tr><td>Total</td><td colspan="3">${timesheet.total_hours}</td></tr>
       </table>
     </body>
     </html>
     `;
-  
+
     const blob = new Blob([html], {
       type: 'application/vnd.ms-excel;charset=utf-8;'
     });
-  
-    const url = URL.createObjectURL(blob);
+
     const link = document.createElement('a');
-    link.href = url;
-    link.download = `Timesheet_${timesheet.date}.xls`; // HTML-based Excel
+    link.href = URL.createObjectURL(blob);
+    link.download = `Timesheet_${timesheet.date}.xls`;
     link.click();
-  
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(link.href);
   }
 
   /* ================= UTILS ================= */

@@ -7,8 +7,8 @@ import { environment } from 'src/environments/environment'
   providedIn: 'root',
 })
 export class TimesheetService {
-  
-  private env = environment; 
+
+  private env = environment;
   private baseUrl = `http://${this.env.apiURL}/api/timesheets`;
 
   constructor(private http: HttpClient) { }
@@ -50,9 +50,21 @@ export class TimesheetService {
   downloadTimesheetExcel(timesheetId: number): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/regular/${timesheetId}/download`,
-      {
-        responseType: 'blob'
-      }
+      { responseType: 'blob' }
+    );
+  }
+
+  /* ================= ASSIGNMENT STATUS ================= */
+
+  getAssignmentStatus(): Observable<{
+    has_project: boolean;
+    timesheet_type: 'regular' | 'project';
+  }> {
+    return this.http.get<{
+      has_project: boolean;
+      timesheet_type: 'regular' | 'project';
+    }>(
+      `${this.baseUrl}/assignment-status`
     );
   }
 }

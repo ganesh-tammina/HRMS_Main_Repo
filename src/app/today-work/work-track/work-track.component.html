@@ -1,134 +1,160 @@
 <ion-content class="ion-padding page-containerOn">
 
   <h1>Work Track</h1>
+  <div *ngIf="hasProject == false">
+    <!-- ================= CREATE TIMESHEET ================= -->
+    <ion-card class="worklog-block">
+      <ion-card-header>
+        <ion-card-title>Daily Work Log</ion-card-title>
+        <p>Track your work hours and tasks for today</p>
+      </ion-card-header>
 
-  <!-- ================= CREATE TIMESHEET ================= -->
-  <ion-card class="worklog-block">
-    <ion-card-header>
-      <ion-card-title>Daily Work Log</ion-card-title>
-      <p>Track your work hours and tasks for today</p>
-    </ion-card-header>
-
-    <ion-card-content>
-      <form [formGroup]="workTrackForm">
+      <ion-card-content>
+        <form [formGroup]="workTrackForm">
           <ion-item class="row-left date-block" lines="none">
-              <label>Date</label>             
-              <ion-input
-                    type="date"
-                    formControlName="date"
-                    [max]="today">
-                  </ion-input>
-            </ion-item>
-            <ion-grid class="table-block ion-no-padding">
-              <ion-row class="table-header">           
-                <ion-col size="2">Time Slot</ion-col>
-                <ion-col size="8">Task</ion-col>
-                <ion-col size="1">Hours</ion-col>
-                <ion-col size="1">Action</ion-col>
-              </ion-row>
-              <div formArrayName="hours_breakdown">
-                  <ion-row class="table-list-row" *ngFor="let row of breakdowns.controls; let i = index" [formGroupName]="i">           
-                      <ion-col size="2">
-                          <ion-input formControlName="hour" placeholder="Add Time"></ion-input>
-                      </ion-col>
-                      <ion-col size="8">
-                        <ion-textarea formControlName="task"  placeholder="Add task details"></ion-textarea>
-                      </ion-col>
-                      <ion-col size="1">
-                          <ion-input type="number" formControlName="hours" placeholder="1"></ion-input>
-                      </ion-col>
-                      <ion-col size="1">
-                          <ion-button fill="clear" color="danger" size="small" *ngIf="!(breakdowns.length>1)" (click)="removeRow(i)" disabled>
-                              <ion-img src="../../../assets/delete.svg"></ion-img>
-                            </ion-button>
-                          <ion-button fill="clear" color="danger" size="small" *ngIf="breakdowns.length > 1" (click)="removeRow(i)">
-                              <ion-img src="../../../assets/delete.svg"></ion-img>
-                            </ion-button>
-                      </ion-col>
-                    </ion-row>
-              </div>
-              <ion-row>
-                <ion-col size="12">
-                    <ion-button class="primary-outline-btn" expand="block" (click)="addRow()">
-                        + Add Time Slot
-                      </ion-button>
+            <label>Date</label>
+            <ion-input type="date" formControlName="date" [max]="today">
+            </ion-input>
+          </ion-item>
+          <ion-grid class="table-block ion-no-padding">
+            <ion-row class="table-header">
+              <ion-col size="2">Time Slot</ion-col>
+              <ion-col size="8">Task</ion-col>
+              <ion-col size="1">Hours</ion-col>
+              <ion-col size="1">Action</ion-col>
+            </ion-row>
+            <div formArrayName="hours_breakdown">
+              <ion-row class="table-list-row" *ngFor="let row of breakdowns.controls; let i = index"
+                [formGroupName]="i">
+                <ion-col size="2">
+                  <ion-input formControlName="hour" placeholder="Add Time"></ion-input>
+                </ion-col>
+                <ion-col size="8">
+                  <ion-textarea formControlName="task" placeholder="Add task details"></ion-textarea>
+                </ion-col>
+                <ion-col size="1">
+                  <ion-input type="number" formControlName="hours" placeholder="1"></ion-input>
+                </ion-col>
+                <ion-col size="1">
+                  <ion-button fill="clear" color="danger" size="small" *ngIf="!(breakdowns.length>1)"
+                    (click)="removeRow(i)" disabled>
+                    <ion-img src="../../../assets/delete.svg"></ion-img>
+                  </ion-button>
+                  <ion-button fill="clear" color="danger" size="small" *ngIf="breakdowns.length > 1"
+                    (click)="removeRow(i)">
+                    <ion-img src="../../../assets/delete.svg"></ion-img>
+                  </ion-button>
                 </ion-col>
               </ion-row>
-              </ion-grid>
+            </div>
+            <ion-row>
+              <ion-col size="12">
+                <ion-button class="primary-outline-btn" expand="block" (click)="addRow()">
+                  + Add Time Slot
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
 
-       
 
-        <!-- TOTAL -->
-        <ion-item lines="none" class="total-row">
-          <ion-label class="row-left"> <ion-img src="../../../assets/Icons/clock-blue.svg"></ion-img>Total Hours</ion-label>
-          <ion-badge>{{ calculateTotalHours() }} hrs</ion-badge>
-        </ion-item>
 
-        <!-- NOTES -->
-        <ion-item lines="none" class="note-block">
-          <ion-label position="stacked">Notes</ion-label>
-          <ion-textarea formControlName="notes"></ion-textarea>
-        </ion-item>
+          <!-- TOTAL -->
+          <ion-item lines="none" class="total-row">
+            <ion-label class="row-left"> <ion-img src="../../../assets/Icons/clock-blue.svg"></ion-img>Total
+              Hours</ion-label>
+            <ion-badge>{{ calculateTotalHours() }} hrs</ion-badge>
+          </ion-item>
 
-        <!-- SUBMIT -->
-        <ion-button expand="block" class="primary-btn"
-          (click)="submit()" [disabled]="loading">
-          {{ loading ? 'Submitting...' : 'Submit Work Log' }}
-        </ion-button>
+          <!-- NOTES -->
+          <ion-item lines="none" class="note-block">
+            <ion-label position="stacked">Notes</ion-label>
+            <ion-textarea formControlName="notes"></ion-textarea>
+          </ion-item>
 
-      </form>
-    </ion-card-content>
-  </ion-card>
+          <!-- SUBMIT -->
+          <ion-button expand="block" class="primary-btn" (click)="submit()" [disabled]="loading">
+            {{ loading ? 'Submitting...' : 'Submit Work Log' }}
+          </ion-button>
 
-  <!-- ================= MY TIMESHEETS ================= -->
-  <ion-card class="worklog-block">
-    <ion-card-header>
-      <ion-card-title>My Timesheets</ion-card-title>
-      <p>View and manage your submitted work logs</p>
-    </ion-card-header>
+        </form>
+      </ion-card-content>
+    </ion-card>
 
-    <ion-card-content>
+    <!-- ================= MY TIMESHEETS ================= -->
+    <ion-card class="worklog-block">
+      <ion-card-header>
+        <ion-card-title>My Timesheets</ion-card-title>
+        <p>View and manage your submitted work logs</p>
+      </ion-card-header>
 
-      <ion-spinner *ngIf="loadingList"></ion-spinner>
+      <ion-card-content>
 
-          <ion-grid class="table-block ion-no-padding" *ngIf="!loadingList && myTimesheets.length">
-              <ion-row class="table-header">           
-                <ion-col size="2">Date</ion-col>
-                <ion-col size="6">Note</ion-col>
-                <ion-col size="2">Total Hours</ion-col>
-                <ion-col size="2">Actions</ion-col>
-              </ion-row>
-                  <ion-row class="table-list-row" *ngFor="let t of myTimesheets">           
-                      <ion-col size="2">
-                          {{ t.date | date }}
-                      </ion-col>
-                      <ion-col size="6">
-                          {{ t.notes || 'No notes' }} 
-                      </ion-col>
-                      <ion-col size="2">
-                         {{ t.total_hours }}
-                      </ion-col>
-                      <ion-col size="2">
-                          <ion-button fill="clear"
-                          (click)="openPreview(t)">
-                          <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
-                        </ion-button>
-            
-                        <!-- EXCEL -->
-                        <ion-button fill="clear"
-                          (click)="downloadExcel(t)">
-                          <ion-img src="../../../assets/Icons/dowload-blue.svg"></ion-img>
-                        </ion-button>
-                      </ion-col>
-                    </ion-row>
-    
-      </ion-grid>
+        <ion-spinner *ngIf="loadingList"></ion-spinner>
 
-      <p *ngIf="!loadingList && !myTimesheets.length">
-        No timesheets found
-      </p>
+        <ion-grid class="table-block ion-no-padding" *ngIf="!loadingList && myTimesheets.length">
+          <ion-row class="table-header">
+            <ion-col size="2">Date</ion-col>
+            <ion-col size="6">Note</ion-col>
+            <ion-col size="2">Total Hours</ion-col>
+            <ion-col size="2">Actions</ion-col>
+          </ion-row>
+          <ion-row class="table-list-row" *ngFor="let t of myTimesheets">
+            <ion-col size="2">
+              {{ t.date | date }}
+            </ion-col>
+            <ion-col size="6">
+              {{ t.notes || 'No notes' }}
+            </ion-col>
+            <ion-col size="2">
+              {{ t.total_hours }}
+            </ion-col>
+            <ion-col size="2">
+              <ion-button fill="clear" (click)="openPreview(t)">
+                <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
+              </ion-button>
 
-    </ion-card-content>
-  </ion-card>
+              <!-- EXCEL -->
+              <ion-button fill="clear" (click)="downloadExcel(t)">
+                <ion-img src="../../../assets/Icons/dowload-blue.svg"></ion-img>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+
+        <p *ngIf="!loadingList && !myTimesheets.length">
+          No timesheets found
+        </p>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <div *ngIf="hasProject">
+
+    <h5>You are assigned to project</h5>
+
+    <ion-card *ngFor="let a of assignments" class="worklog-block ion-margin-bottom">
+
+      <ion-card-content>
+        <p><strong>Project Name:</strong> {{ a.project_name }}</p>
+        <p><strong>Project Code:</strong> {{ a.project_code }}</p>
+        <p><strong>Client:</strong> {{ a.client_name }}</p>
+        <p><strong>Shift:</strong> {{ a.shift_name }}</p>
+        <p><strong>Working Time:</strong> {{ a.start_time }} - {{ a.end_time }}</p>
+        <p>
+          <strong>Assignment Duration:</strong>
+          {{ a.start_date | date }} to {{ a.end_date | date }}
+        </p>
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
+
+
+
+
 
 </ion-content>
