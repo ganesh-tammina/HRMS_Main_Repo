@@ -81,9 +81,13 @@
   </ion-modal>
 
   <!-- ================= LIST ================= -->
-  <ion-card>
+  <ion-card class="listhead">
     <ion-card-header>
-      <ion-card-title>Leave Types List</ion-card-title>
+      <div>
+      <h3>Leaves</h3>
+      <p>5</p>
+      </div>
+
     </ion-card-header>
 
     <ion-card-content>
@@ -92,14 +96,14 @@
 
       <ion-grid *ngIf="!listLoading && leaveTypes.length">
         <ion-row class="table-header">
-          <ion-col size="3">Name</ion-col>
+          <ion-col size="3">Leave Type</ion-col>
           <ion-col size="2">Code</ion-col>
           <ion-col size="2">Paid</ion-col>
           <ion-col size="2">Approval</ion-col>
           <ion-col size="3">Carry Forward</ion-col>
         </ion-row>
 
-        <ion-row *ngFor="let type of leaveTypes">
+        <ion-row class ="table-list" *ngFor="let type of leaveTypes">
           <ion-col size="3">{{ type.type_name }}</ion-col>
           <ion-col size="2">{{ type.type_code }}</ion-col>
           <ion-col size="2">{{ type.is_paid ? 'Yes' : 'No' }}</ion-col>

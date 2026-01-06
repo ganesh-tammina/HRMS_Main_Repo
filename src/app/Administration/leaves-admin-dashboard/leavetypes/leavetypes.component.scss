@@ -71,3 +71,44 @@ ion-item {
   color: #888;
   margin-top: 20px;
 }
+.table-list{
+  padding: 15px 0px;
+  border-bottom: 1px solid #ccc;
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.listhead{
+  div{
+    display: flex;
+  }
+  p{
+    padding: 3px 7px;
+    font-size: 12px;
+    margin-left: 8px;
+    margin-top: 0px;
+    background: #CFECFF;
+    border-radius: 20px;
+    width: 23px;
+    height: 23px;
+    color: #1F74BB;
+    @media(max-width:992px){
+      padding: 3px 6px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  border: 1px solid #ABABAB80;
+  h3{
+    color: #181D27;
+    margin-bottom: 10px;
+    margin-top: 0;    
+  }
+  ion-card-content{
+    padding:0;
+  }
+  ion-card-header{
+    display: flex;
+  }
+}
