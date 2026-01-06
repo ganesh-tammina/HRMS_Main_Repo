@@ -144,7 +144,7 @@ export class AppComponent implements OnInit {
     localStorage.clear();
     this.employeeService.clearEmployee();
     sessionStorage.clear();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   private handlePageRefresh(url: string) {

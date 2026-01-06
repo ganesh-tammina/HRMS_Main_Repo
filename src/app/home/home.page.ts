@@ -1,95 +1,125 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HeaderComponent } from '../shared/header/header.component';
-import moment from 'moment';
 import { IonicModule, AlertController } from '@ionic/angular';
+import { Router, RouterLink } from '@angular/router';
+
+import moment from 'moment';
+
+import { environment } from 'src/environments/environment';
+import { EmployeeService } from '../services/employee.service';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
-import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
-import { environment } from 'src/environments/environment';
-import { RouterLink, Router } from '@angular/router';
-import { EmployeeService } from '../services/employee.service';
 
 @Component({
   standalone: true,
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  imports: [CommonModule, FormsModule, IonicModule, ClockButtonComponent, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    ClockButtonComponent,
+    RouterLink
+  ],
 })
 export class HomePage implements OnInit {
 
+  /* ================= CONSTANTS ================= */
   private static readonly REFRESH_DELAY_MS = 10;
 
-  /* ================= EXISTING ================= */
-  days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
-  currentEmployee: any;
-  one: any;
-  full_name: string = '';
-  currentTime: string = '';
-  allEmployees: any[] = [];
-  fullName: any;
-  currentemp: any;
-  employee_id: any;
-  uploadedImageUrl: string | null = null;
-  imageUrls: any;
-  profileimg: string = environment.apiURL;
-  backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
-  /* ================= NEW (ONLY REQUIRED) ================= */
+  /* ================= UI DATA ================= */
   greeting: string = '';
   todayDate: string = '';
+  currentTime: string = '';
   workMode: string = 'On-Site';
 
+  /* ================= EMPLOYEE ================= */
+  currentEmployee: any = null;
+
+  /* ================= IMAGES ================= */
+  env: string = '';
+  imageUrls: any;
+  backgroundImageUrl: string =
+    '../../assets/holidays-pics/christmas_pic.svg';
+
+  /* ================= DASHBOARD ================= */
+  days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
+
   constructor(
-    private candidateService: CandidateService,
-    private cdr: ChangeDetectorRef,
-    private alertController: AlertController,
-    private routeGuardService: RouteGuardService,
-    private router: Router,
     private employeeService: EmployeeService,
+    private candidateService: CandidateService,
+    private alertController: AlertController,
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
+  /* =====================================================
+     🔹 ngOnInit → runs ONCE (static data only)
+  ===================================================== */
   ngOnInit() {
+    this.setupEnvironment();
+    this.setupGreetingAndDate();
+    this.setupClock();
+    this.setupDays();
 
     const showLoginSuccess = localStorage.getItem('showLoginSuccess');
     if (showLoginSuccess === 'true') {
       localStorage.removeItem('showLoginSuccess');
       this.showLoginSuccessAlert();
     }
+  }
 
-    /* ✅ SET GREETING */
-    this.setGreeting();
+  /* =====================================================
+     🔹 ionViewWillEnter → runs EVERY TIME page opens
+     🔥 THIS FIXES YOUR ISSUE
+  ===================================================== */
+  ionViewWillEnter() {
+    this.loadEmployeeProfile();
+  }
 
-    /* ✅ SET DATE */
-    this.todayDate = moment().format('dddd, MMMM DD, YYYY');
+  /* ================= ENV ================= */
+  private setupEnvironment() {
+    this.env = environment.apiURL.startsWith('http')
+      ? environment.apiURL
+      : `http://${environment.apiURL}`;
+  }
 
-    /* ================= EXISTING LOGIC ================= */
-    const today = moment();
-    this.days = Array.from({ length: 7 }, (_, i) => {
-      const day = today.clone().add(i, 'days');
-      const status = day.isSameOrBefore(today, 'day')
-        ? 'Complete'
-        : 'Remaining';
-      return { date: day.format('ddd'), status };
-    });
-
-    setInterval(() => {
-      this.currentTime = new Date().toLocaleTimeString('en-US', {
-        hour12: true,
-      });
-    }, 1000);
+  /* ================= EMPLOYEE PROFILE ================= */
+  private loadEmployeeProfile() {
+    // 🔴 Clear old user immediately
+    this.currentEmployee = null;
 
     this.employeeService.getMyProfile().subscribe({
       next: (res: any) => {
         this.currentEmployee = res;
-        console.log("list", this.currentEmployee);
+        console.log('Logged-in Employee 👉', this.currentEmployee);
+
+        // Force UI refresh
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Profile load failed', err);
+        this.currentEmployee = null;
       }
     });
   }
 
-  /* ================= GREETING LOGIC ================= */
-  setGreeting() {
+  /* ================= PROFILE IMAGE ================= */
+  get profileImageUrl(): string {
+    if (!this.currentEmployee?.profile_image) {
+      return 'assets/icon/Default-user.svg';
+    }
+    return `${this.env}${this.currentEmployee.profile_image}`;
+  }
+
+  /* ================= GREETING ================= */
+  private setupGreetingAndDate() {
     const hour = new Date().getHours();
 
     if (hour < 12) {
@@ -99,12 +129,39 @@ export class HomePage implements OnInit {
     } else {
       this.greeting = 'Good Evening';
     }
+
+    this.todayDate = moment().format('dddd, MMMM DD, YYYY');
   }
 
+  /* ================= CLOCK ================= */
+  private setupClock() {
+    setInterval(() => {
+      this.currentTime = new Date().toLocaleTimeString('en-US', {
+        hour12: true,
+      });
+    }, 1000);
+  }
+
+  /* ================= WEEK DAYS ================= */
+  private setupDays() {
+    const today = moment();
+    this.days = Array.from({ length: 7 }, (_, i) => {
+      const day = today.clone().add(i, 'days');
+      return {
+        date: day.format('ddd'),
+        status: day.isSameOrBefore(today, 'day')
+          ? 'Complete'
+          : 'Remaining'
+      };
+    });
+  }
+
+  /* ================= ALERT ================= */
   async showLoginSuccessAlert() {
     const alert = await this.alertController.create({
       header: 'Information',
       message: 'Login Successful',
+      backdropDismiss: false,
       buttons: [
         {
           text: 'OK',
@@ -112,12 +169,12 @@ export class HomePage implements OnInit {
             setTimeout(() => { }, HomePage.REFRESH_DELAY_MS);
           }
         }
-      ],
-      backdropDismiss: false
+      ]
     });
     await alert.present();
   }
 
+  /* ================= NAVIGATION ================= */
   attendance() {
     this.router.navigate(['/Me']);
   }
@@ -128,5 +185,10 @@ export class HomePage implements OnInit {
 
   myteam() {
     this.router.navigate(['/MyTeam']);
+  }
+
+  /* ================= OPTIONAL LOGOUT (SAFE) ================= */
+  logout() {
+
   }
 }

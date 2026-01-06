@@ -12,15 +12,14 @@
               <ion-col size="12" size-sm="8" size-md="8" size-lg="8" size-xl="8" class="row-left ion-align-items-start">
 
                 <ion-img [src]="imageUrls" class="profile-img" *ngIf="imageUrls"></ion-img>
-                <ion-img class="profile-img" src="../../../assets/icon/Default-user.svg" width="46" alt="Profile"
-                  *ngIf="!imageUrls">
+                <ion-img *ngIf="currentEmployee" class="profile-img" [src]="profileImageUrl" width="46" alt="Profile">
                 </ion-img>
 
                 <div>
                   <!-- ✅ DYNAMIC GREETING -->
                   <p class="greeting">{{ greeting }}</p>
-                  <p class="name"  *ngIf="currentEmployee as emp">
-                      {{ emp.FullName }}
+                  <p class="name" *ngIf="currentEmployee as emp">
+                    {{ emp.FullName }}
                   </p>
                   <!-- ✅ DYNAMIC DATE -->
                   <p class="date">
