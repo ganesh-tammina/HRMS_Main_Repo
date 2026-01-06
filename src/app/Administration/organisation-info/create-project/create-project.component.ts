@@ -9,6 +9,7 @@ import {
 import { IonicModule, ToastController } from '@ionic/angular';
 
 import { ProjectService, Project } from 'src/app/services/project.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-project',
@@ -30,8 +31,9 @@ export class CreateProjectComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
-    private toastCtrl: ToastController
-  ) {}
+    private toastCtrl: ToastController,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -106,5 +108,8 @@ export class CreateProjectComponent implements OnInit {
       position: 'top'
     });
     await toast.present();
+  }
+  createprojectshifts() {
+    this.router.navigate(['/createProject_shifts']);
   }
 }

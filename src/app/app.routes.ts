@@ -40,6 +40,7 @@ import { EmployeeLeaveAllocationComponent } from './Administration/leaves-admin-
 import { MasterAdminSetupComponent } from './Administration/master-admin-setup/master-admin-setup.component';
 import { PreonboardSubItemsComponent } from './onboarding/preonboard-sub-items/preonboard-sub-items.component';
 import { CreateProjectComponent } from './Administration/organisation-info/create-project/create-project.component';
+import { ProjectAssignComponent } from './Administration/organisation-info/project-assign/project-assign.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -151,6 +152,10 @@ export const routes: Routes = [
   {
     path: 'CreateProject',
     component: CreateProjectComponent
+  },
+  {
+    path: 'createProject_shifts',
+    component: ProjectAssignComponent
   }
 
 ];
