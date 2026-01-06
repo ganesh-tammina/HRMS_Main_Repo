@@ -1,19 +1,23 @@
-<ion-content [fullscreen]="true" class="admin-dashboard">
-
-  <ion-grid>
-    <ion-row class="ion-no-padding">
+<ion-content [fullscreen]="true" class="admin-dashboard ion-padding">
+  <div class="top-bar">
+      <h1>Projects</h1>
+      <p>Track and manage organizational projects</p>
+  </div>
+  <ion-grid class="ion-no-padding">
+    <ion-row>
 
       <!-- ================= EMPLOYEES ================= -->
       <ion-col size="12">
         <ion-card>
 
           <ion-card-header class="row-space-between">
-            <ion-card-title>Total Employees</ion-card-title>
-
+            <ion-card-title>Employees <small>{{allCandidates.length}}</small></ion-card-title>
+            <ion-searchbar placeholder="Search Employees, Employee ID or Department " showCancelButton="never">
+            </ion-searchbar>
             <ion-card-subtitle>
               <div class="row-right">
-                <ion-button class="primary-outline-btn" id="open-upload-modal">
-                  <ion-icon name="add-circle-outline"></ion-icon>
+                <ion-button class="primary-btn" id="open-upload-modal">
+                  <ion-icon name="add-circle-outline" class="pr-5"></ion-icon>
                   Add Employees
                 </ion-button>
               </div>
@@ -35,7 +39,7 @@
                           Alternatively, select a file by
                           <label class="select-file-link">
                             clicking here
-                            <input type="file" #EmployeeInput accept=".xlsx,.xls" (change)="EmployeeSelected($event)" />
+                            <input type="file" #EmployeeInput accept=".xlsx,.xls" (change)="EmployeeSelected($event)" id="file-upload-input"/>
                           </label>
                         </p>
                       </div>
@@ -61,28 +65,31 @@
 
               <!-- Header -->
               <ion-row class="table-header">
-                <ion-col size="1">Emp Id</ion-col>
-                <ion-col size="2">Name</ion-col>
-                <ion-col size="3">Email</ion-col>
-                <ion-col size="2">Gender</ion-col>
+                <ion-col size="2"><p>Employee ID</p></ion-col>
+                <ion-col size="3"><p>Name</p></ion-col>
+                <ion-col size="2"><p>Gender</p></ion-col>
+                <ion-col size="4"><p> Contact</p></ion-col>
+                <ion-col size="1"><p>Actions</p></ion-col>
+               
               </ion-row>
 
               <!-- Rows -->
-              <ion-row class="table-list-row" *ngFor="let candidate of pagedCandidates">
+              <ion-row class="table-row-list" *ngFor="let candidate of pagedCandidates">
 
-                <ion-col size="1">{{ candidate.id }}</ion-col>
-
-                <ion-col size="2">
-                  {{ candidate.FirstName || '-' }}
-                </ion-col>
+                <ion-col size="2"><p>{{ candidate.id }}</p></ion-col>
 
                 <ion-col size="3">
-                  {{ candidate.WorkEmail || '-' }}
+                  <p>{{ candidate.FullName || '-' }}</p>
                 </ion-col>
-
                 <ion-col size="2">
-                  {{ candidate.Gender || '-' }}
+                  <p>{{ candidate.Gender || '-' }}</p>
                 </ion-col>
+                <ion-col size="4">
+                  <p>{{ candidate.WorkEmail || '-' }}</p>
+                </ion-col>
+                <ion-col size="1">
+                  
+                </ion-col>                
               </ion-row>
 
               <!-- No Records -->
@@ -95,7 +102,7 @@
             </ion-grid>
 
             <!-- ================= PAGINATION ================= -->
-            <div class="row-center ion-padding">
+            <div class="row-right ion-padding">
 
               <ion-button fill="clear" (click)="prevPage()" [disabled]="currentPage === 1">
                 <ion-icon name="chevron-back-outline"></ion-icon>
@@ -117,24 +124,59 @@
 
       <!-- ================= OTHER UI ================= -->
       <ion-col size="12" class="manage-block">
+          <ion-card>
+              <ion-card-header>
+                  <img src="../../../assets/Org-master-data.svg" width="48">
+                
+    
+                  <ion-card-title>Organization Master Data</ion-card-title>
+                  <p>Access and manage core organizational lists and settings.</p>
+               
+                  <ion-button class="primary-outline-btn" (click)="dep()">Admin Setup <ion-icon name="arrow-forward-outline"></ion-icon></ion-button>
+               
+              </ion-card-header>
+            </ion-card>
+
+            <ion-card>
+                <ion-card-header>
+                    <img src="../../../assets/roles-management.svg" width="48">                  
+      
+                    <ion-card-title>Role & Access Management</ion-card-title>
+                    <p>Assign roles and permissions for HR, managers and admin</p>
+                 
+                    <ion-button class="primary-outline-btn" (click)="adminsetup()">Admin Setup <ion-icon name="arrow-forward-outline"></ion-icon></ion-button>
+                 
+                </ion-card-header>
+              </ion-card>
+
         <ion-card>
-          <ion-card-header class="row-space-between">
-            <div>
-              <ion-card-title>Organization Master Data</ion-card-title>
-              <p>Access and manage core organizational lists and settings.</p>
-            </div>
-            <div class="row-right">
-              <ion-button class="primary-outline-btn" (click)="dep()">Manage Data Lists</ion-button>
-            </div>
+          <ion-card-header>
+              <img src="../../../assets/leave-management.svg" width="48">
+            
+
+              <ion-card-title>Leave Management</ion-card-title>
+              <p>Manage leave types, plans, and balance initialization.</p>
+           
+              <ion-button class="primary-outline-btn" (click)="adminleaves()">Admin Setup <ion-icon name="arrow-forward-outline"></ion-icon></ion-button>
+           
           </ion-card-header>
         </ion-card>
+
+        <ion-card>
+            <ion-card-header>
+                <img src="../../../assets/leave-management.svg" width="48">
+              
+  
+                <ion-card-title>Projects Management</ion-card-title>
+                <p>All client, project, and shift information—organized and up to date.</p>
+             
+                <ion-button class="primary-outline-btn" (click)="projectsetup()">Admin Setup <ion-icon name="arrow-forward-outline"></ion-icon></ion-button>
+             
+            </ion-card-header>
+          </ion-card>
       </ion-col>
 
     </ion-row>
   </ion-grid>
-  <ion-button class="primary-outline-btn" (click)="adminleaves()">Master leaves Setup</ion-button>
-  <ion-button class="primary-outline-btn" (click)="adminsetup()">Master Admin Setup</ion-button>
-  <ion-button class="primary-outline-btn" (click)="projectsetup()">Projects</ion-button>
-
 
 </ion-content>
