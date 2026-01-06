@@ -1,43 +1,61 @@
-<ion-header>
+<ion-content class="ion-padding page-containerOn project-wrappers">
+<div class="top-bar">
+  <div >
+    <ion-title>Manage Leave Plan</ion-title>
+  </div>
+
+  <ion-button shape="round" color="primary" (click)="openCreateForm()">
+  <ion-icon name="add" slot="start"></ion-icon>
+    Create Leave Plan
+  </ion-button>
+</div>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-title>Create Leave Plan</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content class="ion-padding">
-
+ <ion-modal [isOpen]="showCreateForm" cssClass="create-project-modal side-custom-popup" backdropDismiss="false">
+    <ng-template>
+       <div class="leave-head">
+    <ion-card-header>
+      <ion-card-title>Create Leave Type</ion-card-title>
+    </ion-card-header>
   <form [formGroup]="leavePlanForm">
+    <div class="formscroll">
 
-    <ion-item>
+    <ion-item class="leavetype-ipt">
       <ion-label position="stacked">Plan Name</ion-label>
-      <ion-input formControlName="name"></ion-input>
+      <ion-input fill="outline" formControlName="name"></ion-input>
     </ion-item>
 
-    <ion-item>
+    <div class="leave-year">
+          <ion-item class="leavetype-ipt">
       <ion-label position="stacked">Leave Year Start Month</ion-label>
-      <ion-input type="number" formControlName="leave_year_start_month"></ion-input>
+      <ion-input fill="outline" type="number" formControlName="leave_year_start_month"></ion-input>
     </ion-item>
 
-    <ion-item>
+    <ion-item class="leavetype-ipt">
       <ion-label position="stacked">Leave Year Start Day</ion-label>
-      <ion-input type="number" formControlName="leave_year_start_day"></ion-input>
+      <ion-input fill="outline" type="number" formControlName="leave_year_start_day"></ion-input>
     </ion-item>
+    </div>
 
-    <ion-item>
+    <ion-item class="leavetype-ipt">
       <ion-label position="stacked">Description</ion-label>
-      <ion-textarea formControlName="description"></ion-textarea>
+      <ion-textarea fill="outline" formControlName="description"></ion-textarea>
     </ion-item>
 
-    <h3 style="margin-top: 20px;">Leave Allocations</h3>
+    <h3 style="margin-top: 5px;">Leave Allocations</h3>
 
     <div formArrayName="allocations">
       <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i"
-        style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px;">
+        style="border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin: 0 10px;">
 
         <!-- ✅ LEAVE TYPE SELECT -->
-        <ion-item>
+        <ion-item class="leavetype-ipt">
           <ion-label position="stacked">Leave Type</ion-label>
-          <ion-select formControlName="leave_type_id" placeholder="Select Leave Type" interface="popover">
+          <ion-select fill="outline" formControlName="leave_type_id" placeholder="Select Leave Type" interface="popover">
 
             <ion-select-option *ngFor="let type of filteredLeaveTypes" [value]="type.id">
               {{ type.type_name }}
@@ -46,12 +64,12 @@
           </ion-select>
         </ion-item>
 
-        <ion-item>
+        <ion-item class="leavetype-ipt">
           <ion-label position="stacked">Days Allocated</ion-label>
-          <ion-input type="number" formControlName="days_allocated"></ion-input>
+          <ion-input fill="outline" type="number" formControlName="days_allocated"></ion-input>
         </ion-item>
 
-        <ion-item lines="none">
+        <ion-item lines="none" class="leavetype-ipt">
           <ion-checkbox slot="start" formControlName="prorate_on_joining"></ion-checkbox>
           <ion-label>Prorate on Joining</ion-label>
         </ion-item>
@@ -71,9 +89,11 @@
     <ion-button expand="block" color="primary" [disabled]="loading" (click)="submit()">
       {{ loading ? 'Saving...' : 'Create Leave Plan' }}
     </ion-button>
-
+    </div>
   </form>
-
+  </div>
+</ng-template>
+ </ion-modal>
   <!-- ================= EXISTING PLANS ================= -->
 
   <h2 style="margin-top: 30px;">Leave Plans</h2>
