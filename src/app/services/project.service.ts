@@ -13,7 +13,7 @@ export interface Project {
   client_name: string;
   start_date: string;
   end_date: string;
-  status: 'Active' | 'OnHold' | 'Completed';
+  status: 'active' | 'on_hold' | 'completed' | 'cancelled';
   description?: string;
   project_manager_id: number;
 }

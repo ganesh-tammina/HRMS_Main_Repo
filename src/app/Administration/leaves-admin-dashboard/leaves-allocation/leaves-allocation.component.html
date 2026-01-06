@@ -5,6 +5,9 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+
+  <!-- ================= EXISTING FORM (UNCHANGED) ================= -->
+
   <ion-card>
     <ion-card-header>
       <ion-card-title>Leave Plan Details</ion-card-title>
@@ -12,6 +15,7 @@
 
     <ion-card-content>
       <form [formGroup]="allocationForm">
+
         <ion-item>
           <ion-label position="stacked">Leave Plan</ion-label>
           <ion-select placeholder="Select Leave Plan" [value]="selectedPlanId"
@@ -27,16 +31,19 @@
           <ion-textarea formControlName="description" rows="3"></ion-textarea>
         </ion-item>
 
-        <h3 class="section-title" style="margin-top: 20px; font-weight: bold;">Allocations</h3>
+        <h3 class="section-title" style="margin-top:20px;font-weight:bold;">
+          Allocations
+        </h3>
 
         <div formArrayName="allocations">
-          <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i" class="allocation-card"
-            style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 8px;">
+          <div *ngFor="let alloc of allocations.controls; let i=index" [formGroupName]="i"
+            style="border:1px solid #ddd;padding:10px;margin-bottom:10px;border-radius:8px;">
+
             <ion-grid>
               <ion-row>
                 <ion-col size="5">
                   <ion-label>Leave Type</ion-label>
-                  <ion-select placeholder="Type" formControlName="leave_type_id" interface="popover">
+                  <ion-select formControlName="leave_type_id">
                     <ion-select-option *ngFor="let type of filteredLeaveTypes" [value]="type.id">
                       {{ type.type_name }}
                     </ion-select-option>
@@ -45,7 +52,8 @@
 
                 <ion-col size="4">
                   <ion-label>Days</ion-label>
-                  <ion-input type="number" formControlName="days_allocated" placeholder="0"></ion-input>
+                  <ion-input type="number" formControlName="days_allocated">
+                  </ion-input>
                 </ion-col>
 
                 <ion-col size="3">
@@ -62,7 +70,7 @@
           </div>
         </div>
 
-        <ion-button expand="block" fill="outline" (click)="addAllocation()" style="margin-top: 10px;">
+        <ion-button expand="block" fill="outline" (click)="addAllocation()">
           + Add New Allocation Row
         </ion-button>
 
@@ -70,7 +78,36 @@
           <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
           <span *ngIf="!loading">Save & Allocate Leaves</span>
         </ion-button>
+
       </form>
     </ion-card-content>
   </ion-card>
+
+  <!-- ================= SAVED RESULT CARD (ADDED ONLY) ================= -->
+
+  <ion-card *ngIf="savedAllocationResult" class="ion-margin-top">
+    <ion-card-header>
+      <ion-card-title>{{ savedAllocationResult.plan_name }}</ion-card-title>
+      <ion-card-subtitle>Allocated Leave Summary</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let alloc of savedAllocationResult.allocations">
+          <ion-label>
+            <h3>{{ alloc.leave_type_name }}</h3>
+            <p>
+              Allocated Days:
+              <strong>{{ alloc.days_allocated }}</strong>
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" color="danger" fill="outline" (click)="deleteSavedAllocation()">
+        Delete Allocation Permanently
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>

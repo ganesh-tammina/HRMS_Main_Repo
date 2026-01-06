@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
-import { LeaveTypeService } from 'src/app/services/leavetype.service';
 
 @Component({
   selector: 'app-create-leave-plan',
@@ -20,18 +19,13 @@ export class LeaveplansComponent implements OnInit {
 
   loading = false;
   loadingPlans = false;
-  listLoading = false;
 
   leavePlans: any[] = [];
 
-  leaveTypes: any[] = [];
-  filteredLeaveTypes: any[] = [];
-
   constructor(
     private fb: FormBuilder,
-    private leavePlanService: LeavePlanService,
-    private leaveTypeService: LeaveTypeService
-  ) {}
+    private leavePlanService: LeavePlanService
+  ) { }
 
   ngOnInit(): void {
     this.leavePlanForm = this.fb.group({
@@ -39,32 +33,9 @@ export class LeaveplansComponent implements OnInit {
       leave_year_start_month: [1, Validators.required],
       leave_year_start_day: [1, Validators.required],
       description: [''],
-      allocations: this.fb.array([]),
     });
 
-    this.addAllocation();       // default row
-    this.loadLeavePlans();      // existing plans
-    this.loadLeaveTypes();      // 🔥 same logic as allocation component
-  }
-
-  /* ================= FORM ARRAY ================= */
-
-  get allocations(): FormArray {
-    return this.leavePlanForm.get('allocations') as FormArray;
-  }
-
-  addAllocation(): void {
-    this.allocations.push(
-      this.fb.group({
-        leave_type_id: [null, Validators.required],
-        days_allocated: ['', [Validators.required, Validators.min(1)]],
-        prorate_on_joining: [false],
-      })
-    );
-  }
-
-  removeAllocation(index: number): void {
-    this.allocations.removeAt(index);
+    this.loadLeavePlans();
   }
 
   /* ================= SUBMIT ================= */
@@ -76,16 +47,17 @@ export class LeaveplansComponent implements OnInit {
     }
 
     const payload = this.leavePlanForm.value;
-    console.log('Payload:', payload);
+    console.log('Leave Plan Payload 👉', payload);
 
     this.loading = true;
 
     this.leavePlanService.createLeavePlan(payload).subscribe({
       next: () => {
         this.loading = false;
-        this.leavePlanForm.reset();
-        this.allocations.clear();
-        this.addAllocation();
+        this.leavePlanForm.reset({
+          leave_year_start_month: 1,
+          leave_year_start_day: 1,
+        });
         this.loadLeavePlans();
       },
       error: (err) => {
@@ -95,7 +67,7 @@ export class LeaveplansComponent implements OnInit {
     });
   }
 
-  /* ================= LOADERS ================= */
+  /* ================= LOAD PLANS ================= */
 
   loadLeavePlans(): void {
     this.loadingPlans = true;
@@ -105,21 +77,6 @@ export class LeaveplansComponent implements OnInit {
         this.loadingPlans = false;
       },
       error: () => (this.loadingPlans = false),
-    });
-  }
-
-  loadLeaveTypes(): void {
-    this.listLoading = true;
-    this.leaveTypeService.getLeaveTypes().subscribe({
-      next: (res: any[]) => {
-        this.leaveTypes = res;
-        this.filteredLeaveTypes = res.map(t => ({
-          id: t.id,
-          type_name: t.type_name,
-        }));
-        this.listLoading = false;
-      },
-      error: () => (this.listLoading = false),
     });
   }
 }

@@ -28,46 +28,6 @@
       <ion-textarea formControlName="description"></ion-textarea>
     </ion-item>
 
-    <h3 style="margin-top: 20px;">Leave Allocations</h3>
-
-    <div formArrayName="allocations">
-      <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i"
-        style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px;">
-
-        <!-- ✅ LEAVE TYPE SELECT -->
-        <ion-item>
-          <ion-label position="stacked">Leave Type</ion-label>
-          <ion-select formControlName="leave_type_id" placeholder="Select Leave Type" interface="popover">
-
-            <ion-select-option *ngFor="let type of filteredLeaveTypes" [value]="type.id">
-              {{ type.type_name }}
-            </ion-select-option>
-
-          </ion-select>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Days Allocated</ion-label>
-          <ion-input type="number" formControlName="days_allocated"></ion-input>
-        </ion-item>
-
-        <ion-item lines="none">
-          <ion-checkbox slot="start" formControlName="prorate_on_joining"></ion-checkbox>
-          <ion-label>Prorate on Joining</ion-label>
-        </ion-item>
-
-        <ion-button color="danger" expand="block" fill="outline" (click)="removeAllocation(i)"
-          *ngIf="allocations.length > 1">
-          Remove Allocation
-        </ion-button>
-
-      </div>
-    </div>
-
-    <ion-button expand="block" fill="outline" (click)="addAllocation()">
-      Add Allocation
-    </ion-button>
-
     <ion-button expand="block" color="primary" [disabled]="loading" (click)="submit()">
       {{ loading ? 'Saving...' : 'Create Leave Plan' }}
     </ion-button>
@@ -90,16 +50,6 @@
 
     <ion-card-content>
       <p>{{ plan.description }}</p>
-
-      <ion-list>
-        <ion-item *ngFor="let alloc of plan.allocations">
-          <ion-label>
-            <h3>Leave Type ID: {{ alloc.leave_type_id }}</h3>
-            <p>Days: {{ alloc.days_allocated }}</p>
-            <p>Prorate: {{ alloc.prorate_on_joining ? 'Yes' : 'No' }}</p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
     </ion-card-content>
   </ion-card>
 
