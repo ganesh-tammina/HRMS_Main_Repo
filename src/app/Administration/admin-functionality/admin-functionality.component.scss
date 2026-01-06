@@ -1,137 +1,123 @@
-.masters-wrapper {
-  background: #fff;
-  padding: 24px;
+@import '../../../global.scss';
+
+ion-content {
+    --background: var(--ion-bg-color);
+}
+.border-block {
+  border: 1px solid #ABABAB80;
   border-radius: 12px;
-  font-family: Inter, Arial, sans-serif;
 }
-
-/* HEADER */
-.masters-header {
+.manage-main-block {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
   h2 {
+    @include card-sub-title();
     margin: 0;
-    font-size: 22px;
   }
-  p {
-    margin-top: 4px;
-    color: #6b7280;
-    font-size: 14px;
+  .sub-text {
+    @include text-style-normal();
+    color: #4A5568;
+    margin-top: 5px; 
   }
-}
+    ul.custom-btn-tabs {
+      border: 1.25px solid #CBD5E0;
+      box-shadow: 0px 1px 3px 0px #0000001A;
+      border-radius: 30px;
+      justify-content: left;
+      width: max-content;
+      display: flex;
+      list-style: none;
+      padding: 8px;
+   li {
+      width: max-content;
+      text-transform: capitalize;
+      min-height: 37px;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      &.active {
+        background: $primary-color;
+        color: #fff;
+        --color-checked: #fff;
+        --indicator-height: 0px;
+        border: 1.25px solid #EDF2F7;
+        border-radius: 20px;
+      box-shadow: 0px 1px 3px 0px #0000001A;
+      }
 
-/* TABS */
-.masters-tabs {
-  display: flex;
-  gap: 24px;
-  margin: 20px 0;
-  padding: 0;
-  list-style: none;
-  border-bottom: 1px solid #e5e7eb;
-
-  li {
-    padding: 10px 0;
-    cursor: pointer;
-    color: #6b7280;
-
-    &.active {
-      color: #2563eb;
-      font-weight: 600;
-      border-bottom: 3px solid #2563eb;
     }
   }
-}
-
-/* CARD */
-.tab-card {
-  background: #fafafa;
-  padding: 20px;
-  border-radius: 10px;
-  height: calc(100vh);
-  overflow-y: auto;
-}
-
-/* HEADER */
-.tab-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-/* CREATE BOX */
-.create-box {
-  background: #fff;
-  border: 1px dashed #2563eb;
-  padding: 16px;
-  border-radius: 8px;
-
-  input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    margin-bottom: 12px;
+  .header-title {
+     @include card-header-title();
+     padding-left: 12px; 
+     margin: 12px 0;
+     span {
+      background: $primary-color;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 15px;
+      @include normal-text-unbold();
+     }
   }
-
-  .actions {
-    display: flex;
-    gap: 10px;
+   .tab-content-list {
+    @extend .border-block;
+    .table-block {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      .table-list-row {
+         .active-status {
+          background: rgb(49 130 206 / 24%);
+          color: #3182CE;
+          border-radius: 16px;
+          width: fit-content;
+          padding: 8px 16px;
+        }
+        .inactive-status {
+          background: #A0AEC040;
+          color: #4A5568;
+          border-radius: 16px;
+          width: fit-content;
+          padding: 8px 16px;
+        }
+      }
+    }   
+   
   }
-}
-
-/* BUTTONS */
-.btn-primary {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.btn-secondary {
-  background: #e5e7eb;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* TABLE */
-.masters-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
+  .tab-content-form {
+   @extend .border-block;
+   padding: 24px;
+   .form-header {
+     @include text-style-bold();
+   }
+   .form-subheader {
+    @include normal-text-unbold();
+   }
+   ion-list {
+     ion-item {
+       margin-bottom: 15px;       
+       --padding-start: 0;
+       ion-label {
+        @include normal-text-unbold();
+        margin-bottom: 8px;
+        transform: none;
+       }
+       ion-input {
+        border: 1px solid #ABABAB;
+        border-radius: 8px;
+        height: 37px;
+        padding-left: 12px !important; 
+       }
+     
+       ion-textarea {
+        border: 1px solid #ABABAB;
+        border-radius: 8px;
+        height: 100px;       
+        padding-left: 12px; 
+       }
+     }
+   }
   }
-
-  .action {
-    width: 120px;
+  
   }
-}
-
-/* STATUS */
-.status.active {
-  background: #ecfdf5;
-  color: #047857;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-}
-
-/* ICONS */
-.icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-right: 8px;
-  font-size: 14px;
-}
-
-/* EMPTY */
-.empty {
-  padding: 40px;
-  text-align: center;
-  color: #9ca3af;
-}

@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminService, ShiftPolicyPayload } from 'src/app/services/admin-functionality/admin.service.service';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-admin-functionality',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, IonicModule],
   templateUrl: './admin-functionality.component.html',
   styleUrls: ['./admin-functionality.component.scss']
 })
