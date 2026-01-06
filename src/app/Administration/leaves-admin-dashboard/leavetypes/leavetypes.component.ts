@@ -19,6 +19,7 @@ export class LeavetypesComponent implements OnInit {
   leaveTypes: any[] = [];
   loading = false;
   listLoading = false;
+  showCreateForm = false;
 
   constructor(
     private fb: FormBuilder,
@@ -42,6 +43,14 @@ export class LeavetypesComponent implements OnInit {
       description: [''],
     });
   }
+    openCreateForm(): void {
+    this.showCreateForm = true;
+  }
+    cancelCreate(): void {
+    this.showCreateForm = false;
+    this.leaveTypeForm.reset({ status: 'Active' });
+  }
+
 
   /** CREATE */
   submit(): void {
@@ -70,6 +79,7 @@ export class LeavetypesComponent implements OnInit {
           color: 'success',
         });
         toast.present();
+        this.showCreateForm = false;
       },
       error: async () => {
         this.loading = false;
