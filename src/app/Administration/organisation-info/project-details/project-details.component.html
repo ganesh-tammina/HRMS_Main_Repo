@@ -17,13 +17,8 @@
   <!-- ================= PROJECT INFO ================= -->
   <ion-card *ngIf="!loading && project">
     <ion-card-header>
-      <ion-card-title>
-        {{ project.project_name }}
-      </ion-card-title>
-
-      <ion-chip color="primary">
-        {{ project.project_code }}
-      </ion-chip>
+      <ion-card-title>{{ project.project_name }}</ion-card-title>
+      <ion-chip color="primary">{{ project.project_code }}</ion-chip>
     </ion-card-header>
 
     <ion-card-content>
@@ -33,12 +28,9 @@
             <strong>Client</strong>
             <p>{{ project.client_name }}</p>
           </ion-col>
-
           <ion-col size="6">
             <strong>Status</strong>
-            <ion-badge color="success">
-              {{ project.status }}
-            </ion-badge>
+            <ion-badge color="success">{{ project.status }}</ion-badge>
           </ion-col>
         </ion-row>
 
@@ -47,25 +39,37 @@
             <strong>Start Date</strong>
             <p>{{ project.start_date | date }}</p>
           </ion-col>
-
           <ion-col size="6">
             <strong>End Date</strong>
             <p>{{ project.end_date | date }}</p>
-          </ion-col>
-        </ion-row>
-
-        <ion-row *ngIf="project.description">
-          <ion-col size="12">
-            <strong>Description</strong>
-            <p>{{ project.description }}</p>
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-card-content>
   </ion-card>
 
-  <!-- ================= SHIFTS ================= -->
-  <ion-card *ngIf="!loading">
+  <!-- ================= CREATE SHIFT ================= -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Create Shift</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="shiftForm">
+        <ion-input placeholder="Shift Name" formControlName="shift_name"></ion-input>
+        <ion-input placeholder="Shift Type" formControlName="shift_type"></ion-input>
+        <ion-input type="time" formControlName="start_time"></ion-input>
+        <ion-input type="time" formControlName="end_time"></ion-input>
+
+        <ion-button expand="block" (click)="createShift()">
+          Add Shift
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= SHIFTS LIST ================= -->
+  <ion-card>
     <ion-card-header>
       <ion-card-title>Project Shifts</ion-card-title>
     </ion-card-header>
@@ -78,14 +82,40 @@
         </ion-label>
       </ion-item>
 
-      <p *ngIf="!shifts.length" class="empty">
-        No shifts created
-      </p>
+      <p *ngIf="!shifts.length" class="empty">No shifts created</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= ASSIGN EMPLOYEE ================= -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Assign Employee</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="assignForm">
+        <ion-input placeholder="Employee ID" formControlName="employee_id"></ion-input>
+        <ion-input placeholder="Role in Project" formControlName="role_in_project"></ion-input>
+
+        <ion-select placeholder="Shift" formControlName="shift_id">
+          <ion-select-option *ngFor="let s of shifts" [value]="s.id">
+            {{ s.shift_name }}
+          </ion-select-option>
+        </ion-select>
+
+        <ion-input type="number" formControlName="allocation_percentage"></ion-input>
+        <ion-input type="date" formControlName="assignment_start_date"></ion-input>
+        <ion-input type="date" formControlName="assignment_end_date"></ion-input>
+
+        <ion-button expand="block" (click)="assignEmployee()">
+          Assign Employee
+        </ion-button>
+      </form>
     </ion-card-content>
   </ion-card>
 
   <!-- ================= ASSIGNED TEAM ================= -->
-  <ion-card *ngIf="!loading">
+  <ion-card>
     <ion-card-header>
       <ion-card-title>Assigned Team</ion-card-title>
     </ion-card-header>
@@ -99,9 +129,7 @@
         <ion-label>
           <h2>{{ a.employee_name }}</h2>
           <p>{{ a.designation_name }} | {{ a.role_in_project }}</p>
-          <ion-chip color="tertiary">
-            {{ a.shift_name }}
-          </ion-chip>
+          <ion-chip color="tertiary">{{ a.shift_name }}</ion-chip>
         </ion-label>
       </ion-item>
 
