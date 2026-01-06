@@ -22,6 +22,15 @@ export class TimesheetService {
     );
   }
 
+  /* ================= SUBMIT PROJECT TIMESHEET ================= */
+
+  submitProjectTimesheet(payload: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/project/submit`,
+      payload
+    );
+  }
+
   /* ================= GET MY TIMESHEETS ================= */
 
   getMyRegularTimesheets(filters: {
@@ -67,4 +76,6 @@ export class TimesheetService {
       `${this.baseUrl}/assignment-status`
     );
   }
+
+
 }

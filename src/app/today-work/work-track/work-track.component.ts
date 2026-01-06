@@ -122,21 +122,45 @@ export class WorkTrackComponent implements OnInit {
       return;
     }
 
-    const payload = {
-      ...this.workTrackForm.value,
+    const basePayload = {
+      date: this.workTrackForm.value.date,
+      hours_breakdown: this.workTrackForm.value.hours_breakdown,
       total_hours: this.calculateTotalHours(),
+      notes: this.workTrackForm.value.notes,
     };
 
     this.loading = true;
 
-    this.timesheetService.submitRegularTimesheet(payload).subscribe({
+    /* ================= PROJECT TIMESHEET ================= */
+    if (this.hasProject) {
+
+      const projectPayload = {
+        ...basePayload,
+        project_id: this.assignments?.[0]?.project_id,   // ✅ from assignment API
+        work_description: this.workTrackForm.value.notes // API expects this
+      };
+
+      this.timesheetService.submitProjectTimesheet(projectPayload).subscribe({
+        next: () => {
+          this.loading = false;
+          this.showToast('Project work submitted successfully');
+          this.resetForm();
+        },
+        error: () => {
+          this.loading = false;
+          this.showToast('Failed to submit project work');
+        },
+      });
+
+      return;
+    }
+
+    /* ================= REGULAR TIMESHEET ================= */
+    this.timesheetService.submitRegularTimesheet(basePayload).subscribe({
       next: () => {
         this.loading = false;
         this.showToast('Timesheet submitted successfully');
-        this.workTrackForm.reset({ date: this.today });
-        this.breakdowns.clear();
-        this.addRow();
-        this.loadMyTimesheets();
+        this.resetForm();
       },
       error: () => {
         this.loading = false;
@@ -144,7 +168,12 @@ export class WorkTrackComponent implements OnInit {
       },
     });
   }
-
+  resetForm() {
+    this.workTrackForm.reset({ date: this.today });
+    this.breakdowns.clear();
+    this.addRow();
+    this.loadMyTimesheets();
+  }
   /* ================= PREVIEW ================= */
 
   async openPreview(timesheet: any) {
