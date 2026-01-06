@@ -112,4 +112,7 @@ export class CreateProjectComponent implements OnInit {
   createprojectshifts() {
     this.router.navigate(['/createProject_shifts']);
   }
+  openProjectDetails(projectId: number) {
+    this.router.navigate(['/project-details', projectId]);
+  }
 }

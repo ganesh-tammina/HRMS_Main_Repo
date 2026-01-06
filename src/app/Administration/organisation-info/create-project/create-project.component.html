@@ -11,7 +11,7 @@
       <ion-icon name="add" slot="start"></ion-icon>
       New Project
     </ion-button>
-      <ion-button shape="round" color="primary" (click)="createprojectshifts()">
+    <ion-button shape="round" color="primary" (click)="createprojectshifts()">
       <ion-icon name="add" slot="start"></ion-icon>
       Create Project Shifts
     </ion-button>
@@ -123,7 +123,8 @@
           </ion-col>
         </ion-row>
 
-        <ion-row class="table-row-list" *ngFor="let project of projects">
+        <ion-row class="table-row-list" *ngFor="let project of projects" (click)="openProjectDetails(project.id!)"
+          style="cursor: pointer;">
           <ion-col size="3">
             <p> {{ project.project_name }}
               (<small>({{ project.project_code }})</small>)</p>

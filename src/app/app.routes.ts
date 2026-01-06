@@ -156,6 +156,12 @@ export const routes: Routes = [
   {
     path: 'createProject_shifts',
     component: ProjectAssignComponent
+  },
+  {
+    path: 'project-details/:id',
+    loadComponent: () =>
+      import('./Administration/organisation-info/project-details/project-details.component')
+        .then(m => m.ProjectDetailsComponent)
   }
 
 ];

@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
    PROJECT MODEL
 ========================= */
 export interface Project {
-  id?: number;
+  id: number; // ✅ NOT optional
   project_code: string;
   project_name: string;
   client_name: string;
@@ -22,8 +22,8 @@ export interface Project {
    PROJECT SHIFT
 ========================= */
 export interface ProjectShift {
-  id?: number;
-  project_id?: number;
+  id: number;
+  project_id: number;
   shift_type: string;
   shift_name: string;
   start_time: string;
@@ -35,7 +35,7 @@ export interface ProjectShift {
    PROJECT ASSIGNMENT
 ========================= */
 export interface ProjectAssignment {
-  id?: number;
+  id: number;
   employee_id: number;
   role_in_project: string;
   allocation_percentage: number;
@@ -71,7 +71,7 @@ export class ProjectService {
   }
 
   /* =========================
-     GET PROJECTS
+     GET ALL PROJECTS
   ========================= */
   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(this.BASE_URL, {
@@ -80,8 +80,19 @@ export class ProjectService {
   }
 
   /* =========================
+     GET PROJECT BY ID ✅ FIXED
+     GET /api/projects/:id
+  ========================= */
+  getProjectById(id: number): Observable<Project> {
+    return this.http.get<Project>(
+      `${this.BASE_URL}/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /* =========================
      CREATE SHIFT
-     POST /projects/:id/shifts
+     POST /api/projects/:id/shifts
   ========================= */
   createProjectShift(
     projectId: number,
@@ -96,7 +107,7 @@ export class ProjectService {
 
   /* =========================
      GET SHIFTS
-     GET /projects/:id/shifts
+     GET /api/projects/:id/shifts
   ========================= */
   getProjectShifts(projectId: number): Observable<ProjectShift[]> {
     return this.http.get<ProjectShift[]>(
@@ -107,7 +118,7 @@ export class ProjectService {
 
   /* =========================
      ASSIGN EMPLOYEE
-     POST /projects/:id/assignments
+     POST /api/projects/:id/assignments
   ========================= */
   assignEmployee(
     projectId: number,
@@ -122,7 +133,7 @@ export class ProjectService {
 
   /* =========================
      GET ASSIGNMENTS
-     GET /projects/:id/assignments
+     GET /api/projects/:id/assignments
   ========================= */
   getAssignments(projectId: number): Observable<any[]> {
     return this.http.get<any[]>(

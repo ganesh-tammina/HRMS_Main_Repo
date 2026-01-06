@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Project Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- LOADING -->
+  <ion-spinner *ngIf="loading" class="center-spinner"></ion-spinner>
+
+  <!-- ERROR -->
+  <p *ngIf="!loading && errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <!-- ================= PROJECT INFO ================= -->
+  <ion-card *ngIf="!loading && project">
+    <ion-card-header>
+      <ion-card-title>
+        {{ project.project_name }}
+      </ion-card-title>
+
+      <ion-chip color="primary">
+        {{ project.project_code }}
+      </ion-chip>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <strong>Client</strong>
+            <p>{{ project.client_name }}</p>
+          </ion-col>
+
+          <ion-col size="6">
+            <strong>Status</strong>
+            <ion-badge color="success">
+              {{ project.status }}
+            </ion-badge>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="6">
+            <strong>Start Date</strong>
+            <p>{{ project.start_date | date }}</p>
+          </ion-col>
+
+          <ion-col size="6">
+            <strong>End Date</strong>
+            <p>{{ project.end_date | date }}</p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row *ngIf="project.description">
+          <ion-col size="12">
+            <strong>Description</strong>
+            <p>{{ project.description }}</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= SHIFTS ================= -->
+  <ion-card *ngIf="!loading">
+    <ion-card-header>
+      <ion-card-title>Project Shifts</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item *ngFor="let s of shifts">
+        <ion-label>
+          <h2>{{ s.shift_name }}</h2>
+          <p>{{ s.start_time }} - {{ s.end_time }} ({{ s.shift_type }})</p>
+        </ion-label>
+      </ion-item>
+
+      <p *ngIf="!shifts.length" class="empty">
+        No shifts created
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ================= ASSIGNED TEAM ================= -->
+  <ion-card *ngIf="!loading">
+    <ion-card-header>
+      <ion-card-title>Assigned Team</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item *ngFor="let a of assignments">
+        <ion-avatar slot="start">
+          <ion-icon name="person-circle-outline" size="large"></ion-icon>
+        </ion-avatar>
+
+        <ion-label>
+          <h2>{{ a.employee_name }}</h2>
+          <p>{{ a.designation_name }} | {{ a.role_in_project }}</p>
+          <ion-chip color="tertiary">
+            {{ a.shift_name }}
+          </ion-chip>
+        </ion-label>
+      </ion-item>
+
+      <p *ngIf="!assignments.length" class="empty">
+        No employees assigned
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
