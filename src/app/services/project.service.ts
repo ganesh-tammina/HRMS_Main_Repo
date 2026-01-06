@@ -141,4 +141,7 @@ export class ProjectService {
       { headers: this.getHeaders() }
     );
   }
+  updateProject(projectId: number, payload: any): Observable<any> {
+    return this.http.put(`${this.BASE_URL}/${projectId}`, payload, { headers: this.getHeaders() });
+  }
 }

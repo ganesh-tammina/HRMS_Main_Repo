@@ -7,9 +7,9 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 import { ProjectService, Project } from 'src/app/services/project.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-project',
@@ -27,6 +27,10 @@ export class CreateProjectComponent implements OnInit {
   loadingProjects = false;
 
   showCreateForm = false;
+
+  // ✅ ADDED FOR EDIT
+  isEditMode = false;
+  editingProjectId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -54,12 +58,35 @@ export class CreateProjectComponent implements OnInit {
   }
 
   openCreateForm(): void {
+    this.isEditMode = false;
+    this.editingProjectId = null;
     this.showCreateForm = true;
   }
 
   cancelCreate(): void {
-    this.showCreateForm = false;
     this.projectForm.reset({ status: 'Active' });
+    this.showCreateForm = false;
+    this.submitting = false;
+    this.isEditMode = false;
+    this.editingProjectId = null;
+  }
+
+  // ✅ ADDED
+  editProject(project: Project): void {
+    this.isEditMode = true;
+    this.editingProjectId = project.id!;
+    this.showCreateForm = true;
+
+    this.projectForm.patchValue({
+      project_code: project.project_code,
+      project_name: project.project_name,
+      client_name: project.client_name,
+      start_date: project.start_date,
+      end_date: project.end_date,
+      status: project.status,
+      description: project.description,
+      project_manager_id: project.project_manager_id
+    });
   }
 
   submit(): void {
@@ -70,12 +97,32 @@ export class CreateProjectComponent implements OnInit {
 
     this.submitting = true;
 
+    // ✅ EDIT FLOW (PUT)
+    if (this.isEditMode && this.editingProjectId) {
+      this.projectService
+        .updateProject(this.editingProjectId, {
+          ...this.projectForm.value,
+          status: this.projectForm.value.status.toLowerCase()
+        })
+        .subscribe({
+          next: () => {
+            this.showToast('Project updated successfully', 'success');
+            this.cancelCreate();
+            this.getProjects();
+          },
+          error: () => {
+            this.showToast('Failed to update project', 'danger');
+            this.submitting = false;
+          }
+        });
+      return;
+    }
+
+    // ✅ EXISTING CREATE FLOW (UNCHANGED)
     this.projectService.createProject(this.projectForm.value).subscribe({
       next: () => {
         this.showToast('Project created successfully', 'success');
-        this.submitting = false;
-        this.showCreateForm = false;
-        this.projectForm.reset({ status: 'Active' });
+        this.cancelCreate();
         this.getProjects();
       },
       error: () => {
@@ -109,9 +156,7 @@ export class CreateProjectComponent implements OnInit {
     });
     await toast.present();
   }
-  createprojectshifts() {
-    this.router.navigate(['/createProject_shifts']);
-  }
+
   openProjectDetails(projectId: number) {
     this.router.navigate(['/project-details', projectId]);
   }
