@@ -32,6 +32,10 @@ export class ProjectDetailsComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
+  // ✅ Popover flags
+  showShiftPopover = false;
+  showAssignPopover = false;
+
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
@@ -49,7 +53,6 @@ export class ProjectDetailsComponent implements OnInit {
     }
 
     this.projectId = +idParam;
-
     this.initForms();
     this.loadAll();
   }
@@ -74,7 +77,7 @@ export class ProjectDetailsComponent implements OnInit {
     });
   }
 
-  /* ================= LOAD ALL ================= */
+  /* ================= LOAD ================= */
   loadAll() {
     this.loading = true;
 
@@ -93,6 +96,23 @@ export class ProjectDetailsComponent implements OnInit {
     this.loadAssignments();
   }
 
+  /* ================= POPOVERS ================= */
+  openShiftPopover() {
+    this.showShiftPopover = true;
+  }
+
+  closeShiftPopover() {
+    this.showShiftPopover = false;
+  }
+
+  openAssignPopover() {
+    this.showAssignPopover = true;
+  }
+
+  closeAssignPopover() {
+    this.showAssignPopover = false;
+  }
+
   /* ================= SHIFTS ================= */
   createShift() {
     if (this.shiftForm.invalid) return;
@@ -103,6 +123,7 @@ export class ProjectDetailsComponent implements OnInit {
         next: () => {
           this.showToast('Shift created', 'success');
           this.shiftForm.reset({ shift_type: 'day', timezone: 'UTC' });
+          this.closeShiftPopover();
           this.loadShifts();
         },
         error: () => this.showToast('Shift creation failed', 'danger')
@@ -125,6 +146,7 @@ export class ProjectDetailsComponent implements OnInit {
         next: () => {
           this.showToast('Employee assigned', 'success');
           this.assignForm.reset({ allocation_percentage: 100 });
+          this.closeAssignPopover();
           this.loadAssignments();
         },
         error: () => this.showToast('Assignment failed', 'danger')

@@ -48,25 +48,22 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- ================= CREATE SHIFT ================= -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Create Shift</ion-card-title>
-    </ion-card-header>
+  <!-- ================= ACTION BUTTONS ================= -->
+  <ion-row class="ion-margin-bottom">
+    <ion-col size="6">
+      <ion-button expand="block" (click)="openShiftPopover()">
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        Create Shift
+      </ion-button>
+    </ion-col>
 
-    <ion-card-content>
-      <form [formGroup]="shiftForm">
-        <ion-input placeholder="Shift Name" formControlName="shift_name"></ion-input>
-        <ion-input placeholder="Shift Type" formControlName="shift_type"></ion-input>
-        <ion-input type="time" formControlName="start_time"></ion-input>
-        <ion-input type="time" formControlName="end_time"></ion-input>
-
-        <ion-button expand="block" (click)="createShift()">
-          Add Shift
-        </ion-button>
-      </form>
-    </ion-card-content>
-  </ion-card>
+    <ion-col size="6">
+      <ion-button expand="block" color="secondary" (click)="openAssignPopover()">
+        <ion-icon name="person-add-outline" slot="start"></ion-icon>
+        Assign Employee
+      </ion-button>
+    </ion-col>
+  </ion-row>
 
   <!-- ================= SHIFTS LIST ================= -->
   <ion-card>
@@ -82,35 +79,9 @@
         </ion-label>
       </ion-item>
 
-      <p *ngIf="!shifts.length" class="empty">No shifts created</p>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- ================= ASSIGN EMPLOYEE ================= -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Assign Employee</ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-      <form [formGroup]="assignForm">
-        <ion-input placeholder="Employee ID" formControlName="employee_id"></ion-input>
-        <ion-input placeholder="Role in Project" formControlName="role_in_project"></ion-input>
-
-        <ion-select placeholder="Shift" formControlName="shift_id">
-          <ion-select-option *ngFor="let s of shifts" [value]="s.id">
-            {{ s.shift_name }}
-          </ion-select-option>
-        </ion-select>
-
-        <ion-input type="number" formControlName="allocation_percentage"></ion-input>
-        <ion-input type="date" formControlName="assignment_start_date"></ion-input>
-        <ion-input type="date" formControlName="assignment_end_date"></ion-input>
-
-        <ion-button expand="block" (click)="assignEmployee()">
-          Assign Employee
-        </ion-button>
-      </form>
+      <p *ngIf="!shifts.length" class="empty">
+        No shifts created
+      </p>
     </ion-card-content>
   </ion-card>
 
@@ -138,5 +109,87 @@
       </p>
     </ion-card-content>
   </ion-card>
+
+  <!-- ================= CREATE SHIFT POPOVER ================= -->
+  <ion-popover [isOpen]="showShiftPopover" (didDismiss)="closeShiftPopover()">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <h3>Create Shift</h3>
+
+        <form [formGroup]="shiftForm">
+          <ion-item>
+            <ion-input label="Shift Name" formControlName="shift_name"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input label="Shift Type" formControlName="shift_type"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="time" label="Start Time" formControlName="start_time"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="time" label="End Time" formControlName="end_time"></ion-input>
+          </ion-item>
+
+          <ion-button expand="block" (click)="createShift()">
+            Save Shift
+          </ion-button>
+
+          <ion-button expand="block" fill="clear" (click)="closeShiftPopover()">
+            Cancel
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <!-- ================= ASSIGN EMPLOYEE POPOVER ================= -->
+  <ion-popover [isOpen]="showAssignPopover" (didDismiss)="closeAssignPopover()">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <h3>Assign Employee</h3>
+
+        <form [formGroup]="assignForm">
+          <ion-item>
+            <ion-input label="Employee ID" formControlName="employee_id"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input label="Role" formControlName="role_in_project"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-select label="Shift" formControlName="shift_id">
+              <ion-select-option *ngFor="let s of shifts" [value]="s.id">
+                {{ s.shift_name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="number" label="Allocation %" formControlName="allocation_percentage"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="date" label="Start Date" formControlName="assignment_start_date"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="date" label="End Date" formControlName="assignment_end_date"></ion-input>
+          </ion-item>
+
+          <ion-button expand="block" (click)="assignEmployee()">
+            Assign
+          </ion-button>
+
+          <ion-button expand="block" fill="clear" (click)="closeAssignPopover()">
+            Cancel
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
 
 </ion-content>
