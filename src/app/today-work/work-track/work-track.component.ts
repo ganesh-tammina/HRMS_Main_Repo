@@ -40,17 +40,22 @@ export class WorkTrackComponent implements OnInit {
   assignments: any[] = [];
   timesheetType: 'regular' | 'project' = 'regular'; // fallback default
 
+  myProjectTimesheets: any[] = [];
+  loadingProjectList = false;
+
   constructor(
     private fb: FormBuilder,
     private timesheetService: TimesheetService,
     private toastCtrl: ToastController,
     private modalCtrl: ModalController
-  ) { }
+  ) {
+
+  }
 
   ngOnInit() {
     this.initForm();
     this.checkAssignmentOrFallback(); // ✅ NEW
-    this.loadMyTimesheets();
+
   }
 
   /* ================= ASSIGNMENT CHECK ================= */
@@ -65,12 +70,20 @@ export class WorkTrackComponent implements OnInit {
         this.timesheetType = res.timesheet_type;
         this.assignments = res.assignments || [];
         this.loadingStatus = false;
+        // ✅ LOAD TIMESHEETS ON PAGE ENTER
+        if (this.hasProject) {
+          this.loadMyProjectTimesheets();
+        } else {
+          this.loadMyTimesheets();
+        }
       },
       error: () => {
         // ✅ FALLBACK TO REGULAR
         this.hasProject = false;
         this.timesheetType = 'regular';
         this.loadingStatus = false;
+        // ✅ LOAD REGULAR TIMESHEETS
+        this.loadMyTimesheets();
       }
     });
   }
@@ -114,6 +127,34 @@ export class WorkTrackComponent implements OnInit {
     );
   }
 
+
+  loadMyProjectTimesheets() {
+    if (!this.hasProject || !this.assignments?.length) {
+      return;
+    }
+
+    this.loadingProjectList = true;
+
+    const projectId = this.assignments[0].project_id;
+
+    this.timesheetService.getMyProjectTimesheets({
+      project_id: projectId,
+      start_date: '2026-01-01',
+      end_date: '2026-01-31',
+      month: 1,
+      year: 2026
+    }).subscribe({
+      next: (res: any) => {
+        console.log('Project Timesheets 👉', res);
+        this.myProjectTimesheets = res?.data || res || [];
+        this.loadingProjectList = false;
+      },
+      error: () => {
+        this.loadingProjectList = false;
+        this.showToast('Failed to load project timesheets');
+      }
+    });
+  }
   /* ================= SUBMIT ================= */
 
   submit() {
@@ -145,6 +186,7 @@ export class WorkTrackComponent implements OnInit {
           this.loading = false;
           this.showToast('Project work submitted successfully');
           this.resetForm();
+          this.loadMyProjectTimesheets();
         },
         error: () => {
           this.loading = false;

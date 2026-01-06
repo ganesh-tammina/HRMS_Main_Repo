@@ -247,6 +247,52 @@
       </ion-card-content>
 
     </ion-card>
+
+    <ion-card class="worklog-block" *ngIf="hasProject">
+
+      <ion-card-header>
+        <ion-card-title>My Project Timesheets</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <ion-spinner *ngIf="loadingProjectList"></ion-spinner>
+
+        <ion-grid class="table-block ion-no-padding" *ngIf="!loadingProjectList && myProjectTimesheets.length">
+
+          <ion-row class="table-header">
+            <ion-col size="3">Date</ion-col>
+            <ion-col size="5">Notes</ion-col>
+            <ion-col size="2">Hours</ion-col>
+            <ion-col size="2">Actions</ion-col>
+          </ion-row>
+
+          <ion-row class="table-list-row" *ngFor="let t of myProjectTimesheets">
+
+            <ion-col size="3">{{ t.date | date }}</ion-col>
+            <ion-col size="5">{{ t.notes || '-' }}</ion-col>
+            <ion-col size="2">{{ t.total_hours }}</ion-col>
+
+            <ion-col size="2">
+              <ion-button fill="clear" (click)="openPreview(t)">
+                <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
+              </ion-button>
+              <ion-button fill="clear" (click)="downloadExcel(t)">
+                <ion-img src="../../../assets/Icons/dowload-blue.svg"></ion-img>
+              </ion-button>
+            </ion-col>
+
+          </ion-row>
+
+        </ion-grid>
+
+        <p *ngIf="!loadingProjectList && !myProjectTimesheets.length">
+          No project timesheets found
+        </p>
+
+      </ion-card-content>
+
+    </ion-card>
   </div>
 
 
