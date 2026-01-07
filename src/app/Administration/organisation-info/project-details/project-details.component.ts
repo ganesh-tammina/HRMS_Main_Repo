@@ -141,7 +141,7 @@ export class ProjectDetailsComponent implements OnInit {
   /* ================= EMPLOYEE SEARCH ================= */
   loadEmployees() {
     console.log('Loading employees...');
-    
+
     this.employeeService.getAllEmployees().subscribe({
       next: (response: any) => {
         console.log('Employee response:', response);
@@ -182,7 +182,7 @@ export class ProjectDetailsComponent implements OnInit {
       return;
     }
 
-    this.filteredEmployees = this.allEmployees.filter(emp => 
+    this.filteredEmployees = this.allEmployees.filter(emp =>
       emp.FirstName?.toLowerCase().includes(query) ||
       emp.LastName?.toLowerCase().includes(query) ||
       emp.EmployeeNumber?.toLowerCase().includes(query) ||

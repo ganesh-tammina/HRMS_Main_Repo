@@ -84,18 +84,36 @@
 
       <ion-grid class="table-block" *ngIf="!loading && shifts.length">
         <ion-row class="table-header">
-          <ion-col size="3"><p>Shift Name</p></ion-col>
-          <ion-col size="2"><p>Type</p></ion-col>
-          <ion-col size="3"><p>Start Time</p></ion-col>
-          <ion-col size="3"><p>End Time</p></ion-col>
-          <ion-col size="1"><p>Status</p></ion-col>
+          <ion-col size="3">
+            <p>Shift Name</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>Type</p>
+          </ion-col>
+          <ion-col size="3">
+            <p>Start Time</p>
+          </ion-col>
+          <ion-col size="3">
+            <p>End Time</p>
+          </ion-col>
+          <ion-col size="1">
+            <p>Status</p>
+          </ion-col>
         </ion-row>
 
         <ion-row class="table-row-list" *ngFor="let s of shifts">
-          <ion-col size="3"><p>{{ s.shift_name }}</p></ion-col>
-          <ion-col size="2"><p>{{ s.shift_type }}</p></ion-col>
-          <ion-col size="3"><p>{{ s.start_time }}</p></ion-col>
-          <ion-col size="3"><p>{{ s.end_time }}</p></ion-col>
+          <ion-col size="3">
+            <p>{{ s.shift_name }}</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>{{ s.shift_type }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <p>{{ s.start_time }}</p>
+          </ion-col>
+          <ion-col size="3">
+            <p>{{ s.end_time }}</p>
+          </ion-col>
           <ion-col size="1">
             <ion-badge [color]="s.is_active ? 'success' : 'medium'">
               {{ s.is_active ? 'Active' : 'Inactive' }}
@@ -183,12 +201,24 @@
 
       <ion-grid class="table-block" *ngIf="!loading && assignments.length">
         <ion-row class="table-header">
-          <ion-col size="3"><p>Employee</p></ion-col>
-          <ion-col size="2"><p>Role</p></ion-col>
-          <ion-col size="2"><p>Shift</p></ion-col>
-          <ion-col size="2"><p>Allocation</p></ion-col>
-          <ion-col size="2"><p>Duration</p></ion-col>
-          <ion-col size="1"><p>Status</p></ion-col>
+          <ion-col size="3">
+            <p>Employee</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>Role</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>Shift</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>Allocation</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>Duration</p>
+          </ion-col>
+          <ion-col size="1">
+            <p>Status</p>
+          </ion-col>
         </ion-row>
 
         <ion-row class="table-row-list" *ngFor="let a of assignments">
@@ -196,9 +226,15 @@
             <p><strong>{{ a.employee_name }}</strong></p>
             <p><small>{{ a.designation_name }}</small></p>
           </ion-col>
-          <ion-col size="2"><p>{{ a.role_in_project }}</p></ion-col>
-          <ion-col size="2"><p>{{ a.shift_name || 'Not assigned' }}</p></ion-col>
-          <ion-col size="2"><p>{{ a.allocation_percentage }}%</p></ion-col>
+          <ion-col size="2">
+            <p>{{ a.role_in_project }}</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>{{ a.shift_name || 'Not assigned' }}</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>{{ a.allocation_percentage }}%</p>
+          </ion-col>
           <ion-col size="2">
             <p><small>{{ a.assignment_start_date | date:'shortDate' }}</small></p>
             <p *ngIf="a.assignment_end_date"><small>to {{ a.assignment_end_date | date:'shortDate' }}</small></p>
@@ -237,29 +273,19 @@
             <div class="full employee-search-container">
               <label>Search Employee *</label>
               <div class="search-wrapper">
-                <ion-input 
-                  [(ngModel)]="searchTerm"
-                  [ngModelOptions]="{standalone: true}"
-                  (ionInput)="onEmployeeSearch($event)"
-                  placeholder="Search by name, employee ID, or email"
+                <ion-input [(ngModel)]="searchTerm" [ngModelOptions]="{standalone: true}"
+                  (ionInput)="onEmployeeSearch($event)" placeholder="Search by name, employee ID, or email"
                   [disabled]="!!selectedEmployee">
                 </ion-input>
-                <ion-button 
-                  *ngIf="selectedEmployee" 
-                  fill="clear" 
-                  size="small" 
-                  (click)="clearEmployeeSelection()"
+                <ion-button *ngIf="selectedEmployee" fill="clear" size="small" (click)="clearEmployeeSelection()"
                   class="clear-btn">
                   <ion-icon name="close-circle" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
-              
+
               <!-- Search Results Dropdown -->
               <div class="search-results" *ngIf="filteredEmployees.length > 0">
-                <div 
-                  class="search-result-item" 
-                  *ngFor="let emp of filteredEmployees"
-                  (click)="selectEmployee(emp)">
+                <div class="search-result-item" *ngFor="let emp of filteredEmployees" (click)="selectEmployee(emp)">
                   <div class="emp-info">
                     <strong>{{ emp.FirstName }} {{ emp.LastName }}</strong>
                     <span class="emp-code">{{ emp.EmployeeNumber }}</span>
@@ -272,7 +298,8 @@
               <div class="selected-employee" *ngIf="selectedEmployee">
                 <ion-chip color="primary">
                   <ion-icon name="person"></ion-icon>
-                  <ion-label>{{ selectedEmployee.FirstName }} {{ selectedEmployee.LastName }} - {{ selectedEmployee.EmployeeNumber }}</ion-label>
+                  <ion-label>{{ selectedEmployee.FirstName }} {{ selectedEmployee.LastName }} - {{
+                    selectedEmployee.EmployeeNumber }}</ion-label>
                 </ion-chip>
               </div>
 
@@ -287,7 +314,8 @@
 
             <div>
               <label>Shift</label>
-              <ion-select formControlName="shift_id" placeholder="Select shift" toggleIcon="chevron-down" expandedIcon="chevron-up">
+              <ion-select formControlName="shift_id" placeholder="Select shift" toggleIcon="chevron-down"
+                expandedIcon="chevron-up">
                 <ion-select-option *ngFor="let s of shifts" [value]="s.id">
                   {{ s.shift_name }} ({{ s.start_time }} - {{ s.end_time }})
                 </ion-select-option>
@@ -296,7 +324,8 @@
 
             <div>
               <label>Allocation Percentage *</label>
-              <ion-input type="number" formControlName="allocation_percentage" placeholder="100" min="1" max="100"></ion-input>
+              <ion-input type="number" formControlName="allocation_percentage" placeholder="100" min="1"
+                max="100"></ion-input>
             </div>
 
             <div>

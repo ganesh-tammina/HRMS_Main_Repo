@@ -15,7 +15,7 @@ export class EmployeeService {
   private readonly reportingEndpoint = `${this.API_URL}/reporting`;
   private readonly uploadProfileImageUrl = `${this.API_URL}/profile/image`;
 
-   private readonly myTeamEndpoint = `${this.API_URL}/my-team/list`;
+  private readonly myTeamEndpoint = `${this.API_URL}/my-team/list`;
 
   private currentEmployee: any | null = null;
 
@@ -61,7 +61,7 @@ export class EmployeeService {
   searchEmployees(keyword: string): Observable<any[]> {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
     const params = new HttpParams().set('q', keyword);
-    return this.http.get<any[]>(`${this.API_URL}/search/query`, { 
+    return this.http.get<any[]>(`${this.API_URL}/search/query`, {
       params,
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -98,7 +98,7 @@ export class EmployeeService {
     );
   }
 
-    /* ================= ✅ NEW METHOD: MY TEAM LIST ================= */
+  /* ================= ✅ NEW METHOD: MY TEAM LIST ================= */
 
   /**
    * Get logged-in employee's team members
