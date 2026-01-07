@@ -1,20 +1,31 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Update Leave Allocation</ion-title>
-  </ion-toolbar>
-</ion-header>
+ <ion-content class="ion-padding page-containerOn project-wrappers">
+ <p class="page-header mb-8">
+   <a routerLink="/admin" (click)="adminManagement()">Admin Management ></a>
+   <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard ></a>
+   Leave Allocation
+  </p>
 
-<ion-content class="ion-padding">
-  <ion-card>
+<!-- <ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Leave Allocation</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<div>
+  <h4>Leave Allocation</h4>
+<p>Allocate leaves to employees</p>
+</div>
+  <ion-card class="allocatehead">
     <ion-card-header>
       <ion-card-title>Leave Plan Details</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
       <form [formGroup]="allocationForm">
-        <ion-item>
+        <ion-list lines="none">
+        <ion-item  class="allocation-ipt">
           <ion-label position="stacked">Leave Plan</ion-label>
-          <ion-select placeholder="Select Leave Plan" [value]="selectedPlanId"
+          <ion-select fill="outline" placeholder="Select Leave Plan" [value]="selectedPlanId"
             (ionChange)="onPlanChange($event.detail.value)">
             <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
               {{ plan.name }}
@@ -22,10 +33,11 @@
           </ion-select>
         </ion-item>
 
-        <ion-item>
+        <ion-item class="allocation-ipt">
           <ion-label position="stacked">Description</ion-label>
-          <ion-textarea formControlName="description" rows="3"></ion-textarea>
+          <ion-textarea fill="outline" formControlName="description" rows="3"></ion-textarea>
         </ion-item>
+        </ion-list>
 
         <h3 class="section-title" style="margin-top: 20px; font-weight: bold;">Allocations</h3>
 
@@ -34,7 +46,7 @@
             style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 8px;">
             <ion-grid>
               <ion-row>
-                <ion-col size="5">
+                <ion-col size="4">
                   <ion-label>Leave Type</ion-label>
                   <ion-select placeholder="Type" formControlName="leave_type_id" interface="popover">
                     <ion-select-option *ngFor="let type of filteredLeaveTypes" [value]="type.id">
@@ -43,7 +55,7 @@
                   </ion-select>
                 </ion-col>
 
-                <ion-col size="4">
+                <ion-col size="3">
                   <ion-label>Days</ion-label>
                   <ion-input type="number" formControlName="days_allocated" placeholder="0"></ion-input>
                 </ion-col>
@@ -52,17 +64,22 @@
                   <ion-label>Prorate</ion-label>
                   <ion-toggle formControlName="prorate_on_joining"></ion-toggle>
                 </ion-col>
-              </ion-row>
-            </ion-grid>
 
+                <ion-col size="2">
             <ion-button size="small" color="danger" fill="clear" (click)="removeAllocation(i)">
               <ion-icon name="trash-outline" slot="start"></ion-icon>
               Remove
             </ion-button>
+            </ion-col>
+
+              </ion-row>
+            </ion-grid>
+
+
           </div>
         </div>
 
-        <ion-button expand="block" fill="outline" (click)="addAllocation()" style="margin-top: 10px;">
+        <ion-button expand="block" fill="outline" (click)="addAllocation()" style="margin-top: 10px;--border-radius: 20px;">
           + Add New Allocation Row
         </ion-button>
 

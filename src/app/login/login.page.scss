@@ -144,11 +144,20 @@
 }
 
 /* RESPONSIVE */
-@media (max-width: 900px) {
+@media (max-width: 992px) {
   .login-wrapper {
     flex-direction: column;
-  }
 
+  }
+.login-card{
+  p{
+          margin:auto;
+      text-align: center;
+    img{
+
+    }
+  }
+}
   .login-left {
     display: none;
   }

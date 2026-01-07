@@ -23,3 +23,29 @@ ion-item {
 .mt-20 {
   margin-top: 20px;
 }
+h4{
+  font-weight: bold;
+}
+.allocatehead{
+  ion-card-title{
+    font-weight: bold;
+  }
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+p{
+  margin-top: 3px;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+.allocation-ipt{
+   ion-select {
+    min-height: 45px;
+    margin-top: 10px;
+
+  }
+  ion-textarea{
+    padding-top: 10px !important; 
+  }
+
+}

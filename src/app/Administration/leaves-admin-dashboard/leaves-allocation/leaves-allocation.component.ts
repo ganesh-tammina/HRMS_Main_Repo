@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { UpdatealloctionleaveService } from 'src/app/services/updatealloctionleave.service';
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { LeaveTypeService } from 'src/app/services/leavetype.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-leaves-allocation',
@@ -34,7 +35,8 @@ export class LeavesAllocationComponent implements OnInit {
     private updateAllocationService: UpdatealloctionleaveService,
     private toastCtrl: ToastController,
     private leavePlanService: LeavePlanService,
-    private leaveTypesService: LeaveTypeService
+    private leaveTypesService: LeaveTypeService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -158,5 +160,11 @@ export class LeavesAllocationComponent implements OnInit {
         );
       });
     }
+  }
+        leavetype() {
+    this.router.navigate(['./admin-leaves']);
+  }
+    adminManagement() {
+    this.router.navigate(['./admin']);
   }
 }
