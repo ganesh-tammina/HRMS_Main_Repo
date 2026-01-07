@@ -5,16 +5,18 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  FormsModule
 } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 
 import { ProjectService } from 'src/app/services/project.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
   templateUrl: './project-details.component.html',
   styleUrls: ['./project-details.component.scss'],
 })
@@ -32,9 +34,20 @@ export class ProjectDetailsComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
+  showShiftModal = false;
+  showAssignModal = false;
+  submittingShift = false;
+  submittingAssignment = false;
+
+  allEmployees: any[] = [];
+  filteredEmployees: any[] = [];
+  searchTerm = '';
+  selectedEmployee: any = null;
+
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
+    private employeeService: EmployeeService,
     private fb: FormBuilder,
     private toastCtrl: ToastController
   ) { }
@@ -52,6 +65,7 @@ export class ProjectDetailsComponent implements OnInit {
 
     this.initForms();
     this.loadAll();
+    this.loadEmployees();
   }
 
   /* ================= FORMS ================= */
@@ -80,7 +94,16 @@ export class ProjectDetailsComponent implements OnInit {
 
     this.projectService.getProjectById(this.projectId).subscribe({
       next: (res: any) => {
-        this.project = Array.isArray(res) ? res[0] : res;
+        // Handle nested response structure
+        if (res.success && res.project) {
+          this.project = res.project;
+          this.shifts = res.project.shifts || [];
+          this.assignments = res.project.assignments || [];
+        } else if (Array.isArray(res)) {
+          this.project = res[0];
+        } else {
+          this.project = res;
+        }
         this.loading = false;
       },
       error: () => {
@@ -88,24 +111,122 @@ export class ProjectDetailsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
 
-    this.loadShifts();
-    this.loadAssignments();
+  /* ================= MODAL CONTROLS ================= */
+  openShiftModal() {
+    this.showShiftModal = true;
+  }
+
+  closeShiftModal() {
+    this.showShiftModal = false;
+    this.shiftForm.reset({ shift_type: 'day', timezone: 'UTC' });
+  }
+
+  openAssignModal() {
+    this.showAssignModal = true;
+    this.searchTerm = '';
+    this.filteredEmployees = [];
+    this.selectedEmployee = null;
+  }
+
+  closeAssignModal() {
+    this.showAssignModal = false;
+    this.searchTerm = '';
+    this.filteredEmployees = [];
+    this.selectedEmployee = null;
+    this.assignForm.reset({ allocation_percentage: 100 });
+  }
+
+  /* ================= EMPLOYEE SEARCH ================= */
+  loadEmployees() {
+    console.log('Loading employees...');
+    
+    this.employeeService.getAllEmployees().subscribe({
+      next: (response: any) => {
+        console.log('Employee response:', response);
+        // Handle different response formats
+        if (Array.isArray(response)) {
+          this.allEmployees = response;
+        } else if (response.employees) {
+          this.allEmployees = response.employees;
+        } else if (response.data) {
+          this.allEmployees = response.data;
+        } else {
+          this.allEmployees = [];
+        }
+        console.log('Loaded employees:', this.allEmployees.length);
+      },
+      error: (err) => {
+        console.error('Error loading employees:', err);
+        // Fallback: try search endpoint
+        this.employeeService.searchEmployees('').subscribe({
+          next: (employees) => {
+            console.log('Loaded via search:', employees);
+            this.allEmployees = employees || [];
+          },
+          error: (err2) => {
+            console.error('Error with search fallback:', err2);
+          }
+        });
+      }
+    });
+  }
+
+  onEmployeeSearch(event: any) {
+    const query = event.detail.value?.toLowerCase() || '';
+    this.searchTerm = query;
+
+    if (query.length < 2) {
+      this.filteredEmployees = [];
+      return;
+    }
+
+    this.filteredEmployees = this.allEmployees.filter(emp => 
+      emp.FirstName?.toLowerCase().includes(query) ||
+      emp.LastName?.toLowerCase().includes(query) ||
+      emp.EmployeeNumber?.toLowerCase().includes(query) ||
+      emp.WorkEmail?.toLowerCase().includes(query) ||
+      `${emp.FirstName} ${emp.LastName}`.toLowerCase().includes(query)
+    ).slice(0, 10); // Limit to 10 results
+  }
+
+  selectEmployee(employee: any) {
+    this.selectedEmployee = employee;
+    this.searchTerm = `${employee.FirstName} ${employee.LastName} (${employee.EmployeeNumber})`;
+    this.assignForm.patchValue({ employee_id: employee.id });
+    this.filteredEmployees = [];
+  }
+
+  clearEmployeeSelection() {
+    this.selectedEmployee = null;
+    this.searchTerm = '';
+    this.assignForm.patchValue({ employee_id: '' });
+    this.filteredEmployees = [];
   }
 
   /* ================= SHIFTS ================= */
   createShift() {
-    if (this.shiftForm.invalid) return;
+    if (this.shiftForm.invalid) {
+      this.showToast('Please fill all required fields', 'danger');
+      return;
+    }
+
+    this.submittingShift = true;
 
     this.projectService
       .createProjectShift(this.projectId, this.shiftForm.value)
       .subscribe({
         next: () => {
-          this.showToast('Shift created', 'success');
-          this.shiftForm.reset({ shift_type: 'day', timezone: 'UTC' });
+          this.showToast('Shift created successfully', 'success');
+          this.submittingShift = false;
+          this.closeShiftModal();
           this.loadShifts();
         },
-        error: () => this.showToast('Shift creation failed', 'danger')
+        error: () => {
+          this.showToast('Shift creation failed', 'danger');
+          this.submittingShift = false;
+        }
       });
   }
 
@@ -117,17 +238,26 @@ export class ProjectDetailsComponent implements OnInit {
 
   /* ================= ASSIGN EMPLOYEE ================= */
   assignEmployee() {
-    if (this.assignForm.invalid) return;
+    if (this.assignForm.invalid) {
+      this.showToast('Please fill all required fields', 'danger');
+      return;
+    }
+
+    this.submittingAssignment = true;
 
     this.projectService
       .assignEmployee(this.projectId, this.assignForm.value)
       .subscribe({
         next: () => {
-          this.showToast('Employee assigned', 'success');
-          this.assignForm.reset({ allocation_percentage: 100 });
+          this.showToast('Employee assigned successfully', 'success');
+          this.submittingAssignment = false;
+          this.closeAssignModal();
           this.loadAssignments();
         },
-        error: () => this.showToast('Assignment failed', 'danger')
+        error: () => {
+          this.showToast('Assignment failed', 'danger');
+          this.submittingAssignment = false;
+        }
       });
   }
 

@@ -274,11 +274,13 @@ export const routes: Routes = [
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['admin', 'hr'] },
   },
-  // {
-  //   path: 'project-details/:id',
-  //   loadComponent: () =>
-  //     import('./Administration/organisation-info/project-details/project-details.component')
-  //       .then(m => m.ProjectDetailsComponent)
-  // }
+  {
+    path: 'project-details/:id',
+    loadComponent: () =>
+      import('./Administration/organisation-info/project-details/project-details.component')
+        .then(m => m.ProjectDetailsComponent),
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] }
+  }
 
 ];

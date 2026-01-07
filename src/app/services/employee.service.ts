@@ -59,8 +59,20 @@ export class EmployeeService {
   }
 
   searchEmployees(keyword: string): Observable<any[]> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
     const params = new HttpParams().set('q', keyword);
-    return this.http.get<any[]>(`${this.API_URL}/search/query`, { params });
+    return this.http.get<any[]>(`${this.API_URL}/search/query`, { 
+      params,
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  /* Get all employees */
+  getAllEmployees(): Observable<any[]> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    return this.http.get<any[]>(this.API_URL, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
   clearEmployee(): void {
