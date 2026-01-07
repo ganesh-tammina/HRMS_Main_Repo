@@ -1,33 +1,65 @@
+@import '../../../global.scss';
 .create-card {
   border-left: 4px solid #2dd36f;
 }
 
 .filter-card {
-  margin-bottom: 16px;
+  margin-bottom: 16px;  
+  ion-searchbar {
+    --background: var(--ion-background-color, #fff);
+    border-radius: 20px;
+    --box-shadow: none;
+    border: 1px solid #ABABAB;
+    --min-height: 36px;
+    height: 38px;
+    width: 100%;
+    padding: 0;
+    --border-radius: 20px;
+  }
+  ion-select {
+    border: 1px solid #C4C4C4;
+    height: 38px;
+    border-radius: 20px;
+    padding: 0 24px !important;
+    background: #fff;
+    width: 150px;
+  }
 }
-
-.user-card {
-  margin-bottom: 16px;
-}
-
-.user-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-ion-badge[color="admin"] {
-  background: #3b82f6;
-}
-
-ion-badge[color="hr"] {
-  background: #10b981;
-}
-
-ion-badge[color="manager"] {
-  background: #f59e0b;
-}
-
-ion-badge[color="employee"] {
-  background: #6b7280;
+.table-block {
+  background: #fff;
+  .table-header {
+    align-items: center;
+    p {
+      margin: 0;
+    }
+  }
+  .table-row-list {
+    height: auto;
+    ion-segment {
+      --background: #fff;
+      border: 1px solid #ABABAB;
+      border-radius: 20px;
+      height: 38px;
+    }
+    
+    ion-segment-button {
+      text-transform: capitalize;
+      min-height: 38px;
+      --height: 38px;
+      ion-label {
+        margin: 0;
+        @include normal-text-unbold();
+      }
+     &.segment-button-checked {
+      background: #1F74BB;
+      color: #fff;     
+      &:hover {
+        ion-label {
+          --color: #fff !important;
+        }        
+        } 
+     }
+  
+    }
+  }
 }

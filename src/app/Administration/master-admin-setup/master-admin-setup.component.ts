@@ -28,7 +28,7 @@ export class MasterAdminSetupComponent implements OnInit {
     password: '',
     role: 'employee',
   };
-
+  userId: any;
   constructor(
     private adminSetupService: AdminSetup,
     private toastCtrl: ToastController
@@ -74,6 +74,23 @@ export class MasterAdminSetupComponent implements OnInit {
   }
 
   /** ================= ROLE ACTIONS ================= */
+
+  changeRole(event: any) {
+    const role = event.detail.value;
+  
+    switch (role) {
+      case 'admin':
+        this.makeAdmin(this.userId);
+        break;
+      case 'manager':
+        this.makeManager(this.userId);
+        break;
+      case 'hr':
+        this.makeHR(this.userId);
+        break;
+    }
+  }
+
 
   makeHR(userId: number): void {
     this.adminSetupService.makeHR(userId).subscribe({
