@@ -75,18 +75,22 @@ export class MasterAdminSetupComponent implements OnInit {
 
   /** ================= ROLE ACTIONS ================= */
 
-  changeRole(event: any) {
+  changeRole(event: any, userId: number) {
     const role = event.detail.value;
-  
+
     switch (role) {
       case 'admin':
-        this.makeAdmin(this.userId);
+        this.makeAdmin(userId);
         break;
       case 'manager':
-        this.makeManager(this.userId);
+        this.makeManager(userId);
         break;
       case 'hr':
-        this.makeHR(this.userId);
+        this.makeHR(userId);
+        break;
+      case 'employee':
+        // Optionally add a method to demote to employee
+        this.presentToast('Role changed to Employee');
         break;
     }
   }

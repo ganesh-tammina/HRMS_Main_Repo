@@ -3,6 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../services/employee.service';
+import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -19,43 +20,69 @@ export class MyTeamPage implements OnInit {
   filteredMembers: any[] = [];
   loading = true;
   env: string = '';
+  userRole: string | null = null;
 
-  constructor(private employeeService: EmployeeService) { }
+  constructor(
+    private employeeService: EmployeeService,
+    private routeGuardService: RouteGuardService
+  ) { }
 
   ngOnInit() {
+    this.loading = true;
+    this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
 
-    // 🔹 Reporting employees (if employeeId exists)
-    this.employeeService.employeeId$.subscribe((employeeId) => {
-      if (!employeeId) return;
+    // Get user role from RouteGuardService
+    this.userRole = this.routeGuardService.userRole?.toLowerCase() || null;
 
-      this.loading = true;
+    // Check if user is a manager or higher (admin, hr, manager)
+    const isManager = ['admin', 'hr', 'manager'].includes(this.userRole || '');
 
-      this.employeeService.getReportingEmployees(employeeId).subscribe({
+    console.log('🔍 User Role:', this.userRole);
+    console.log('🔍 Is Manager:', isManager);
+
+    if (isManager) {
+      // 🔹 MANAGER ONLY: Get reporting employees
+      const employeeId = this.routeGuardService.employeeID;
+      console.log('🔹 Manager Employee ID:', employeeId);
+
+      if (!employeeId) {
+        console.error('❌ No employee ID found for manager');
+        this.loading = false;
+        return;
+      }
+
+      console.log('📞 Calling getReportingEmployees for manager');
+      this.employeeService.getReportingEmployees(Number(employeeId)).subscribe({
         next: (res: any[]) => {
+          console.log('✅ Manager API Response:', res);
           this.teamMembers = res || [];
           this.filteredMembers = [...this.teamMembers];
+          console.log('✅ Manager - Reporting Employees Count:', this.teamMembers.length);
           this.loading = false;
         },
-        error: () => {
+        error: (err) => {
+          console.error('❌ Error fetching reporting employees:', err);
           this.loading = false;
         }
       });
-    });
-
-    // 🔹 My Team list (API returns { type, team, message })
+      return; // ⚠️ CRITICAL: Exit here to prevent else block
+    }
+    
+    // 🔹 EMPLOYEE ONLY: Get team list
+    console.log('📞 Calling getMyTeamList for employee');
     this.employeeService.getMyTeamList().subscribe({
       next: (res: any) => {
-        this.teamMembers = res?.team || [];
+        console.log('✅ Employee API Response:', res);
+        this.teamMembers = res?.team || res || [];
         this.filteredMembers = [...this.teamMembers];
-        console.log('Team Members:', this.teamMembers);
+        console.log('✅ Employee - Team Members Count:', this.teamMembers.length);
         this.loading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Error fetching team list:', err);
         this.loading = false;
       }
     });
-    this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
-
   }
 
   /* ================= PROFILE IMAGE ================= */
