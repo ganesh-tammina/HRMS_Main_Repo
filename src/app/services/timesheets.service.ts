@@ -63,6 +63,30 @@ export class TimesheetService {
     );
   }
 
+  /* ================= GET MY PROJECT TIMESHEETS ================= */
+
+  getMyProjectTimesheets(filters: {
+    start_date?: string;
+    end_date?: string;
+    month?: number;
+    year?: number;
+    project_id?: number;
+  }): Observable<any> {
+
+    let params = new HttpParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params = params.set(key, value.toString());
+      }
+    });
+
+    return this.http.get(
+      `${this.baseUrl}/project/my-timesheets`,
+      { params }
+    );
+  }
+
   /* ================= ASSIGNMENT STATUS ================= */
 
   getAssignmentStatus(): Observable<{

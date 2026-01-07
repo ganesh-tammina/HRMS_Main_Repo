@@ -32,6 +32,31 @@ export class WorkTrackComponent implements OnInit {
   myTimesheets: any[] = [];
   loadingList = false;
 
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 5;
+  totalPages = 0;
+  paginatedTimesheets: any[] = [];
+
+  // Filters
+  selectedMonth: number = new Date().getMonth() + 1;
+  selectedYear: number = new Date().getFullYear();
+  months = [
+    { value: 1, name: 'January' },
+    { value: 2, name: 'February' },
+    { value: 3, name: 'March' },
+    { value: 4, name: 'April' },
+    { value: 5, name: 'May' },
+    { value: 6, name: 'June' },
+    { value: 7, name: 'July' },
+    { value: 8, name: 'August' },
+    { value: 9, name: 'September' },
+    { value: 10, name: 'October' },
+    { value: 11, name: 'November' },
+    { value: 12, name: 'December' }
+  ];
+  years: number[] = [];
+
   today = this.formatDate(new Date());
 
   /* ================= ASSIGNMENT STATE ================= */
@@ -49,8 +74,15 @@ export class WorkTrackComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
-    this.checkAssignmentOrFallback(); // ✅ NEW
-    this.loadMyTimesheets();
+    this.initializeYears();
+    this.checkAssignmentOrFallback(); // ✅ NEW - this will call loadMyTimesheets() after assignment is loaded
+  }
+
+  initializeYears() {
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i >= currentYear - 5; i--) {
+      this.years.push(i);
+    }
   }
 
   /* ================= ASSIGNMENT CHECK ================= */
@@ -68,6 +100,9 @@ export class WorkTrackComponent implements OnInit {
 
         // Initialize first row with shift timing after assignments are loaded
         this.initializeFirstTimeSlot();
+        
+        // Load timesheets after assignment status is determined
+        this.loadMyTimesheets();
       },
       error: () => {
         // ✅ FALLBACK TO REGULAR
@@ -77,6 +112,9 @@ export class WorkTrackComponent implements OnInit {
 
         // Initialize with default timing for regular employees
         this.initializeFirstTimeSlot();
+        
+        // Load timesheets after assignment status is determined
+        this.loadMyTimesheets();
       }
     });
   }
@@ -165,13 +203,12 @@ export class WorkTrackComponent implements OnInit {
     if (this.breakdowns.length > 0) {
       const lastRow = this.breakdowns.at(this.breakdowns.length - 1);
       const lastTimeSlot = lastRow.get('hour')?.value;
-      const lastHours = Number(lastRow.get('hours')?.value || 1);
 
       if (lastTimeSlot && lastTimeSlot.includes('-')) {
-        // Extract start time from last slot
-        const startTime = lastTimeSlot.split('-')[0];
-        // Calculate next slot based on hours worked in last slot
-        nextTimeSlot = this.generateTimeSlotWithDuration(startTime, lastHours);
+        // Extract END time from last slot as the START time for the new slot
+        const endTime = lastTimeSlot.split('-')[1];
+        // Calculate next slot with 1 hour duration
+        nextTimeSlot = this.generateTimeSlotWithDuration(endTime, 1);
       }
     }
 
@@ -319,7 +356,8 @@ export class WorkTrackComponent implements OnInit {
   resetForm() {
     this.workTrackForm.reset({ date: this.today });
     this.initializeFirstTimeSlot();
-    this.loadMyTimesheets();
+    // Delay loading to ensure hasProject is set
+    setTimeout(() => this.loadMyTimesheets(), 100);
   }
   /* ================= PREVIEW ================= */
 
@@ -337,9 +375,21 @@ export class WorkTrackComponent implements OnInit {
   loadMyTimesheets() {
     this.loadingList = true;
 
-    this.timesheetService.getMyRegularTimesheets({}).subscribe({
+    const filters = {
+      month: this.selectedMonth,
+      year: this.selectedYear
+    };
+
+    // Load project timesheets if user has project, otherwise regular timesheets
+    const fetchObservable = this.hasProject
+      ? this.timesheetService.getMyProjectTimesheets(filters)
+      : this.timesheetService.getMyRegularTimesheets(filters);
+
+    fetchObservable.subscribe({
       next: (res: any) => {
         this.myTimesheets = res?.data || res || [];
+        this.currentPage = 1;
+        this.updatePagination();
         this.loadingList = false;
       },
       error: () => {
@@ -347,6 +397,48 @@ export class WorkTrackComponent implements OnInit {
         this.showToast('Failed to load timesheets');
       },
     });
+  }
+
+  /* ================= PAGINATION ================= */
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.myTimesheets.length / this.itemsPerPage);
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedTimesheets = this.myTimesheets.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  /* ================= FILTERS ================= */
+
+  onMonthChange(event: any) {
+    this.selectedMonth = Number(event.detail.value);
+    this.loadMyTimesheets();
+  }
+
+  onYearChange(event: any) {
+    this.selectedYear = Number(event.detail.value);
+    this.loadMyTimesheets();
   }
 
   /* ================= DOWNLOAD EXCEL (UNCHANGED) ================= */

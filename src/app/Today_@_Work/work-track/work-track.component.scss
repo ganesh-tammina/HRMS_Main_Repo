@@ -834,5 +834,51 @@ ion-spinner {
   }
 }
 
+/* ======= FILTERS & PAGINATION ======= */
+.filter-section {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 12px;
 
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
 
+  ion-label {
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin-bottom: 4px;
+  }
+
+  ion-select {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: white;
+  }
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  margin-top: 16px;
+  border-top: 1px solid #e0e0e0;
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+
+  .page-info {
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    font-size: 14px;
+  }
+}
