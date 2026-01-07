@@ -100,7 +100,7 @@ export class WorkTrackComponent implements OnInit {
 
         // Initialize first row with shift timing after assignments are loaded
         this.initializeFirstTimeSlot();
-        
+
         // Load timesheets after assignment status is determined
         this.loadMyTimesheets();
       },
@@ -112,7 +112,7 @@ export class WorkTrackComponent implements OnInit {
 
         // Initialize with default timing for regular employees
         this.initializeFirstTimeSlot();
-        
+
         // Load timesheets after assignment status is determined
         this.loadMyTimesheets();
       }
