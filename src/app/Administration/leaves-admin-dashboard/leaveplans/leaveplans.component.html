@@ -1,8 +1,10 @@
-<p class="page-header mb-8">
-   <a routerLink="/admin-leaves" (click)="adminleave()">Admin Management ></a>
-   <a routerLink="/admin-leaves" (click)="adminleave()">Leaves Admin Dashboard ></a>
-  </p>
+
 <ion-content class="ion-padding page-containerOn project-wrappers">
+ <p class="page-header mb-8">
+   <a routerLink="/admin-leaves" (click)="adminManagement()">Admin Management ></a>
+   <a routerLink="/leavetype" (click)="leavetype()">Leaves Admin Dashboard ></a>
+   Manage Leave Plan
+  </p>
 <div class="top-bar">
   <div >
     <ion-title>Manage Leave Plan</ion-title>
@@ -86,9 +88,9 @@
       </div>
     </div> -->
 
-    <ion-button style="margin: 10px;" expand="block" fill="outline" (click)="addAllocation()">
+    <!-- <ion-button style="margin: 10px;" expand="block" fill="outline" (click)="addAllocation()">
       Add Allocation
-    </ion-button>
+    </ion-button> -->
 
     <div class="leave-btns">
     <ion-button class="primary-outline-btn cancel-btn" (click)="cancelCreate()">

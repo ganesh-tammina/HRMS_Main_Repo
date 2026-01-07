@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { LeaveTypeService } from 'src/app/services/leavetype.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-leavetypes',
@@ -24,7 +25,8 @@ export class LeavetypesComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private leaveTypesService: LeaveTypeService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -106,5 +108,11 @@ export class LeavetypesComponent implements OnInit {
         this.listLoading = false;
       },
     });
+  }
+      leavetype() {
+    this.router.navigate(['./admin-leaves']);
+  }
+    adminManagement() {
+    this.router.navigate(['./admin']);
   }
 }

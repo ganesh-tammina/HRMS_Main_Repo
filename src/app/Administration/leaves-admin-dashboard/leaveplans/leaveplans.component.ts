@@ -115,7 +115,7 @@ export class LeaveplansComponent implements OnInit {
     });
   }
 
-    adminleave() {
+      leavetype() {
     this.router.navigate(['./admin-leaves']);
   }
     adminManagement() {
