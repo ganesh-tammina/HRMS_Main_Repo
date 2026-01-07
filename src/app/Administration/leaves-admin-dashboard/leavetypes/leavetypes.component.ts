@@ -21,6 +21,10 @@ export class LeavetypesComponent implements OnInit {
   listLoading = false;
   showCreateForm = false;
 
+  // 🔹 EDIT STATE
+  isEditMode = false;
+  selectedLeaveTypeId: number | null = null;
+
   constructor(
     private fb: FormBuilder,
     private leaveTypesService: LeaveTypeService,
@@ -43,16 +47,45 @@ export class LeavetypesComponent implements OnInit {
       description: [''],
     });
   }
-    openCreateForm(): void {
+
+  /** OPEN CREATE FORM */
+  openCreateForm(): void {
+    this.isEditMode = false;
+    this.selectedLeaveTypeId = null;
+    this.leaveTypeForm.reset({
+      is_paid: true,
+      requires_approval: true,
+      can_carry_forward: false,
+      max_carry_forward_days: 0,
+    });
     this.showCreateForm = true;
   }
-    cancelCreate(): void {
+
+  /** CANCEL */
+  cancelCreate(): void {
     this.showCreateForm = false;
-    this.leaveTypeForm.reset({ status: 'Active' });
+    this.isEditMode = false;
+    this.selectedLeaveTypeId = null;
   }
 
+  /** EDIT */
+  editLeaveType(type: any): void {
+    this.isEditMode = true;
+    this.selectedLeaveTypeId = type.id;
+    this.showCreateForm = true;
 
-  /** CREATE */
+    this.leaveTypeForm.patchValue({
+      type_name: type.type_name,
+      type_code: type.type_code,
+      is_paid: type.is_paid,
+      requires_approval: type.requires_approval,
+      can_carry_forward: type.can_carry_forward,
+      max_carry_forward_days: type.max_carry_forward_days,
+      description: type.description,
+    });
+  }
+
+  /** CREATE / UPDATE */
   submit(): void {
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
@@ -60,31 +93,34 @@ export class LeavetypesComponent implements OnInit {
     }
 
     this.loading = true;
+    const payload = this.leaveTypeForm.value;
 
-    this.leaveTypesService.createLeaveType(this.leaveTypeForm.value).subscribe({
+    const request$ = this.isEditMode
+      ? this.leaveTypesService.updateLeaveType(this.selectedLeaveTypeId!, payload)
+      : this.leaveTypesService.createLeaveType(payload);
+
+    request$.subscribe({
       next: async () => {
         this.loading = false;
-        this.leaveTypeForm.reset({
-          is_paid: true,
-          requires_approval: true,
-          can_carry_forward: false,
-          max_carry_forward_days: 0,
-        });
+        this.showCreateForm = false;
+        this.isEditMode = false;
+        this.selectedLeaveTypeId = null;
 
-        this.loadLeaveTypes(); // 🔄 refresh list
+        this.loadLeaveTypes();
 
         const toast = await this.toastCtrl.create({
-          message: 'Leave Type created successfully',
+          message: this.isEditMode
+            ? 'Leave Type updated successfully'
+            : 'Leave Type created successfully',
           duration: 2000,
           color: 'success',
         });
         toast.present();
-        this.showCreateForm = false;
       },
       error: async () => {
         this.loading = false;
         const toast = await this.toastCtrl.create({
-          message: 'Failed to create Leave Type',
+          message: 'Operation failed',
           duration: 2000,
           color: 'danger',
         });
