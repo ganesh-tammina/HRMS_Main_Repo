@@ -125,22 +125,22 @@
         </ion-row>
 
         <ion-row class="table-row-list" *ngFor="let project of projects">
-          <ion-col size="2.5">
+          <ion-col size="2.5" (click)="navigateToDetails(project)" style="cursor: pointer;">
             <p> {{ project.project_name }}
               (<small>({{ project.project_code }})</small>)</p>
 
           </ion-col>
 
-          <ion-col size="2.5">
+          <ion-col size="2.5" (click)="navigateToDetails(project)" style="cursor: pointer;">
             <p>{{ project.client_name }}</p>
           </ion-col>
 
-          <ion-col size="2" class="status">
+          <ion-col size="2" class="status" (click)="navigateToDetails(project)" style="cursor: pointer;">
             <p [ngClass]="project.status.toLowerCase()">
               {{ project.status }}</p>
           </ion-col>
 
-          <ion-col size="3">
+          <ion-col size="3" (click)="navigateToDetails(project)" style="cursor: pointer;">
             <p>{{ project.start_date | date }} - {{ project.end_date | date }}</p>
           </ion-col>
 
