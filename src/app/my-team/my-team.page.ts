@@ -21,7 +21,7 @@ export class MyTeamPage implements OnInit {
   loading = true;
   env: string = '';
   userRole: string | null = null;
-  
+
   // Attendance data
   selectedDate: string = new Date().toISOString().split('T')[0];
   attendanceData: any = null;
@@ -101,20 +101,20 @@ export class MyTeamPage implements OnInit {
     this.employeeService.getTeamAttendanceReport(this.selectedDate).subscribe({
       next: (res: any) => {
         console.log('✅ Full Attendance Report Response:', res);
-        
+
         const teamMembersData = res.team_members || [];
         this.attendanceData = res.attendance || [];
         this.attendanceSummary = res.summary || null;
-        
+
         console.log('✅ Team Members Count:', teamMembersData.length);
         console.log('✅ Attendance Records Count:', this.attendanceData.length);
         console.log('✅ Summary:', this.attendanceSummary);
-        
+
         // Merge team members with their attendance data
         this.teamMembers = teamMembersData.map((member: any) => {
           // Find attendance record for this member
           const attendanceRecord = this.attendanceData.find((att: any) => att.employee_id === member.id);
-          
+
           return {
             id: member.id,
             EmployeeNumber: member.EmployeeNumber,
@@ -147,14 +147,14 @@ export class MyTeamPage implements OnInit {
             }
           };
         });
-        
+
         console.log('✅ Mapped Team Members:', this.teamMembers.length);
         console.log('✅ First mapped member:', this.teamMembers[0]);
-        
+
         this.applyAttendanceFilter();
         console.log('✅ Filtered Members after filter:', this.filteredMembers.length);
         console.log('✅ Current filter:', this.attendanceFilter);
-        
+
         this.loading = false;
       },
       error: (err) => {

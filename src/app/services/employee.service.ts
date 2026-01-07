@@ -140,7 +140,7 @@ export class EmployeeService {
   getTeamAttendanceReport(date?: string): Observable<any> {
     const token = localStorage.getItem('token');
     let params = new HttpParams();
-    
+
     if (date) {
       params = params.set('date', date);
     }

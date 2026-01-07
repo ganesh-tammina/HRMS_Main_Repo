@@ -30,15 +30,11 @@
                <ion-label>Select Date</ion-label>
                <ion-datetime-button datetime="attendance-date"></ion-datetime-button>
             </ion-item>
-            
+
             <ion-modal [keepContentsMounted]="true">
                <ng-template>
-                  <ion-datetime
-                     id="attendance-date"
-                     presentation="date"
-                     [value]="selectedDate"
-                     (ionChange)="onDateChange($event)"
-                  ></ion-datetime>
+                  <ion-datetime id="attendance-date" presentation="date" [value]="selectedDate"
+                     (ionChange)="onDateChange($event)"></ion-datetime>
                </ng-template>
             </ion-modal>
          </ion-card-content>
@@ -46,29 +42,23 @@
 
       <!-- Filter Chips -->
       <div class="filter-chips">
-         <ion-chip 
-            [color]="attendanceFilter === 'all' ? 'primary' : 'light'"
-            (click)="setAttendanceFilter('all')">
+         <ion-chip [color]="attendanceFilter === 'all' ? 'primary' : 'light'" (click)="setAttendanceFilter('all')">
             <ion-icon name="people-outline"></ion-icon>
             <ion-label>All ({{ attendanceSummary?.total_team || 0 }})</ion-label>
          </ion-chip>
-         
-         <ion-chip 
-            [color]="attendanceFilter === 'present' ? 'success' : 'light'"
+
+         <ion-chip [color]="attendanceFilter === 'present' ? 'success' : 'light'"
             (click)="setAttendanceFilter('present')">
             <ion-icon name="checkmark-circle"></ion-icon>
             <ion-label>Present ({{ attendanceSummary?.present || 0 }})</ion-label>
          </ion-chip>
-         
-         <ion-chip 
-            [color]="attendanceFilter === 'absent' ? 'danger' : 'light'"
-            (click)="setAttendanceFilter('absent')">
+
+         <ion-chip [color]="attendanceFilter === 'absent' ? 'danger' : 'light'" (click)="setAttendanceFilter('absent')">
             <ion-icon name="close-circle"></ion-icon>
             <ion-label>Absent ({{ attendanceSummary?.absent || 0 }})</ion-label>
          </ion-chip>
-         
-         <ion-chip 
-            [color]="attendanceFilter === 'on_leave' ? 'warning' : 'light'"
+
+         <ion-chip [color]="attendanceFilter === 'on_leave' ? 'warning' : 'light'"
             (click)="setAttendanceFilter('on_leave')">
             <ion-icon name="calendar-outline"></ion-icon>
             <ion-label>On Leave ({{ attendanceSummary?.on_leave || 0 }})</ion-label>
@@ -186,10 +176,7 @@
                </div>
             </ion-label>
 
-            <ion-badge 
-               slot="end" 
-               [color]="getAttendanceBadgeColor(getAttendanceStatus(member))"
-               class="status-badge">
+            <ion-badge slot="end" [color]="getAttendanceBadgeColor(getAttendanceStatus(member))" class="status-badge">
                <ion-icon [name]="getAttendanceIcon(getAttendanceStatus(member))"></ion-icon>
                {{ getAttendanceStatus(member) | titlecase }}
             </ion-badge>
