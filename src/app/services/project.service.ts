@@ -139,4 +139,10 @@ export class ProjectService {
       { headers: this.getHeaders() }
     );
   }
+  getProjectById(id: number): Observable<Project> {
+    return this.http.get<Project>(
+      `${this.BASE_URL}/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
 }

@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
- import { environment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment';
+import { RouteGuardService } from './route-guard/route-service/route-guard.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-   private env = environment;
+  private env = environment;
   private LOGIN_URL = `http://${this.env.apiURL}/api/auth/login`;
   private CHECK_EMAIL_URL = `http://${this.env.apiURL}/api/auth/employee/check`;
   private CREATE_USER_URL = `http://${this.env.apiURL}/api/auth/user/create`;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private routeGuardService: RouteGuardService
+  ) { }
 
   /** CHECK EMAIL */
   checkEmployee(email: string): Observable<any> {
@@ -22,7 +27,16 @@ export class AuthService {
   login(payload: { username: string; password: string }): Observable<any> {
     return this.http.post<any>(this.LOGIN_URL, payload).pipe(
       tap(res => {
-        if (res?.token) {
+        if (res?.token && res?.user) {
+          // Store using RouteGuardService for consistency
+          this.routeGuardService.storeTokens(
+            res.token,           // accessToken
+            res.token,           // refreshToken (using same token)
+            res.user.id?.toString() || null,  // employee_id
+            res.user.role || 'employee'       // role
+          );
+
+          // Also keep backward compatibility
           localStorage.setItem('token', res.token);
         }
       })
@@ -39,6 +53,6 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.clear();
+    this.routeGuardService.logout();
   }
 }
