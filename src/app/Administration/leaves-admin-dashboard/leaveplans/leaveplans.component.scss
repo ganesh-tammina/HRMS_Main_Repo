@@ -47,5 +47,21 @@ h3{
 }
 .formscroll{
 max-height: calc(100vh - 42px);
-overflow: scroll;
+overflow-y: scroll;
 }
+.create-btn{
+  border-radius: 20px;
+  --background: transparent;
+  .button-native{
+    background: transparent;
+  }
+}
+.cancel-btn{
+  border-radius: 20px;
+  margin-right: 20px;
+  --box-shadow: none;
+}
+.leave-btns{
+  margin: 0 10px;
+}
+

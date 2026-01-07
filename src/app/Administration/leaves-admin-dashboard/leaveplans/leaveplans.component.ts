@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { LeaveTypeService } from 'src/app/services/leavetype.service';
@@ -31,7 +32,8 @@ export class LeaveplansComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private leavePlanService: LeavePlanService,
-    private leaveTypeService: LeaveTypeService
+    private leaveTypeService: LeaveTypeService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -130,5 +132,12 @@ export class LeaveplansComponent implements OnInit {
       },
       error: () => (this.listLoading = false),
     });
+  }
+
+    adminleave() {
+    this.router.navigate(['./admin-leaves']);
+  }
+    adminManagement() {
+    this.router.navigate(['./admin']);
   }
 }

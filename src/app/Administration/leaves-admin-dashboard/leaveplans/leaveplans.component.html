@@ -1,3 +1,8 @@
+<p class="page-header mb-8">
+   <a routerLink="/admin-leaves" (click)="adminManagement()">Admin Management ></a>
+   <a routerLink="/admin-leaves" (click)="adminleave()">Leaves Admin Dashboard ></a>
+   Leave Plan
+  </p>
 <ion-content class="ion-padding page-containerOn project-wrappers">
 <div class="top-bar">
   <div >
@@ -50,7 +55,7 @@
 
     <div formArrayName="allocations">
       <div *ngFor="let alloc of allocations.controls; let i = index" [formGroupName]="i"
-        style="border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin: 0 10px;">
+        style="border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin: 5px 10px;">
 
         <!-- ✅ LEAVE TYPE SELECT -->
         <ion-item class="leavetype-ipt">
@@ -82,13 +87,22 @@
       </div>
     </div>
 
-    <ion-button expand="block" fill="outline" (click)="addAllocation()">
+    <ion-button style="margin: 10px;" expand="block" fill="outline" (click)="addAllocation()">
       Add Allocation
     </ion-button>
 
-    <ion-button expand="block" color="primary" [disabled]="loading" (click)="submit()">
+    <div class="leave-btns">
+    <ion-button class="primary-outline-btn cancel-btn" (click)="cancelCreate()">
+    Cancel
+  </ion-button>
+
+    <ion-button  class="primary-btn create-btn" [disabled]="loading" (click)="submit()">
       {{ loading ? 'Saving...' : 'Create Leave Plan' }}
     </ion-button>
+    </div>
+
+
+
     </div>
   </form>
   </div>
