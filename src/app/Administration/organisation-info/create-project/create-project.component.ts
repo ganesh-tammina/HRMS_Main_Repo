@@ -26,12 +26,14 @@ export class CreateProjectComponent implements OnInit {
   loadingProjects = false;
 
   showCreateForm = false;
+  isEditMode = false;
+  selectedProjectId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
     private toastCtrl: ToastController
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -45,19 +47,23 @@ export class CreateProjectComponent implements OnInit {
       client_name: ['', Validators.required],
       start_date: ['', Validators.required],
       end_date: ['', Validators.required],
-      status: ['Active', Validators.required],
+      status: ['active', Validators.required],
       description: [''],
       project_manager_id: ['', Validators.required]
     });
   }
 
   openCreateForm(): void {
+    this.isEditMode = false;
+    this.selectedProjectId = null;
     this.showCreateForm = true;
   }
 
   cancelCreate(): void {
     this.showCreateForm = false;
-    this.projectForm.reset({ status: 'Active' });
+    this.isEditMode = false;
+    this.selectedProjectId = null;
+    this.projectForm.reset({ status: 'active' });
   }
 
   submit(): void {
@@ -68,16 +74,25 @@ export class CreateProjectComponent implements OnInit {
 
     this.submitting = true;
 
-    this.projectService.createProject(this.projectForm.value).subscribe({
+    const operation = this.isEditMode && this.selectedProjectId
+      ? this.projectService.updateProject(this.selectedProjectId, this.projectForm.value)
+      : this.projectService.createProject(this.projectForm.value);
+
+    const successMessage = this.isEditMode ? 'Project updated successfully' : 'Project created successfully';
+    const errorMessage = this.isEditMode ? 'Failed to update project' : 'Failed to create project';
+
+    operation.subscribe({
       next: () => {
-        this.showToast('Project created successfully', 'success');
+        this.showToast(successMessage, 'success');
         this.submitting = false;
         this.showCreateForm = false;
-        this.projectForm.reset({ status: 'Active' });
+        this.isEditMode = false;
+        this.selectedProjectId = null;
+        this.projectForm.reset({ status: 'active' });
         this.getProjects();
       },
       error: () => {
-        this.showToast('Failed to create project', 'danger');
+        this.showToast(errorMessage, 'danger');
         this.submitting = false;
       }
     });
@@ -87,8 +102,8 @@ export class CreateProjectComponent implements OnInit {
     this.loadingProjects = true;
 
     this.projectService.getProjects().subscribe({
-      next: (res) => {
-        this.projects = res || [];
+      next: (res: any) => {
+        this.projects = res.projects || res || [];
         this.loadingProjects = false;
       },
       error: () => {
@@ -96,6 +111,22 @@ export class CreateProjectComponent implements OnInit {
         this.loadingProjects = false;
       }
     });
+  }
+
+  openEditForm(project: Project): void {
+    this.isEditMode = true;
+    this.selectedProjectId = project.id || null;
+    this.projectForm.patchValue({
+      project_code: project.project_code,
+      project_name: project.project_name,
+      client_name: project.client_name,
+      start_date: project.start_date,
+      end_date: project.end_date,
+      status: project.status,
+      description: project.description,
+      project_manager_id: project.project_manager_id
+    });
+    this.showCreateForm = true;
   }
 
   private async showToast(message: string, color: 'success' | 'danger') {

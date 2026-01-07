@@ -20,12 +20,17 @@ export class LeaveplansComponent implements OnInit {
 
   loading = false;
   loadingPlans = false;
-  listLoading = false;
-    showCreateForm = false;
+  loadingPlanDetails = false;
+  showCreateForm = false;
 
   leavePlans: any[] = [];
-  filteredLeaveTypes:any[]=[];
-  leaveTypes:any[]=[]
+
+  // EDIT STATE
+  isEditMode = false;
+  editingPlanId: number | null = null;
+
+  // VIEW STATE
+  selectedPlan: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -39,17 +44,16 @@ export class LeaveplansComponent implements OnInit {
       leave_year_start_month: [1, Validators.required],
       leave_year_start_day: [1, Validators.required],
       description: [''],
+      is_active: [true],
+      allocations: this.fb.array([]),
     });
 
-    this.addAllocation();       // default row
-    this.loadLeavePlans();      // existing plans
+    this.addAllocation();
+    this.loadLeavePlans();
   }
-      openCreateForm(): void {
-    this.showCreateForm = true;
-  }
-    cancelCreate(): void {
-    this.showCreateForm = false;
-    this.leavePlanForm.reset({ status: 'Active' });
+
+  ionViewWillEnter(): void {
+    this.loadLeavePlans();
   }
 
   /* ================= FORM ARRAY ================= */
@@ -61,15 +65,78 @@ export class LeaveplansComponent implements OnInit {
   addAllocation(): void {
     this.allocations.push(
       this.fb.group({
-        leave_type_id: [null, Validators.required],
-        days_allocated: ['', [Validators.required, Validators.min(1)]],
+        leave_type_id: [1, Validators.required],
+        days_allocated: [1, Validators.required],
         prorate_on_joining: [false],
       })
     );
   }
 
-  removeAllocation(index: number): void {
-    this.allocations.removeAt(index);
+  /* ================= CREATE ================= */
+
+  openCreateForm(): void {
+    this.isEditMode = false;
+    this.editingPlanId = null;
+
+    this.leavePlanForm.reset({
+      leave_year_start_month: 1,
+      leave_year_start_day: 1,
+      is_active: true,
+    });
+
+    this.allocations.clear();
+    this.addAllocation();
+    this.showCreateForm = true;
+  }
+
+  /* ================= EDIT ================= */
+
+  editPlan(plan: any): void {
+    this.isEditMode = true;
+    this.editingPlanId = plan.id;
+    this.loading = true;
+
+    // Fetch full plan details including allocations
+    this.leavePlanService.getLeavePlanById(plan.id).subscribe({
+      next: (fullPlan) => {
+        this.leavePlanForm.patchValue({
+          name: fullPlan.name,
+          leave_year_start_month: fullPlan.leave_year_start_month,
+          leave_year_start_day: fullPlan.leave_year_start_day,
+          description: fullPlan.description,
+          is_active: fullPlan.is_active !== undefined ? fullPlan.is_active : true,
+        });
+
+        this.allocations.clear();
+
+        if (fullPlan.allocations?.length) {
+          fullPlan.allocations.forEach((a: any) => {
+            this.allocations.push(
+              this.fb.group({
+                leave_type_id: a.leave_type_id,
+                days_allocated: a.days_allocated,
+                prorate_on_joining: a.prorate_on_joining || false,
+              })
+            );
+          });
+        } else {
+          this.addAllocation();
+        }
+
+        this.loading = false;
+        this.showCreateForm = true;
+      },
+      error: () => {
+        this.loading = false;
+        alert('Failed to load plan details for editing');
+      }
+    });
+  }
+
+  cancelCreate(): void {
+    this.showCreateForm = false;
+    this.isEditMode = false;
+    this.editingPlanId = null;
   }
 
   /* ================= SUBMIT ================= */
@@ -80,45 +147,72 @@ export class LeaveplansComponent implements OnInit {
       return;
     }
 
-    const payload = this.leavePlanForm.value;
-    console.log('Leave Plan Payload 👉', payload);
+    if (this.allocations.length === 0) {
+      this.addAllocation();
+    }
 
+    const payload = this.leavePlanForm.value;
     this.loading = true;
 
-    this.leavePlanService.createLeavePlan(payload).subscribe({
-      next: () => {
+    const request$ = this.isEditMode
+      ? this.leavePlanService.updateLeavePlan(this.editingPlanId!, payload)
+      : this.leavePlanService.createLeavePlan(payload);
+
+    request$.subscribe({
+      next: (response) => {
         this.loading = false;
-        this.leavePlanForm.reset({
-          leave_year_start_month: 1,
-          leave_year_start_day: 1,
-        });
-        this.loadLeavePlans();
         this.showCreateForm = false;
+        this.isEditMode = false;
+        this.editingPlanId = null;
+        alert(this.isEditMode ? 'Leave plan updated successfully!' : 'Leave plan created successfully!');
+        this.loadLeavePlans();
       },
-      error: (err) => {
-        console.error('Create error:', err);
+      error: (error) => {
+        console.error('Error submitting leave plan:', error);
         this.loading = false;
+        alert('Failed to ' + (this.isEditMode ? 'update' : 'create') + ' leave plan: ' + (error.error?.error || error.message || 'Unknown error'));
       },
     });
   }
 
-  /* ================= LOAD PLANS ================= */
+  /* ================= VIEW SINGLE PLAN ================= */
+
+  viewPlanDetails(planId: number): void {
+    this.loadingPlanDetails = true;
+
+    this.leavePlanService.getLeavePlanById(planId).subscribe({
+      next: (res) => {
+        this.selectedPlan = res;
+        this.loadingPlanDetails = false;
+      },
+      error: () => (this.loadingPlanDetails = false),
+    });
+  }
+
+  /* ================= DELETE ================= */
+
+  deletePlan(planId: number): void {
+    if (!confirm('Are you sure you want to delete this leave plan?')) return;
+
+    this.leavePlanService.deleteLeavePlan(planId).subscribe({
+      next: () => this.loadLeavePlans(),
+    });
+  }
+
+  /* ================= LOAD ================= */
 
   loadLeavePlans(): void {
     this.loadingPlans = true;
     this.leavePlanService.getLeavePlans().subscribe({
       next: (res) => {
-        this.leavePlans = res;
+        this.leavePlans = res || [];
         this.loadingPlans = false;
       },
       error: () => (this.loadingPlans = false),
     });
   }
 
-    adminleave() {
+  adminleave(): void {
     this.router.navigate(['./admin-leaves']);
-  }
-    adminManagement() {
-    this.router.navigate(['./admin']);
   }
 }

@@ -13,7 +13,7 @@ export interface Project {
   client_name: string;
   start_date: string;
   end_date: string;
-  status: 'Active' | 'OnHold' | 'Completed';
+  status: 'active' | 'on_hold' | 'completed' | 'cancelled';
   description?: string;
   project_manager_id: number;
 }
@@ -75,6 +75,15 @@ export class ProjectService {
   ========================= */
   getProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(this.BASE_URL, {
+      headers: this.getHeaders()
+    });
+  }
+
+  /* =========================
+     UPDATE PROJECT
+  ========================= */
+  updateProject(id: number, payload: Partial<Project>): Observable<any> {
+    return this.http.put(`${this.BASE_URL}/${id}`, payload, {
       headers: this.getHeaders()
     });
   }
