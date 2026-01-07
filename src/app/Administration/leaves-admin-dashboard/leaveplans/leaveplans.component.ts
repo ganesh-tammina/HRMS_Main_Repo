@@ -36,7 +36,7 @@ export class LeaveplansComponent implements OnInit {
     private fb: FormBuilder,
     private leavePlanService: LeavePlanService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.leavePlanForm = this.fb.group({
