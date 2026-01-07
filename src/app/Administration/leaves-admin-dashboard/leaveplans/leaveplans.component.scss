@@ -6,17 +6,23 @@ ion-item {
   --border-color: transparent;
 }
 .leavetype-ipt{
+  margin-bottom: 10px;
    ion-input {
-    padding-top: 10px !important;
-    min-height: 35px;
+    padding-top: 0px !important;
+    min-height: 40px;
   }
   ion-textarea{
-    padding-top: 10px !important; 
+    padding-top: 0px !important; 
   }
   ion-select {
     padding-top: 0 !important;
-    min-height: 35px;
+    min-height: 40px;
     margin-top: 5px;
+  }
+  ion-checkbox{
+    position: relative;
+    top: 3px;
+    right: 3px;
   }
 }
 .top-bar {
@@ -24,6 +30,9 @@ ion-item {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  ion-title{
+    font-weight: bold;
+  }
 }
 .leave-head{
   ion-card-header{
@@ -38,16 +47,12 @@ ion-item {
   justify-content: space-between;
 }
 .side-custom-popup{
-    --width: 435px;
+    --width: 385px;
 }
 h3{
   font-weight: bold;
   padding:10px;
   margin: 0;
-}
-.formscroll{
-max-height: calc(100vh - 42px);
-// overflow-y: scroll;
 }
 .create-btn{
   border-radius: 20px;
@@ -64,4 +69,34 @@ max-height: calc(100vh - 42px);
 .leave-btns{
   margin: 0 10px;
 }
+.allocation-item{
+  margin-bottom: 5px;
+  ion-card{
+    margin: 0;
+    border: 1px solid #ccc;
+  }
+}
+.leave-planlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
 
+  ion-card {
+    flex: 0 0 calc(50% - 16px); // 2 cards per row
+    max-width: calc(50% - 16px);
+    margin: 0;
+  }
+  div{
+    display: flex;
+    justify-content: end;
+  }
+}
+.plandetails{
+  margin-top: 5%;
+  h4{
+    font-weight: bold;
+  }
+  ion-card-title{
+    font-weight: bold;
+  }
+}
