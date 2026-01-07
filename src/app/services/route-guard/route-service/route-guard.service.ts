@@ -1,15 +1,22 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+
 @Injectable({
   providedIn: 'root',
 })
 export class RouteGuardService {
+
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly ROLE_KEY = 'role';
   private readonly EMPLOYEE_ID_KEY = 'employee_id';
-  constructor(private http: HttpClient, private router: Router) {}
+
+  constructor(private http: HttpClient, private router: Router) { }
+
+  /* ===============================
+     STORE LOGIN DATA
+  =============================== */
   storeTokens(
     accessToken: string,
     refreshToken: string | null,
@@ -17,8 +24,9 @@ export class RouteGuardService {
     role: string
   ): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(this.ROLE_KEY, role);
+    localStorage.setItem(this.ROLE_KEY, role.toLowerCase()); // ✅ IMPORTANT
     localStorage.setItem(this.EMPLOYEE_ID_KEY, employee_id!);
+
     if (refreshToken) {
       localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
     }
@@ -26,44 +34,32 @@ export class RouteGuardService {
 
   login(token: string, role: string): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
-    localStorage.setItem(this.ROLE_KEY, role);
+    localStorage.setItem(this.ROLE_KEY, role.toLowerCase()); // ✅ IMPORTANT
   }
 
+  /* ===============================
+     LOGOUT
+  =============================== */
   logout(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.EMPLOYEE_ID_KEY);
-    localStorage.removeItem('login_time'); // Clear login time on logout
-    localStorage.removeItem('uploadedImageUrl'); // Clear profile image
-    
-    // Clear all attendance records for all users
+    localStorage.removeItem('login_time');
+    localStorage.removeItem('uploadedImageUrl');
+
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith('attendance_')) {
         localStorage.removeItem(key);
       }
     });
-    
-    this.router.navigate(['/']);
+
+    this.router.navigate(['/login']);
   }
 
-  redirectBasedOnRole(role: string): void {
-    switch (role.toUpperCase()) {
-      case 'ADMIN':
-        this.router.navigate(['/admin']);
-        break;
-      case 'USER':
-        this.router.navigate(['/Home']);
-        break;
-      case 'HR':
-        this.router.navigate(['/Home']);
-        break;
-      default:
-        console.warn('Unknown role:', role);
-        this.router.navigate(['/login']);
-    }
-  }
-
+  /* ===============================
+     HELPERS
+  =============================== */
   get token(): string | null {
     return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }

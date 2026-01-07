@@ -45,6 +45,7 @@ export class AppComponent implements OnInit {
   allEmployees: any[] = [];
   currentUrl: any; //get current page
   isRefreshing = false;
+  userRole: string | null = null;
 
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(
@@ -79,6 +80,11 @@ export class AppComponent implements OnInit {
           event.urlAfterRedirects.includes('/candidate_status');
         console.log('this.iscandiateofferPage', this.iscandiateofferPage);
 
+        // Update user role on navigation to ensure menu visibility is correct
+        this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+        const role = this.userRole || '';
+        this.isAdmin = (role === 'admin' || role === 'hr');
+
         // Quick refresh effect for main navigation pages after login
         this.handlePageRefresh(event.urlAfterRedirects);
 
@@ -99,41 +105,37 @@ export class AppComponent implements OnInit {
   toggleDropdown() {
     this.showCategories = !this.showCategories;
   }
+
   ngOnInit(): void {
+    this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
     this.isAdmin = false;
 
-    const role = this.routeGaurdService.userRole?.trim().toUpperCase() || '';
-    if (role === 'ADMIN' || role === 'HR') {
+    const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
+    if (role === 'admin' || role === 'hr') {
       this.isAdmin = true;
     } else {
       this.isAdmin = false
     }
 
-
-    // const role = this.routeGaurdService.userRole;
-    // if (this.routeGaurdService.userRole) {
-    //   this.routeGaurdService.userRole === 'ADMIN' || 'HR'
-    //     ? (this.isAdmin = true)
-    //     : (this.isAdmin = false);
-    // }
     this.service.getAnnouncements().subscribe(r => console.log(r));
   }
 
-  // ionViewDidEnter() {
-  //   const role = this.routeGaurdService.userRole?.trim().toUpperCase() || '';
-  //   if (role === 'ADMIN' || role === 'HR') {
-  //     this.isAdmin = true;
-  //   } else {
-  //     this.isAdmin = false
-  //   }
-  // }
+  // Role checking helper methods
+  isAdminOrHR(): boolean {
+    return this.userRole === 'admin' || this.userRole === 'hr';
+  }
 
-  // preonboard() {
-  //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-  //     this.router.navigate(['/pre_onboarding']);
-  //   });
-  //   window.location.href = '/pre_onboarding';
-  // }
+  isManager(): boolean {
+    return this.userRole === 'manager';
+  }
+
+  isManagerOrAbove(): boolean {
+    return this.userRole === 'manager' || this.userRole === 'admin' || this.userRole === 'hr';
+  }
+
+  isEmployee(): boolean {
+    return this.userRole === 'employee';
+  }
   preonboard() {
     //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
     this.router.navigate(['/pre-onboarding-cards']);

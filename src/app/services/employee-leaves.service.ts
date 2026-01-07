@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class EmployeeLeavesService {
-private env = environment;
+  private env = environment;
   private readonly API_URL = `http://${this.env.apiURL}/api/leaves`;
 
   constructor(private http: HttpClient) { }
