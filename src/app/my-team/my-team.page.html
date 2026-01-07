@@ -1,6 +1,11 @@
 <ion-header>
    <ion-toolbar>
       <ion-title>My Team</ion-title>
+      <ion-buttons slot="end">
+         <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length">
+            <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
+         </ion-button>
+      </ion-buttons>
    </ion-toolbar>
 </ion-header>
 
@@ -12,11 +17,188 @@
       <p>Loading team members...</p>
    </div>
 
-   <!-- 🧑‍🤝‍🧑 Team List -->
-   <ion-list class="team-list-view" *ngIf="!loading && teamMembers.length">
+   <!-- 📅 Attendance View -->
+   <div *ngIf="!loading && showAttendance && teamMembers.length">
 
-      <!-- DEBUG (keep for now) -->
-      <!-- {{ teamMembers | json }} -->
+      <!-- Date Picker -->
+      <ion-card class="date-card">
+         <ion-card-header>
+            <ion-card-title>Attendance Report</ion-card-title>
+         </ion-card-header>
+         <ion-card-content>
+            <ion-item lines="none">
+               <ion-label>Select Date</ion-label>
+               <ion-datetime-button datetime="attendance-date"></ion-datetime-button>
+            </ion-item>
+            
+            <ion-modal [keepContentsMounted]="true">
+               <ng-template>
+                  <ion-datetime
+                     id="attendance-date"
+                     presentation="date"
+                     [value]="selectedDate"
+                     (ionChange)="onDateChange($event)"
+                  ></ion-datetime>
+               </ng-template>
+            </ion-modal>
+         </ion-card-content>
+      </ion-card>
+
+      <!-- Filter Chips -->
+      <div class="filter-chips">
+         <ion-chip 
+            [color]="attendanceFilter === 'all' ? 'primary' : 'light'"
+            (click)="setAttendanceFilter('all')">
+            <ion-icon name="people-outline"></ion-icon>
+            <ion-label>All ({{ attendanceSummary?.total_team || 0 }})</ion-label>
+         </ion-chip>
+         
+         <ion-chip 
+            [color]="attendanceFilter === 'present' ? 'success' : 'light'"
+            (click)="setAttendanceFilter('present')">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <ion-label>Present ({{ attendanceSummary?.present || 0 }})</ion-label>
+         </ion-chip>
+         
+         <ion-chip 
+            [color]="attendanceFilter === 'absent' ? 'danger' : 'light'"
+            (click)="setAttendanceFilter('absent')">
+            <ion-icon name="close-circle"></ion-icon>
+            <ion-label>Absent ({{ attendanceSummary?.absent || 0 }})</ion-label>
+         </ion-chip>
+         
+         <ion-chip 
+            [color]="attendanceFilter === 'on_leave' ? 'warning' : 'light'"
+            (click)="setAttendanceFilter('on_leave')">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <ion-label>On Leave ({{ attendanceSummary?.on_leave || 0 }})</ion-label>
+         </ion-chip>
+      </div>
+
+      <!-- DEBUG INFO - Remove after testing -->
+      <ion-card *ngIf="filteredMembers.length === 0" color="warning">
+         <ion-card-content>
+            <strong>Debug Info:</strong><br>
+            Total team members: {{ teamMembers.length }}<br>
+            Filtered members: {{ filteredMembers.length }}<br>
+            Current filter: {{ attendanceFilter }}<br>
+            Attendance data count: {{ attendanceData?.length || 0 }}<br>
+         </ion-card-content>
+      </ion-card>
+
+      <!-- Summary Cards -->
+      <div class="summary-cards" *ngIf="attendanceSummary">
+         <ion-card class="summary-card">
+            <ion-card-content>
+               <div class="summary-item">
+                  <ion-icon name="people" color="primary"></ion-icon>
+                  <div class="summary-text">
+                     <p class="summary-label">Total Team</p>
+                     <h2 class="summary-value">{{ attendanceSummary.total_team }}</h2>
+                  </div>
+               </div>
+            </ion-card-content>
+         </ion-card>
+
+         <ion-card class="summary-card">
+            <ion-card-content>
+               <div class="summary-item">
+                  <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                  <div class="summary-text">
+                     <p class="summary-label">Present</p>
+                     <h2 class="summary-value">{{ attendanceSummary.present }}</h2>
+                  </div>
+               </div>
+            </ion-card-content>
+         </ion-card>
+
+         <ion-card class="summary-card">
+            <ion-card-content>
+               <div class="summary-item">
+                  <ion-icon name="close-circle" color="danger"></ion-icon>
+                  <div class="summary-text">
+                     <p class="summary-label">Absent</p>
+                     <h2 class="summary-value">{{ attendanceSummary.absent }}</h2>
+                  </div>
+               </div>
+            </ion-card-content>
+         </ion-card>
+
+         <ion-card class="summary-card">
+            <ion-card-content>
+               <div class="summary-item">
+                  <ion-icon name="calendar-outline" color="warning"></ion-icon>
+                  <div class="summary-text">
+                     <p class="summary-label">On Leave</p>
+                     <h2 class="summary-value">{{ attendanceSummary.on_leave }}</h2>
+                  </div>
+               </div>
+            </ion-card-content>
+         </ion-card>
+      </div>
+
+      <!-- Team Attendance List -->
+      <ion-list class="attendance-list">
+         <ion-item *ngFor="let member of filteredMembers" lines="full" class="attendance-item">
+            <ion-avatar slot="start">
+               <img [src]="getProfileImage(member)" />
+            </ion-avatar>
+
+            <ion-label>
+               <h2>{{ member.FullName || member.full_name || member.attendance?.employee_name || 'N/A' }}</h2>
+               <p>{{ member.WorkEmail || member.work_email || member.attendance?.email || '—' }}</p>
+               <p class="sub-text">
+                  <ion-icon name="briefcase-outline"></ion-icon>
+                  {{ member.designation || member.designation_name || member.attendance?.designation || '—' }}
+               </p>
+               <p class="sub-text">
+                  <ion-icon name="business-outline"></ion-icon>
+                  {{ member.department || member.department_name || member.attendance?.department || '—' }}
+               </p>
+
+               <!-- Attendance Details -->
+               <div class="attendance-details" *ngIf="member.attendance">
+                  <div class="attendance-info" *ngIf="member.attendance.status === 'present'">
+                     <ion-chip color="light" class="info-chip">
+                        <ion-icon name="log-in-outline"></ion-icon>
+                        <ion-label>In: {{ formatTime(member.attendance.attendance?.check_in) }}</ion-label>
+                     </ion-chip>
+                     <ion-chip color="light" class="info-chip" *ngIf="member.attendance.attendance?.check_out">
+                        <ion-icon name="log-out-outline"></ion-icon>
+                        <ion-label>Out: {{ formatTime(member.attendance.attendance?.check_out) }}</ion-label>
+                     </ion-chip>
+                     <ion-chip color="primary" class="info-chip">
+                        <ion-icon name="time-outline"></ion-icon>
+                        <ion-label>{{ formatHours(member.attendance.attendance?.total_hours) }}</ion-label>
+                     </ion-chip>
+                     <ion-chip color="tertiary" class="info-chip" *ngIf="member.attendance.attendance?.work_mode">
+                        <ion-icon name="location-outline"></ion-icon>
+                        <ion-label>{{ member.attendance.attendance?.work_mode }}</ion-label>
+                     </ion-chip>
+                  </div>
+
+                  <div class="attendance-info" *ngIf="member.attendance.status === 'on_leave'">
+                     <ion-chip color="warning" class="info-chip">
+                        <ion-icon name="information-circle-outline"></ion-icon>
+                        <ion-label>{{ member.attendance.attendance?.leave_type || 'On Leave' }}</ion-label>
+                     </ion-chip>
+                  </div>
+               </div>
+            </ion-label>
+
+            <ion-badge 
+               slot="end" 
+               [color]="getAttendanceBadgeColor(getAttendanceStatus(member))"
+               class="status-badge">
+               <ion-icon [name]="getAttendanceIcon(getAttendanceStatus(member))"></ion-icon>
+               {{ getAttendanceStatus(member) | titlecase }}
+            </ion-badge>
+         </ion-item>
+      </ion-list>
+   </div>
+
+   <!-- 🧑‍🤝‍🧑 Regular Team List -->
+   <ion-list class="team-list-view" *ngIf="!loading && !showAttendance && teamMembers.length">
 
       <ion-item *ngFor="let member of teamMembers" lines="full">
 

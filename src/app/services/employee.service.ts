@@ -16,6 +16,7 @@ export class EmployeeService {
   private readonly uploadProfileImageUrl = `${this.API_URL}/profile/image`;
 
   private readonly myTeamEndpoint = `${this.API_URL}/my-team/list`;
+  private readonly ATTENDANCE_API_URL = `http://${this.env.apiURL}/api/attendance`;
 
   private currentEmployee: any | null = null;
 
@@ -128,5 +129,30 @@ export class EmployeeService {
   }
   getCurrentEmployeeId(): number | null {
     return this.currentEmployeeSubject.value;
+  }
+
+  /* ================= ✅ TEAM ATTENDANCE REPORT ================= */
+
+  /**
+   * Get team attendance report for a specific date
+   * @param date Date in YYYY-MM-DD format (optional, defaults to today)
+   */
+  getTeamAttendanceReport(date?: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    let params = new HttpParams();
+    
+    if (date) {
+      params = params.set('date', date);
+    }
+
+    return this.http.get<any>(
+      `${this.ATTENDANCE_API_URL}/report/team`,
+      {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   }
 }
