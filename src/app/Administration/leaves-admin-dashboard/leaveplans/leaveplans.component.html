@@ -1,13 +1,14 @@
-<p class="page-header mb-8">
-  <a routerLink="/admin-leaves" (click)="adminleave()">Admin Management ></a>
-  <a routerLink="/admin-leaves" (click)="adminleave()">Leaves Admin Dashboard ></a>
-</p>
-
 <ion-content class="ion-padding page-containerOn project-wrappers">
+
+   <p class="page-header mb-8">
+   <a routerLink="/admin" (click)="adminManagement()">Admin Management ></a>
+   <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard ></a>
+   Manage Leave Plans
+  </p>
 
   <!-- TOP BAR -->
   <div class="top-bar">
-    <ion-title>Manage Leave Plan</ion-title>
+    <ion-title>Leave Plans</ion-title>
 
     <ion-button shape="round" color="primary" (click)="openCreateForm()" type="button">
       <ion-icon name="add" slot="start"></ion-icon>
@@ -33,24 +34,26 @@
         <form [formGroup]="leavePlanForm" (ngSubmit)="submit()">
 
           <div class="form-grid">
-            <div class="full">
+            <div class="full leavetype-ipt">
               <ion-label>Plan Name *</ion-label>
-              <ion-input formControlName="name" placeholder="Enter plan name"></ion-input>
+              <ion-input formControlName="name" fill="outline" placeholder="Enter plan name"></ion-input>
             </div>
 
-            <div>
+            <div class="leave-year">
+            <div class="leavetype-ipt">
               <ion-label>Leave Year Start Month *</ion-label>
-              <ion-input type="number" formControlName="leave_year_start_month" min="1" max="12"></ion-input>
+              <ion-input type="number" fill="outline" formControlName="leave_year_start_month" min="1" max="12"></ion-input>
             </div>
 
-            <div>
+            <div class="leavetype-ipt">
               <ion-label>Leave Year Start Day *</ion-label>
-              <ion-input type="number" formControlName="leave_year_start_day" min="1" max="31"></ion-input>
+              <ion-input type="number" fill="outline" formControlName="leave_year_start_day" min="1" max="31"></ion-input>
+            </div>
             </div>
 
-            <div class="full">
+            <div class="full leavetype-ipt">
               <ion-label>Description</ion-label>
-              <ion-textarea rows="3" formControlName="description" placeholder="Enter plan description"></ion-textarea>
+              <ion-textarea rows="3" fill="outline" formControlName="description" placeholder="Enter plan description"></ion-textarea>
             </div>
 
             <!-- ALLOCATIONS -->
@@ -60,22 +63,22 @@
               <div formArrayName="allocations">
                 <div *ngFor="let allocation of allocations.controls; let i = index" [formGroupName]="i"
                   class="allocation-item">
-                  <ion-card>
+                  <ion-card class="allocation-card">
                     <ion-card-content>
                       <div class="form-grid">
-                        <div>
+                        <div class="leavetype-ipt">
                           <ion-label>Leave Type ID *</ion-label>
-                          <ion-input type="number" formControlName="leave_type_id" min="1"></ion-input>
+                          <ion-input fill="outline" type="number" formControlName="leave_type_id" min="1"></ion-input>
                         </div>
 
-                        <div>
+                        <div class="leavetype-ipt">
                           <ion-label>Days Allocated *</ion-label>
-                          <ion-input type="number" formControlName="days_allocated" min="0"></ion-input>
+                          <ion-input fill="outline" type="number" formControlName="days_allocated" min="0"></ion-input>
                         </div>
-
-                        <div>
+                        <div class="leave-year">
+                        <div class="leavetype-ipt">
+                           <ion-checkbox formControlName="prorate_on_joining"></ion-checkbox>
                           <ion-label>Prorate on Joining</ion-label>
-                          <ion-checkbox formControlName="prorate_on_joining"></ion-checkbox>
                         </div>
 
                         <div>
@@ -84,6 +87,9 @@
                             <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                           </ion-button>
                         </div>
+                        </div>
+
+
                       </div>
                     </ion-card-content>
                   </ion-card>
@@ -97,12 +103,12 @@
             </div>
           </div>
 
-          <div class="row-right">
-            <ion-button class="primary-outline-btn" type="button" (click)="cancelCreate()">
+          <div class="row-right" style="margin-top: 6px;">
+            <ion-button class="primary-outline-btn cancel-btn" type="button" (click)="cancelCreate()">
               Cancel
             </ion-button>
 
-            <ion-button type="submit" class="primary-btn" [disabled]="loading">
+            <ion-button type="submit" class="primary-btn create-btn" [disabled]="loading">
               {{ loading ? (isEditMode ? 'Updating…' : 'Creating…') : (isEditMode ? 'Update Plan' : 'Create Plan') }}
             </ion-button>
           </div>
@@ -113,7 +119,8 @@
 
   <!-- LIST -->
   <ion-spinner *ngIf="loadingPlans"></ion-spinner>
-
+  
+<div class="leave-planlist">
   <ion-card *ngFor="let plan of leavePlans">
     <ion-card-header>
       <ion-card-title>{{ plan.name }}</ion-card-title>
@@ -124,23 +131,28 @@
 
     <ion-card-content>
       <p>{{ plan.description }}</p>
-
-      <ion-button size="small" color="medium" type="button" (click)="viewPlanDetails(plan.id)">
-        View
+      <div>
+      <ion-button size="small" fill="outline" color="medium" type="button" (click)="viewPlanDetails(plan.id)">
+        <ion-icon name="eye-outline"></ion-icon>
       </ion-button>
 
-      <ion-button size="small" color="primary" type="button" (click)="editPlan(plan)">
-        Edit
+      <ion-button size="small" fill="outline"  color="primary" type="button" (click)="editPlan(plan)">
+         <ion-icon name="create-outline"></ion-icon>
       </ion-button>
 
-      <ion-button size="small" color="danger" type="button" (click)="deletePlan(plan.id)">
-        Delete
+      <ion-button size="small" fill="outline"  color="danger" type="button" (click)="deletePlan(plan.id)">
+        <ion-icon name="trash-outline"></ion-icon>
       </ion-button>
+      </div>
+      
     </ion-card-content>
   </ion-card>
+</div>
 
   <!-- SINGLE PLAN DETAILS -->
-  <ion-card *ngIf="selectedPlan">
+   <div class="plandetails" *ngIf="selectedPlan">
+       <h4>Plan Details</h4>
+         <ion-card>
     <ion-card-header>
       <ion-card-title>{{ selectedPlan.name }} (Details)</ion-card-title>
       <ion-card-subtitle>
@@ -171,5 +183,8 @@
       </p>
     </ion-card-content>
   </ion-card>
+   </div>
+
+
 
 </ion-content>

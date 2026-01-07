@@ -1,3 +1,9 @@
+ion-content{
+p{
+    margin-top: 0;  
+    margin-bottom: 11px;
+}
+}
 .page-title{
     color: #333333;
     font-weight: bold;
@@ -5,7 +11,7 @@
 }
 .sub-text{
     color: #707070;
-    margin: 5px 15px;
+    margin: 0px 15px;
 }
 .leaves-config{
         margin-top: 15px;
@@ -14,7 +20,7 @@
     background: #122E44;
     margin: 0;
     border-radius: 12px;
-    height: 110px;
+    height: 105px;
     ion-card-title{
         font-size: 30px;
         color: #fff;

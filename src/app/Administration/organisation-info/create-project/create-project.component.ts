@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 import { ProjectService, Project } from 'src/app/services/project.service';
 
@@ -32,7 +33,8 @@ export class CreateProjectComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -127,6 +129,12 @@ export class CreateProjectComponent implements OnInit {
       project_manager_id: project.project_manager_id
     });
     this.showCreateForm = true;
+  }
+
+  navigateToDetails(project: Project): void {
+    if (project.id) {
+      this.router.navigate(['/project-details', project.id]);
+    }
   }
 
   private async showToast(message: string, color: 'success' | 'danger') {

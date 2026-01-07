@@ -7,8 +7,8 @@ import { environment } from 'src/environments/environment'
   providedIn: 'root',
 })
 export class TimesheetService {
-  
-  private env = environment; 
+
+  private env = environment;
   private baseUrl = `http://${this.env.apiURL}/api/timesheets`;
 
   constructor(private http: HttpClient) { }
@@ -18,6 +18,15 @@ export class TimesheetService {
   submitRegularTimesheet(payload: any): Observable<any> {
     return this.http.post(
       `${this.baseUrl}/regular/submit`,
+      payload
+    );
+  }
+
+  /* ================= SUBMIT PROJECT TIMESHEET ================= */
+
+  submitProjectTimesheet(payload: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/project/submit`,
       payload
     );
   }
@@ -50,9 +59,47 @@ export class TimesheetService {
   downloadTimesheetExcel(timesheetId: number): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/regular/${timesheetId}/download`,
-      {
-        responseType: 'blob'
-      }
+      { responseType: 'blob' }
     );
   }
+
+  /* ================= GET MY PROJECT TIMESHEETS ================= */
+
+  getMyProjectTimesheets(filters: {
+    start_date?: string;
+    end_date?: string;
+    month?: number;
+    year?: number;
+    project_id?: number;
+  }): Observable<any> {
+
+    let params = new HttpParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params = params.set(key, value.toString());
+      }
+    });
+
+    return this.http.get(
+      `${this.baseUrl}/project/my-timesheets`,
+      { params }
+    );
+  }
+
+  /* ================= ASSIGNMENT STATUS ================= */
+
+  getAssignmentStatus(): Observable<{
+    has_project: boolean;
+    timesheet_type: 'regular' | 'project';
+  }> {
+    return this.http.get<{
+      has_project: boolean;
+      timesheet_type: 'regular' | 'project';
+    }>(
+      `${this.baseUrl}/assignment-status`
+    );
+  }
+
+
 }
