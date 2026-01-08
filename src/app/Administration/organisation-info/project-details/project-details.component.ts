@@ -73,7 +73,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     this.initForms();
     this.loadAll();
     this.loadEmployees();
-    
+
     // Refresh attendance status every 2 minutes
     this.statusRefreshInterval = setInterval(() => {
       this.loadEmployeeAttendanceStatus();
@@ -123,7 +123,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           this.project = res;
         }
         this.loading = false;
-        
+
         // Reload shifts and assignments separately to ensure data is fresh
         this.loadShifts();
         this.loadAssignments();
@@ -298,11 +298,11 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   /* ================= ATTENDANCE STATUS ================= */
   loadEmployeeAttendanceStatus() {
     if (!this.assignments || this.assignments.length === 0) return;
-    
+
     const employeeIds = this.assignments
       .map(a => a.employee_id)
       .filter(id => id != null);
-    
+
     if (employeeIds.length === 0) return;
 
     const token = localStorage.getItem('access_token');

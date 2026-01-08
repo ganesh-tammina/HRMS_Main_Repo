@@ -51,7 +51,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
     console.log('⏰ Setting up 30-second auto-refresh for attendance status');
     this.subscribeToProfileImageUpdates();
     this.loadTeamData();
-    
+
     // Refresh attendance status every 30 seconds for real-time updates
     this.statusRefreshInterval = setInterval(() => {
       if (!this.showAttendance && this.teamMembers.length > 0) {
@@ -64,7 +64,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     if (this.statusRefreshInterval) {
       clearInterval(this.statusRefreshInterval);
     }
@@ -312,19 +312,19 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
   loadEmployeeAttendanceStatus() {
     console.log('📡 loadEmployeeAttendanceStatus() called');
-    
+
     if (!this.teamMembers || this.teamMembers.length === 0) {
       console.log('⚠️ No team members to check status for');
       return;
     }
-    
+
     const employeeIds = this.teamMembers
       .map(m => m.id)
       .filter(id => id != null);
-    
+
     console.log('👥 Team Members:', this.teamMembers.length);
     console.log('🆔 Employee IDs to check:', employeeIds);
-    
+
     if (employeeIds.length === 0) {
       console.log('⚠️ No valid employee IDs found');
       return;
@@ -346,11 +346,11 @@ export class MyTeamPage implements OnInit, OnDestroy {
         console.log('📅 Response Date:', response.date);
         console.log('✅ Response Success:', response.success);
         console.log('📋 Number of statuses received:', response.statuses?.length || 0);
-        
+
         if (response.success && response.statuses) {
           this.employeeStatusMap = {};
           console.log('🔄 Building employee status map...');
-          
+
           response.statuses.forEach((s: any, index: number) => {
             console.log(`\n--- Employee ${index + 1}/${response.statuses.length} ---`);
             console.log(`  Employee ID: ${s.employee_id}`);
@@ -359,14 +359,14 @@ export class MyTeamPage implements OnInit, OnDestroy {
             console.log(`  Work Mode: ${s.work_mode}`);
             console.log(`  Last Punch Time: ${s.last_punch_time}`);
             console.log(`  Attendance Status: ${s.attendance_status}`);
-            
+
             this.employeeStatusMap[s.employee_id] = {
               status: s.status,
               work_mode: s.work_mode,
               last_punch_time: s.last_punch_time
             };
           });
-          
+
           console.log('\n✅ Final Employee Status Map:', JSON.stringify(this.employeeStatusMap, null, 2));
           console.log('📊 Total employees in map:', Object.keys(this.employeeStatusMap).length);
         } else {
@@ -391,7 +391,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
   formatPunchTime(timestamp: string | null): string {
     if (!timestamp) return '—';
-    
+
     try {
       const date = new Date(timestamp);
       return date.toLocaleString('en-US', {
@@ -413,7 +413,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
     console.log('📅 Current Date/Time:', new Date().toISOString());
     console.log('👥 Team Members Count:', this.teamMembers.length);
     console.log('🗺️ Current Status Map:', this.employeeStatusMap);
-    
+
     if (this.teamMembers.length > 0) {
       this.loadEmployeeAttendanceStatus();
     } else {

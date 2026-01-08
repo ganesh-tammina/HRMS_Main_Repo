@@ -5,7 +5,8 @@
          My Team
       </ion-title>
       <ion-buttons slot="end" class="header-buttons">
-         <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance" class="header-action-btn">
+         <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
+            class="header-action-btn">
             <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
          </ion-button>
          <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
@@ -203,22 +204,23 @@
    <div class="team-grid" *ngIf="!loading && !showAttendance && teamMembers.length">
 
       <ion-card class="team-card" *ngFor="let member of teamMembers">
-         
+
          <!-- Gradient Header -->
          <div class="card-gradient-header"></div>
-         
+
          <ion-card-content>
-            
+
             <!-- Avatar Section -->
             <div class="avatar-section">
                <div class="avatar-wrapper">
                   <div class="avatar-border">
                      <img [src]="getProfileImage(member)" class="avatar" />
                   </div>
-                  <div *ngIf="member.id" class="status-badge" 
-                       [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
-                       [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
-                     <ion-icon [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark' : 'close'"></ion-icon>
+                  <div *ngIf="member.id" class="status-badge"
+                     [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
+                     [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
+                     <ion-icon
+                        [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark' : 'close'"></ion-icon>
                   </div>
                </div>
             </div>
@@ -247,16 +249,19 @@
             </div>
 
             <!-- Status Card -->
-            <div *ngIf="member.id" class="status-card" 
-                 [class.status-active]="getEmployeePunchStatus(member.id).status === 'in'"
-                 [class.status-inactive]="getEmployeePunchStatus(member.id).status === 'out'">
+            <div *ngIf="member.id" class="status-card"
+               [class.status-active]="getEmployeePunchStatus(member.id).status === 'in'"
+               [class.status-inactive]="getEmployeePunchStatus(member.id).status === 'out'">
                <div class="status-content">
                   <div class="status-badge-large">
-                     <ion-icon [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+                     <ion-icon
+                        [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
                   </div>
                   <div class="status-details">
-                     <span class="status-label">{{ getEmployeePunchStatus(member.id).status === 'in' ? 'Checked In' : 'Checked Out' }}</span>
-                     <span *ngIf="getEmployeePunchStatus(member.id).work_mode" class="status-mode">{{ getEmployeePunchStatus(member.id).work_mode }}</span>
+                     <span class="status-label">{{ getEmployeePunchStatus(member.id).status === 'in' ? 'Checked In' :
+                        'Checked Out' }}</span>
+                     <span *ngIf="getEmployeePunchStatus(member.id).work_mode" class="status-mode">{{
+                        getEmployeePunchStatus(member.id).work_mode }}</span>
                      <span *ngIf="getEmployeePunchStatus(member.id).last_punch_time" class="status-time">
                         <ion-icon name="time-outline"></ion-icon>
                         {{ formatPunchTime(getEmployeePunchStatus(member.id).last_punch_time) }}
