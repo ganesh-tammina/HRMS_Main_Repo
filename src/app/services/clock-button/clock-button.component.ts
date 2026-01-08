@@ -44,8 +44,8 @@ import { Router } from '@angular/router';
         Web Clock-In
       </ion-button>
 
-      <!-- Clock Out Button -->
-      <div class="row-center" *ngIf="isClockedIn && currentUrl !== '/Me'">
+      <!-- Clock Out Button - Regular -->
+      <div class="row-center" *ngIf="isClockedIn && workMode !== 'WFH' && currentUrl !== '/Me'">
       <ion-button
         class="btn-clockout"        
         (click)="clockOut()">
@@ -54,10 +54,26 @@ import { Router } from '@angular/router';
 
       <ion-button
         class="btn-clockout me-clock-out"
-        *ngIf="isClockedIn && currentUrl == '/Me'"
+        *ngIf="isClockedIn && workMode !== 'WFH' && currentUrl == '/Me'"
         (click)="clockOut()"
       >
         Web Clock-Out
+      </ion-button>
+
+      <!-- Clock Out Button - WFH -->
+      <div class="row-center" *ngIf="isClockedIn && workMode === 'WFH' && currentUrl !== '/Me'">
+      <ion-button
+        class="btn-clockout"        
+        (click)="clockOut()">
+        WFH Clock-Out
+      </ion-button></div>
+
+      <ion-button
+        class="btn-clockout me-clock-out"
+        *ngIf="isClockedIn && workMode === 'WFH' && currentUrl == '/Me'"
+        (click)="clockOut()"
+      >
+        WFH Clock-Out
       </ion-button>
 
     </div>
@@ -72,6 +88,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
   /** true → show Clock-Out */
   isClockedIn = false;
+  workMode: string = 'Office'; // Track work mode: Office, WFH, Remote
   loading = false;
   private destroy$ = new Subject<void>();
 
@@ -112,18 +129,28 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   private loadLastPunch(): void {
     this.attendanceApi.getTodayAttendance().subscribe({
       next: (res) => {
+        console.log('🔍 Full attendance response:', res);
         const punches = res?.punches || [];
+        console.log('🔍 Punches array:', punches);
 
         if (!punches.length) {
           this.isClockedIn = false;
+          this.workMode = 'Office';
+          console.log('⚠️ No punches found, setting to Office mode');
           return;
         }
 
         const lastPunch = punches[punches.length - 1];
+        console.log('🔍 Last punch:', lastPunch);
         this.isClockedIn = lastPunch.punch_type === 'in';
+        this.workMode = lastPunch.work_mode || 'Office';
+        console.log('📍 Current work mode:', this.workMode);
+        console.log('📍 Is clocked in:', this.isClockedIn);
+        console.log('📍 Should show WFH Clock-Out?', this.isClockedIn && this.workMode === 'WFH');
       },
       error: () => {
         this.isClockedIn = false;
+        this.workMode = 'Office';
       }
     });
   }

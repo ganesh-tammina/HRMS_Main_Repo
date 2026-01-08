@@ -178,7 +178,7 @@ export class MePage implements OnInit {
   wfhClockIn() {
     this.attendanceApi.checkTodayWFH().subscribe({
       next: (res: any) => {
-        if (!res?.isWFH) {
+        if (!res?.has_wfh) {
           this.showToast('WFH not approved for today', 'warning');
           return;
         }
@@ -191,6 +191,8 @@ export class MePage implements OnInit {
           next: () => {
             this.showToast('WFH Clock-In successful', 'success');
             this.loadTodayAttendance();
+            // Reload page to update clock button state
+            window.location.reload();
           },
           error: err => {
             this.showToast(err?.error?.message || 'WFH Clock-In failed', 'danger');
