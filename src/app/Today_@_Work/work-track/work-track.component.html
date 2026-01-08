@@ -165,11 +165,14 @@
             <ion-col size="2">
               <p><ion-icon name="calendar"></ion-icon> Date</p>
             </ion-col>
-            <ion-col size="6">
+            <ion-col size="4">
               <p><ion-icon name="document-text"></ion-icon> Notes</p>
             </ion-col>
             <ion-col size="2">
               <p><ion-icon name="time"></ion-icon> Total Hours</p>
+            </ion-col>
+            <ion-col size="2">
+              <p><ion-icon name="checkmark-circle"></ion-icon> Status</p>
             </ion-col>
             <ion-col size="2">
               <p>Actions</p>
@@ -179,11 +182,14 @@
             <ion-col size="2">
               {{ t.date | date }}
             </ion-col>
-            <ion-col size="6">
+            <ion-col size="4">
               {{ t.notes || 'No notes' }}
             </ion-col>
             <ion-col size="2">
               {{ t.total_hours }}
+            </ion-col>
+            <ion-col size="2">
+              <ion-badge [color]="getStatusColor(t.status)">{{ t.status || 'pending' | titlecase }}</ion-badge>
             </ion-col>
             <ion-col size="2">
               <ion-button fill="clear" (click)="openPreview(t)">
@@ -430,11 +436,14 @@
             <ion-col size="2">
               <p><ion-icon name="calendar"></ion-icon> Date</p>
             </ion-col>
-            <ion-col size="6">
+            <ion-col size="4">
               <p><ion-icon name="document-text"></ion-icon> Work Description</p>
             </ion-col>
             <ion-col size="2">
               <p><ion-icon name="time"></ion-icon> Total Hours</p>
+            </ion-col>
+            <ion-col size="2">
+              <p><ion-icon name="checkmark-circle"></ion-icon> Status</p>
             </ion-col>
             <ion-col size="2">
               <p>Actions</p>
@@ -444,11 +453,14 @@
             <ion-col size="2">
               {{ t.date | date }}
             </ion-col>
-            <ion-col size="6">
+            <ion-col size="4">
               {{ t.work_description || t.notes || 'No description' }}
             </ion-col>
             <ion-col size="2">
               {{ t.total_hours }}
+            </ion-col>
+            <ion-col size="2">
+              <ion-badge [color]="getStatusColor(t.status)">{{ t.status || 'pending' | titlecase }}</ion-badge>
             </ion-col>
             <ion-col size="2">
               <ion-button fill="clear" (click)="openPreview(t)">

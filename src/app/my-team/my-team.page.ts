@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
@@ -35,7 +36,8 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
   constructor(
     private employeeService: EmployeeService,
-    private routeGuardService: RouteGuardService
+    private routeGuardService: RouteGuardService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -300,5 +302,11 @@ export class MyTeamPage implements OnInit, OnDestroy {
       m.WorkEmail?.toLowerCase().includes(text) ||
       m.department_name?.toLowerCase().includes(text)
     );
+  }
+
+  /* ================= NAVIGATE TO TIMESHEET APPROVALS ================= */
+
+  navigateToTimesheetApprovals() {
+    this.router.navigate(['/ManagerTimesheetApprovals']);
   }
 }

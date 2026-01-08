@@ -2,6 +2,9 @@
    <ion-toolbar>
       <ion-title>My Team</ion-title>
       <ion-buttons slot="end">
+         <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length">
+            <ion-icon name="document-text-outline" slot="icon-only"></ion-icon>
+         </ion-button>
          <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length">
             <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
          </ion-button>

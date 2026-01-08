@@ -8,6 +8,7 @@ import { CandidateStatusComponent } from './candidate-status/candidate-status.co
 import { HomePage } from './home/home.page';
 import { LoginPage } from './login/login.page';
 import { MyTeamPage } from './my-team/my-team.page';
+import { ManagerTimesheetApprovalsPage } from './manager-timesheet-approvals/manager-timesheet-approvals.page';
 import { CandiateCreateComponent } from './onboarding/candiate-create/candiate-create.component';
 import { CompensationComponent } from './onboarding/compensation/compensation.component';
 import { CreateOfferComponent } from './onboarding/create-offer/create-offer.component';
@@ -58,6 +59,12 @@ export const routes: Routes = [
   {
     path: 'MyTeam',
     component: MyTeamPage,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['manager', 'admin', 'hr'] },
+  },
+  {
+    path: 'ManagerTimesheetApprovals',
+    component: ManagerTimesheetApprovalsPage,
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['manager', 'admin', 'hr'] },
   },
