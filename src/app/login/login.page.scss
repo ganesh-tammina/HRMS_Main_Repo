@@ -65,6 +65,9 @@
     margin-bottom: 30px;
   }
 }
+.mobile-logo {
+  display: none;
+}
 
 /* FORM */
 .form-group {
@@ -147,15 +150,16 @@
 @media (max-width: 992px) {
   .login-wrapper {
     flex-direction: column;
-
+  }
+    .mobile-logo {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 70%;
   }
 .login-card{
   p{
-          margin:auto;
+      margin:auto;
       text-align: center;
-    img{
-
-    }
   }
 }
   .login-left {
