@@ -147,10 +147,10 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
       // ✅ Use today punches (already loaded)
       console.log('✅ Using today punches (fresh data)');
       console.log('  - Raw Punches:', JSON.stringify(this.todayPunches, null, 2));
-      
+
       const mappedRecords = this.mapPunches(this.todayPunches);
       console.log('  - Mapped Records:', JSON.stringify(mappedRecords, null, 2));
-      
+
       this.selectedLog = {
         attendance_date: log.attendance_date,
         records: mappedRecords,
@@ -205,13 +205,13 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
 
   private mapPunches(punches: any[]): any[] {
     console.log('🗺️ Mapping punches:', JSON.stringify(punches, null, 2));
-    
+
     const records: any[] = [];
     let current: any = null;
 
     punches.forEach(p => {
       console.log('  Processing punch:', p.punch_type, 'work_mode:', p.work_mode);
-      
+
       if (p.punch_type === 'in') {
         current = {
           check_in: p.punch_time,
