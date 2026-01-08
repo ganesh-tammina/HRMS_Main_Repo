@@ -1,4 +1,21 @@
 <ion-content [fullscreen]="true" class="admin-dashboard ion-padding">
+
+  <!-- Beautiful Loading Overlay -->
+  <div class="upload-loading-overlay" *ngIf="isUploading">
+    <div class="loading-content">
+      <div class="spinner-container">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+      </div>
+      <h2>Uploading Employees</h2>
+      <p>Please wait while we process your file...</p>
+      <div class="progress-dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
   <div class="top-bar">
     <h1>Projects</h1>
     <p>Track and manage organizational projects</p>

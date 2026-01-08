@@ -25,6 +25,7 @@ export class AdminComponent implements OnInit {
   totalPages = 1;
 
   EmployeeselectedFile: File | null = null;
+  isUploading = false; // Loading state for upload
 
   @ViewChild(IonModal) modal!: IonModal;
 
@@ -65,8 +66,11 @@ export class AdminComponent implements OnInit {
       return;
     }
 
+    this.isUploading = true; // Show loading spinner
+
     this.uploadService.uploadEmployees(this.EmployeeselectedFile).subscribe({
       next: () => {
+        this.isUploading = false; // Hide loading spinner
         alert('Employees uploaded successfully');
 
         this.modal.dismiss();
@@ -76,6 +80,7 @@ export class AdminComponent implements OnInit {
         this.loadEmployees();
       },
       error: () => {
+        this.isUploading = false; // Hide loading spinner
         alert('Employee upload failed');
       }
     });
