@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-my-team',
@@ -13,7 +14,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './my-team.page.html',
   styleUrls: ['./my-team.page.scss'],
 })
-export class MyTeamPage implements OnInit {
+export class MyTeamPage implements OnInit, OnDestroy {
 
   searchText = '';
   teamMembers: any[] = [];
@@ -29,12 +30,45 @@ export class MyTeamPage implements OnInit {
   showAttendance = false;
   attendanceFilter: string = 'all'; // all, present, absent, on_leave
 
+  private destroy$ = new Subject<void>();
+  private profileImageCache = new Map<number, string>();
+
   constructor(
     private employeeService: EmployeeService,
     private routeGuardService: RouteGuardService
   ) { }
 
   ngOnInit() {
+    this.subscribeToProfileImageUpdates();
+    this.loadTeamData();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /* ================= PROFILE IMAGE SUBSCRIPTION ================= */
+
+  subscribeToProfileImageUpdates() {
+    this.employeeService.profileImageUpdate$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imageUrl: string | null) => {
+        if (imageUrl) {
+          console.log('📸 My Team: Profile image update received:', imageUrl);
+          // Refresh team data to get updated images
+          if (this.showAttendance) {
+            this.loadAttendanceData();
+          } else {
+            this.loadTeamData();
+          }
+        }
+      });
+  }
+
+  /* ================= LOAD TEAM DATA ================= */
+
+  loadTeamData() {
     this.loading = true;
     this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
 
@@ -243,7 +277,15 @@ export class MyTeamPage implements OnInit {
 
   getProfileImage(member: any): string {
     if (member?.profile_image) {
-      return `http://${environment.apiURL}${member.profile_image}`;
+      // Use cached URL if available, otherwise construct with cache-buster
+      const employeeId = member.id || member.employee_id;
+      if (this.profileImageCache.has(employeeId)) {
+        return this.profileImageCache.get(employeeId)!;
+      }
+      
+      const imageUrl = `http://${environment.apiURL}${member.profile_image}?t=${Date.now()}`;
+      this.profileImageCache.set(employeeId, imageUrl);
+      return imageUrl;
     }
     return 'assets/user.svg';
   }

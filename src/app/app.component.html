@@ -18,7 +18,7 @@
               </ion-item>
             </ion-menu-toggle>
 
-            <ion-menu-toggle auto-hide="false">
+            <ion-menu-toggle *ngIf="isEmployeeOrManagerOrHr()" auto-hide="false">
               <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -116,7 +116,7 @@
             <!-- ///////////////////////////////////////////////// -->
 
             <!-- Inbox -->
-            <ion-menu-toggle auto-hide="false">
+            <!-- <ion-menu-toggle auto-hide="false">
               <ion-item lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/inbox') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -125,8 +125,8 @@
                   <ion-label>Inbox</ion-label>
                 </div>
               </ion-item>
-            </ion-menu-toggle>
-            <ion-menu-toggle auto-hide="false" id='menu-buttons2'>
+            </ion-menu-toggle> -->
+            <ion-menu-toggle *ngIf="isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
               <ion-item lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -156,7 +156,7 @@
             </ion-popover>
 
 
-            <ion-menu-toggle auto-hide="false" id="menu-buttons1">
+            <!-- <ion-menu-toggle auto-hide="false" id="menu-buttons1">
               <ion-item lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -166,7 +166,7 @@
                   <ion-label>My Finances</ion-label>
                 </div>
               </ion-item>
-            </ion-menu-toggle>
+            </ion-menu-toggle> -->
             <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" class="menu-dropdown menu-drop1" side="right">
               <ng-template>
                 <ion-content>

@@ -23,6 +23,10 @@ export class EmployeeService {
   private currentEmployeeSubject = new BehaviorSubject<any>(null);
   currentEmployee$ = this.currentEmployeeSubject.asObservable();
 
+  // Profile image update subject
+  private profileImageUpdateSubject = new BehaviorSubject<string | null>(null);
+  profileImageUpdate$ = this.profileImageUpdateSubject.asObservable();
+
   constructor(private http: HttpClient) { }
 
   /* ================= EXISTING CODE (UNCHANGED) ================= */
@@ -52,7 +56,16 @@ export class EmployeeService {
       // ❌ DO NOT set Content-Type for FormData
     });
 
-    return this.http.post(this.uploadProfileImageUrl, formData, { headers });
+    return this.http.post(this.uploadProfileImageUrl, formData, { headers }).pipe(
+      tap((res: any) => {
+        // Broadcast the new profile image URL
+        if (res.imagePath) {
+          const imageUrl = `http://${this.env.apiURL}${res.imagePath}?t=${Date.now()}`;
+          this.profileImageUpdateSubject.next(imageUrl);
+          console.log('📸 Profile image updated and broadcasted:', imageUrl);
+        }
+      })
+    );
   }
 
   getCurrentEmployee() {

@@ -133,6 +133,10 @@ export class AppComponent implements OnInit {
     return this.userRole === 'manager' || this.userRole === 'admin' || this.userRole === 'hr';
   }
 
+  isEmployeeOrManagerOrHr(): boolean {
+    return this.userRole === 'employee' || this.userRole === 'manager' || this.userRole === 'hr'  ;
+  }
+
   isEmployee(): boolean {
     return this.userRole === 'employee';
   }

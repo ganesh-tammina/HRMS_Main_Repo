@@ -42,6 +42,7 @@ import { RouteGuardService } from './services/route-guard/route-service/route-gu
 import { ClientWorkTrackComponent } from './Today_@_Work/client-work-track/client-work-track.component';
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
+import { h } from 'ionicons/dist/types/stencil-public-runtime';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
@@ -183,12 +184,14 @@ export const routes: Routes = [
   {
     path: 'workTrack',
     component: WorkTrackComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['employee', 'manager', 'hr'] },
   },
   {
     path: 'ClientWorkTrack',
     component: ClientWorkTrackComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['employee', 'manager', 'hr'] },
   },
 
   {
