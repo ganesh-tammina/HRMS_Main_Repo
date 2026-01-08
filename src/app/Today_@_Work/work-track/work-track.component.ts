@@ -496,7 +496,7 @@ export class WorkTrackComponent implements OnInit {
 
   getStatusColor(status: string): string {
     if (!status) return 'warning'; // pending/no status
-    
+
     const statusLower = status.toLowerCase();
     switch (statusLower) {
       case 'verified':
