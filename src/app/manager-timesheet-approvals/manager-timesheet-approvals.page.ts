@@ -26,6 +26,9 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
     pendingApprovalsCount: number = 0;
     statisticsLoading = false;
 
+    // Date tracking
+    currentDate: string = '';
+
     // Filter options
     filterType: string = 'all'; // all, regular, project
     startDate: string = '';
@@ -38,6 +41,7 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.currentDate = new Date().toISOString().split('T')[0];
         this.loadPendingTimesheets();
         this.loadTeamStatistics();
     }
@@ -221,6 +225,17 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
             return `http://${environment.apiURL}${timesheet.profile_image}?t=${Date.now()}`;
         }
         return 'assets/user.svg';
+    }
+
+    getDateRangeText(): string {
+        if (this.startDate && this.endDate) {
+            return `${this.formatDate(this.startDate)} - ${this.formatDate(this.endDate)}`;
+        }
+        return 'Current Month';
+    }
+
+    getTodayFormatted(): string {
+        return this.formatDate(this.currentDate);
     }
 
     /* ================= DIALOG HELPERS ================= */

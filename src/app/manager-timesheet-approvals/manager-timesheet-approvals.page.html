@@ -45,6 +45,16 @@
                 <ion-icon name="people-outline" color="primary"></ion-icon>
                 Team Overview
             </ion-card-title>
+            <ion-card-subtitle>
+                <ion-chip color="medium" size="small">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <ion-label>Today: {{ getTodayFormatted() }}</ion-label>
+                </ion-chip>
+                <ion-chip color="primary" size="small">
+                    <ion-icon name="filter-outline"></ion-icon>
+                    <ion-label>Period: {{ getDateRangeText() }}</ion-label>
+                </ion-chip>
+            </ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
             <div class="statistics-grid" *ngIf="!statisticsLoading">
