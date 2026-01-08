@@ -11,7 +11,7 @@
   </ion-toolbar>
 </ion-header> -->
 
-<div>
+<div class="leavehead">
   <h4>Leave Allocation</h4>
 <p>Allocate leaves to employees</p>
 </div>
@@ -46,7 +46,7 @@
             style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 8px;">
             <ion-grid>
               <ion-row>
-                <ion-col size="4">
+                <ion-col size="3">
                   <ion-label>Leave Type</ion-label>
                   <ion-select placeholder="Type" formControlName="leave_type_id" interface="popover">
                     <ion-select-option *ngFor="let type of filteredLeaveTypes" [value]="type.id">
@@ -56,22 +56,27 @@
                 </ion-col>
 
                 <ion-col size="3">
-                  <ion-label>Days</ion-label>
+                  <ion-label> Allocated Days</ion-label>
                   <ion-input type="number" formControlName="days_allocated" placeholder="0"></ion-input>
                 </ion-col>
 
-                <ion-col size="3">
-                  <ion-label>Prorate</ion-label>
-                  <ion-toggle formControlName="prorate_on_joining"></ion-toggle>
+                <ion-col size="3" class="toggle">
+                   <ion-item lines="none">
+                    <ion-label position="stacked">Prorate on joining</ion-label>
+                    <ion-toggle formControlName="prorate_on_joining"></ion-toggle>
+                  </ion-item>
                 </ion-col>
 
-                <ion-col size="2">
-            <ion-button size="small" color="danger" fill="clear" (click)="removeAllocation(i)">
-              <ion-icon name="trash-outline" slot="start"></ion-icon>
-              Remove
-            </ion-button>
-            </ion-col>
+                <ion-col size="3" class="toggle">
+                <ion-item lines="none">
+                  <ion-label position="stacked">Actions</ion-label>
 
+                  <ion-button size="small" color="danger" fill="clear"(click)="removeAllocation(i)">
+                    <ion-icon name="trash-outline" slot="start"></ion-icon>
+                    Remove
+                  </ion-button>
+                </ion-item>
+            </ion-col>
               </ion-row>
             </ion-grid>
 
@@ -83,11 +88,18 @@
           + Add New Allocation Row
         </ion-button>
 
-        <ion-button expand="block" class="ion-margin-top" [disabled]="loading" (click)="submitallocationLeaves()">
-          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
-          <span *ngIf="!loading">Save & Allocate Leaves</span>
-        </ion-button>
       </form>
     </ion-card-content>
   </ion-card>
+  <div class="row-right">
+        <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" >
+          Cancel
+        </ion-button>
+        <ion-button class="ion-margin-top primary-btn create-btn" [disabled]="loading" (click)="submitallocationLeaves()">
+          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+          <span *ngIf="!loading">Save & Allocate Leaves</span>
+        </ion-button>
+
+  </div>
+
 </ion-content>
