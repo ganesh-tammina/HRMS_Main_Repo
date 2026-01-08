@@ -12,6 +12,7 @@ export class AuthService {
   private LOGIN_URL = `http://${this.env.apiURL}/api/auth/login`;
   private CHECK_EMAIL_URL = `http://${this.env.apiURL}/api/auth/employee/check`;
   private CREATE_USER_URL = `http://${this.env.apiURL}/api/auth/user/create`;
+  private PREVIEW_ROLE_URL = `http://${this.env.apiURL}/api/auth/user/preview-role`;
 
   constructor(
     private http: HttpClient,
@@ -50,6 +51,11 @@ export class AuthService {
       password,
       role: 'employee'
     });
+  }
+
+  /** PREVIEW ROLE - Check if employee has team/reporting members */
+  previewRole(email: string): Observable<any> {
+    return this.http.get(`${this.PREVIEW_ROLE_URL}/${email}`);
   }
 
   logout(): void {

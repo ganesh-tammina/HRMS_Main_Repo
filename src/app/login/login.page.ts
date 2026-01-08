@@ -22,6 +22,7 @@ export class LoginPage implements OnInit {
   showCreatePassword = false;
   loading = false;
   isAdmin = false;
+  rolePreviewData: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -64,6 +65,21 @@ export class LoginPage implements OnInit {
           alert('Email not found in employee records');
           return;
         }
+
+        // Check if employee has team/reporting members
+        this.authService.previewRole(value).subscribe({
+          next: (roleRes) => {
+            console.log('Employee role preview:', roleRes);
+            this.rolePreviewData = roleRes;
+            // Store role information if needed
+            if (roleRes.hasTeam || roleRes.reportingMembers?.length > 0) {
+              console.log('Employee has team members:', roleRes);
+              sessionStorage.setItem('hasTeam', 'true');
+              sessionStorage.setItem('rolePreview', JSON.stringify(roleRes));
+            }
+          },
+          error: (err) => console.warn('Failed to fetch role preview:', err)
+        });
 
         this.emailChecked = true;
 
@@ -152,7 +168,35 @@ export class LoginPage implements OnInit {
     if (role === 'admin') {
       this.router.navigate(['/admin'], { replaceUrl: true });
     } else {
+      // Show welcome popup for employees before navigation
+      // this.showWelcomePopup();
       this.router.navigate(['/Home'], { replaceUrl: true });
+    }
+  }
+
+  /** SHOW WELCOME POPUP WITH EMPLOYEE DETAILS */
+  private showWelcomePopup(): void {
+    const employee = this.employeeService.getCurrentEmployee();
+    const roleData = this.rolePreviewData;
+
+    if (employee) {
+      const name = `${employee.FirstName || ''} ${employee.LastName || ''}`;
+      const department = employee.Department || 'Not Assigned';
+
+      // Determine if employee is a Manager based on having reporting members
+      const isManager = roleData?.hasTeam || (roleData?.reportingMembers && roleData.reportingMembers.length > 0);
+      const role = isManager ? 'Manager' : (employee.Role || 'Employee');
+      const teamInfo = isManager ? `\n👥 Team Members: ${roleData.reportingMembers?.length || 0}` : '';
+
+      const message = `
+🎉 Welcome Back!
+
+👤 Name: ${name}
+💼 Role: ${role}${teamInfo}
+🏢 Department: ${department}
+      `;
+
+      alert(message.trim());
     }
   }
 }
