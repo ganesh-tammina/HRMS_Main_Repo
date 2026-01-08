@@ -83,7 +83,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
     this.employeeService.getMyTeamList().subscribe({
       next: (res: any) => {
         console.log('✅ My Team API Response:', res);
-        
+
         // Handle different response formats
         if (res?.team) {
           this.teamMembers = res.team;
@@ -92,11 +92,11 @@ export class MyTeamPage implements OnInit, OnDestroy {
         } else {
           this.teamMembers = [];
         }
-        
+
         this.filteredMembers = [...this.teamMembers];
         console.log('✅ Team Members Count:', this.teamMembers.length);
         console.log('✅ Team Type:', res?.type || 'unknown');
-        
+
         this.loading = false;
       },
       error: (err) => {

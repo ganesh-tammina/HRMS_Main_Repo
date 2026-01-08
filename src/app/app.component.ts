@@ -111,7 +111,7 @@ export class AppComponent implements OnInit {
     // Get userRole from RouteGuardService
     this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
     console.log('🔍 App Component ngOnInit - User Role:', this.userRole);
-    
+
     this.isAdmin = false;
 
     const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
