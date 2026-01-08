@@ -130,7 +130,7 @@ export class CreateProjectComponent implements OnInit {
   openEditForm(project: Project): void {
     this.isEditMode = true;
     this.selectedProjectId = project.id || null;
-    
+
     // Find and set the manager if exists
     if (project.project_manager_id) {
       const manager = this.allEmployees.find(emp => emp.id === project.project_manager_id);
@@ -139,7 +139,7 @@ export class CreateProjectComponent implements OnInit {
         this.managerSearchTerm = `${manager.FirstName} ${manager.LastName} (${manager.EmployeeNumber})`;
       }
     }
-    
+
     this.projectForm.patchValue({
       project_code: project.project_code,
       project_name: project.project_name,
