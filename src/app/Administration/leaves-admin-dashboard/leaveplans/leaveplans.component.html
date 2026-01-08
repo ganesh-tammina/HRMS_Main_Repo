@@ -88,15 +88,16 @@
 
       <ion-card-content>
         <p>{{ plan.description }}</p>
-        
+
         <!-- Member Count Display -->
-        <div style="margin: 12px 0; padding: 8px; background-color: #f0f4ff; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+        <div
+          style="margin: 12px 0; padding: 8px; background-color: #f0f4ff; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
           <ion-icon name="people-outline" style="font-size: 20px; color: #3880ff;"></ion-icon>
           <span style="font-weight: 500; color: #3880ff;">
             {{ plan.employees_count || 0 }} {{ (plan.employees_count === 1) ? 'Member' : 'Members' }} Assigned
           </span>
         </div>
-        
+
         <div>
           <ion-button size="small" fill="outline" color="medium" type="button" (click)="viewPlanDetails(plan.id)">
             <ion-icon name="eye-outline"></ion-icon>
@@ -128,7 +129,7 @@
 
       <ion-card-content>
         <p><strong>Description:</strong> {{ selectedPlan.description }}</p>
-        
+
         <!-- Member Count in Details -->
         <div style="margin: 12px 0; padding: 10px; background-color: #f0f4ff; border-radius: 8px;">
           <ion-icon name="people-outline" style="font-size: 24px; color: #3880ff; vertical-align: middle;"></ion-icon>
