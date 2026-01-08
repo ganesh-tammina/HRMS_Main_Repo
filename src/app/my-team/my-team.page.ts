@@ -7,6 +7,7 @@ import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
 import { Subject, takeUntil } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-my-team',
@@ -34,20 +35,39 @@ export class MyTeamPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private profileImageCache = new Map<number, string>();
 
+  // Real-time attendance status tracking
+  employeeStatusMap: { [key: number]: { status: string; work_mode: string | null; last_punch_time: string | null } } = {};
+  statusRefreshInterval: any = null;
+
   constructor(
     private employeeService: EmployeeService,
     private routeGuardService: RouteGuardService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
+    console.log('🚀 My Team Component Initialized');
+    console.log('⏰ Setting up 30-second auto-refresh for attendance status');
     this.subscribeToProfileImageUpdates();
     this.loadTeamData();
+    
+    // Refresh attendance status every 30 seconds for real-time updates
+    this.statusRefreshInterval = setInterval(() => {
+      if (!this.showAttendance && this.teamMembers.length > 0) {
+        console.log('⏰ Auto-refresh triggered (30s interval)');
+        this.loadEmployeeAttendanceStatus();
+      }
+    }, 30000); // Changed from 120000 (2 min) to 30000 (30 sec)
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    
+    if (this.statusRefreshInterval) {
+      clearInterval(this.statusRefreshInterval);
+    }
   }
 
   /* ================= PROFILE IMAGE SUBSCRIPTION ================= */
@@ -96,6 +116,11 @@ export class MyTeamPage implements OnInit, OnDestroy {
         this.filteredMembers = [...this.teamMembers];
         console.log('✅ Team Members Count:', this.teamMembers.length);
         console.log('✅ Team Type:', res?.type || 'unknown');
+
+        // Load real-time attendance status for regular view
+        if (this.teamMembers.length > 0) {
+          this.loadEmployeeAttendanceStatus();
+        }
 
         this.loading = false;
       },
@@ -281,6 +306,119 @@ export class MyTeamPage implements OnInit, OnDestroy {
       m.WorkEmail?.toLowerCase().includes(text) ||
       m.department_name?.toLowerCase().includes(text)
     );
+  }
+
+  /* ================= REAL-TIME ATTENDANCE STATUS ================= */
+
+  loadEmployeeAttendanceStatus() {
+    console.log('📡 loadEmployeeAttendanceStatus() called');
+    
+    if (!this.teamMembers || this.teamMembers.length === 0) {
+      console.log('⚠️ No team members to check status for');
+      return;
+    }
+    
+    const employeeIds = this.teamMembers
+      .map(m => m.id)
+      .filter(id => id != null);
+    
+    console.log('👥 Team Members:', this.teamMembers.length);
+    console.log('🆔 Employee IDs to check:', employeeIds);
+    
+    if (employeeIds.length === 0) {
+      console.log('⚠️ No valid employee IDs found');
+      return;
+    }
+
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+
+    const apiUrl = `http://${environment.apiURL}/api/attendance/bulk-status`;
+    console.log('🌐 API URL:', apiUrl);
+    console.log('📤 Sending request with employee_ids:', employeeIds);
+
+    this.http.post<any>(apiUrl, { employee_ids: employeeIds }, { headers }).subscribe({
+      next: (response) => {
+        console.log('📊 Bulk Status API Response:', response);
+        console.log('📅 Response Date:', response.date);
+        console.log('✅ Response Success:', response.success);
+        console.log('📋 Number of statuses received:', response.statuses?.length || 0);
+        
+        if (response.success && response.statuses) {
+          this.employeeStatusMap = {};
+          console.log('🔄 Building employee status map...');
+          
+          response.statuses.forEach((s: any, index: number) => {
+            console.log(`\n--- Employee ${index + 1}/${response.statuses.length} ---`);
+            console.log(`  Employee ID: ${s.employee_id}`);
+            console.log(`  Status: ${s.status}`);
+            console.log(`  Has Attendance: ${s.has_attendance}`);
+            console.log(`  Work Mode: ${s.work_mode}`);
+            console.log(`  Last Punch Time: ${s.last_punch_time}`);
+            console.log(`  Attendance Status: ${s.attendance_status}`);
+            
+            this.employeeStatusMap[s.employee_id] = {
+              status: s.status,
+              work_mode: s.work_mode,
+              last_punch_time: s.last_punch_time
+            };
+          });
+          
+          console.log('\n✅ Final Employee Status Map:', JSON.stringify(this.employeeStatusMap, null, 2));
+          console.log('📊 Total employees in map:', Object.keys(this.employeeStatusMap).length);
+        } else {
+          console.log('⚠️ Invalid response format or unsuccessful');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error loading real-time attendance status:', err);
+      }
+    });
+  }
+
+  getEmployeePunchStatus(employeeId: number): { status: string; work_mode: string | null; last_punch_time: string | null } {
+    const statusData = this.employeeStatusMap[employeeId] || { status: 'out', work_mode: null, last_punch_time: null };
+    console.log(`🔍 getEmployeePunchStatus(${employeeId}):`, statusData);
+    return statusData;
+  }
+
+  getPunchStatusBgColor(status: string): string {
+    return status === 'in' ? '#d4edda' : '#ffe6e6';
+  }
+
+  formatPunchTime(timestamp: string | null): string {
+    if (!timestamp) return '—';
+    
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (e) {
+      return '—';
+    }
+  }
+
+  /* ================= MANUAL REFRESH ================= */
+
+  refreshAttendanceStatus() {
+    console.log('\n🔄 ========== MANUAL REFRESH TRIGGERED ==========');
+    console.log('📅 Current Date/Time:', new Date().toISOString());
+    console.log('👥 Team Members Count:', this.teamMembers.length);
+    console.log('🗺️ Current Status Map:', this.employeeStatusMap);
+    
+    if (this.teamMembers.length > 0) {
+      this.loadEmployeeAttendanceStatus();
+    } else {
+      console.log('⚠️ No team members to refresh status for');
+    }
   }
 
   /* ================= NAVIGATE TO APPROVALS PAGES ================= */
