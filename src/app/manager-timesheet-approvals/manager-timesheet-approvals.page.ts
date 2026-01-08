@@ -60,7 +60,7 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
                 console.log('✅ Submitted:', res.submitted_count);
                 console.log('❌ Not Submitted:', res.not_submitted_count);
                 console.log('⏳ Pending:', res.pending_approvals);
-                
+
                 this.teamSize = res.team_size || 0;
                 this.submittedCount = res.submitted_count || 0;
                 this.notSubmittedCount = res.not_submitted_count || 0;
