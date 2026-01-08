@@ -38,6 +38,60 @@
     <ion-searchbar [(ngModel)]="searchText" (ionInput)="filterTimesheets()"
         placeholder="Search by name, email, or project" animated></ion-searchbar>
 
+    <!-- Team Statistics Card -->
+    <ion-card class="statistics-card">
+        <ion-card-header>
+            <ion-card-title>
+                <ion-icon name="people-outline" color="primary"></ion-icon>
+                Team Overview
+            </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <div class="statistics-grid" *ngIf="!statisticsLoading">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <ion-icon name="people-circle-outline" color="primary"></ion-icon>
+                    </div>
+                    <div class="stat-content">
+                        <h2>{{ teamSize }}</h2>
+                        <p>Team Size</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+                    </div>
+                    <div class="stat-content">
+                        <h2>{{ submittedCount }}</h2>
+                        <p>Submitted</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <ion-icon name="close-circle-outline" color="danger"></ion-icon>
+                    </div>
+                    <div class="stat-content">
+                        <h2>{{ notSubmittedCount }}</h2>
+                        <p>Not Submitted</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <ion-icon name="hourglass-outline" color="warning"></ion-icon>
+                    </div>
+                    <div class="stat-content">
+                        <h2>{{ pendingApprovalsCount }}</h2>
+                        <p>Pending Approvals</p>
+                    </div>
+                </div>
+            </div>
+            <div class="statistics-loading" *ngIf="statisticsLoading">
+                <ion-spinner></ion-spinner>
+                <p>Loading statistics...</p>
+            </div>
+        </ion-card-content>
+    </ion-card>
+
     <!-- Date Range Filter -->
     <ion-card class="filter-card">
         <ion-card-content>

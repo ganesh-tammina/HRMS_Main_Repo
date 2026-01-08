@@ -19,6 +19,13 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
     loading = false;
     searchText = '';
 
+    // Team statistics
+    teamSize: number = 0;
+    submittedCount: number = 0;
+    notSubmittedCount: number = 0;
+    pendingApprovalsCount: number = 0;
+    statisticsLoading = false;
+
     // Filter options
     filterType: string = 'all'; // all, regular, project
     startDate: string = '';
@@ -32,6 +39,41 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
 
     ngOnInit() {
         this.loadPendingTimesheets();
+        this.loadTeamStatistics();
+    }
+
+    /* ================= LOAD TEAM STATISTICS ================= */
+
+    loadTeamStatistics() {
+        this.statisticsLoading = true;
+
+        const filters: any = {};
+        if (this.startDate) filters.start_date = this.startDate;
+        if (this.endDate) filters.end_date = this.endDate;
+
+        console.log('🔍 Loading team statistics with filters:', filters);
+
+        this.timesheetService.getManagerTeamStatistics(filters).subscribe({
+            next: (res: any) => {
+                console.log('✅ Team Statistics Response:', res);
+                console.log('📊 Team Size:', res.team_size);
+                console.log('✅ Submitted:', res.submitted_count);
+                console.log('❌ Not Submitted:', res.not_submitted_count);
+                console.log('⏳ Pending:', res.pending_approvals);
+                
+                this.teamSize = res.team_size || 0;
+                this.submittedCount = res.submitted_count || 0;
+                this.notSubmittedCount = res.not_submitted_count || 0;
+                this.pendingApprovalsCount = res.pending_approvals || 0;
+                this.statisticsLoading = false;
+            },
+            error: (err) => {
+                console.error('❌ Error fetching team statistics:', err);
+                console.error('❌ Error details:', err.error);
+                this.showToast('Error loading team statistics', 'danger');
+                this.statisticsLoading = false;
+            }
+        });
     }
 
     /* ================= LOAD PENDING TIMESHEETS ================= */
@@ -118,6 +160,7 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
     onDateRangeChange() {
         if (this.startDate && this.endDate) {
             this.loadPendingTimesheets();
+            this.loadTeamStatistics();
         }
     }
 
@@ -127,6 +170,7 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
         this.endDate = '';
         this.searchText = '';
         this.loadPendingTimesheets();
+        this.loadTeamStatistics();
     }
 
     /* ================= SEARCH ================= */
@@ -257,6 +301,7 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
 
     handleRefresh(event: any) {
         this.loadPendingTimesheets();
+        this.loadTeamStatistics();
         setTimeout(() => {
             event.target.complete();
         }, 1000);

@@ -129,6 +129,33 @@ export class TimesheetService {
     );
   }
 
+  /* ================= MANAGER: GET TEAM STATISTICS ================= */
+
+  /**
+   * Get team statistics for manager (team size, submitted, not submitted)
+   * @param filters Optional filters for date range
+   */
+  getManagerTeamStatistics(filters?: {
+    start_date?: string;
+    end_date?: string;
+  }): Observable<any> {
+
+    let params = new HttpParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params = params.set(key, value.toString());
+        }
+      });
+    }
+
+    return this.http.get<any>(
+      `${this.baseUrl}/manager/team-statistics`,
+      { params }
+    );
+  }
+
   /* ================= MANAGER: APPROVE TIMESHEET ================= */
 
   /**
