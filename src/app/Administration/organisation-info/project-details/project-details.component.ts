@@ -12,6 +12,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
 
 import { ProjectService } from 'src/app/services/project.service';
 import { EmployeeService } from 'src/app/services/employee.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-details',
@@ -43,13 +44,19 @@ export class ProjectDetailsComponent implements OnInit {
   filteredEmployees: any[] = [];
   searchTerm = '';
   selectedEmployee: any = null;
+  shiftIcons: any = {
+    day: '../../../../assets/Icons/day-blue.svg',
+    night: '../../../../assets/Icons/night-blue.svg',
+    evening: '../../../../assets/Icons/evening-blue.svg'
+  };
 
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private employeeService: EmployeeService,
     private fb: FormBuilder,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -276,4 +283,11 @@ export class ProjectDetailsComponent implements OnInit {
     });
     toast.present();
   }
+  adminManagement() {
+    this.router.navigate(['./admin']);
+  }
+  projectDeails() {
+    this.router.navigate(['./CreateProject']);
+  }
+  
 }

@@ -223,6 +223,17 @@ ion-modal {
                 @include card-header-title();
             }         
         }
+        .form-continer {
+          max-height: calc(100vh - 150px);
+          overflow-y: auto;
+          @include scroll-style();
+        }
+        .form-footer {
+          position: fixed;
+          right: 30px;
+          bottom: 9px;
+          background: #fff;
+        }
     }
 }
 .custom-popup {
@@ -270,7 +281,7 @@ ion-popover.select-popover {
 }
 .custom-button {
     padding: 3px 7px;
-    border-radius: 8px;
+    border-radius: 20px;
     height: 40px;
     --box-shadow: none;
     --background: transparent;
@@ -279,15 +290,15 @@ ion-popover.select-popover {
 }
 .primary-btn {
     --color: #fff;
-    --background: #2986CE;
-    background: #2986CE;
+    // --background: var(--ion-color-primary);
+    background: var(--ion-color-primary);
     @extend .custom-button ;
 }
 .primary-outline-btn {
     background: #fff;
-    --color: #2986CE;
-    color: #2986CE;
-    border: 1.5px solid #2986CE;
+    --color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    border: 1.5px solid var(--ion-color-primary);
     @extend .custom-button ;    
 }
 .danger-outline-btn {
@@ -417,17 +428,11 @@ ion-popover ion-content::-webkit-scrollbar {
         --width: 650px;
     }
     &.date-modal {
-        --width: auto;
+    --width: auto;
     --height: fit-content; 
     --backdrop-opacity: 0.35 !important;
     }
 }
-
-
-
-
-
-
 
 .view-work-log {
 .date-strip {
@@ -582,5 +587,27 @@ ion-popover ion-content::-webkit-scrollbar {
       border-bottom-left-radius: 8px;
       border-bottom-right-radius: 8px;
     }
+  }
+}
+
+p.page-header{
+  margin: 0;
+  a {
+    cursor: pointer;
+    color: #00000073;
+     margin-right: 5px;
+  }
+}
+
+ion-chip {
+  padding: 0px 18px;
+    border-radius: 20px;
+    height: 26px;
+    margin: 0;
+    line-height: 26px;
+    margin-left: 30px;
+  &.success {
+    background: rgba(19, 159, 65, 0.168627451);
+    color: #1FAD4E;    
   }
 }

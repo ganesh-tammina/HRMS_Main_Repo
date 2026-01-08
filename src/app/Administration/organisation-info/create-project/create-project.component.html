@@ -1,5 +1,9 @@
 <ion-content class="page-containerOn project-wrapper ion-padding">
-
+    <p class="page-header mb-8">
+        <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
+        Projects
+       </p>
+     
   <!-- ======= TOP BAR ======= -->
   <div class="top-bar">
     <div>
@@ -31,7 +35,7 @@
       <ion-content class="ion-padding form-block ">
         <form [formGroup]="projectForm" (ngSubmit)="submit()">
 
-          <div lines="none" class="form-grid">
+          <div lines="none" class="form-grid form-continer">
             <div>
               <label>Project Code</label>
               <ion-input formControlName="project_code"></ion-input>
@@ -80,7 +84,7 @@
             </div>
           </div>
 
-          <div class="row-right">
+          <div class="row-right form-footer">
             <ion-button class="primary-outline-btn" (click)="cancelCreate()">
               Cancel
             </ion-button>
@@ -96,67 +100,85 @@
   </ion-modal>
 
   <!-- ======= PROJECT LIST ======= -->
-  <ion-card class="list-card">
-    <ion-card-header>
-      <ion-card-title>Project List</ion-card-title>
-    </ion-card-header>
 
-    <ion-card-content>
-
-      <ion-spinner *ngIf="loadingProjects"></ion-spinner>
-
-      <ion-grid class="table-block" *ngIf="!loadingProjects && projects.length">
-        <ion-row class="table-header">
-          <ion-col size="2.5">
-            <p>Project</p>
+<div class="table-list-block">
+   <!-- ================= FILTER BAR ================= -->
+    <ion-grid class="filter-card">
+        <ion-row class="row-left">
+          <ion-col  size="12" size-md="4">
+              <p class="title">Project List <small>{{ projects.length }}</small></p>
           </ion-col>
-          <ion-col size="2.5">
-            <p>Client</p>
+           
+          <ion-col size="12" size-md="4">
+            <ion-searchbar placeholder="Search by name, email, employee ID" >
+            </ion-searchbar>
           </ion-col>
-          <ion-col size="2">
-            <p>Status</p>
-          </ion-col>
-          <ion-col size="3">
-            <p>Duration</p>
-          </ion-col>
-          <ion-col size="2">
-            <p>Actions</p>
-          </ion-col>
-        </ion-row>
-
-        <ion-row class="table-row-list" *ngFor="let project of projects">
-          <ion-col size="2.5" (click)="navigateToDetails(project)" style="cursor: pointer;">
-            <p> {{ project.project_name }}
-              (<small>({{ project.project_code }})</small>)</p>
-
-          </ion-col>
-
-          <ion-col size="2.5" (click)="navigateToDetails(project)" style="cursor: pointer;">
-            <p>{{ project.client_name }}</p>
-          </ion-col>
-
-          <ion-col size="2" class="status" (click)="navigateToDetails(project)" style="cursor: pointer;">
-            <p [ngClass]="project.status.toLowerCase()">
-              {{ project.status }}</p>
-          </ion-col>
-
-          <ion-col size="3" (click)="navigateToDetails(project)" style="cursor: pointer;">
-            <p>{{ project.start_date | date }} - {{ project.end_date | date }}</p>
-          </ion-col>
-
-          <ion-col size="2">
-            <ion-button fill="clear" size="small" (click)="openEditForm(project)">
-              <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+    
+          <ion-col size="12" size-md="4" class="row-right pr-15">
+            <ion-select  placeholder="Filter by role"
+              toggleIcon="chevron-down" expandedIcon="chevron-up" interface="popover">
+              <ion-select-option value="all">All Roles</ion-select-option>
+              <ion-select-option value="employee">Employee</ion-select-option>
+              <ion-select-option value="hr">HR</ion-select-option>
+              <ion-select-option value="manager">Manager</ion-select-option>
+              <ion-select-option value="admin">Admin</ion-select-option>
+            </ion-select>
           </ion-col>
         </ion-row>
       </ion-grid>
-
-      <p *ngIf="!loadingProjects && !projects.length" class="empty">
-        No projects created yet.
-      </p>
-
-    </ion-card-content>
-  </ion-card>
+      <ion-spinner *ngIf="loadingProjects"></ion-spinner>
+          
+          <ion-grid class="table-block" *ngIf="!loadingProjects && projects.length">
+            <ion-row class="table-header">
+              <ion-col size="2.5">
+                <p>Project</p>
+              </ion-col>
+              <ion-col size="2.5">
+                <p>Client</p>
+              </ion-col>
+              <ion-col size="2">
+                <p>Status</p>
+              </ion-col>
+              <ion-col size="3">
+                <p>Duration</p>
+              </ion-col>
+              <ion-col size="2">
+                <p>Actions</p>
+              </ion-col>
+            </ion-row>
+    
+            <ion-row class="table-row-list" *ngFor="let project of projects">
+              <ion-col size="2.5" (click)="navigateToDetails(project)" style="cursor: pointer;">
+                <p> {{ project.project_name }}
+                  (<small>({{ project.project_code }})</small>)</p>
+    
+              </ion-col>
+    
+              <ion-col size="2.5" (click)="navigateToDetails(project)" style="cursor: pointer;">
+                <p>{{ project.client_name }}</p>
+              </ion-col>
+    
+              <ion-col size="2" class="status" (click)="navigateToDetails(project)" style="cursor: pointer;">
+                <p [ngClass]="project.status.toLowerCase()">
+                  {{ project.status }}</p>
+              </ion-col>
+    
+              <ion-col size="3" (click)="navigateToDetails(project)" style="cursor: pointer;">
+                <p>{{ project.start_date | date }} - {{ project.end_date | date }}</p>
+              </ion-col>
+    
+              <ion-col size="2">
+                <ion-button fill="clear" size="small" (click)="openEditForm(project)">
+                  <ion-img src="../../../../assets/Icons/pencil.svg"></ion-img>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+    
+          <p *ngIf="!loadingProjects && !projects.length" class="empty">
+            No projects created yet.
+          </p>
+</div>
+ 
 
 </ion-content>

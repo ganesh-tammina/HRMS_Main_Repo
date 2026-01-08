@@ -1,5 +1,8 @@
 <ion-content class="page-containerOn project-details-wrapper ion-padding">
-
+    <p class="page-header mb-8">
+        <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
+        <a routerLink="/admin" (click)="projectDeails()">Projects /</a> Projects Details
+       </p>
   <!-- LOADING -->
   <ion-spinner *ngIf="loading" class="center-spinner"></ion-spinner>
 
@@ -9,71 +12,33 @@
   </p>
 
   <!-- ======= TOP BAR ======= -->
-  <div class="top-bar" *ngIf="!loading && project">
+  <div class="project-header-block row-left" *ngIf="!loading && project">
+    <ion-img src="../../../../assets/Icons/project-name.svg"></ion-img>
     <div>
-      <h1>{{ project.project_name }}</h1>
-      <p>{{ project.project_code }} • {{ project.client_name }}</p>
+      <h1>{{ project.project_name }}
+          <ion-chip [ngClass]="project.status === 'active' ? 'success' : project.status === 'completed' ? 'medium' : 'warning'">
+              {{ project.status }}
+            </ion-chip>
+      </h1>
+      <div class="row-left">
+          <p><ion-img src="../../../../assets/Icons/building-blue.svg"  width="18"></ion-img>
+            {{ project.client_name }} ({{ project.project_code }}) </p>
+          <p><ion-img src="../../../../assets/Icons/calender-blue.svg" width="18"></ion-img>
+            {{ project.start_date | date:'mediumDate' }} to {{ project.end_date | date:'mediumDate' }} </p>
+            <p><ion-img src="../../../../assets/user.svg"></ion-img>
+              {{ project.project_manager_name || 'Not assigned' }} </p>
+      </div>
     </div>
-    <ion-chip [color]="project.status === 'active' ? 'success' : project.status === 'completed' ? 'medium' : 'warning'">
-      {{ project.status }}
-    </ion-chip>
+  
   </div>
 
-  <!-- ================= PROJECT INFO ================= -->
-  <ion-card *ngIf="!loading && project" class="info-card">
-    <ion-card-header>
-      <ion-card-title>Project Information</ion-card-title>
-    </ion-card-header>
 
-    <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12" sizeMd="6">
-            <div class="info-item">
-              <label>Client Name</label>
-              <p>{{ project.client_name }}</p>
-            </div>
-          </ion-col>
-          <ion-col size="12" sizeMd="6">
-            <div class="info-item">
-              <label>Project Manager</label>
-              <p>{{ project.project_manager_name || 'Not assigned' }}</p>
-            </div>
-          </ion-col>
-        </ion-row>
-
-        <ion-row>
-          <ion-col size="12" sizeMd="6">
-            <div class="info-item">
-              <label>Start Date</label>
-              <p>{{ project.start_date | date:'mediumDate' }}</p>
-            </div>
-          </ion-col>
-          <ion-col size="12" sizeMd="6">
-            <div class="info-item">
-              <label>End Date</label>
-              <p>{{ project.end_date | date:'mediumDate' }}</p>
-            </div>
-          </ion-col>
-        </ion-row>
-
-        <ion-row *ngIf="project.description">
-          <ion-col size="12">
-            <div class="info-item">
-              <label>Description</label>
-              <p>{{ project.description }}</p>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
 
   <!-- ================= SHIFTS LIST ================= -->
-  <ion-card class="list-card">
-    <ion-card-header>
+  <ion-card class="shift-card">
+    <ion-card-header class="row-space-between">
       <ion-card-title>Project Shifts</ion-card-title>
-      <ion-button shape="round" color="primary" (click)="openShiftModal()">
+      <ion-button class="primary-btn" (click)="openShiftModal()">
         <ion-icon name="add" slot="start"></ion-icon>
         Add Shift
       </ion-button>
@@ -81,45 +46,23 @@
 
     <ion-card-content>
       <ion-spinner *ngIf="loading"></ion-spinner>
-
-      <ion-grid class="table-block" *ngIf="!loading && shifts.length">
-        <ion-row class="table-header">
-          <ion-col size="3">
-            <p>Shift Name</p>
-          </ion-col>
-          <ion-col size="2">
-            <p>Type</p>
-          </ion-col>
-          <ion-col size="3">
-            <p>Start Time</p>
-          </ion-col>
-          <ion-col size="3">
-            <p>End Time</p>
-          </ion-col>
-          <ion-col size="1">
-            <p>Status</p>
-          </ion-col>
-        </ion-row>
-
-        <ion-row class="table-row-list" *ngFor="let s of shifts">
-          <ion-col size="3">
-            <p>{{ s.shift_name }}</p>
-          </ion-col>
-          <ion-col size="2">
-            <p>{{ s.shift_type }}</p>
-          </ion-col>
-          <ion-col size="3">
-            <p>{{ s.start_time }}</p>
-          </ion-col>
-          <ion-col size="3">
-            <p>{{ s.end_time }}</p>
-          </ion-col>
-          <ion-col size="1">
-            <ion-badge [color]="s.is_active ? 'success' : 'medium'">
-              {{ s.is_active ? 'Active' : 'Inactive' }}
-            </ion-badge>
-          </ion-col>
-        </ion-row>
+      <ion-grid>
+      <ion-row *ngIf="!loading && shifts.length">
+        <ion-col size="12" size-sm="12" size-md="6" size-lg="4"  size-xl="4"  
+        class="shift-list-card row-space-between" *ngFor="let s of shifts">
+        <div class="row-left">
+            <ion-img [src]="shiftIcons[s.shift_type] || ''"></ion-img>
+            <div>
+                <p>{{ s.shift_name }}</p>
+                <p>{{ s.start_time }} - {{ s.end_time }}</p>
+            </div>
+        </div>      
+            
+        <ion-chip [ngClass]="s.is_active ? 'success' : 'medium'">
+            {{ s.is_active ? 'Active' : 'Inactive' }}
+          </ion-chip>
+        </ion-col>
+      </ion-row>     
       </ion-grid>
 
       <p *ngIf="!loading && !shifts.length" class="empty">No shifts created yet</p>
@@ -188,9 +131,9 @@
 
   <!-- ================= ASSIGNED TEAM ================= -->
   <ion-card class="list-card">
-    <ion-card-header>
+    <ion-card-header class="row-space-between">
       <ion-card-title>Assigned Team</ion-card-title>
-      <ion-button shape="round" color="primary" (click)="openAssignModal()">
+      <ion-button class="primary-btn" (click)="openAssignModal()">
         <ion-icon name="person-add" slot="start"></ion-icon>
         Assign Employee
       </ion-button>

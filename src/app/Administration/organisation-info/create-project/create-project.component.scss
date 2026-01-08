@@ -1,4 +1,28 @@
+@import '../../master-admin-setup/master-admin-setup.component.scss';
 
+.table-list-block {
+  background: #fff;
+  border: 1px solid #ababaa;
+  border-radius: 8px;
+  .title {
+    margin: 0;
+    small {
+      border-radius: 50%;
+      background: #1F74BB;
+      padding: 3px;
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+      text-align: center;
+      font-weight: 600;
+    }
+  }
+  .table-block {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+}
 /* ===== Form ===== */
 .form-block {
   ion-item {

@@ -146,4 +146,7 @@ export class CreateProjectComponent implements OnInit {
     });
     await toast.present();
   }
+  adminManagement() {
+    this.router.navigate(['./admin']);
+  }
 }
