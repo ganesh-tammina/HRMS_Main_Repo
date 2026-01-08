@@ -4,28 +4,27 @@
   <ion-grid class="row-space-between">
     <ion-row>
       <ion-col>
-          <h1>Role & Access Management</h1>
-          <p>Assign roles and permissions for employees, HR, managers and admin</p>
-      </ion-col>     
+        <h1>Role & Access Management</h1>
+        <p>Assign roles and permissions for employees, HR, managers and admin</p>
+      </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-          <ion-button shape="round" color="primary" (click)="toggleCreateUser()">
-              <ion-icon name="add" slot="start"></ion-icon>
-              {{ showCreateUser ? 'Cancel' : 'Create User' }}
-            </ion-button>
-      </ion-col>   
-  </ion-row>
+        <ion-button shape="round" color="primary" (click)="toggleCreateUser()">
+          <ion-icon name="add" slot="start"></ion-icon>
+          {{ showCreateUser ? 'Cancel' : 'Create User' }}
+        </ion-button>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 
   <!-- ================= CREATE USER ================= -->
   <ion-card *ngIf="showCreateUser" class="create-card">
-     <ion-card-content>
+    <ion-card-content>
       <ion-grid>
         <ion-row>
           <ion-col size="12" size-md="4">
-            <ion-input label="Email" labelPlacement="stacked"
-              [(ngModel)]="newUser.email"></ion-input>
+            <ion-input label="Email" labelPlacement="stacked" [(ngModel)]="newUser.email"></ion-input>
           </ion-col>
 
           <ion-col size="12" size-md="4">
@@ -34,8 +33,7 @@
           </ion-col>
 
           <ion-col size="12" size-md="4">
-            <ion-select label="Role" labelPlacement="stacked"
-              [(ngModel)]="newUser.role">
+            <ion-select label="Role" labelPlacement="stacked" [(ngModel)]="newUser.role">
               <ion-select-option value="employee">Employee</ion-select-option>
               <ion-select-option value="hr">HR</ion-select-option>
               <ion-select-option value="manager">Manager</ion-select-option>
@@ -44,8 +42,7 @@
           </ion-col>
         </ion-row>
 
-        <ion-button expand="block" color="success" class="ion-margin-top"
-          (click)="createUser()">
+        <ion-button expand="block" color="success" class="ion-margin-top" (click)="createUser()">
           Create User
         </ion-button>
       </ion-grid>
@@ -53,69 +50,64 @@
   </ion-card>
 
   <!-- ================= FILTER BAR ================= -->
- 
-    <ion-grid class="filter-card">
-      <ion-row class="row-left">
-        <ion-col size="12" size-md="8">
-          <ion-searchbar
-            placeholder="Search by name, email, employee ID"
-            [(ngModel)]="searchText"
-            (ionInput)="applyFilter()">
-          </ion-searchbar>
-        </ion-col>
 
-        <ion-col size="12" size-md="4">
-          <ion-select
-            [(ngModel)]="selectedRole"
-            (ionChange)="applyFilter()"
-            placeholder="Filter by role"
-            toggleIcon="chevron-down" expandedIcon="chevron-up">
-            <ion-select-option value="all">All Roles</ion-select-option>
-            <ion-select-option value="employee">Employee</ion-select-option>
-            <ion-select-option value="hr">HR</ion-select-option>
-            <ion-select-option value="manager">Manager</ion-select-option>
-            <ion-select-option value="admin">Admin</ion-select-option>
-          </ion-select>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+  <ion-grid class="filter-card">
+    <ion-row class="row-left">
+      <ion-col size="12" size-md="8">
+        <ion-searchbar placeholder="Search by name, email, employee ID" [(ngModel)]="searchText"
+          (ionInput)="applyFilter()">
+        </ion-searchbar>
+      </ion-col>
+
+      <ion-col size="12" size-md="4">
+        <ion-select [(ngModel)]="selectedRole" (ionChange)="applyFilter()" placeholder="Filter by role"
+          toggleIcon="chevron-down" expandedIcon="chevron-up">
+          <ion-select-option value="all">All Roles</ion-select-option>
+          <ion-select-option value="employee">Employee</ion-select-option>
+          <ion-select-option value="hr">HR</ion-select-option>
+          <ion-select-option value="manager">Manager</ion-select-option>
+          <ion-select-option value="admin">Admin</ion-select-option>
+        </ion-select>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <!-- ================= USERS ================= -->
   <ion-spinner *ngIf="loading"></ion-spinner>
 
   <ion-grid class="table-block">
-     <ion-row class="table-header">
-       <ion-col size="2">
-          <p>Employee ID</p>
-       </ion-col>
-       <ion-col  size="2">
-          <p>Name</p>
-        </ion-col>
-        <ion-col size="3">
-            <p>Username</p>
-          </ion-col>
-        <ion-col size="1">
-            <p>Assign Role</p>
-          </ion-col>
-          <ion-col size="4">
-              <p>Actions</p>
-            </ion-col>
-     </ion-row>
-     <ion-row class="table-row-list"  *ngFor="let user of filteredUsers">
-        <ion-col size="2">
-           <p>{{ user.EmployeeNumber }}</p>
-        </ion-col>
-        <ion-col  size="2">
-           <p>{{ user.full_name || 'User' }}</p>
-         </ion-col>
-         <ion-col  size="3">
-            <p>{{ user.username }}</p>
-          </ion-col>
-         <ion-col size="1">
-             <p> {{ user.role | uppercase }}</p>
-           </ion-col>
-           <ion-col size="4" class="row-left">
-              <!-- <ion-button expand="block" color="success"
+    <ion-row class="table-header">
+      <ion-col size="2">
+        <p>Employee ID</p>
+      </ion-col>
+      <ion-col size="2">
+        <p>Name</p>
+      </ion-col>
+      <ion-col size="3">
+        <p>Username</p>
+      </ion-col>
+      <ion-col size="1">
+        <p>Assign Role</p>
+      </ion-col>
+      <ion-col size="4">
+        <p>Actions</p>
+      </ion-col>
+    </ion-row>
+    <ion-row class="table-row-list" *ngFor="let user of filteredUsers">
+      <ion-col size="2">
+        <p>{{ user.EmployeeNumber }}</p>
+      </ion-col>
+      <ion-col size="2">
+        <p>{{ user.full_name || 'User' }}</p>
+      </ion-col>
+      <ion-col size="3">
+        <p>{{ user.username }}</p>
+      </ion-col>
+      <ion-col size="1">
+        <p> {{ user.role | uppercase }}</p>
+      </ion-col>
+      <ion-col size="4" class="row-left">
+        <!-- <ion-button expand="block" color="success"
               (click)="makeHR(user.id)" [disabled]="user.role === 'hr'">
               HR
             </ion-button>
@@ -128,25 +120,25 @@
           Admin
         </ion-button> -->
 
-        <ion-segment [(ngModel)]="user.role" (ionChange)="changeRole($event)">
-            <ion-segment-button value="admin">
-              <ion-label>Admin</ion-label>
-            </ion-segment-button>
-          
-            <ion-segment-button value="manager">
-              <ion-label>Manager</ion-label>
-            </ion-segment-button>
-          
-            <ion-segment-button value="hr">
-              <ion-label>Hr</ion-label>
-            </ion-segment-button>
-          
-            <ion-segment-button value="employee">
-              <ion-label>Employee</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-             </ion-col>
-      </ion-row>
-      </ion-grid>
+        <ion-segment [(ngModel)]="user.role" (ionChange)="changeRole($event, user.id)">
+          <ion-segment-button value="admin">
+            <ion-label>Admin</ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="manager">
+            <ion-label>Manager</ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="hr">
+            <ion-label>Hr</ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="employee">
+            <ion-label>Employee</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

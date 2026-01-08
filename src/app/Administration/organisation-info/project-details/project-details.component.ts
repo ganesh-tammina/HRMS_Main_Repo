@@ -114,23 +114,23 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   /* ================= MODAL CONTROLS ================= */
-  openShiftModal() {
+  openShiftModal(): void {
     this.showShiftModal = true;
   }
 
-  closeShiftModal() {
+  closeShiftModal(): void {
     this.showShiftModal = false;
     this.shiftForm.reset({ shift_type: 'day', timezone: 'UTC' });
   }
 
-  openAssignModal() {
+  openAssignModal(): void {
     this.showAssignModal = true;
     this.searchTerm = '';
     this.filteredEmployees = [];
     this.selectedEmployee = null;
   }
 
-  closeAssignModal() {
+  closeAssignModal(): void {
     this.showAssignModal = false;
     this.searchTerm = '';
     this.filteredEmployees = [];
@@ -139,7 +139,7 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   /* ================= EMPLOYEE SEARCH ================= */
-  loadEmployees() {
+  loadEmployees(): void {
     console.log('Loading employees...');
 
     this.employeeService.getAllEmployees().subscribe({
