@@ -23,8 +23,18 @@ ion-item {
 .mt-20 {
   margin-top: 20px;
 }
+
+.leavehead{
+  margin: 0 20px;
 h4{
   font-weight: bold;
+  margin-bottom: 3px;
+}
+p{
+  margin-top: 3px;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
 }
 .allocatehead{
   ion-card-title{
@@ -33,19 +43,59 @@ h4{
   border: 1px solid #ccc;
   border-radius: 10px;
 }
-p{
-  margin-top: 3px;
-  font-size: 12px;
-  margin-bottom: 20px;
-}
+
 .allocation-ipt{
    ion-select {
-    min-height: 45px;
+    min-height: 40px;
     margin-top: 10px;
-
+    --border-radius: 10px;
   }
   ion-textarea{
     padding-top: 10px !important; 
+    --border-radius: 10px;
   }
-
+}
+.toggle{
+  ion-label{
+    margin-top: -15px;
+    @media(min-width:992px){
+    font-size: 16px;
+    color: #737373;
+    }
+  }
+  ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+    }
+  ion-toggle{
+    margin-top: 8px;
+    margin-left: 10px;
+    position: relative;
+    top: 3px;    
+    @media(max-width:767px){
+      top: 0px;
+      margin-left: 2px;
+    }
+  }
+}
+.cancel-btn{
+  border-radius: 20px;
+  margin-right: 20px;
+  --box-shadow: none;
+}
+.create-btn{
+  border-radius: 20px;
+  --background: transparent;
+  .button-native{
+    background: transparent;
+  }
+}
+ion-popover{
+.select-popover{
+    margin-left: 110px;
+    margin-top: 15px;
+    @media(max-width:767px){
+      margin-left: 50px;
+    }
+}
 }

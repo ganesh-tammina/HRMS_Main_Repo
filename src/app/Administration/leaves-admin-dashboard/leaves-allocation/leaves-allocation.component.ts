@@ -167,4 +167,5 @@ export class LeavesAllocationComponent implements OnInit {
     adminManagement() {
     this.router.navigate(['./admin']);
   }
+
 }
