@@ -10,45 +10,65 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-button shape="round" color="primary" (click)="toggleCreateUser()">
+        <ion-button class="primary-btn" (click)="toggleCreateUser()">
           <ion-icon name="add" slot="start"></ion-icon>
-          {{ showCreateUser ? 'Cancel' : 'Create User' }}
+          Create User
         </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
 
   <!-- ================= CREATE USER ================= -->
-  <ion-card *ngIf="showCreateUser" class="create-card">
-    <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12" size-md="4">
-            <ion-input label="Email" labelPlacement="stacked" [(ngModel)]="newUser.email"></ion-input>
-          </ion-col>
+  <ion-modal [isOpen]="showCreateUser" class="side-custom-popup custom-popup">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+              <ion-title>Assign Role </ion-title>
+              <p>Set up user account and permissions</p>
+          <ion-buttons slot="end">
+           
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="form-block">
+            <div>
+                <ion-label>Employee</ion-label>
+                  <ion-input labelPlacement="stacked"></ion-input>
+              </div>
+          <div>
+            <ion-label>Email</ion-label>
+              <ion-input labelPlacement="stacked" [(ngModel)]="newUser.email"></ion-input>
+          </div>
+          <div>
+              <ion-label>Password</ion-label>
+              <ion-input labelPlacement="stacked" type="password" [(ngModel)]="newUser.password"></ion-input>
+            </div>
+            <div>
+                <ion-label>Role</ion-label>
+                <ion-select labelPlacement="stacked" [(ngModel)]="newUser.role"  
+                toggleIcon="chevron-down" expandedIcon="chevron-up" interface="popover" >
+                    <ion-select-option value="employee">Employee</ion-select-option>
+                    <ion-select-option value="hr">HR</ion-select-option>
+                    <ion-select-option value="manager">Manager</ion-select-option>
+                    <ion-select-option value="admin">Admin</ion-select-option>
+                  </ion-select>
+              </div>
+        </div>     
+        <div class="row-center">
+            <ion-button (click)="toggleCreateUser()" class="primary-outline-btn mr-8">Close</ion-button>
+            <ion-button class="primary-btn" (click)="createUser()">
+              Create User
+            </ion-button>
+        </div>
+        
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
-          <ion-col size="12" size-md="4">
-            <ion-input label="Password" labelPlacement="stacked" type="password"
-              [(ngModel)]="newUser.password"></ion-input>
-          </ion-col>
 
-          <ion-col size="12" size-md="4">
-            <ion-select label="Role" labelPlacement="stacked" [(ngModel)]="newUser.role">
-              <ion-select-option value="employee">Employee</ion-select-option>
-              <ion-select-option value="hr">HR</ion-select-option>
-              <ion-select-option value="manager">Manager</ion-select-option>
-              <ion-select-option value="admin">Admin</ion-select-option>
-            </ion-select>
-          </ion-col>
-        </ion-row>
 
-        <ion-button expand="block" color="success" class="ion-margin-top" (click)="createUser()">
-          Create User
-        </ion-button>
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
-
+ 
   <!-- ================= FILTER BAR ================= -->
 
   <ion-grid class="filter-card">

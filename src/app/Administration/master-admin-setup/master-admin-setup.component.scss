@@ -63,3 +63,21 @@
     }
   }
 }
+ion-modal {
+  &.side-custom-popup {
+    --width: 450px !important;    
+    ion-toolbar {     
+      margin-top: 12px; 
+      ion-title {
+        padding-left: 32px;
+      }
+      p {
+        margin: 0;
+        padding: 5px 30px;
+      }
+    } 
+    .form-block {
+      padding-left: 20px;
+    }
+  }
+}
