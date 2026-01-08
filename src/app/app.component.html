@@ -7,7 +7,8 @@
       <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
-            <ion-menu-toggle auto-hide="false">
+            <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())"
+              auto-hide="false">
               <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -18,7 +19,7 @@
               </ion-item>
             </ion-menu-toggle>
 
-            <ion-menu-toggle *ngIf="isEmployeeOrManagerOrHr()" auto-hide="false">
+            <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false">
               <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -29,8 +30,8 @@
               </ion-item>
             </ion-menu-toggle>
 
-            <!-- Org Parent Item - Only for Admin/HR -->
-            <ng-container *ngIf="isAdminOrHR()">
+            <!-- Org Parent Item - Only for HR -->
+            <ng-container *ngIf="isHROnly()">
               <ion-menu-toggle auto-hide="false" id="menu-button">
                 <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
@@ -68,8 +69,8 @@
               </ion-popover>
             </ng-container>
 
-            <!-- My Team - Only for Manager, Admin, HR -->
-            <ng-container *ngIf="isManagerOrAbove()">
+            <!-- My Team - Only for Manager, HR -->
+            <ng-container *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())">
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
                   routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">
@@ -98,7 +99,7 @@
             <!-- ///////////////////////////////////////////////// -->
             <!-- ///////////////////////////////////////////////// -->
             <!-- ///////////////////////////////////////////////// -->
-            <ng-container *ngIf="isAdminOrHR()">
+            <ng-container *ngIf="isAdminOnly() || isHROnly()">
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable':''">
@@ -126,7 +127,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle> -->
-            <ion-menu-toggle *ngIf="isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
+            <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
               <ion-item lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
                 <div class="row-left">

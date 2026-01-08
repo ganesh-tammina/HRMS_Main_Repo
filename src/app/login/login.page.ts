@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/login-services.service';
 import { EmployeeService } from '../services/employee.service';
+import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private employeeService: EmployeeService,
-    private router: Router
+    private router: Router,
+    private routeGuardService: RouteGuardService
   ) { }
 
   ngOnInit(): void {
@@ -88,7 +90,7 @@ export class LoginPage implements OnInit {
       this.authService.login({ username: email, password }).subscribe({
         next: () => {
           this.loading = false;
-          this.router.navigate(['/Home'], { replaceUrl: true });
+          this.navigateBasedOnRole();
         },
         error: () => {
           this.loading = false;
@@ -134,12 +136,23 @@ export class LoginPage implements OnInit {
     this.employeeService.getMyProfile(true).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/Home'], { replaceUrl: true });
+        this.navigateBasedOnRole();
       },
       error: () => {
         this.loading = false;
         alert('Failed to load employee profile');
       }
     });
+  }
+
+  /** NAVIGATE BASED ON USER ROLE */
+  private navigateBasedOnRole(): void {
+    const role = this.routeGuardService.userRole?.toLowerCase();
+
+    if (role === 'admin') {
+      this.router.navigate(['/admin'], { replaceUrl: true });
+    } else {
+      this.router.navigate(['/Home'], { replaceUrl: true });
+    }
   }
 }

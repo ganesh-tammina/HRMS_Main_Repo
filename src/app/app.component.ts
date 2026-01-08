@@ -121,6 +121,14 @@ export class AppComponent implements OnInit {
   }
 
   // Role checking helper methods
+  isAdminOnly(): boolean {
+    return this.userRole === 'admin';
+  }
+
+  isHROnly(): boolean {
+    return this.userRole === 'hr';
+  }
+
   isAdminOrHR(): boolean {
     return this.userRole === 'admin' || this.userRole === 'hr';
   }
@@ -130,11 +138,11 @@ export class AppComponent implements OnInit {
   }
 
   isManagerOrAbove(): boolean {
-    return this.userRole === 'manager' || this.userRole === 'admin' || this.userRole === 'hr';
+    return this.userRole === 'manager' || this.userRole === 'hr';
   }
 
   isEmployeeOrManagerOrHr(): boolean {
-    return this.userRole === 'employee' || this.userRole === 'manager' || this.userRole === 'hr'  ;
+    return this.userRole === 'employee' || this.userRole === 'manager' || this.userRole === 'hr';
   }
 
   isEmployee(): boolean {

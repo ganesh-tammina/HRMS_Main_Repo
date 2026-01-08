@@ -1,0 +1,129 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/my-team"></ion-back-button>
+        </ion-buttons>
+        <ion-title>WFH Approvals</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="loadPendingWFHRequests()">
+                <ion-icon name="refresh" slot="icon-only"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+
+    <!-- Search -->
+    <ion-toolbar>
+        <ion-searchbar placeholder="Search employee..." (ionInput)="onSearchChange($event)" [debounce]="300">
+        </ion-searchbar>
+    </ion-toolbar>
+
+    <!-- Mode Filter -->
+    <ion-toolbar>
+        <ion-segment [(ngModel)]="modeFilter" (ionChange)="onModeFilterChange($event)">
+            <ion-segment-button value="all">
+                <ion-label>All</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="WFH">
+                <ion-label>WFH</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="WFO">
+                <ion-label>WFO</ion-label>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading pending WFH requests...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredRequests.length === 0" class="empty-state">
+        <ion-icon name="home-outline" size="large"></ion-icon>
+        <h2>No Pending Requests</h2>
+        <p>All WFH requests have been processed.</p>
+    </div>
+
+    <!-- WFH Request Cards -->
+    <div class="requests-container" *ngIf="!isLoading && filteredRequests.length > 0">
+        <ion-card *ngFor="let request of filteredRequests" class="wfh-card">
+            <ion-card-header>
+                <div class="card-header-content">
+                    <ion-avatar class="employee-avatar">
+                        <img [src]="getProfileImage(request)" />
+                    </ion-avatar>
+                    <div class="employee-info">
+                        <ion-card-title>{{ request.FirstName }} {{ request.LastName }}</ion-card-title>
+                        <p class="employee-number">{{ request.EmployeeNumber }}</p>
+                    </div>
+                    <div class="badges">
+                        <ion-badge [color]="getModeColor(request.work_mode)">
+                            <ion-icon [name]="getModeIcon(request.work_mode)"></ion-icon>
+                            {{ request.work_mode }}
+                        </ion-badge>
+                        <ion-badge [color]="getStatusColor(request.status)">
+                            {{ request.status || 'pending' }}
+                        </ion-badge>
+                    </div>
+                </div>
+            </ion-card-header>
+
+            <ion-card-content>
+                <!-- Date -->
+                <div class="info-row">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <div>
+                        <strong>Date:</strong>
+                        <p>{{ request.date | date:'fullDate' }}</p>
+                    </div>
+                </div>
+
+                <!-- Work Mode Details -->
+                <div class="info-row">
+                    <ion-icon [name]="getModeIcon(request.work_mode)"></ion-icon>
+                    <div>
+                        <strong>Work Mode:</strong>
+                        <p>{{ request.work_mode === 'WFH' ? 'Work From Home' : 'Work From Office' }}</p>
+                    </div>
+                </div>
+
+                <!-- Reason -->
+                <div class="info-row" *ngIf="request.reason">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                    <div>
+                        <strong>Reason:</strong>
+                        <p>{{ request.reason }}</p>
+                    </div>
+                </div>
+
+                <!-- Applied Date -->
+                <div class="info-row">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <div>
+                        <strong>Requested On:</strong>
+                        <p>{{ request.created_at | date:'medium' }}</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <ion-button expand="block" color="success" (click)="approveWFH(request)">
+                        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                        Approve
+                    </ion-button>
+                    <ion-button expand="block" color="danger" (click)="rejectWFH(request)">
+                        <ion-icon name="close-circle" slot="start"></ion-icon>
+                        Reject
+                    </ion-button>
+                </div>
+            </ion-card-content>
+        </ion-card>
+    </div>
+</ion-content>

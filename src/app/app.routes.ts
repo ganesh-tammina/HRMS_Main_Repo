@@ -9,6 +9,8 @@ import { HomePage } from './home/home.page';
 import { LoginPage } from './login/login.page';
 import { MyTeamPage } from './my-team/my-team.page';
 import { ManagerTimesheetApprovalsPage } from './manager-timesheet-approvals/manager-timesheet-approvals.page';
+import { ManagerLeaveApprovalsPage } from './manager-leave-approvals/manager-leave-approvals.page';
+import { ManagerWfhApprovalsPage } from './manager-wfh-approvals/manager-wfh-approvals.page';
 import { CandiateCreateComponent } from './onboarding/candiate-create/candiate-create.component';
 import { CompensationComponent } from './onboarding/compensation/compensation.component';
 import { CreateOfferComponent } from './onboarding/create-offer/create-offer.component';
@@ -49,7 +51,8 @@ export const routes: Routes = [
   {
     path: 'Home',
     component: HomePage,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['employee', 'manager', 'hr'] },
   },
   {
     path: 'Me',
@@ -60,11 +63,23 @@ export const routes: Routes = [
     path: 'MyTeam',
     component: MyTeamPage,
     canActivate: [AuthGuard, roleHandlerGuard],
-    data: { role: ['manager', 'admin', 'hr'] },
+    data: { role: ['manager', 'hr', 'employee'] },
   },
   {
     path: 'ManagerTimesheetApprovals',
     component: ManagerTimesheetApprovalsPage,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['manager', 'admin', 'hr'] },
+  },
+  {
+    path: 'ManagerLeaveApprovals',
+    component: ManagerLeaveApprovalsPage,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['manager', 'admin', 'hr'] },
+  },
+  {
+    path: 'ManagerWfhApprovals',
+    component: ManagerWfhApprovalsPage,
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['manager', 'admin', 'hr'] },
   },

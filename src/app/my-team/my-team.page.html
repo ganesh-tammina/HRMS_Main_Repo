@@ -5,6 +5,12 @@
          <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length">
             <ion-icon name="document-text-outline" slot="icon-only"></ion-icon>
          </ion-button>
+         <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length">
+            <ion-icon name="calendar-clear-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length">
+            <ion-icon name="home-outline" slot="icon-only"></ion-icon>
+         </ion-button>
          <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length">
             <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
          </ion-button>

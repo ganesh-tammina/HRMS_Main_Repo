@@ -304,9 +304,17 @@ export class MyTeamPage implements OnInit, OnDestroy {
     );
   }
 
-  /* ================= NAVIGATE TO TIMESHEET APPROVALS ================= */
+  /* ================= NAVIGATE TO APPROVALS PAGES ================= */
 
   navigateToTimesheetApprovals() {
     this.router.navigate(['/ManagerTimesheetApprovals']);
+  }
+
+  navigateToLeaveApprovals() {
+    this.router.navigate(['/ManagerLeaveApprovals']);
+  }
+
+  navigateToWfhApprovals() {
+    this.router.navigate(['/ManagerWfhApprovals']);
   }
 }
