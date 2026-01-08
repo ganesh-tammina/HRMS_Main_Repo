@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { LeaveTypeService } from 'src/app/services/leavetype.service';
+import { EmployeeLeaveAllocationComponent } from './employee-leave-allocation/employee-leave-allocation.component';
 
 @Component({
   selector: 'app-leaves-admin-dashboard',
@@ -23,7 +24,7 @@ export class LeavesAdminDashboardComponent {
   listLoading: any;
   leaveTypes: any;
 
-  constructor(private router: Router, private leavePlanService: LeavePlanService, private leaveTypesService: LeaveTypeService) { }
+  constructor(private router: Router, private leavePlanService: LeavePlanService, private leaveTypesService: LeaveTypeService, private modalCtrl: ModalController,) { }
 
   ngOnInit() {
     this.loadLeavePlans();
@@ -65,10 +66,18 @@ export class LeavesAdminDashboardComponent {
   leavesallocation() {
     this.router.navigate(['/leaves_allocation']);
   }
-  employeeallocation() {
-    this.router.navigate(['/employee_lEAVE_allocation']);
-  }
+  // employeeallocation() {
+  //   this.router.navigate(['/employee_lEAVE_allocation']);
+  // }
     adminManagement() {
     this.router.navigate(['./admin']);
   }
+    async employeeallocation() {
+      const modal = await this.modalCtrl.create({
+        component: EmployeeLeaveAllocationComponent,
+        cssClass: 'side-custom-popup checkinInfo-popup',
+        backdropDismiss: false,
+      });
+      await modal.present();
+    }
 }

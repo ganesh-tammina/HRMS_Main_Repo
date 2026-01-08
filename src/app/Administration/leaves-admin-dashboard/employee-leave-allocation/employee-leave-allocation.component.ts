@@ -28,6 +28,9 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
 
   employees: any[] = [];
   leavePlans: any[] = [];
+  showCreateForm = false;
+  isEditMode = false;
+  selectedLeaveTypeId: number | null = null;
 
   selectedEmployeeLabel = '';
 
@@ -49,7 +52,22 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
     this.loadEmployees();
     this.loadLeavePlans(); // ✅ SAME PATTERN AS LeavesAllocationComponent
   }
-
+    openCreateForm(): void {
+    this.isEditMode = false;
+    this.selectedLeaveTypeId = null;
+    this.allocationForm.reset({
+      is_paid: true,
+      requires_approval: true,
+      can_carry_forward: false,
+      max_carry_forward_days: 0,
+    });
+    this.showCreateForm = true;
+  }
+  cancelCreate(): void {
+    this.showCreateForm = false;
+    this.isEditMode = false;
+    this.selectedLeaveTypeId = null;
+  }
   /* ================= LOADERS ================= */
 
   loadEmployees(): void {
@@ -119,6 +137,7 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
         error: () => {
           this.showToast('Initialization failed');
           this.loading = false;
+          this.showCreateForm = false;
         }
       });
       return;
