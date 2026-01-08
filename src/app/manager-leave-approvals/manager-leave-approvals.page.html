@@ -22,10 +22,9 @@
             <ion-label>Leave Type:</ion-label>
             <ion-select [(ngModel)]="leaveTypeFilter" (ionChange)="onTypeFilterChange($event)" interface="popover">
                 <ion-select-option value="all">All Types</ion-select-option>
-                <ion-select-option value="CL">Casual Leave</ion-select-option>
-                <ion-select-option value="SL">Sick Leave</ion-select-option>
-                <ion-select-option value="PL">Privilege Leave</ion-select-option>
-                <ion-select-option value="EL">Emergency Leave</ion-select-option>
+                <ion-select-option *ngFor="let type of leaveTypes" [value]="type.type_code">
+                    {{ type.type_name }}
+                </ion-select-option>
             </ion-select>
         </ion-item>
     </ion-toolbar>

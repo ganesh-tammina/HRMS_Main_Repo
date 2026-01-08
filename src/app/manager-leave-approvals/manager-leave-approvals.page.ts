@@ -8,7 +8,8 @@ import {
     IonBadge, IonSearchbar, IonSelect, IonSelectOption, IonLabel, IonItem, IonAvatar,
     IonRefresher, IonRefresherContent, IonSpinner, AlertController, ToastController
 } from '@ionic/angular/standalone';
-import { LeaveService } from '../services/leave.service';
+import { LeaverequestService } from '../services/leaverequest.service';
+import { LeaveTypeService } from '../services/leavetype.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -27,24 +28,39 @@ import { environment } from 'src/environments/environment';
 export class ManagerLeaveApprovalsPage implements OnInit {
     pendingLeaves: any[] = [];
     filteredLeaves: any[] = [];
+    leaveTypes: any[] = [];
     isLoading = false;
     searchTerm = '';
     leaveTypeFilter = 'all';
 
     constructor(
-        private leaveService: LeaveService,
+        private leaveRequestService: LeaverequestService,
+        private leaveTypeService: LeaveTypeService,
         private alertController: AlertController,
         private toastController: ToastController,
         private router: Router
     ) { }
 
     ngOnInit() {
+        this.loadLeaveTypes();
         this.loadPendingLeaves();
+    }
+
+    loadLeaveTypes() {
+        this.leaveTypeService.getLeaveTypes().subscribe({
+            next: (types) => {
+                this.leaveTypes = types;
+            },
+            error: (error) => {
+                console.error('Error loading leave types:', error);
+                this.showToast('Failed to load leave types', 'danger');
+            }
+        });
     }
 
     loadPendingLeaves() {
         this.isLoading = true;
-        this.leaveService.getPendingLeaves().subscribe({
+        this.leaveRequestService.getPendingLeaveRequests().subscribe({
             next: (leaves) => {
                 this.pendingLeaves = leaves;
                 this.applyFilters();
@@ -140,7 +156,7 @@ export class ManagerLeaveApprovalsPage implements OnInit {
 
     performApprove(leave: any) {
         this.isLoading = true;
-        this.leaveService.approveLeave(leave.id).subscribe({
+        this.leaveRequestService.approveLeave(leave.id, 'Approved').subscribe({
             next: () => {
                 this.showToast('Leave approved successfully', 'success');
                 this.loadPendingLeaves();
@@ -155,7 +171,7 @@ export class ManagerLeaveApprovalsPage implements OnInit {
 
     performReject(leave: any, reason: string) {
         this.isLoading = true;
-        this.leaveService.rejectLeave(leave.id, reason).subscribe({
+        this.leaveRequestService.rejectLeave(leave.id, reason).subscribe({
             next: () => {
                 this.showToast('Leave rejected successfully', 'success');
                 this.loadPendingLeaves();

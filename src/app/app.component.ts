@@ -82,6 +82,7 @@ export class AppComponent implements OnInit {
 
         // Update user role on navigation to ensure menu visibility is correct
         this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+        console.log('🔍 Navigation Event - User Role:', this.userRole);
         const role = this.userRole || '';
         this.isAdmin = (role === 'admin' || role === 'hr');
 
@@ -107,7 +108,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Get userRole from RouteGuardService
     this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+    console.log('🔍 App Component ngOnInit - User Role:', this.userRole);
+    
     this.isAdmin = false;
 
     const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';

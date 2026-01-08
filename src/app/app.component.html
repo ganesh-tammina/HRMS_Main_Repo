@@ -69,8 +69,8 @@
               </ion-popover>
             </ng-container>
 
-            <!-- My Team - Only for Manager, HR -->
-            <ng-container *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())">
+            <!-- My Team - Only for Manager, HR, Employee -->
+            <ng-container *ngIf="isManager() || isHROnly() || isEmployee()">
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
                   routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">

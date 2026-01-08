@@ -77,52 +77,31 @@ export class MyTeamPage implements OnInit, OnDestroy {
     // Get user role from RouteGuardService
     this.userRole = this.routeGuardService.userRole?.toLowerCase() || null;
 
-    // Check if user is a manager or higher (admin, hr, manager)
-    const isManager = ['admin', 'hr', 'manager'].includes(this.userRole || '');
+    console.log('🔍 Loading Team Data - User Role:', this.userRole);
 
-    console.log('🔍 User Role:', this.userRole);
-    console.log('🔍 Is Manager:', isManager);
-
-    if (isManager) {
-      // 🔹 MANAGER ONLY: Get reporting employees
-      const employeeId = this.routeGuardService.employeeID;
-      console.log('🔹 Manager Employee ID:', employeeId);
-
-      if (!employeeId) {
-        console.error('❌ No employee ID found for manager');
-        this.loading = false;
-        return;
-      }
-
-      console.log('📞 Calling getReportingEmployees for manager');
-      this.employeeService.getReportingEmployees(Number(employeeId)).subscribe({
-        next: (res: any[]) => {
-          console.log('✅ Manager API Response:', res);
-          this.teamMembers = res || [];
-          this.filteredMembers = [...this.teamMembers];
-          console.log('✅ Manager - Reporting Employees Count:', this.teamMembers.length);
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('❌ Error fetching reporting employees:', err);
-          this.loading = false;
-        }
-      });
-      return; // ⚠️ CRITICAL: Exit here to prevent else block
-    }
-
-    // 🔹 EMPLOYEE ONLY: Get team list
-    console.log('📞 Calling getMyTeamList for employee');
+    // Use getMyTeamList for ALL roles - server handles manager vs employee logic
     this.employeeService.getMyTeamList().subscribe({
       next: (res: any) => {
-        console.log('✅ Employee API Response:', res);
-        this.teamMembers = res?.team || res || [];
+        console.log('✅ My Team API Response:', res);
+        
+        // Handle different response formats
+        if (res?.team) {
+          this.teamMembers = res.team;
+        } else if (Array.isArray(res)) {
+          this.teamMembers = res;
+        } else {
+          this.teamMembers = [];
+        }
+        
         this.filteredMembers = [...this.teamMembers];
-        console.log('✅ Employee - Team Members Count:', this.teamMembers.length);
+        console.log('✅ Team Members Count:', this.teamMembers.length);
+        console.log('✅ Team Type:', res?.type || 'unknown');
+        
         this.loading = false;
       },
       error: (err) => {
         console.error('❌ Error fetching team list:', err);
+        console.error('❌ Error details:', err.error);
         this.loading = false;
       }
     });
