@@ -282,7 +282,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
       if (this.profileImageCache.has(employeeId)) {
         return this.profileImageCache.get(employeeId)!;
       }
-      
+
       const imageUrl = `http://${environment.apiURL}${member.profile_image}?t=${Date.now()}`;
       this.profileImageCache.set(employeeId, imageUrl);
       return imageUrl;

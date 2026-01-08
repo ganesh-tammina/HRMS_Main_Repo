@@ -3,10 +3,12 @@ import {
   Output,
   EventEmitter,
   OnInit,
+  OnDestroy,
   Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { Subject, takeUntil } from 'rxjs';
 
 import { AttendanceApiService } from '../attendance-api.service';
 import { Router } from '@angular/router';
@@ -62,7 +64,7 @@ import { Router } from '@angular/router';
 
   `,
 })
-export class ClockButtonComponent implements OnInit {
+export class ClockButtonComponent implements OnInit, OnDestroy {
   currentUrl: any;
   /* kept only to avoid template errors */
   @Input() record: any;
@@ -71,6 +73,7 @@ export class ClockButtonComponent implements OnInit {
   /** true → show Clock-Out */
   isClockedIn = false;
   loading = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -78,9 +81,29 @@ export class ClockButtonComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadLastPunch();
     this.currentUrl = this.router.url;
-    console.log(this.currentUrl);
+    console.log('🔔 Clock button initialized on:', this.currentUrl);
+
+    // Subscribe to shared clock state
+    this.subscribeToClockState();
+
+    // Load initial state
+    this.loadLastPunch();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /* ================= SUBSCRIBE TO CLOCK STATE ================= */
+  private subscribeToClockState(): void {
+    this.attendanceApi.clockState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isClockedIn: boolean) => {
+        console.log('🔔 Clock state received on', this.currentUrl, ':', isClockedIn);
+        this.isClockedIn = isClockedIn;
+      });
   }
 
   /* ======================
@@ -115,12 +138,15 @@ export class ClockButtonComponent implements OnInit {
       notes: 'Morning shift',
     }).subscribe({
       next: (res: any) => {
+        this.loading = false;
         if (res?.success) {
-          this.isClockedIn = true;
+          // State is updated by service via tap operator
           this.statusChanged.emit(res);
+          console.log('✅ Clocked In successfully on', this.currentUrl);
         }
       },
       error: (err: any) => {
+        this.loading = false;
         alert(err?.error?.message || 'Clock-In failed');
       },
     });
@@ -134,9 +160,11 @@ export class ClockButtonComponent implements OnInit {
       notes: 'Going for lunch',
     }).subscribe({
       next: (res: any) => {
+        this.loading = false;
         if (res?.success) {
-          this.isClockedIn = false;
+          // State is updated by service via tap operator
           this.statusChanged.emit(res);
+          console.log('✅ Clocked Out successfully on', this.currentUrl);
         }
       },
       error: (err) => {
