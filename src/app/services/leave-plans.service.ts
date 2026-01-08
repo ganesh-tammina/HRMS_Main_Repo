@@ -3,6 +3,19 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+// Interface for Leave Plan with member and leave type counts
+export interface LeavePlan {
+  id: number;
+  name: string;
+  description?: string;
+  leave_year_start_month: number;
+  leave_year_start_day: number;
+  is_active: number;
+  employees_count?: number;
+  leave_types_count?: number;
+  allocations?: any[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -26,14 +39,14 @@ export class LeavePlanService {
     return this.http.post(this.API_URL, payload, { headers: this.getHeaders() });
   }
 
-  /* GET ALL */
-  getLeavePlans(): Observable<any[]> {
-    return this.http.get<any[]>(this.API_URL, { headers: this.getHeaders() });
+  /* GET ALL - Now includes employees_count and leave_types_count */
+  getLeavePlans(): Observable<LeavePlan[]> {
+    return this.http.get<LeavePlan[]>(this.API_URL, { headers: this.getHeaders() });
   }
 
   /* GET BY ID (AS PER CURL) */
-  getLeavePlanById(planId: number): Observable<any> {
-    return this.http.get(`${this.API_URL}/${planId}`, {
+  getLeavePlanById(planId: number): Observable<LeavePlan> {
+    return this.http.get<LeavePlan>(`${this.API_URL}/${planId}`, {
       headers: this.getHeaders(),
     });
   }

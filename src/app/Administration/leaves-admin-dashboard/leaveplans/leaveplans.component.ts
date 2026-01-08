@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { LeavePlanService } from 'src/app/services/leave-plans.service';
+import { LeavePlanService, LeavePlan } from 'src/app/services/leave-plans.service';
 
 @Component({
   selector: 'app-create-leave-plan',
@@ -23,14 +23,14 @@ export class LeaveplansComponent implements OnInit {
   loadingPlanDetails = false;
   showCreateForm = false;
 
-  leavePlans: any[] = [];
+  leavePlans: LeavePlan[] = [];
 
   // EDIT STATE
   isEditMode = false;
   editingPlanId: number | null = null;
 
   // VIEW STATE
-  selectedPlan: any = null;
+  selectedPlan: LeavePlan | null = null;
 
   constructor(
     private fb: FormBuilder,
