@@ -137,14 +137,27 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
     const today = new Date().toDateString();
     const logDate = new Date(log.attendance_date).toDateString();
 
+    console.log('📋 Opening log details:');
+    console.log('  - Today:', today);
+    console.log('  - Log Date:', logDate);
+    console.log('  - Is Today:', today === logDate);
+    console.log('  - Today Punches Available:', this.todayPunches.length);
+
     if (today === logDate && this.todayPunches.length) {
       // ✅ Use today punches (already loaded)
+      console.log('✅ Using today punches (fresh data)');
+      console.log('  - Raw Punches:', JSON.stringify(this.todayPunches, null, 2));
+      
+      const mappedRecords = this.mapPunches(this.todayPunches);
+      console.log('  - Mapped Records:', JSON.stringify(mappedRecords, null, 2));
+      
       this.selectedLog = {
         attendance_date: log.attendance_date,
-        records: this.mapPunches(this.todayPunches),
+        records: mappedRecords,
       };
     } else {
       // ✅ Load logs by date from API
+      console.log('📡 Loading logs from API (past date)');
       this.selectedLog = log;
       this.loadLogDetails(log);
     }
@@ -191,24 +204,65 @@ export class AttendanceLogComponent implements OnInit, OnDestroy {
   }
 
   private mapPunches(punches: any[]): any[] {
+    console.log('🗺️ Mapping punches:', JSON.stringify(punches, null, 2));
+    
     const records: any[] = [];
     let current: any = null;
 
     punches.forEach(p => {
+      console.log('  Processing punch:', p.punch_type, 'work_mode:', p.work_mode);
+      
       if (p.punch_type === 'in') {
         current = {
           check_in: p.punch_time,
           check_out: null,
+          work_mode: p.work_mode || 'Office',
+          location: p.location,
+          notes: p.notes
         };
         records.push(current);
+        console.log('    ✅ Created record:', current);
       }
 
       if (p.punch_type === 'out' && current) {
         current.check_out = p.punch_time;
+        console.log('    ✅ Updated with check_out:', current);
         current = null;
       }
     });
 
+    console.log('🎯 Final mapped records:', JSON.stringify(records, null, 2));
     return records;
+  }
+
+  // Separate office and WFH records based on location
+  getOfficeRecords(records: any[]): any[] {
+    const officeRecs = records.filter(r => {
+      const location = r.location?.toLowerCase() || '';
+      const isOffice = location.includes('office') || location.includes('mumbai');
+      return isOffice || (r.work_mode === 'Office' && !location.includes('home'));
+    });
+    console.log('🏢 Office Records:', officeRecs);
+    return officeRecs;
+  }
+
+  getWFHRecords(records: any[]): any[] {
+    const wfhRecs = records.filter(r => {
+      const location = r.location?.toLowerCase() || '';
+      const isHome = location.includes('home') || r.work_mode === 'WFH';
+      return isHome && !location.includes('office');
+    });
+    console.log('🏠 WFH Records:', wfhRecs);
+    return wfhRecs;
+  }
+
+  getRemoteRecords(records: any[]): any[] {
+    const remoteRecs = records.filter(r => {
+      const location = r.location?.toLowerCase() || '';
+      const isRemote = r.work_mode === 'Remote' && !location.includes('home') && !location.includes('office');
+      return isRemote;
+    });
+    console.log('🌐 Remote Records:', remoteRecs);
+    return remoteRecs;
   }
 }
