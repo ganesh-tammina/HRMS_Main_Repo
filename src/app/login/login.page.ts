@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/login-services.service';
 import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { AdminSetup } from '../services/admin-setup.service';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +30,8 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private employeeService: EmployeeService,
     private router: Router,
-    private routeGuardService: RouteGuardService
+    private routeGuardService: RouteGuardService,
+    private adminSetup: AdminSetup
   ) { }
 
   ngOnInit(): void {
@@ -151,12 +153,68 @@ export class LoginPage implements OnInit {
   private loadEmployeeAndNavigate(): void {
     this.employeeService.getMyProfile(true).subscribe({
       next: () => {
-        this.loading = false;
-        this.navigateBasedOnRole();
+        // Auto-assign role based on employee data
+        this.autoAssignRole();
       },
       error: () => {
         this.loading = false;
         alert('Failed to load employee profile');
+      }
+    });
+  }
+
+  /** AUTO-ASSIGN ROLE (HR/Manager/Employee) */
+  private autoAssignRole(): void {
+    console.log('🔄 Starting auto-assign role process...');
+
+    this.adminSetup.autoAssignRole().subscribe({
+      next: (response) => {
+        console.log('📊 Role assignment result:', response);
+
+        if (response.changed) {
+          console.log(`✅ Role auto-assigned: ${response.previousRole} → ${response.newRole}`);
+          console.log(`📋 Reason: ${response.reason}`);
+
+          // Show notification to user
+          alert(`Your role has been updated to: ${response.newRole.toUpperCase()}\nReason: ${response.reason}`);
+
+          // Update the token with new role
+          this.refreshTokenAndNavigate();
+        } else {
+          console.log(`ℹ️ Role unchanged: ${response.role}`);
+          this.loading = false;
+          this.navigateBasedOnRole();
+        }
+      },
+      error: (err) => {
+        console.error('❌ Auto-assign role failed:', err);
+        console.error('Error details:', err.error || err.message);
+
+        // Continue with current role even if auto-assign fails
+        this.loading = false;
+        this.navigateBasedOnRole();
+      }
+    });
+  }
+
+  /** REFRESH TOKEN AFTER ROLE CHANGE */
+  private refreshTokenAndNavigate(): void {
+    const { email, password } = this.loginForm.value;
+
+    // Re-authenticate to get new token with updated role
+    this.authService.login({ username: email, password }).subscribe({
+      next: (response) => {
+        console.log('✅ Token refreshed with new role:', response?.user?.role);
+        this.loading = false;
+
+        // Force reload route guard service role
+        window.location.reload();
+      },
+      error: (err) => {
+        console.error('❌ Token refresh failed:', err);
+        // Even if refresh fails, try to navigate with existing token
+        this.loading = false;
+        this.navigateBasedOnRole();
       }
     });
   }
