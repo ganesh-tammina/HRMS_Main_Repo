@@ -61,15 +61,13 @@ export class EmployeeListComponent  implements OnInit {
     }
 
     this.isUploading = true; // Show loading spinner
+    this.modal.dismiss(); // Immediately close modal
 
     this.uploadService.uploadEmployees(this.EmployeeselectedFile).subscribe({
       next: () => {
         this.isUploading = false; // Hide loading spinner
         alert('Employees uploaded successfully');
-
-        this.modal.dismiss();
         this.EmployeeselectedFile = null;
-
         // ✅ IMMEDIATE REFRESH (NO PAGE RELOAD)
         this.loadEmployees();
       },
