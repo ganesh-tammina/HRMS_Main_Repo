@@ -17,6 +17,8 @@ export class OrgTreeComponent implements OnInit {
     loading = false;
     error: string | null = null;
 
+    expanded: { [id: string]: boolean } = {};
+
     constructor(private employeeService: EmployeeService) { }
 
     ngOnInit() {
@@ -30,6 +32,10 @@ export class OrgTreeComponent implements OnInit {
                 }
                 this.buildHierarchy(emp).then(tree => {
                     this.orgTree = tree;
+                    // Expand the root manager/team by default
+                    if (tree && tree.id) {
+                        this.expanded[tree.id] = true;
+                    }
                     this.loading = false;
                 }).catch(err => {
                     this.error = 'Failed to build org tree.';
