@@ -215,7 +215,7 @@ ion-modal {
         --border-radius: 0;
         justify-content: right;
         &.checkinInfo-popup {
-            --width: 400px;
+            --width: 400px;         
         }
         ion-header {
             box-shadow: none;   
@@ -275,6 +275,10 @@ ion-modal {
 ion-popover.select-popover {
     margin-left: 66px;
     margin-top: 12px;
+    &.popover-side-bottom {
+    margin-left: 0px;
+    margin-top: 3px;
+    }
 }
 .text-center {
     text-align: center;
@@ -316,10 +320,14 @@ ion-popover.select-popover {
 }
 
 /* Hide scrollbar in attendance log popover */
-ion-popover .popover-content {
+ion-popover {
+
+ .popover-content {
     scrollbar-width: none !important; /* Firefox */
     -ms-overflow-style: none !important; /* IE and Edge */
 }
+}
+
 
 ion-popover .popover-content::-webkit-scrollbar {
     display: none !important; /* Chrome, Safari, Opera */

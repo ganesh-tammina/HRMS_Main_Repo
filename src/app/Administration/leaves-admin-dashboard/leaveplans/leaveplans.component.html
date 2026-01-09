@@ -1,8 +1,8 @@
 <ion-content class="ion-padding page-containerOn project-wrappers">
 
   <p class="page-header mb-8">
-    <a routerLink="/admin" (click)="adminManagement()">Admin Management ></a>
-    <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard ></a>
+    <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
+    <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard /</a>
     Manage Leave Plans
   </p>
 
@@ -91,7 +91,7 @@
 
         <!-- Member Count Display -->
         <div
-          style="margin: 12px 0; padding: 8px; background-color: #f0f4ff; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+          style="margin: 12px 0; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
           <ion-icon name="people-outline" style="font-size: 20px; color: #3880ff;"></ion-icon>
           <span style="font-weight: 500; color: #3880ff;">
             {{ plan.employees_count || 0 }} {{ (plan.employees_count === 1) ? 'Member' : 'Members' }} Assigned

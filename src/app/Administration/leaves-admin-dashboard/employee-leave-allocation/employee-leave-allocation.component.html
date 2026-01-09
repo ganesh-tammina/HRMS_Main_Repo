@@ -27,8 +27,8 @@
     <ion-list lines="none" class="allocation-ipt form-container">
 
     <!-- Toggle -->
-    <ion-item>
-      <p>Apply for all employees</p>
+    <ion-item class="toggle">
+      <p>Apply for all employees</p >
       <ion-toggle (ionChange)="onToggleChange($event)"></ion-toggle>
     </ion-item>
 
@@ -43,14 +43,10 @@
     <!-- ✅ LEAVE PLAN SELECT (SAME PATTERN AS LEAVE TYPE) -->
     <ion-item>
       <ion-label position="stacked">Leave Plan</ion-label>
-      <ion-select fill="outline"
-        formControlName="leave_plan_id"
-        placeholder="Select Leave Plan"
-        interface="popover">
-
+      <ion-select fill="outline" formControlName="leave_plan_id" placeholder="Select Leave Plan" interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up">
         <ion-select-option
           *ngFor="let plan of leavePlans"
-          [value]="plan.id">
+          [value]="plan.id"  class="custom-popover">
           {{ plan.name }}
         </ion-select-option>
 
@@ -64,7 +60,7 @@
     </ion-item>
    </ion-list>
     <div class="form-footer">
-        <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" >
+        <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" (click)="cancelCreate()">
           Cancel
         </ion-button>
 

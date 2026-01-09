@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminService, ShiftPolicyPayload } from 'src/app/services/admin-functionality/admin.service.service';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-functionality',
@@ -51,10 +52,13 @@ export class adminFunctionalityComponent implements OnInit {
     ends_at: ''
   };
 
-  constructor(private service: AdminService) { }
+  constructor(private service: AdminService, private router: Router) { }
 
   ngOnInit() {
     this.loadLocations();
+  }
+      adminManagement() {
+    this.router.navigate(['./admin']);
   }
 
   setTab(tab: string) {
