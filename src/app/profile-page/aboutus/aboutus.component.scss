@@ -76,3 +76,10 @@ ion-item:has(ion-input), ion-item:has(ion-select) {
     padding-bottom: 15px;
   }
 }
+ion-input, ion-textarea {
+  border: 1px solid #C4C4C4;
+  height: auto;
+  border-radius: 4px;
+  padding: 0px 12px !important;
+  margin: 11px 0px;
+}

@@ -623,3 +623,14 @@ p.empty-text{
   width: 100% !important;
   height: auto !important;
 }
+
+.empty-data {
+  text-align: center;
+  margin: auto;
+  @include normal-text();
+  color: $Subtle-Text;
+  ion-img {
+    width: 40%;
+    margin: auto;
+  }
+}

@@ -58,7 +58,7 @@
   
   
 p.divider {
-    border-bottom: 1px solid #9E9E9E;
+    // border-bottom: 1px solid #9E9E9E;
   }
   .custom-link {
     @include normal-text();
@@ -114,3 +114,72 @@ p.divider {
   padding: 15px;
 }
 
+.card-title{
+    margin: 0 20px;
+}
+.clockin-out{
+  p{
+    font-weight: bold;
+  }
+  h4{
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 11px;
+    padding: 10px 45px;
+    border: 1px solid #cccc;
+  }
+  .clockin-img{
+    display: flex;
+    ion-img {
+      width: 20px;
+      position: relative;
+      left: 10px;
+      border-radius: 20px;
+      padding: 4px;
+      height: 25px;
+      margin-top: 7px;
+      background: #D1FAE5;
+    }
+  }
+    .clockout-img{
+    display: flex;
+    ion-img {
+      width: 23px;
+      position: relative;
+      left: 10px;
+      border-radius: 20px;
+      padding: 4px;
+      height: 25px;
+      margin-top: 7px;
+      background: #FFEBD2;
+    }
+  }
+}
+.on-office{
+  div{
+   display: flex; 
+   align-items: center; 
+   gap: 10px;
+  }
+  h2{
+    margin: 0; border-radius:20px; border: 1px solid #1F74BB; padding: 5px 15px; color: #1F74BB; font-size: 15px; 
+                    font-weight: bold;
+  }
+}
+.clock-flex{
+border-radius: 12px; 
+padding: 0; 
+margin-bottom: 0;
+h2{
+  margin: 0; 
+  border-radius:20px; 
+  border: 1px solid #1F74BB; 
+  padding: 5px 15px; 
+  color: #1F74BB; 
+  font-size: 15px; 
+  font-weight: bold;
+  background: #E6F4FF;
+
+}
+}

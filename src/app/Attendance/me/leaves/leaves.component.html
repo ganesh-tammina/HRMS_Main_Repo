@@ -65,7 +65,7 @@
   </ion-grid>
 
   <!-- Leave History Table -->
-  <ion-grid class="card-tabs-block table-block">
+  <div class="card-tabs-block table-block">
     <div class="row-space-between">
       <div class="row-left">
         <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
@@ -75,7 +75,7 @@
     </div>
 
     <!-- Check if there are leaves -->
-    <ng-container *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
+    <ion-grid class="table-block" *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
       <ion-row class="table-header">
         <ion-col size="2">
           <p>Period</p>
@@ -100,7 +100,7 @@
         </ion-col>
       </ion-row>
 
-      <ion-row class="table-cell" *ngFor="let leave of leaveRequests">
+      <ion-row class="table-list-row" *ngFor="let leave of leaveRequests">
         <ion-col size="2">
           <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
         </ion-col>
@@ -116,7 +116,7 @@
         <ion-col size="2">
           <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
         </ion-col>
-        <ion-col size="2">
+        <ion-col size="1">
           <p [ngClass]="{
               'pending': leave.status === 'PENDING',
               'approved': leave.status === 'APPROVED',
@@ -142,7 +142,7 @@
           </ng-template>
         </ion-col> -->
       </ion-row>
-    </ng-container>
+    </ion-grid>
 
     <!-- No Leaves -->
     <ng-template  #noLeavesInside>
@@ -153,7 +153,7 @@
         </ion-col>
       </ion-row>
     </ng-template>
-  </ion-grid>
+  </div>
 
   <!-- Leave View/Cancel Popup -->
   <ion-modal [isOpen]="isPopupOpen" (didDismiss)="closePopup()" class="custom-popup">

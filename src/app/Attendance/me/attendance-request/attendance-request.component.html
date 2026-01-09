@@ -8,7 +8,7 @@
     <ion-card-content>
       <!-- Check if this group's records are empty -->
       <ng-container *ngIf="reqGroup.records.length > 0; else noRequests">
-        <ion-grid class="requests-table">
+        <ion-grid class="table-block">
           <ion-row class="table-header">
             <ion-col size="2">Date</ion-col>
             <ion-col size="2">Request</ion-col>
@@ -20,7 +20,7 @@
             <ion-col size="1">Next Approver</ion-col>
           </ion-row>
 
-          <ion-row *ngFor="let record of reqGroup.records" class="table-row">
+          <ion-row *ngFor="let record of reqGroup.records" class="table-list-row">
             <ion-col size="2">{{ record.date }}</ion-col>
             <ion-col size="2">{{ record.request }}</ion-col>
             <ion-col size="2">{{ record.requestedOn }}</ion-col>
@@ -39,10 +39,11 @@
 
       <!-- Show "No Requests" message -->
       <ng-template #noRequests>
-        <ion-item color="light">
-          <ion-label class="no-data">No {{ reqGroup.type }} Available.</ion-label>
-        </ion-item>
-      </ng-template>
+          <p class="empty-data empty-text">
+              <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
+              No {{ reqGroup.type }} Available
+            </p>  
+      </ng-template>     
     </ion-card-content>
   </ion-card>
 </div>

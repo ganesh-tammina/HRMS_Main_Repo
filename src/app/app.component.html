@@ -138,7 +138,7 @@
               </ion-item>
             </ion-menu-toggle> -->
             <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
-              <ion-item lines="none" detail="false" routerLinkActive="selected"
+              <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
                 <div class="row-left">
                   <img src="../assets/icon/work-track.svg" width="24" height="24" class="inactive-menu" />
@@ -147,24 +147,24 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
-            <ion-popover trigger="menu-buttons2" [dismissOnSelect]="true" class="menu-dropdown" side="right">
+            <!-- <ion-popover trigger="menu-buttons2" [dismissOnSelect]="true" class="menu-dropdown" side="right">
               <ng-template>
                 <ion-content>
-                  <ion-menu-toggle auto-hide="false">
+                  <ion-menu-toggle auto-hide="false"> -->
                     <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item [routerLink]="['/workTrack']" lines="none" detail="false">
+                    <!-- <ion-item [routerLink]="['/workTrack']" lines="none" detail="false">
                       <ion-label>My Work Track</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
-                  <ion-menu-toggle auto-hide="false">
+                  <ion-menu-toggle auto-hide="false"> -->
                     <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
+                    <!-- <ion-item [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
                       <ion-label>Client Work Track </ion-label>
                     </ion-item>
                   </ion-menu-toggle>
                 </ion-content>
               </ng-template>
-            </ion-popover>
+            </ion-popover> -->
 
 
             <!-- <ion-menu-toggle auto-hide="false" id="menu-buttons1">
