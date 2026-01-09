@@ -46,6 +46,7 @@ import { ClientWorkTrackComponent } from './Today_@_Work/client-work-track/clien
 import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 import { h } from 'ionicons/dist/types/stencil-public-runtime';
+import { EmployeeListComponent } from './Administration/admin/employee-list/employee-list.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
@@ -219,6 +220,12 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] },
+  },
+  {
+    path: 'employee-list',
+    component: EmployeeListComponent,
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['admin', 'hr'] },
   },

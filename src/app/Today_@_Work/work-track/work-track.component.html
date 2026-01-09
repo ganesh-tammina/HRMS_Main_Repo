@@ -141,7 +141,8 @@
               <ion-col size="6">
                 <ion-item lines="none">
                   <ion-label position="stacked">Month</ion-label>
-                  <ion-select [value]="selectedMonth" (ionChange)="onMonthChange($event)" interface="popover">
+                  <ion-select [value]="selectedMonth" (ionChange)="onMonthChange($event)"
+                   interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up">
                     <ion-select-option *ngFor="let m of months" [value]="m.value">{{m.name}}</ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -149,7 +150,8 @@
               <ion-col size="6">
                 <ion-item lines="none">
                   <ion-label position="stacked">Year</ion-label>
-                  <ion-select [value]="selectedYear" (ionChange)="onYearChange($event)" interface="popover">
+                  <ion-select [value]="selectedYear" (ionChange)="onYearChange($event)" interface="popover"
+                  toggleIcon="chevron-down" expandedIcon="chevron-up">
                     <ion-select-option *ngFor="let y of years" [value]="y">{{y}}</ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -412,7 +414,8 @@
               <ion-col size="6">
                 <ion-item lines="none">
                   <ion-label position="stacked">Month</ion-label>
-                  <ion-select [value]="selectedMonth" (ionChange)="onMonthChange($event)" interface="popover">
+                  <ion-select [value]="selectedMonth" (ionChange)="onMonthChange($event)" interface="popover"
+                  toggleIcon="chevron-down" expandedIcon="chevron-up">
                     <ion-select-option *ngFor="let m of months" [value]="m.value">{{m.name}}</ion-select-option>
                   </ion-select>
                 </ion-item>
@@ -420,7 +423,8 @@
               <ion-col size="6">
                 <ion-item lines="none">
                   <ion-label position="stacked">Year</ion-label>
-                  <ion-select [value]="selectedYear" (ionChange)="onYearChange($event)" interface="popover">
+                  <ion-select [value]="selectedYear" (ionChange)="onYearChange($event)" interface="popover"
+                  toggleIcon="chevron-down" expandedIcon="chevron-up">
                     <ion-select-option *ngFor="let y of years" [value]="y">{{y}}</ion-select-option>
                   </ion-select>
                 </ion-item>
