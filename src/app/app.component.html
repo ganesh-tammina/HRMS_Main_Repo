@@ -94,11 +94,22 @@
               </ion-item>
             </ion-menu-toggle> -->
 
-            <!-- My TEam -->
 
-            <!-- ///////////////////////////////////////////////// -->
-            <!-- ///////////////////////////////////////////////// -->
-            <!-- ///////////////////////////////////////////////// -->
+            <!-- Org Tree - Accessible to all except admin -->
+            <ng-container *ngIf="!isAdminOnly()">
+              <ion-menu-toggle auto-hide="false">
+                <ion-item routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/org-tree') ? 'selected ion-activatable':''">
+                  <div class="row-left">
+                    <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu" />
+                    <img src="../assets/icon/oraganization-active.svg" width="24" height="24" class="active-menu" />
+                    <ion-label>Org Tree</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
+            </ng-container>
+
+            <!-- Admin - Only for admin and HR -->
             <ng-container *ngIf="isAdminOnly() || isHROnly()">
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
@@ -111,7 +122,6 @@
                 </ion-item>
               </ion-menu-toggle>
             </ng-container>
-            <!-- Admin -->
 
             <!-- ///////////////////////////////////////////////// -->
             <!-- ///////////////////////////////////////////////// -->

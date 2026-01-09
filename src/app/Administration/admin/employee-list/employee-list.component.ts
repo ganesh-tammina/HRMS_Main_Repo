@@ -13,19 +13,19 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, IonicModule, FormsModule],
 })
-export class EmployeeListComponent  implements OnInit {
- /* ================= EMPLOYEES ================= */
- allCandidates: any[] = [];
- pagedCandidates: any[] = [];
+export class EmployeeListComponent implements OnInit {
+  /* ================= EMPLOYEES ================= */
+  allCandidates: any[] = [];
+  pagedCandidates: any[] = [];
 
- pageSize = 5;        // 5 records per page
- currentPage = 1;
- totalPages = 1;
+  pageSize = 5;        // 5 records per page
+  currentPage = 1;
+  totalPages = 1;
 
- EmployeeselectedFile: File | null = null;
- isUploading = false; // Loading state for upload
- @ViewChild(IonModal) modal!: IonModal;
-  constructor(    
+  EmployeeselectedFile: File | null = null;
+  isUploading = false; // Loading state for upload
+  @ViewChild(IonModal) modal!: IonModal;
+  constructor(
     private uploadService: UploadService,
     private employeeService: CandidateService,
     private router: Router
@@ -34,8 +34,8 @@ export class EmployeeListComponent  implements OnInit {
   ngOnInit() {
     this.loadEmployees(); // ✅ initial load
   }
-   /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
-   loadEmployees() {
+  /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
+  loadEmployees() {
     this.employeeService.getAllEmployeeDeatils().subscribe((res: any[]) => {
       this.allCandidates = res || [];
 
@@ -61,15 +61,13 @@ export class EmployeeListComponent  implements OnInit {
     }
 
     this.isUploading = true; // Show loading spinner
+    this.modal.dismiss(); // Immediately close modal
 
     this.uploadService.uploadEmployees(this.EmployeeselectedFile).subscribe({
       next: () => {
         this.isUploading = false; // Hide loading spinner
         alert('Employees uploaded successfully');
-
-        this.modal.dismiss();
         this.EmployeeselectedFile = null;
-
         // ✅ IMMEDIATE REFRESH (NO PAGE RELOAD)
         this.loadEmployees();
       },

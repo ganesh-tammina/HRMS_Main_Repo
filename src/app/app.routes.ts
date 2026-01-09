@@ -1,3 +1,4 @@
+import { OrgTreeComponent } from './Administration/org-tree.component';
 import { Routes } from '@angular/router';
 import { AdminComponent } from './Administration/admin/admin.component';
 import { OrganisationInfoComponent } from './Administration/organisation-info/organisation-info.component';
@@ -48,6 +49,12 @@ import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.compone
 import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import { EmployeeListComponent } from './Administration/admin/employee-list/employee-list.component';
 export const routes: Routes = [
+  {
+    path: 'org-tree',
+    component: OrgTreeComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['employee', 'manager', 'hr'] }
+  },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'Home',
