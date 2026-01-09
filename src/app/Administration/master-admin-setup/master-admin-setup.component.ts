@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { AdminSetup } from 'src/app/services/admin-setup.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-master-admin-setup',
@@ -31,7 +32,8 @@ export class MasterAdminSetupComponent implements OnInit {
   userId: any;
   constructor(
     private adminSetupService: AdminSetup,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -164,5 +166,8 @@ export class MasterAdminSetupComponent implements OnInit {
       position: 'top',
     });
     toast.present();
+  }
+    adminManagement() {
+    this.router.navigate(['./admin']);
   }
 }
