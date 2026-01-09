@@ -19,10 +19,10 @@ export class AdminComponent implements OnInit {
 
   /* ================= INIT ================= */
   ngOnInit() {
-   
+
   }
 
- 
+
   emp() {
     this.router.navigate(['/employee-list']);
   }

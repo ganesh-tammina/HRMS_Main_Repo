@@ -1,5 +1,3 @@
-
-
 <ion-content class="org-tree-content ion-padding">
     <div class="org-tree-header">
         <ion-icon name="git-network-outline" class="org-tree-icon"></ion-icon>
@@ -36,7 +34,8 @@
                 </div>
                 <div *ngIf="employee.directReports && employee.directReports.length > 0" class="org-sub-team">
                     <ng-container *ngFor="let sub of employee.directReports">
-                        <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
+                        <ng-container
+                            *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
                     </ng-container>
                 </div>
             </ion-card>
