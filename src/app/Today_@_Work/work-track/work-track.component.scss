@@ -453,16 +453,7 @@ ion-accordion-group {
 }
 
 
-.empty-data {
-  text-align: center;
-  margin: auto;
-  @include normal-text();
-  color: $Subtle-Text;
-  ion-img {
-    width: 40%;
-    margin: auto;
-  }
-}
+
 
 //new styles for my worksheet
 h1 {
@@ -846,8 +837,7 @@ ion-spinner {
     --padding-start: 0;
     --inner-padding-end: 0;
     &:hover {
-     --background: transparent;
-     background: transparent;
+     --background-hover: transparent;
     }
   }
 
