@@ -21,13 +21,15 @@
     border-radius: 8px;
     ion-row {
       flex-wrap: nowrap;
-      ion-col {
+      ion-col.card-block{
+        
         // min-width: 15% !important;
         // max-width: 15% !important;
         // margin-right: 15px;
         min-width: 210px !important;
         max-width: 238px !important;
         margin-right: 52px;
+        
 
         &:last-child {
           margin-left: 0px;
