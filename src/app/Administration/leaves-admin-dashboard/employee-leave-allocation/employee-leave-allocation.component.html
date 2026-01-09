@@ -43,11 +43,7 @@
     <!-- ✅ LEAVE PLAN SELECT (SAME PATTERN AS LEAVE TYPE) -->
     <ion-item>
       <ion-label position="stacked">Leave Plan</ion-label>
-      <ion-select fill="outline"
-        formControlName="leave_plan_id"
-        placeholder="Select Leave Plan"
-        interface="popover">
-
+      <ion-select fill="outline" formControlName="leave_plan_id" placeholder="Select Leave Plan" interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up">
         <ion-select-option
           *ngFor="let plan of leavePlans"
           [value]="plan.id"  class="custom-popover">
