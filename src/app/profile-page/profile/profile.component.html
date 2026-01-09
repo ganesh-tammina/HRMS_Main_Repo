@@ -1,7 +1,7 @@
 <!-- Personal Details -->
 <div class="row-left content-detail-block">
   <div class="ion-card">
-    <p class="header-text row-space-between">Primary Details<img (click)="isEditForm()"
+    <p class="header-text row-space-between">Primary Details<img (click)="isEditDetails()"
         src="../../assets/Icons/pencil.svg" width="18"></p>
     <form>
       <ion-grid *ngIf="currentEmployee">
@@ -9,39 +9,39 @@
           <ion-col>
             <div>
               <p>First Name</p>
-              <h6 *ngIf="!Isedit">{{currentEmployee.FullName}}</h6>
-              <ion-input [value]="currentEmployee?.first_name" *ngIf="Isedit"></ion-input>
+              <h6 *ngIf="!IsDetails">{{currentEmployee.FullName}}</h6>
+              <ion-input [value]="currentEmployee?.FullName" *ngIf="IsDetails"></ion-input>
             </div>
             <div>
               <p>Gender</p>
-              <h6 *ngIf="!Isedit">{{currentEmployee?.Gender}}</h6>
-              <ion-input [value]="currentEmployee.gender" *ngIf="Isedit"></ion-input>
+              <h6 *ngIf="!IsDetails">{{currentEmployee?.Gender}}</h6>
+              <ion-input [value]="currentEmployee.Gender" *ngIf="IsDetails"></ion-input>
             </div>
             <div>
               <p>Marital Status</p>
-              <h6 *ngIf="!Isedit">{{currentEmployee?.MaritalStatus}}</h6>
-              <ion-input [value]="currentEmployee.MaritalStatus" *ngIf="Isedit"></ion-input>
+              <h6 *ngIf="!IsDetails">{{currentEmployee?.MaritalStatus}}</h6>
+              <ion-input [value]="currentEmployee.MaritalStatus" *ngIf="IsDetails"></ion-input>
             </div>
 
           </ion-col>
           <ion-col>
             <div>
               <p>Last Name</p>
-              <h6 *ngIf="!Isedit">{{currentEmployee?.LastName}}</h6>
-              <ion-input [value]="currentEmployee.last_name" *ngIf="Isedit"></ion-input>
+              <h6 *ngIf="!IsDetails">{{currentEmployee?.LastName}}</h6>
+              <ion-input [value]="currentEmployee.LastName" *ngIf="IsDetails"></ion-input>
             </div>
 
             <div>
               <p>Blood Group</p>
-              <h6 *ngIf="!Isedit">{{currentEmployee.BloodGroup}}</h6>
-              <ion-input [value]="currentEmployee.blood_group" *ngIf="Isedit"></ion-input>
+              <h6 *ngIf="!IsDetails">{{currentEmployee.BloodGroup}}</h6>
+              <ion-input [value]="currentEmployee.BloodGroup" *ngIf="IsDetails"></ion-input>
             </div>
             <div>
               <p>Physically Handicapped</p>
-              <h6 *ngIf="!Isedit">{{currentEmployee?.PhysicallyHandicapped}}</h6>
-              <ion-input [value]="currentEmployee?.physically_handicapped" *ngIf="Isedit"></ion-input>
+              <h6 *ngIf="!IsDetails">{{currentEmployee?.PhysicallyHandicapped}}</h6>
+              <ion-input [value]="currentEmployee?.PhysicallyHandicapped" *ngIf="IsDetails"></ion-input>
             </div>
-            <ion-button class="primary-btn row-right" type="submit" *ngIf="Isedit">
+            <ion-button class="primary-btn row-right" type="submit" *ngIf="IsDetails">
               Submit
             </ion-button>
           </ion-col>
@@ -60,17 +60,17 @@
             <div>
               <p>Work Email</p>
               <h6 *ngIf="!Isedit">{{currentEmployee?.WorkEmail}}</h6>
-              <ion-input [value]="currentEmployee?.work_email" *ngIf="Isedit"></ion-input>
+              <ion-input [value]="currentEmployee?.WorkEmail" *ngIf="Isedit"></ion-input>
             </div>
             <div>
               <p>Aadhaar Number</p>
               <h6 *ngIf="!Isedit">{{currentEmployee?.AadhaarNumber}}</h6>
-              <ion-input [value]="currentEmployee?.gender" *ngIf="Isedit"></ion-input>
+              <ion-input [value]="currentEmployee?.AadhaarNumber" *ngIf="Isedit"></ion-input>
             </div>
             <div>
               <p>Residence Number</p>
               <h6 *ngIf="!Isedit"></h6>
-              <ion-input [value]="currentEmployee?.marital_status" *ngIf="Isedit"></ion-input>
+              <ion-input [value]="currentEmployee?.ResidenceNumber" *ngIf="Isedit"></ion-input>
             </div>
 
           </ion-col>
@@ -78,12 +78,12 @@
             <div>
               <p>Personal Email</p>
               <h6 *ngIf="!Isedit">{{currentEmployee?.last_name}}</h6>
-              <ion-input [value]="currentEmployee?.last_name" *ngIf="Isedit"></ion-input>
+              <ion-input [value]="currentEmployee?.Email" *ngIf="Isedit"></ion-input>
             </div>
             <div>
               <p>PF Number</p>
               <h6 *ngIf="!Isedit">{{currentEmployee?.pf_number}}</h6>
-              <ion-input [value]="currentEmployee?.gender" *ngIf="Isedit"></ion-input>
+              <ion-input [value]="currentEmployee?.pf_number" *ngIf="Isedit"></ion-input>
             </div>
             <div>
               <p>PF Number</p>

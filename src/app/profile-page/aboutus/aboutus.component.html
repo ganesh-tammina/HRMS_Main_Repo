@@ -11,8 +11,7 @@
       <ion-row>
         <ion-col>
           <div class="editor-container" *ngIf="viewEditor">
-            <quill-editor [modules]="modules" placeholder="Write something awesome...">
-            </quill-editor>
+              <ion-textarea placeholder="About yourself"></ion-textarea>
           </div>
 
           <p *ngIf="!viewEditor">
@@ -56,7 +55,7 @@
       <div>
         <p class="mb-8">Reporting Manager</p>
         <h6 class="row-left" *ngIf="!IsOrg">
-          <img src="../../assets/user.svg" width="18" />
+          <img src="../../assets/user.svg" width="18" class="mr-8"/>
           {{ currentEmployee?.manager_first_name }}
           {{ currentEmployee?.manager_last_name }}
         </h6>

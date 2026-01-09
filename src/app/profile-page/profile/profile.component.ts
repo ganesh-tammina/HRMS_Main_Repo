@@ -26,6 +26,7 @@ export class ProfileComponent implements OnChanges {
   currentEmployee$!: Observable<Employee | null>;
   Isedit: boolean = false;
   isAdress: boolean = false;
+  IsDetails: boolean = false;
   constructor(private candidateService: CandidateService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -35,6 +36,9 @@ export class ProfileComponent implements OnChanges {
         this.currentEmployee
       );
     }
+  }
+  isEditDetails() {
+    this.IsDetails = !this.IsDetails;
   }
   isEditForm() {
     this.Isedit = !this.Isedit;
