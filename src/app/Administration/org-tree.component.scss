@@ -1,0 +1,211 @@
+.org-tree-node.selected {
+  box-shadow: 0 0 0 3px #3880ff44;
+  border-color: #3880ff;
+}
+
+// Modal/panel for selected member org tree
+.org-tree-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.org-tree-modal-content {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(56,128,255,0.18);
+  padding: 2rem 2.5rem 2rem 2.5rem;
+  min-width: 340px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.org-tree-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.org-card {
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.org-card-root {
+  background: #f8fafc;
+  border: 2px solid #b2e2ff;
+}
+.org-employee-root {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.org-team-label {
+  font-size: 1em;
+  margin: 12px 0 4px 0;
+  color: #0077b6;
+  text-align: left;
+}
+.org-team-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.org-card-member {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+}
+.org-member-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 1em;
+}
+.org-member-role {
+  font-size: 0.95em;
+  color: #555;
+  margin-top: 2px;
+}
+.org-expand-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  color: #0077b6;
+  font-size: 1.2em;
+  transition: color 0.2s;
+}
+.org-expand-icon:hover {
+  color: #023e8a;
+}
+.org-loading {
+  color: #888;
+  font-size: 0.9em;
+  margin-top: 6px;
+}
+.org-sub-team {
+  margin-top: 8px;
+}
+
+.org-label {
+  text-align: center;
+}
+.org-label h3 {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  font-size: 1.1rem;
+}
+.org-label p {
+  margin: 0;
+  font-size: 0.98em;
+  color: #444;
+}
+.role-badge {
+  display: inline-block;
+  margin-top: 0.3rem;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.role-badge.manager {
+  background: #e3f0ff;
+  color: #3880ff;
+  border: 1px solid #b6d4fa;
+}
+.role-badge.self {
+  background: #e6f9f0;
+  color: #10dc60;
+  border: 1px solid #b2f2d7;
+}
+
+// Team grid
+.org-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+  width: 100%;
+  margin-top: 1.2rem;
+}
+
+.org-tree-card {
+  box-shadow: 0 4px 24px 0 rgba(56,128,255,0.08), 0 1.5px 4px 0 rgba(0,0,0,0.04);
+  border-radius: 18px;
+  border: 1px solid #e0e7ef;
+  background: #fff;
+}
+
+.org-avatar-large {
+  width: 64px;
+  height: 64px;
+}
+.org-avatar-large img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid #3880ff;
+}
+
+ion-label h3 {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  font-size: 1.1rem;
+}
+ion-label p {
+  margin: 0;
+  font-size: 0.98em;
+  color: #444;
+}
+
+.role-badge {
+  display: inline-block;
+  margin-top: 0.3rem;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.role-badge.manager {
+  background: #e3f0ff;
+  color: #3880ff;
+  border: 1px solid #b6d4fa;
+}
+.role-badge.self {
+  background: #e6f9f0;
+  color: #10dc60;
+  border: 1px solid #b2f2d7;
+}
+
+.org-tree-member ion-avatar img {
+  border: 2px solid #e0e7ef;
+}
+
+ion-item-divider[color="primary"] {
+  background: #f0f6ff;
+  color: #3880ff;
+  font-weight: 600;
+  font-size: 1.05em;
+  letter-spacing: 0.5px;
+}
+
+.org-tree-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  font-size: 1.1em;
+  color: #666;
+}

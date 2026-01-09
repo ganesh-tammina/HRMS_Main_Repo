@@ -1,0 +1,45 @@
+
+
+<ion-content class="org-tree-content ion-padding">
+    <div class="org-tree-header">
+        <ion-icon name="git-network-outline" class="org-tree-icon"></ion-icon>
+        <h2>Organization Tree</h2>
+        <p class="org-tree-desc">Visualize your reporting structure and team at a glance</p>
+    </div>
+
+    <ion-card *ngIf="loading">
+        <ion-card-content class="org-tree-loading">
+            <ion-spinner name="dots"></ion-spinner>
+            <span>Loading organization tree...</span>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="error">
+        <ion-card-content class="org-tree-error">
+            <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+            <span>{{ error }}</span>
+        </ion-card-content>
+    </ion-card>
+
+    <ng-container *ngIf="orgTree">
+        <div class="org-tree-root">
+            <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: orgTree, level: 0 }"></ng-container>
+        </div>
+    </ng-container>
+
+    <ng-template #recursiveTree let-employee let-level="level">
+        <div class="org-team-member" [ngStyle]="{ 'margin-left.px': level * 32 }">
+            <ion-card class="org-card org-card-member">
+                <div class="org-member-header">
+                    <span>{{ employee.name || employee.FirstName + ' ' + employee.LastName }}</span>
+                    <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>
+                </div>
+                <div *ngIf="employee.directReports && employee.directReports.length > 0" class="org-sub-team">
+                    <ng-container *ngFor="let sub of employee.directReports">
+                        <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
+                    </ng-container>
+                </div>
+            </ion-card>
+        </div>
+    </ng-template>
+</ion-content>
