@@ -120,8 +120,8 @@
 }
 
 .highlight-weekoff {
-  background: #ffe6e6 !important;
-  color: blue !important;
+  // background: #ffe6e6 !important;
+  // color: blue !important;
   font-weight: 600;
   width: 40px;
   height: 40px;
@@ -130,7 +130,11 @@
   align-items: center;
   justify-content: center;
   margin-top: -6px;
-  margin-left: -6px;
+  margin-left: 6px;
+  &::before{
+    background: linear-gradient(180deg, #D4D4D4 0%, #EFEFEF 100%);
+;
+  }
 }
 
 
