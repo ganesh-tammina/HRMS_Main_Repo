@@ -27,8 +27,8 @@
     <ion-list lines="none" class="allocation-ipt form-container">
 
     <!-- Toggle -->
-    <ion-item>
-      <p>Apply for all employees</p>
+    <ion-item class="toggle">
+      <p>Apply for all employees</p >
       <ion-toggle (ionChange)="onToggleChange($event)"></ion-toggle>
     </ion-item>
 
@@ -50,7 +50,7 @@
 
         <ion-select-option
           *ngFor="let plan of leavePlans"
-          [value]="plan.id">
+          [value]="plan.id"  class="custom-popover">
           {{ plan.name }}
         </ion-select-option>
 
@@ -64,7 +64,7 @@
     </ion-item>
    </ion-list>
     <div class="form-footer">
-        <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" >
+        <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" (click)="cancelCreate()">
           Cancel
         </ion-button>
 
