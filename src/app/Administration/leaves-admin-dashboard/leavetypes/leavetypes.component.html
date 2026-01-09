@@ -93,9 +93,9 @@
   </ion-modal>
 
   <!-- ================= LIST ================= -->
-  <ion-card class="listhead">
+  <ion-card >
     <ion-card-header>
-      <div>
+      <div class="head">
         <h3>Leaves</h3>
         <p>{{ leaveTypes.length }}</p>
       </div>
@@ -104,6 +104,7 @@
     <ion-card-content>
 
       <ion-spinner *ngIf="listLoading" name="crescent"></ion-spinner>
+      <div class="listhead">
 
       <ion-grid *ngIf="!listLoading && leaveTypes.length">
 
@@ -139,9 +140,11 @@
         </ion-row>
 
       </ion-grid>
+      </div>
 
       <p *ngIf="!listLoading && !leaveTypes.length" class="empty-text">
-        No leave types found
+        <img src="../../.././../assets/no-data-img.svg">
+        <ion-text>No leave types</ion-text>
       </p>
 
     </ion-card-content>

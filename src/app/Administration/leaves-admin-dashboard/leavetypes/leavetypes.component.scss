@@ -81,16 +81,13 @@ ion-item {
     border-bottom: none;
   }
 }
-
-.listhead{
-  div{
-    display: flex;
-  }
+.head{
+  display: flex;
   p{
     padding: 3px 7px;
     font-size: 12px;
     margin-left: 8px;
-    margin-top: 0px;
+    margin-top: 15px;
     background: #CFECFF;
     border-radius: 20px;
     width: 23px;
@@ -102,7 +99,10 @@ ion-item {
       height: 20px;
     }
   }
-  border: 1px solid #ABABAB80;
+}
+
+.listhead{
+
   h3{
     color: #181D27;
     margin-bottom: 10px;
@@ -113,5 +113,19 @@ ion-item {
   }
   ion-card-header{
     display: flex;
+  }
+}
+.empty-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+
+  ion-text {
+    color: #56238b;
+    font-size: 14px;
+    font-weight: bold;
   }
 }
