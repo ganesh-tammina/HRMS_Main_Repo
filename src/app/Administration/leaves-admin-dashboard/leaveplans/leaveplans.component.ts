@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { LeavePlanService } from 'src/app/services/leave-plans.service';
+import { LeavePlanService, LeavePlan } from 'src/app/services/leave-plans.service';
 
 @Component({
   selector: 'app-create-leave-plan',
@@ -23,14 +23,14 @@ export class LeaveplansComponent implements OnInit {
   loadingPlanDetails = false;
   showCreateForm = false;
 
-  leavePlans: any[] = [];
+  leavePlans: LeavePlan[] = [];
 
   // EDIT STATE
   isEditMode = false;
   editingPlanId: number | null = null;
 
   // VIEW STATE
-  selectedPlan: any = null;
+  selectedPlan: LeavePlan | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -45,31 +45,13 @@ export class LeaveplansComponent implements OnInit {
       leave_year_start_day: [1, Validators.required],
       description: [''],
       is_active: [true],
-      allocations: this.fb.array([]),
     });
 
-    this.addAllocation();
     this.loadLeavePlans();
   }
 
   ionViewWillEnter(): void {
     this.loadLeavePlans();
-  }
-
-  /* ================= FORM ARRAY ================= */
-
-  get allocations(): FormArray {
-    return this.leavePlanForm.get('allocations') as FormArray;
-  }
-
-  addAllocation(): void {
-    this.allocations.push(
-      this.fb.group({
-        leave_type_id: [1, Validators.required],
-        days_allocated: [1, Validators.required],
-        prorate_on_joining: [false],
-      })
-    );
   }
 
   /* ================= CREATE ================= */
@@ -84,8 +66,6 @@ export class LeaveplansComponent implements OnInit {
       is_active: true,
     });
 
-    this.allocations.clear();
-    this.addAllocation();
     this.showCreateForm = true;
   }
 
@@ -106,22 +86,6 @@ export class LeaveplansComponent implements OnInit {
           description: fullPlan.description,
           is_active: fullPlan.is_active !== undefined ? fullPlan.is_active : true,
         });
-
-        this.allocations.clear();
-
-        if (fullPlan.allocations?.length) {
-          fullPlan.allocations.forEach((a: any) => {
-            this.allocations.push(
-              this.fb.group({
-                leave_type_id: a.leave_type_id,
-                days_allocated: a.days_allocated,
-                prorate_on_joining: a.prorate_on_joining || false,
-              })
-            );
-          });
-        } else {
-          this.addAllocation();
-        }
 
         this.loading = false;
         this.showCreateForm = true;
@@ -145,10 +109,6 @@ export class LeaveplansComponent implements OnInit {
     if (this.leavePlanForm.invalid) {
       this.leavePlanForm.markAllAsTouched();
       return;
-    }
-
-    if (this.allocations.length === 0) {
-      this.addAllocation();
     }
 
     const payload = this.leavePlanForm.value;
@@ -212,10 +172,10 @@ export class LeaveplansComponent implements OnInit {
     });
   }
 
-      leavetype() {
+  leavetype() {
     this.router.navigate(['./admin-leaves']);
   }
-    adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
 }

@@ -494,6 +494,24 @@ export class WorkTrackComponent implements OnInit {
 
   /* ================= UTILS ================= */
 
+  getStatusColor(status: string): string {
+    if (!status) return 'warning'; // pending/no status
+
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
+      case 'verified':
+      case 'approved':
+        return 'success';
+      case 'rejected':
+        return 'danger';
+      case 'submitted':
+      case 'pending':
+        return 'warning';
+      default:
+        return 'medium';
+    }
+  }
+
   formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }

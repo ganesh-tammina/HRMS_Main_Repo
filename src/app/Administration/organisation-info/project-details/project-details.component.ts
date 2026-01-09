@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
@@ -13,6 +13,8 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { ProjectService } from 'src/app/services/project.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-project-details',
@@ -21,7 +23,7 @@ import { Router } from '@angular/router';
   templateUrl: './project-details.component.html',
   styleUrls: ['./project-details.component.scss'],
 })
-export class ProjectDetailsComponent implements OnInit {
+export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
   projectId!: number;
 
@@ -50,13 +52,18 @@ export class ProjectDetailsComponent implements OnInit {
     evening: '../../../../assets/Icons/evening-blue.svg'
   };
 
+  // Attendance status tracking
+  employeeStatusMap: { [key: number]: { status: string; work_mode: string | null } } = {};
+  statusRefreshInterval: any = null;
+
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private employeeService: EmployeeService,
     private fb: FormBuilder,
     private toastCtrl: ToastController,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
@@ -73,6 +80,17 @@ export class ProjectDetailsComponent implements OnInit {
     this.initForms();
     this.loadAll();
     this.loadEmployees();
+
+    // Refresh attendance status every 2 minutes
+    this.statusRefreshInterval = setInterval(() => {
+      this.loadEmployeeAttendanceStatus();
+    }, 120000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.statusRefreshInterval) {
+      clearInterval(this.statusRefreshInterval);
+    }
   }
 
   /* ================= FORMS ================= */
@@ -112,6 +130,10 @@ export class ProjectDetailsComponent implements OnInit {
           this.project = res;
         }
         this.loading = false;
+
+        // Reload shifts and assignments separately to ensure data is fresh
+        this.loadShifts();
+        this.loadAssignments();
       },
       error: () => {
         this.errorMessage = 'Failed to load project';
@@ -164,15 +186,15 @@ export class ProjectDetailsComponent implements OnInit {
         }
         console.log('Loaded employees:', this.allEmployees.length);
       },
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error loading employees:', err);
         // Fallback: try search endpoint
         this.employeeService.searchEmployees('').subscribe({
-          next: (employees) => {
+          next: (employees:any) => {
             console.log('Loaded via search:', employees);
             this.allEmployees = employees || [];
           },
-          error: (err2) => {
+          error: (err2:any) => {
             console.error('Error with search fallback:', err2);
           }
         });
@@ -271,7 +293,61 @@ export class ProjectDetailsComponent implements OnInit {
   loadAssignments() {
     this.projectService
       .getAssignments(this.projectId)
-      .subscribe(res => (this.assignments = res || []));
+      .subscribe((res:any) => {
+        this.assignments = res || [];
+        // Load attendance status after assignments are loaded
+        if (this.assignments.length > 0) {
+          this.loadEmployeeAttendanceStatus();
+        }
+      });
+  }
+
+  /* ================= ATTENDANCE STATUS ================= */
+  loadEmployeeAttendanceStatus() {
+    if (!this.assignments || this.assignments.length === 0) return;
+
+    const employeeIds = this.assignments
+      .map(a => a.employee_id)
+      .filter(id => id != null);
+
+    if (employeeIds.length === 0) return;
+
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+
+    const apiUrl = `http://${environment.apiURL}/api/attendance/bulk-status`;
+
+    this.http.post<any>(apiUrl, { employee_ids: employeeIds }, { headers }).subscribe({
+      next: (response:any) => {
+        if (response.success && response.statuses) {
+          this.employeeStatusMap = {};
+          response.statuses.forEach((s: any) => {
+            this.employeeStatusMap[s.employee_id] = {
+              status: s.status,
+              work_mode: s.work_mode
+            };
+          });
+        }
+      },
+      error: (err:any) => {
+        console.error('Error loading attendance status:', err);
+      }
+    });
+  }
+
+  getEmployeeStatus(employeeId: number): { status: string; work_mode: string | null } {
+    return this.employeeStatusMap[employeeId] || { status: 'out', work_mode: null };
+  }
+
+  getStatusColor(status: string): string {
+    return status === 'in' ? 'success' : 'danger';
+  }
+
+  getStatusBgColor(status: string): string {
+    return status === 'in' ? '#d4edda' : '#ffe6e6';
   }
 
   async showToast(message: string, color: 'success' | 'danger') {

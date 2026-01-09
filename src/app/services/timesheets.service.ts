@@ -101,5 +101,87 @@ export class TimesheetService {
     );
   }
 
+  /* ================= MANAGER: GET PENDING TIMESHEETS ================= */
+
+  /**
+   * Get pending timesheets for manager's team
+   * @param filters Optional filters for date range and timesheet type
+   */
+  getManagerPendingTimesheets(filters?: {
+    start_date?: string;
+    end_date?: string;
+    timesheet_type?: string;
+  }): Observable<any[]> {
+
+    let params = new HttpParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params = params.set(key, value.toString());
+        }
+      });
+    }
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/manager/pending-timesheets`,
+      { params }
+    );
+  }
+
+  /* ================= MANAGER: GET TEAM STATISTICS ================= */
+
+  /**
+   * Get team statistics for manager (team size, submitted, not submitted)
+   * @param filters Optional filters for date range
+   */
+  getManagerTeamStatistics(filters?: {
+    start_date?: string;
+    end_date?: string;
+  }): Observable<any> {
+
+    let params = new HttpParams();
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params = params.set(key, value.toString());
+        }
+      });
+    }
+
+    return this.http.get<any>(
+      `${this.baseUrl}/manager/team-statistics`,
+      { params }
+    );
+  }
+
+  /* ================= MANAGER: APPROVE TIMESHEET ================= */
+
+  /**
+   * Approve a timesheet
+   * @param timesheetId ID of the timesheet to approve
+   */
+  approveTimesheet(timesheetId: number): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/manager/approve/${timesheetId}`,
+      {}
+    );
+  }
+
+  /* ================= MANAGER: REJECT TIMESHEET ================= */
+
+  /**
+   * Reject a timesheet with reason
+   * @param timesheetId ID of the timesheet to reject
+   * @param rejectionReason Reason for rejection
+   */
+  rejectTimesheet(timesheetId: number, rejectionReason: string): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/manager/reject/${timesheetId}`,
+      { rejection_reason: rejectionReason }
+    );
+  }
+
 
 }

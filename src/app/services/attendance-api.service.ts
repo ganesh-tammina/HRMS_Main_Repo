@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -10,7 +10,22 @@ export class AttendanceApiService {
   private env = environment;
   private readonly BASE_URL = `http://${this.env.apiURL}/api/attendance`;
 
+  // Shared clock state - broadcasts to all clock button instances
+  private clockStateSubject = new BehaviorSubject<boolean>(false);
+  clockState$ = this.clockStateSubject.asObservable();
+
   constructor(private http: HttpClient) { }
+
+  // Update clock state (called from anywhere)
+  setClockState(isClockedIn: boolean): void {
+    this.clockStateSubject.next(isClockedIn);
+    console.log('🔔 Clock state updated globally:', isClockedIn ? 'Clocked In' : 'Clocked Out');
+  }
+
+  // Get current clock state
+  getClockState(): boolean {
+    return this.clockStateSubject.value;
+  }
 
   /** ✅ PUNCH IN */
   apiPunchIn(payload: {
@@ -22,6 +37,12 @@ export class AttendanceApiService {
       `${this.BASE_URL}/punch-in`,
       payload,
       { headers: this.getHeaders() }
+    ).pipe(
+      tap((res: any) => {
+        if (res?.success) {
+          this.setClockState(true); // Broadcast clock in state
+        }
+      })
     );
   }
 
@@ -33,6 +54,12 @@ export class AttendanceApiService {
       `${this.BASE_URL}/punch-out`,
       payload,
       { headers: this.getHeaders() }
+    ).pipe(
+      tap((res: any) => {
+        if (res?.success) {
+          this.setClockState(false); // Broadcast clock out state
+        }
+      })
     );
   }
 
@@ -65,6 +92,17 @@ export class AttendanceApiService {
     return this.http.get(
       `${this.BASE_URL}/today`,
       { headers: this.getHeaders() }
+    ).pipe(
+      tap((res: any) => {
+        // Update initial clock state based on last punch
+        const punches = res?.punches || [];
+        if (punches.length > 0) {
+          const lastPunch = punches[punches.length - 1];
+          this.setClockState(lastPunch.punch_type === 'in');
+        } else {
+          this.setClockState(false);
+        }
+      })
     );
   }
 

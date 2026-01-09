@@ -53,6 +53,16 @@ export class AdminSetup {
       this.getHeaders()
     );
   }
+
+  /** AUTO-ASSIGN ROLE BASED ON EMPLOYEE DATA */
+  autoAssignRole(): Observable<any> {
+    return this.http.post(
+      `http://${this.env.apiURL}/api/auth/auto-assign-role`,
+      {},
+      this.getHeaders()
+    );
+  }
+
   createUser(payload: {
     email: string;
     password: string;

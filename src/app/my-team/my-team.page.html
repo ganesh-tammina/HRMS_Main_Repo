@@ -1,8 +1,24 @@
-<ion-header>
-   <ion-toolbar>
-      <ion-title>My Team</ion-title>
-      <ion-buttons slot="end">
-         <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length">
+<ion-header class="ion-no-border">
+   <ion-toolbar class="gradient-header">
+      <ion-title class="header-title">
+         <ion-icon name="people" class="title-icon"></ion-icon>
+         My Team
+      </ion-title>
+      <ion-buttons slot="end" class="header-buttons">
+         <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
+            class="header-action-btn">
+            <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon name="document-text-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon name="calendar-clear-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon name="home-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="header-action-btn">
             <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
          </ion-button>
       </ion-buttons>
@@ -185,34 +201,85 @@
    </div>
 
    <!-- 🧑‍🤝‍🧑 Regular Team List -->
-   <ion-list class="team-list-view" *ngIf="!loading && !showAttendance && teamMembers.length">
+   <div class="team-grid" *ngIf="!loading && !showAttendance && teamMembers.length">
 
-      <ion-item *ngFor="let member of teamMembers" lines="full">
+      <ion-card class="team-card" *ngFor="let member of teamMembers">
 
-         <ion-avatar slot="start">
-            <img [src]="getProfileImage(member)" />
-         </ion-avatar>
+         <!-- Gradient Header -->
+         <div class="card-gradient-header"></div>
 
-         <ion-label>
-            <h2>{{ member.FullName || member.full_name || 'N/A' }}</h2>
-            <p>{{ member.WorkEmail || member.work_email || '—' }}</p>
-            <p class="sub-text">
-               {{ member.department || member.department_name || '—' }}
-            </p>
-         </ion-label>
+         <ion-card-content>
 
-         <ion-badge slot="end" [color]="member.status === 'On Leave' ? 'warning' : 'success'">
-            {{ member.status || 'Active' }}
-         </ion-badge>
+            <!-- Avatar Section -->
+            <div class="avatar-section">
+               <div class="avatar-wrapper">
+                  <div class="avatar-border">
+                     <img [src]="getProfileImage(member)" class="avatar" />
+                  </div>
+                  <div *ngIf="member.id" class="status-badge"
+                     [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
+                     [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
+                     <ion-icon
+                        [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark' : 'close'"></ion-icon>
+                  </div>
+               </div>
+            </div>
 
-      </ion-item>
+            <!-- Member Info -->
+            <div class="member-info">
+               <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
+               <p class="member-role">{{ member.designation || member.designation_name || '—' }}</p>
+            </div>
 
-   </ion-list>
+            <!-- Contact Details -->
+            <div class="contact-details">
+               <div class="detail-item">
+                  <div class="detail-icon gradient-icon">
+                     <ion-icon name="mail"></ion-icon>
+                  </div>
+                  <span class="detail-text">{{ member.WorkEmail || member.work_email || '—' }}</span>
+               </div>
+
+               <div class="detail-item">
+                  <div class="detail-icon gradient-icon">
+                     <ion-icon name="business"></ion-icon>
+                  </div>
+                  <span class="detail-text">{{ member.department || member.department_name || '—' }}</span>
+               </div>
+            </div>
+
+            <!-- Status Card -->
+            <div *ngIf="member.id" class="status-card"
+               [class.status-active]="getEmployeePunchStatus(member.id).status === 'in'"
+               [class.status-inactive]="getEmployeePunchStatus(member.id).status === 'out'">
+               <div class="status-content">
+                  <div class="status-badge-large">
+                     <ion-icon
+                        [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+                  </div>
+                  <div class="status-details">
+                     <span class="status-label">{{ getEmployeePunchStatus(member.id).status === 'in' ? 'Checked In' :
+                        'Checked Out' }}</span>
+                     <span *ngIf="getEmployeePunchStatus(member.id).work_mode" class="status-mode">{{
+                        getEmployeePunchStatus(member.id).work_mode }}</span>
+                     <span *ngIf="getEmployeePunchStatus(member.id).last_punch_time" class="status-time">
+                        <ion-icon name="time-outline"></ion-icon>
+                        {{ formatPunchTime(getEmployeePunchStatus(member.id).last_punch_time) }}
+                     </span>
+                  </div>
+               </div>
+            </div>
+
+         </ion-card-content>
+      </ion-card>
+
+   </div>
 
    <!-- ❌ Empty State -->
-   <div class="empty" *ngIf="!loading && !teamMembers.length">
-      <ion-icon name="people-outline"></ion-icon>
-      <p>No team members found</p>
+   <div class="empty-state" *ngIf="!loading && !teamMembers.length">
+      <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+      <h3>No Team Members</h3>
+      <p>You don't have any team members assigned yet.</p>
    </div>
 
 </ion-content>

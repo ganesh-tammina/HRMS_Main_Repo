@@ -4,19 +4,21 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  FormsModule
 } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 import { ProjectService, Project } from 'src/app/services/project.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-create-project',
   standalone: true,
   templateUrl: './create-project.component.html',
   styleUrls: ['./create-project.component.scss'],
-  imports: [CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule]
 })
 export class CreateProjectComponent implements OnInit {
 
@@ -30,9 +32,16 @@ export class CreateProjectComponent implements OnInit {
   isEditMode = false;
   selectedProjectId: number | null = null;
 
+  // Employee search for Project Manager
+  allEmployees: any[] = [];
+  filteredManagers: any[] = [];
+  managerSearchTerm = '';
+  selectedManager: any = null;
+
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
+    private employeeService: EmployeeService,
     private toastCtrl: ToastController,
     private router: Router
   ) { }
@@ -40,6 +49,7 @@ export class CreateProjectComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.getProjects();
+    this.loadEmployees();
   }
 
   private initForm(): void {
@@ -58,6 +68,7 @@ export class CreateProjectComponent implements OnInit {
   openCreateForm(): void {
     this.isEditMode = false;
     this.selectedProjectId = null;
+    this.clearManagerSelection();
     this.showCreateForm = true;
   }
 
@@ -65,6 +76,7 @@ export class CreateProjectComponent implements OnInit {
     this.showCreateForm = false;
     this.isEditMode = false;
     this.selectedProjectId = null;
+    this.clearManagerSelection();
     this.projectForm.reset({ status: 'active' });
   }
 
@@ -118,6 +130,16 @@ export class CreateProjectComponent implements OnInit {
   openEditForm(project: Project): void {
     this.isEditMode = true;
     this.selectedProjectId = project.id || null;
+
+    // Find and set the manager if exists
+    if (project.project_manager_id) {
+      const manager = this.allEmployees.find(emp => emp.id === project.project_manager_id);
+      if (manager) {
+        this.selectedManager = manager;
+        this.managerSearchTerm = `${manager.FirstName} ${manager.LastName} (${manager.EmployeeNumber})`;
+      }
+    }
+
     this.projectForm.patchValue({
       project_code: project.project_code,
       project_name: project.project_name,
@@ -135,6 +157,67 @@ export class CreateProjectComponent implements OnInit {
     if (project.id) {
       this.router.navigate(['/project-details', project.id]);
     }
+  }
+
+  /* ================= EMPLOYEE SEARCH FOR PROJECT MANAGER ================= */
+  loadEmployees(): void {
+    this.employeeService.getAllEmployees().subscribe({
+      next: (response: any) => {
+        if (Array.isArray(response)) {
+          this.allEmployees = response;
+        } else if (response.employees) {
+          this.allEmployees = response.employees;
+        } else if (response.data) {
+          this.allEmployees = response.data;
+        } else {
+          this.allEmployees = [];
+        }
+      },
+      error: (err) => {
+        console.error('Error loading employees:', err);
+        // Fallback: try search endpoint
+        this.employeeService.searchEmployees('').subscribe({
+          next: (employees) => {
+            this.allEmployees = employees || [];
+          },
+          error: (err2) => {
+            console.error('Error with search fallback:', err2);
+          }
+        });
+      }
+    });
+  }
+
+  onManagerSearch(event: any) {
+    const query = event.detail.value?.toLowerCase() || '';
+    this.managerSearchTerm = query;
+
+    if (query.length < 2) {
+      this.filteredManagers = [];
+      return;
+    }
+
+    this.filteredManagers = this.allEmployees.filter(emp =>
+      emp.FirstName?.toLowerCase().includes(query) ||
+      emp.LastName?.toLowerCase().includes(query) ||
+      emp.EmployeeNumber?.toLowerCase().includes(query) ||
+      emp.WorkEmail?.toLowerCase().includes(query) ||
+      `${emp.FirstName} ${emp.LastName}`.toLowerCase().includes(query)
+    ).slice(0, 10); // Limit to 10 results
+  }
+
+  selectManager(employee: any) {
+    this.selectedManager = employee;
+    this.managerSearchTerm = `${employee.FirstName} ${employee.LastName} (${employee.EmployeeNumber})`;
+    this.projectForm.patchValue({ project_manager_id: employee.id });
+    this.filteredManagers = [];
+  }
+
+  clearManagerSelection() {
+    this.selectedManager = null;
+    this.managerSearchTerm = '';
+    this.projectForm.patchValue({ project_manager_id: '' });
+    this.filteredManagers = [];
   }
 
   private async showToast(message: string, color: 'success' | 'danger') {

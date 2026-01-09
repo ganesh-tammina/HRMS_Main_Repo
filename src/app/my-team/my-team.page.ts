@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
+import { Subject, takeUntil } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-my-team',
@@ -13,7 +16,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './my-team.page.html',
   styleUrls: ['./my-team.page.scss'],
 })
-export class MyTeamPage implements OnInit {
+export class MyTeamPage implements OnInit, OnDestroy {
 
   searchText = '';
   teamMembers: any[] = [];
@@ -29,64 +32,101 @@ export class MyTeamPage implements OnInit {
   showAttendance = false;
   attendanceFilter: string = 'all'; // all, present, absent, on_leave
 
+  private destroy$ = new Subject<void>();
+  private profileImageCache = new Map<number, string>();
+
+  // Real-time attendance status tracking
+  employeeStatusMap: { [key: number]: { status: string; work_mode: string | null; last_punch_time: string | null } } = {};
+  statusRefreshInterval: any = null;
+
   constructor(
     private employeeService: EmployeeService,
-    private routeGuardService: RouteGuardService
+    private routeGuardService: RouteGuardService,
+    private router: Router,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
+    console.log('🚀 My Team Component Initialized');
+    console.log('⏰ Setting up 30-second auto-refresh for attendance status');
+    this.subscribeToProfileImageUpdates();
+    this.loadTeamData();
+
+    // Refresh attendance status every 30 seconds for real-time updates
+    this.statusRefreshInterval = setInterval(() => {
+      if (!this.showAttendance && this.teamMembers.length > 0) {
+        console.log('⏰ Auto-refresh triggered (30s interval)');
+        this.loadEmployeeAttendanceStatus();
+      }
+    }, 30000); // Changed from 120000 (2 min) to 30000 (30 sec)
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    if (this.statusRefreshInterval) {
+      clearInterval(this.statusRefreshInterval);
+    }
+  }
+
+  /* ================= PROFILE IMAGE SUBSCRIPTION ================= */
+
+  subscribeToProfileImageUpdates() {
+    this.employeeService.profileImageUpdate$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imageUrl: string | null) => {
+        if (imageUrl) {
+          console.log('📸 My Team: Profile image update received:', imageUrl);
+          // Refresh team data to get updated images
+          if (this.showAttendance) {
+            this.loadAttendanceData();
+          } else {
+            this.loadTeamData();
+          }
+        }
+      });
+  }
+
+  /* ================= LOAD TEAM DATA ================= */
+
+  loadTeamData() {
     this.loading = true;
     this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
 
     // Get user role from RouteGuardService
     this.userRole = this.routeGuardService.userRole?.toLowerCase() || null;
 
-    // Check if user is a manager or higher (admin, hr, manager)
-    const isManager = ['admin', 'hr', 'manager'].includes(this.userRole || '');
+    console.log('🔍 Loading Team Data - User Role:', this.userRole);
 
-    console.log('🔍 User Role:', this.userRole);
-    console.log('🔍 Is Manager:', isManager);
-
-    if (isManager) {
-      // 🔹 MANAGER ONLY: Get reporting employees
-      const employeeId = this.routeGuardService.employeeID;
-      console.log('🔹 Manager Employee ID:', employeeId);
-
-      if (!employeeId) {
-        console.error('❌ No employee ID found for manager');
-        this.loading = false;
-        return;
-      }
-
-      console.log('📞 Calling getReportingEmployees for manager');
-      this.employeeService.getReportingEmployees(Number(employeeId)).subscribe({
-        next: (res: any[]) => {
-          console.log('✅ Manager API Response:', res);
-          this.teamMembers = res || [];
-          this.filteredMembers = [...this.teamMembers];
-          console.log('✅ Manager - Reporting Employees Count:', this.teamMembers.length);
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('❌ Error fetching reporting employees:', err);
-          this.loading = false;
-        }
-      });
-      return; // ⚠️ CRITICAL: Exit here to prevent else block
-    }
-
-    // 🔹 EMPLOYEE ONLY: Get team list
-    console.log('📞 Calling getMyTeamList for employee');
+    // Use getMyTeamList for ALL roles - server handles manager vs employee logic
     this.employeeService.getMyTeamList().subscribe({
       next: (res: any) => {
-        console.log('✅ Employee API Response:', res);
-        this.teamMembers = res?.team || res || [];
+        console.log('✅ My Team API Response:', res);
+
+        // Handle different response formats
+        if (res?.team) {
+          this.teamMembers = res.team;
+        } else if (Array.isArray(res)) {
+          this.teamMembers = res;
+        } else {
+          this.teamMembers = [];
+        }
+
         this.filteredMembers = [...this.teamMembers];
-        console.log('✅ Employee - Team Members Count:', this.teamMembers.length);
+        console.log('✅ Team Members Count:', this.teamMembers.length);
+        console.log('✅ Team Type:', res?.type || 'unknown');
+
+        // Load real-time attendance status for regular view
+        if (this.teamMembers.length > 0) {
+          this.loadEmployeeAttendanceStatus();
+        }
+
         this.loading = false;
       },
       error: (err) => {
         console.error('❌ Error fetching team list:', err);
+        console.error('❌ Error details:', err.error);
         this.loading = false;
       }
     });
@@ -243,7 +283,15 @@ export class MyTeamPage implements OnInit {
 
   getProfileImage(member: any): string {
     if (member?.profile_image) {
-      return `http://${environment.apiURL}${member.profile_image}`;
+      // Use cached URL if available, otherwise construct with cache-buster
+      const employeeId = member.id || member.employee_id;
+      if (this.profileImageCache.has(employeeId)) {
+        return this.profileImageCache.get(employeeId)!;
+      }
+
+      const imageUrl = `http://${environment.apiURL}${member.profile_image}?t=${Date.now()}`;
+      this.profileImageCache.set(employeeId, imageUrl);
+      return imageUrl;
     }
     return 'assets/user.svg';
   }
@@ -258,5 +306,132 @@ export class MyTeamPage implements OnInit {
       m.WorkEmail?.toLowerCase().includes(text) ||
       m.department_name?.toLowerCase().includes(text)
     );
+  }
+
+  /* ================= REAL-TIME ATTENDANCE STATUS ================= */
+
+  loadEmployeeAttendanceStatus() {
+    console.log('📡 loadEmployeeAttendanceStatus() called');
+
+    if (!this.teamMembers || this.teamMembers.length === 0) {
+      console.log('⚠️ No team members to check status for');
+      return;
+    }
+
+    const employeeIds = this.teamMembers
+      .map(m => m.id)
+      .filter(id => id != null);
+
+    console.log('👥 Team Members:', this.teamMembers.length);
+    console.log('🆔 Employee IDs to check:', employeeIds);
+
+    if (employeeIds.length === 0) {
+      console.log('⚠️ No valid employee IDs found');
+      return;
+    }
+
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    });
+
+    const apiUrl = `http://${environment.apiURL}/api/attendance/bulk-status`;
+    console.log('🌐 API URL:', apiUrl);
+    console.log('📤 Sending request with employee_ids:', employeeIds);
+
+    this.http.post<any>(apiUrl, { employee_ids: employeeIds }, { headers }).subscribe({
+      next: (response) => {
+        console.log('📊 Bulk Status API Response:', response);
+        console.log('📅 Response Date:', response.date);
+        console.log('✅ Response Success:', response.success);
+        console.log('📋 Number of statuses received:', response.statuses?.length || 0);
+
+        if (response.success && response.statuses) {
+          this.employeeStatusMap = {};
+          console.log('🔄 Building employee status map...');
+
+          response.statuses.forEach((s: any, index: number) => {
+            console.log(`\n--- Employee ${index + 1}/${response.statuses.length} ---`);
+            console.log(`  Employee ID: ${s.employee_id}`);
+            console.log(`  Status: ${s.status}`);
+            console.log(`  Has Attendance: ${s.has_attendance}`);
+            console.log(`  Work Mode: ${s.work_mode}`);
+            console.log(`  Last Punch Time: ${s.last_punch_time}`);
+            console.log(`  Attendance Status: ${s.attendance_status}`);
+
+            this.employeeStatusMap[s.employee_id] = {
+              status: s.status,
+              work_mode: s.work_mode,
+              last_punch_time: s.last_punch_time
+            };
+          });
+
+          console.log('\n✅ Final Employee Status Map:', JSON.stringify(this.employeeStatusMap, null, 2));
+          console.log('📊 Total employees in map:', Object.keys(this.employeeStatusMap).length);
+        } else {
+          console.log('⚠️ Invalid response format or unsuccessful');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error loading real-time attendance status:', err);
+      }
+    });
+  }
+
+  getEmployeePunchStatus(employeeId: number): { status: string; work_mode: string | null; last_punch_time: string | null } {
+    const statusData = this.employeeStatusMap[employeeId] || { status: 'out', work_mode: null, last_punch_time: null };
+    console.log(`🔍 getEmployeePunchStatus(${employeeId}):`, statusData);
+    return statusData;
+  }
+
+  getPunchStatusBgColor(status: string): string {
+    return status === 'in' ? '#d4edda' : '#ffe6e6';
+  }
+
+  formatPunchTime(timestamp: string | null): string {
+    if (!timestamp) return '—';
+
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (e) {
+      return '—';
+    }
+  }
+
+  /* ================= MANUAL REFRESH ================= */
+
+  refreshAttendanceStatus() {
+    console.log('\n🔄 ========== MANUAL REFRESH TRIGGERED ==========');
+    console.log('📅 Current Date/Time:', new Date().toISOString());
+    console.log('👥 Team Members Count:', this.teamMembers.length);
+    console.log('🗺️ Current Status Map:', this.employeeStatusMap);
+
+    if (this.teamMembers.length > 0) {
+      this.loadEmployeeAttendanceStatus();
+    } else {
+      console.log('⚠️ No team members to refresh status for');
+    }
+  }
+
+  /* ================= NAVIGATE TO APPROVALS PAGES ================= */
+
+  navigateToTimesheetApprovals() {
+    this.router.navigate(['/ManagerTimesheetApprovals']);
+  }
+
+  navigateToLeaveApprovals() {
+    this.router.navigate(['/ManagerLeaveApprovals']);
+  }
+
+  navigateToWfhApprovals() {
+    this.router.navigate(['/ManagerWfhApprovals']);
   }
 }

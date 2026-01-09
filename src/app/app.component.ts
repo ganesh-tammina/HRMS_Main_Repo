@@ -82,6 +82,7 @@ export class AppComponent implements OnInit {
 
         // Update user role on navigation to ensure menu visibility is correct
         this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+        console.log('🔍 Navigation Event - User Role:', this.userRole);
         const role = this.userRole || '';
         this.isAdmin = (role === 'admin' || role === 'hr');
 
@@ -107,7 +108,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Get userRole from RouteGuardService
     this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+    console.log('🔍 App Component ngOnInit - User Role:', this.userRole);
+
     this.isAdmin = false;
 
     const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
@@ -121,6 +125,14 @@ export class AppComponent implements OnInit {
   }
 
   // Role checking helper methods
+  isAdminOnly(): boolean {
+    return this.userRole === 'admin';
+  }
+
+  isHROnly(): boolean {
+    return this.userRole === 'hr';
+  }
+
   isAdminOrHR(): boolean {
     return this.userRole === 'admin' || this.userRole === 'hr';
   }
@@ -130,7 +142,11 @@ export class AppComponent implements OnInit {
   }
 
   isManagerOrAbove(): boolean {
-    return this.userRole === 'manager' || this.userRole === 'admin' || this.userRole === 'hr';
+    return this.userRole === 'manager' || this.userRole === 'hr';
+  }
+
+  isEmployeeOrManagerOrHr(): boolean {
+    return this.userRole === 'employee' || this.userRole === 'manager' || this.userRole === 'hr';
   }
 
   isEmployee(): boolean {
