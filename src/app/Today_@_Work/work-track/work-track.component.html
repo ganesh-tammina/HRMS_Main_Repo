@@ -33,7 +33,6 @@
         <form [formGroup]="workTrackForm">
           <div class="date-selector">
             <label>
-              <ion-icon name="calendar-outline"></ion-icon>
               Select Date
             </label>
             <ion-input type="date" formControlName="date" [max]="today"></ion-input>
@@ -41,13 +40,13 @@
           <ion-grid class="table-block ion-no-padding">
             <ion-row class="table-header">
               <ion-col size="2">
-                <p><ion-icon name="time-outline"></ion-icon> Time Slot</p>
+                <p>Time Slot</p>
               </ion-col>
               <ion-col size="8">
-                <p><ion-icon name="document-text-outline"></ion-icon> Task Description</p>
+                <p>Task Description</p>
               </ion-col>
               <ion-col size="1">
-                <p><ion-icon name="hourglass-outline"></ion-icon> Hours</p>
+                <p>Hours</p>
               </ion-col>
               <ion-col size="1">
                 <p>Action</p>
@@ -78,28 +77,33 @@
                 </ion-col>
               </ion-row>
             </div>
+              <!-- TOTAL -->
+          <div class="total-hours-card">
+              <div class="total-content">
+                <ion-icon name="time" color="primary"></ion-icon>
+                <span class="total-label">Total Hours</span>
+              </div>
+              <ion-badge class="total-badge">{{ calculateTotalHours() }} hrs</ion-badge>
+            </div>
             <ion-row>
-              <ion-col size="12">
-                <ion-button class="primary-outline-btn" expand="block" (click)="addRow()">
+              <ion-col size="12" class="row-right pr-30">
+                <ion-button class="primary-outline-btn mr-8" (click)="addRow()">
                   + Add Time Slot
-                </ion-button>
+                </ion-button>                
+                <!-- SUBMIT -->
+                <ion-button class="primary-btn" (click)="submit()" [disabled]="loading">
+                    {{ loading ? 'Submitting...' : 'Submit Work Log' }}
+                  </ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>
 
 
 
-          <!-- TOTAL -->
-          <div class="total-hours-card">
-            <div class="total-content">
-              <ion-icon name="time" color="primary"></ion-icon>
-              <span class="total-label">Total Hours</span>
-            </div>
-            <ion-badge class="total-badge">{{ calculateTotalHours() }} hrs</ion-badge>
-          </div>
+        
 
           <!-- NOTES -->
-          <div class="notes-section">
+          <!-- <div class="notes-section">
             <label>
               <ion-icon name="reader-outline"></ion-icon>
               Additional Notes (Optional)
@@ -107,12 +111,8 @@
             <ion-textarea formControlName="notes" placeholder="Add any additional context or notes about your work..."
               rows="4">
             </ion-textarea>
-          </div>
+          </div> -->
 
-          <!-- SUBMIT -->
-          <ion-button expand="block" class="primary-btn" (click)="submit()" [disabled]="loading">
-            {{ loading ? 'Submitting...' : 'Submit Work Log' }}
-          </ion-button>
 
         </form>
       </ion-card-content>
@@ -220,7 +220,8 @@
           </ion-button>
         </div>
 
-        <p *ngIf="!loadingList && !myTimesheets.length">
+        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data empty-text">
+          <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
           No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
         </p>
 
@@ -306,10 +307,16 @@
         <form [formGroup]="workTrackForm">
 
           <!-- DATE -->
-          <ion-item lines="none">
+          <div class="date-selector">
+              <label>
+                Select Date
+              </label>
+              <ion-input type="date" formControlName="date" [max]="today"></ion-input>
+            </div>
+          <!-- <ion-item lines="none">
             <ion-label position="stacked">Date</ion-label>
             <ion-input type="date" formControlName="date" [max]="today"></ion-input>
-          </ion-item>
+          </ion-item> -->
 
           <!-- HOURS BREAKDOWN -->
           <ion-grid class="table-block ion-no-padding">
@@ -356,34 +363,33 @@
               </ion-row>
 
             </div>
-
+            <!-- TOTAL -->
+            <div class="total-hours-card">
+                <div class="total-content">
+                  <ion-icon name="time" color="primary"></ion-icon>
+                  <span class="total-label">Total Hours</span>
+                </div>
+                <ion-badge class="total-badge">{{ calculateTotalHours() }} hrs</ion-badge>
+              </div>
             <!-- ADD TIME SLOT -->
             <ion-row>
-              <ion-col size="12">
-                <ion-button class="primary-outline-btn" expand="block" (click)="addRow()">
+              <ion-col size="12" class="row-right pr-30">
+                <ion-button class="primary-outline-btn mr-8" (click)="addRow()">
                   + Add Time Slot
+                </ion-button>
+                <!-- SUBMIT -->
+              <ion-button class="primary-btn" (click)="submit()" [disabled]="loading">
+                  {{ loading ? 'Submitting...' : 'Submit Project Work' }}
                 </ion-button>
               </ion-col>
             </ion-row>
 
           </ion-grid>
 
-          <!-- TOTAL -->
-          <ion-item lines="none" class="total-row">
-            <ion-label>Total Hours</ion-label>
-            <ion-badge>{{ calculateTotalHours() }} hrs</ion-badge>
-          </ion-item>
+       
 
-          <!-- NOTES -->
-          <ion-item lines="none">
-            <ion-label position="stacked">Work Description</ion-label>
-            <ion-textarea formControlName="notes"></ion-textarea>
-          </ion-item>
 
-          <!-- SUBMIT -->
-          <ion-button expand="block" class="primary-btn" (click)="submit()" [disabled]="loading">
-            {{ loading ? 'Submitting...' : 'Submit Project Work' }}
-          </ion-button>
+          
 
         </form>
 
@@ -493,10 +499,10 @@
           </ion-button>
         </div>
 
-        <p *ngIf="!loadingList && !myTimesheets.length">
-          No project reports found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
-        </p>
-
+        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data empty-text">
+            <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
+            No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
+          </p>
       </ion-card-content>
     </ion-card>
 
