@@ -161,11 +161,14 @@ export class LeavesAllocationComponent implements OnInit {
       });
     }
   }
-        leavetype() {
+  leavetype() {
     this.router.navigate(['./admin-leaves']);
   }
     adminManagement() {
     this.router.navigate(['./admin']);
+  }
+  cancel(){
+    this.router.navigate(['./admin-leaves']);
   }
 
 }

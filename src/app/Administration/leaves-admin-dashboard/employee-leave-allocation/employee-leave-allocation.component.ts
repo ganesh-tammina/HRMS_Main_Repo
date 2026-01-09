@@ -11,6 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LeaveInitializeService } from 'src/app/services/leave-initialize.service';
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { EmployeeSelectPopoverComponent } from './employee-select-popover.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-leave-allocation',
@@ -39,7 +40,8 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
     private leaveInitService: LeaveInitializeService,
     private leavePlanService: LeavePlanService,
     private toastCtrl: ToastController,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
