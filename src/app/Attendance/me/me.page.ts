@@ -48,7 +48,7 @@ export class MePage implements OnInit {
   public async openRemoteClockinModal() {
     const modal = await this.modalCtrl.create({
       component: RemoteClockinModalComponent,
-      cssClass: 'modal-wrapper',
+      cssClass: 'checkinInfo-popup side-custom-popup',
       backdropDismiss: false,
     });
     await modal.present();

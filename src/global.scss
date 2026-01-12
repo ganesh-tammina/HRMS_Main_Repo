@@ -227,6 +227,20 @@ ion-modal {
           max-height: calc(100vh - 150px);
           overflow-y: auto;
           @include scroll-style();
+          ion-select {
+            border: 1px solid #C4C4C4;
+            height: 45px;
+            border-radius: 4px;
+            padding: 0px 12px !important;
+            margin: 11px 0px;
+          }
+          ion-input, ion-textarea {
+            border: 1px solid #C4C4C4;
+            height: auto;
+            border-radius: 4px;
+            padding: 0px 12px !important;
+            margin: 11px 0px;
+          }
         }
         .form-footer {
           position: fixed;
