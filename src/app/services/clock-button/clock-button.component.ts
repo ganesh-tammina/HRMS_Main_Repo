@@ -45,39 +45,21 @@ import { Router } from '@angular/router';
       </ion-button>
 
 
-      <!-- Clock Out Button - Regular (Office/Remote) -->
-      <div class="row-center" *ngIf="isClockedIn && (workMode === 'Office' || (remoteActive && workMode === 'Remote')) && currentUrl !== '/Me'">
-        <ion-button
-          class="btn-clockout"        
-          (click)="clockOut()">
-          {{ remoteActive && workMode === 'Remote' ? 'Remote Clock-Out' : 'Web Clock-Out' }}
-        </ion-button>
+
+      <!-- Clock Out Button - Office -->
+      <div class="row-center" *ngIf="isClockedIn && workMode === 'Office' && currentUrl !== '/Me'">
+        <ion-button class="btn-clockout" (click)="clockOut()">Web Clock-Out</ion-button>
       </div>
 
-      <ion-button
-        class="btn-clockout me-clock-out"
-        *ngIf="isClockedIn && (workMode === 'Office' || (remoteActive && workMode === 'Remote')) && currentUrl == '/Me'"
-        (click)="clockOut()"
-      >
-        {{ remoteActive && workMode === 'Remote' ? 'Remote Clock-Out' : 'Web Clock-Out' }}
-      </ion-button>
-
-      <!-- Clock Out Button - Remote -->
-      <div class="row-center" *ngIf="remoteActive && isClockedIn && workMode === 'Remote' && currentUrl !== '/Me'">
-        <ion-button
-          class="btn-clockout remote-clockout"        
-          (click)="remoteClockOut()">
-          Remote Clock-Out
-        </ion-button>
+      <!-- Clock Out Button - Remote (only once) -->
+      <div class="row-center" *ngIf="isClockedIn && workMode === 'Remote' && currentUrl !== '/Me'">
+        <ion-button class="btn-clockout remote-clockout" (click)="remoteClockOut()">Remote Clock-Out</ion-button>
       </div>
 
-      <ion-button
-        class="btn-clockout me-clock-out remote-clockout"
-        *ngIf="remoteActive && isClockedIn && workMode === 'Remote' && currentUrl == '/Me'"
-        (click)="remoteClockOut()"
-      >
-        Remote Clock-Out
-      </ion-button>
+      <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'Office'" class="btn-clockout me-clock-out" (click)="clockOut()">Web Clock-Out</ion-button>
+      <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'Remote'" class="btn-clockout me-clock-out remote-clockout" (click)="remoteClockOut()">Remote Clock-Out</ion-button>
+
+
 
       <!-- Clock Out Button - WFH -->
       <div class="row-center" *ngIf="isClockedIn && workMode === 'WFH' && currentUrl !== '/Me'">
