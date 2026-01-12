@@ -1,3 +1,4 @@
+import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly-off-policy.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UploadService } from '../../../services/uploads.service';
 import { EmployeeService } from 'src/app/services/employee.service';
@@ -31,6 +32,7 @@ export class EmployeeListComponent implements OnInit {
   shiftPolicies: ShiftPolicy[] = [];
   attendancePolicies: AttendancePolicy[] = [];
   leavePlans: LeavePlan[] = [];
+  weeklyOffPolicies: WeeklyOffPolicy[] = [];
   /* ================= EMPLOYEES ================= */
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
@@ -49,6 +51,7 @@ export class EmployeeListComponent implements OnInit {
     private shiftPolicyService: ShiftPolicyService,
     private attendancePolicyService: AttendancePolicyService,
     private leavePlanService: LeavePlanService,
+    private weeklyOffPolicyService: WeeklyOffPolicyService,
     private router: Router
   ) { }
 
@@ -59,6 +62,13 @@ export class EmployeeListComponent implements OnInit {
     this.loadShiftPolicies();
     this.loadAttendancePolicies();
     this.loadLeavePlans();
+    this.loadWeeklyOffPolicies();
+  }
+
+  loadWeeklyOffPolicies() {
+    this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe((policies: WeeklyOffPolicy[]) => {
+      this.weeklyOffPolicies = policies || [];
+    });
   }
 
   loadLeavePlans() {

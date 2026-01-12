@@ -1,3 +1,11 @@
+                        <ion-item>
+                          <ion-label position="stacked">Weekly Off Policy</ion-label>
+                          <ion-select [(ngModel)]="updateData.weekly_off_policy_id" interface="popover" placeholder="Select Weekly Off Policy">
+                            <ion-select-option *ngFor="let policy of weeklyOffPolicies" [value]="policy.id">
+                              {{policy.name}}
+                            </ion-select-option>
+                          </ion-select>
+                        </ion-item>
 <!-- Beautiful Loading Overlay (outside ion-content for proper z-index) -->
 <div class="upload-loading-overlay" *ngIf="isUploading">
   <div class="loading-content">
@@ -162,6 +170,14 @@
                           <ion-select [(ngModel)]="updateData.attendance_policy_id" interface="popover"
                             placeholder="Select Attendance Policy">
                             <ion-select-option *ngFor="let policy of attendancePolicies" [value]="policy.id">
+                              {{policy.name}}
+                            </ion-select-option>
+                          </ion-select>
+                        </ion-item>
+                        <ion-item>
+                          <ion-label position="stacked">Weekly Off Policy</ion-label>
+                          <ion-select [(ngModel)]="updateData.weekly_off_policy_id" interface="popover" placeholder="Select Weekly Off Policy">
+                            <ion-select-option *ngFor="let policy of weeklyOffPolicies" [value]="policy.id">
                               {{policy.name}}
                             </ion-select-option>
                           </ion-select>
