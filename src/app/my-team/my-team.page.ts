@@ -17,6 +17,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   styleUrls: ['./my-team.page.scss'],
 })
 export class MyTeamPage implements OnInit, OnDestroy {
+  // Handler for On Leave card click (fix for TS2339/TS2663)
+  onOnLeaveCardClick() {
+    this.showOnLeaveList = !this.showOnLeaveList;
+  }
+  // Toggle for showing on-leave employees list
+  showOnLeaveList: boolean = false;
+  // List of employees on leave today (from backend)
+  onLeaveToday: any[] = [];
 
   searchText = '';
   teamMembers: any[] = [];
@@ -145,9 +153,12 @@ export class MyTeamPage implements OnInit, OnDestroy {
         const teamMembersData = res.team_members || [];
         this.attendanceData = res.attendance || [];
         this.attendanceSummary = res.summary || null;
+        this.onLeaveToday = res.on_leave || [];
+        this.showOnLeaveList = false; // Reset on new load
 
         console.log('✅ Team Members Count:', teamMembersData.length);
         console.log('✅ Attendance Records Count:', this.attendanceData.length);
+        console.log('✅ On Leave Today:', this.onLeaveToday);
         console.log('✅ Summary:', this.attendanceSummary);
 
         // Merge team members with their attendance data
@@ -245,6 +256,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   /* ================= GET ATTENDANCE STATUS ================= */
 
   getAttendanceStatus(member: any): string {
+
     return member?.attendance?.status || 'absent';
   }
 

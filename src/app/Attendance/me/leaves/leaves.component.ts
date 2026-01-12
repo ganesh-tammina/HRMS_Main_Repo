@@ -62,6 +62,7 @@ export class LeavesComponent implements OnInit {
   /** TEXTAREA */
   wordsCount = 0;
   description = '';
+  currentMonthFirstDateText = '';
 
   minDate = new Date().toISOString().split('T')[0];
 
@@ -82,6 +83,7 @@ export class LeavesComponent implements OnInit {
     this.loadLeaveRequests();
     this.watchDateChanges();
     this.getallLeaves();
+    this.setCurrentMonthFirstDate(); // ✅ ADD THIS
 
   }
   getallLeaves() {
@@ -292,5 +294,14 @@ export class LeavesComponent implements OnInit {
   }
   openApproveReject() {
     this.router.navigate(['/approve-reject-leave']);
+  }
+  setCurrentMonthFirstDate() {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    this.currentMonthFirstDateText = firstDayOfMonth.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
   }
 }

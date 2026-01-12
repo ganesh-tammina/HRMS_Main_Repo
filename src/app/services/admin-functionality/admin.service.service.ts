@@ -1,3 +1,24 @@
+export interface WeeklyOffPolicyPayload {
+  policy_code: string;
+  name: string;
+  description: string;
+  effective_date: string;
+  is_active: number;
+  sunday_off?: number;
+  monday_off?: number;
+  tuesday_off?: number;
+  wednesday_off?: number;
+  thursday_off?: number;
+  friday_off?: number;
+  saturday_off?: number;
+  is_payable?: number;
+  holiday_overlap_rule?: string;
+  sandwich_rule?: number;
+  minimum_work_days?: number;
+  week_pattern?: any;
+}
+// ...existing code...
+// ...existing code...
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -154,7 +175,7 @@ export class AdminService {
   }
 
   /* ===================== WEEKLY OFF POLICIES ===================== */
-  createWeeklyOffPolicy(payload: MasterPayload): Observable<ApiResponse> {
+  createWeeklyOffPolicy(payload: WeeklyOffPolicyPayload): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.baseUrl}/weekly-off-policies`, payload);
   }
 
@@ -162,7 +183,7 @@ export class AdminService {
     return this.http.get<any[]>(`${this.baseUrl}/weekly-off-policies`);
   }
 
-  updateWeeklyOffPolicy(id: number, payload: MasterPayload): Observable<ApiResponse> {
+  updateWeeklyOffPolicy(id: number, payload: WeeklyOffPolicyPayload): Observable<ApiResponse> {
     return this.http.put<ApiResponse>(`${this.baseUrl}/weekly-off-policies/${id}`, payload);
   }
 

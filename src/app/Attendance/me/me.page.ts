@@ -42,6 +42,7 @@ import { EmployeeService } from 'src/app/services/employee.service';
   ],
 })
 export class MePage implements OnInit {
+  attendanceRefresh = 0;
 
   employee?: Candidate;
   record?: AttendanceRecord;
@@ -232,6 +233,7 @@ export class MePage implements OnInit {
 
   onClockStatusChanged(record: AttendanceRecord) {
     this.record = record;
+    this.attendanceRefresh = Date.now(); // trigger refresh
   }
 
   setTab(tab: string) {
