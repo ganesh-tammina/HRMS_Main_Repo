@@ -1,3 +1,4 @@
+import { AttendanceApiService } from '../services/attendance-api.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -47,17 +48,29 @@ export class MyTeamPage implements OnInit, OnDestroy {
   employeeStatusMap: { [key: number]: { status: string; work_mode: string | null; last_punch_time: string | null } } = {};
   statusRefreshInterval: any = null;
 
+
+  // Manager Remote Clock-In Requests
+  pendingRemoteClockinRequests: any[] = [];
+  isManager: boolean = false;
+  remoteDecisionLoading: { [id: number]: boolean } = {};
+
   constructor(
     private employeeService: EmployeeService,
     private routeGuardService: RouteGuardService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private attendanceApi: AttendanceApiService
   ) { }
+
 
   ngOnInit() {
     console.log('🚀 My Team Component Initialized');
     console.log('⏰ Setting up 30-second auto-refresh for attendance status');
     this.subscribeToProfileImageUpdates();
+    this.isManager = this.userRole === 'manager';
+    if (this.isManager) {
+      this.loadPendingRemoteClockinRequests();
+    }
     this.loadTeamData();
 
     // Refresh attendance status every 30 seconds for real-time updates
@@ -67,6 +80,34 @@ export class MyTeamPage implements OnInit, OnDestroy {
         this.loadEmployeeAttendanceStatus();
       }
     }, 30000); // Changed from 120000 (2 min) to 30000 (30 sec)
+  }
+
+  /** MANAGER: Load pending remote clock-in requests for approval */
+  loadPendingRemoteClockinRequests() {
+    this.attendanceApi.getPendingRemoteClockinRequests().subscribe({
+      next: (res) => {
+        this.pendingRemoteClockinRequests = res || [];
+      },
+      error: (err) => {
+        this.pendingRemoteClockinRequests = [];
+        console.error('Error loading pending remote clock-in requests:', err);
+      }
+    });
+  }
+
+  /** MANAGER: Approve/Reject remote clock-in request */
+  decideRemoteClockinRequest(id: number, decision: 'approved' | 'rejected', rejected_reason?: string) {
+    this.remoteDecisionLoading[id] = true;
+    this.attendanceApi.decideRemoteClockinRequest(id, decision, rejected_reason).subscribe({
+      next: () => {
+        this.pendingRemoteClockinRequests = this.pendingRemoteClockinRequests.filter(r => r.id !== id);
+        this.remoteDecisionLoading[id] = false;
+      },
+      error: (err) => {
+        this.remoteDecisionLoading[id] = false;
+        alert('Failed to process request: ' + (err?.error?.error || err.message));
+      }
+    });
   }
 
   ngOnDestroy() {

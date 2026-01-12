@@ -22,6 +22,31 @@ export class AttendanceApiService {
     console.log('🔔 Clock state updated globally:', isClockedIn ? 'Clocked In' : 'Clocked Out');
   }
 
+  /**
+   * MANAGER: Get all pending remote clock-in requests for their team
+   */
+  getPendingRemoteClockinRequests(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_URL}/remote-requests/pending`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  /**
+   * MANAGER: Approve or reject a remote clock-in request
+   * @param id Request ID
+   * @param decision 'approved' | 'rejected'
+   * @param rejected_reason Reason for rejection (optional)
+   */
+  decideRemoteClockinRequest(id: number, decision: 'approved' | 'rejected', rejected_reason?: string): Observable<any> {
+    return this.http.post(
+      `${this.BASE_URL}/remote-request/${id}/decision`,
+      { decision, rejected_reason },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // ...existing code...
+
   // Get current clock state
   getClockState(): boolean {
     return this.clockStateSubject.value;

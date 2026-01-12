@@ -1,3 +1,31 @@
+<!-- MANAGER: Pending Remote Clock-In Requests Approval -->
+<div *ngIf="isManager && pendingRemoteClockinRequests.length" class="manager-remote-requests">
+   <ion-card>
+      <ion-card-header>
+         <ion-card-title>Pending Remote Clock-In Requests</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+         <ion-list>
+            <ion-item *ngFor="let req of pendingRemoteClockinRequests">
+               <ion-label>
+                  <h3>{{ req.FirstName }} {{ req.LastName }}</h3>
+                  <p><strong>Date:</strong> {{ req.request_date | date:'mediumDate' }}</p>
+                  <p><strong>Reason:</strong> {{ req.reason }}</p>
+                  <p><strong>Status:</strong> {{ req.status | titlecase }}</p>
+               </ion-label>
+               <ion-button color="success" size="small" [disabled]="remoteDecisionLoading[req.id]" (click)="decideRemoteClockinRequest(req.id, 'approved')">
+                  <ion-spinner *ngIf="remoteDecisionLoading[req.id]" name="dots"></ion-spinner>
+                  <span *ngIf="!remoteDecisionLoading[req.id]">Approve</span>
+               </ion-button>
+               <ion-button color="danger" size="small" [disabled]="remoteDecisionLoading[req.id]" (click)="decideRemoteClockinRequest(req.id, 'rejected', 'Rejected by manager')">
+                  <ion-spinner *ngIf="remoteDecisionLoading[req.id]" name="dots"></ion-spinner>
+                  <span *ngIf="!remoteDecisionLoading[req.id]">Reject</span>
+               </ion-button>
+            </ion-item>
+         </ion-list>
+      </ion-card-content>
+   </ion-card>
+</div>
 <ion-content class="ion-padding page-containerOn">
    <div class="row-space-between">
       <h1 class="header-title">
