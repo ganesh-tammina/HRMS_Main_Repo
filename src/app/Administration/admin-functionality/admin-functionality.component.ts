@@ -126,7 +126,7 @@ export class adminFunctionalityComponent implements OnInit {
   editLocation(i: any) { this.showLocationForm = true; this.locationName = i.name; this.editingLocationId = i.id; }
   updateLocation() { this.service.updateLocation(this.editingLocationId!, { name: this.locationName }).subscribe(() => { this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
   deleteLocation(id: number) { this.service.deleteLocation(id).subscribe(() => this.loadLocations()); }
-    cancelLocation() { this.locationName = ''; this.editingLocationId = null; }
+  cancelLocation() { this.locationName = ''; this.editingLocationId = null; }
 
   /* DEPARTMENTS */
   loadDepartments() { this.service.getDepartments().subscribe(r => this.departments = r); }
@@ -135,27 +135,27 @@ export class adminFunctionalityComponent implements OnInit {
   editDepartment(i: any) { this.showDepartmentForm = true; this.departmentName = i.name; this.editingDepartmentId = i.id; }
   updateDepartment() { this.service.updateDepartment(this.editingDepartmentId!, { name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
   deleteDepartment(id: number) { this.service.deleteDepartment(id).subscribe(() => this.loadDepartments()); }
-    cancelDepartment() { this.departmentName = ''; this.editingDepartmentId = null; }
+  cancelDepartment() { this.departmentName = ''; this.editingDepartmentId = null; }
 
   /* SHIFTS */
   loadShiftPolicies() { this.service.getShiftPolicies().subscribe(r => this.shiftPolicies = r); }
   openAddShift() { this.showShiftForm = true; this.editingShiftId = null; }
-    saveShift() { this.service.createShiftPolicy(this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
-    editShift(item: any) { this.editingShiftId = item.id; this.shiftForm = { ...item }; }
-    updateShift() { this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
-    cancelShift() { this.resetShiftForm(); this.editingShiftId = null; }
-    resetShiftForm() {
-      this.shiftForm = {
-        name: '',
-        shift_type: 'general',
-        start_time: '',
-        end_time: '',
-        break_duration_minutes: 60,
-        timezone: 'Asia/Kolkata',
-        description: '',
-        is_active: 1
-      };
-    }
+  saveShift() { this.service.createShiftPolicy(this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
+  editShift(item: any) { this.editingShiftId = item.id; this.shiftForm = { ...item }; }
+  updateShift() { this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
+  cancelShift() { this.resetShiftForm(); this.editingShiftId = null; }
+  resetShiftForm() {
+    this.shiftForm = {
+      name: '',
+      shift_type: 'general',
+      start_time: '',
+      end_time: '',
+      break_duration_minutes: 60,
+      timezone: 'Asia/Kolkata',
+      description: '',
+      is_active: 1
+    };
+  }
 
   /* ANNOUNCEMENTS */
   loadAnnouncements() { this.service.getAnnouncements().subscribe(r => this.announcements = r); }
