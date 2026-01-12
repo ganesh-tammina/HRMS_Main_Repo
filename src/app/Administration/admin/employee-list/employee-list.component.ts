@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UploadService } from '../../../services/uploads.service';
-import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 import { IonicModule, IonModal } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,17 @@ import { Router } from '@angular/router';
   imports: [CommonModule, IonicModule, FormsModule],
 })
 export class EmployeeListComponent implements OnInit {
+  userRole: string | null = null;
+  isHR: boolean = false;
+  searchTerm: string = '';
+  selectedEmployee: any = null;
+  updateData: any = {
+    reporting_manager_id: null,
+    leave_plan_id: null,
+    shift_policy_id: null,
+    attendance_policy_id: null,
+    PayGradeId: null
+  };
   /* ================= EMPLOYEES ================= */
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
@@ -27,24 +38,61 @@ export class EmployeeListComponent implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
   constructor(
     private uploadService: UploadService,
-    private employeeService: CandidateService,
+    private employeeService: EmployeeService,
     private router: Router
   ) { }
 
   ngOnInit() {
+    this.userRole = (localStorage.getItem('role') || '').toLowerCase();
+    this.isHR = this.userRole === 'hr';
     this.loadEmployees(); // ✅ initial load
   }
   /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
   loadEmployees() {
-    this.employeeService.getAllEmployeeDeatils().subscribe((res: any[]) => {
+    this.employeeService.getAllEmployees().subscribe((res: any[]) => {
       this.allCandidates = res || [];
-
+      this.applySearch();
       // reset pagination
       this.currentPage = 1;
       this.calculatePagination();
       this.updatePagedCandidates();
-
       console.log('Employees loaded:', this.allCandidates);
+    });
+  }
+
+  applySearch() {
+    if (this.searchTerm && this.searchTerm.trim()) {
+      const term = this.searchTerm.trim().toLowerCase();
+      this.allCandidates = this.allCandidates.filter(emp =>
+        (emp.FullName || '').toLowerCase().includes(term) ||
+        (emp.id + '').includes(term) ||
+        (emp.WorkEmail || '').toLowerCase().includes(term)
+      );
+    }
+  }
+
+  selectEmployee(emp: any) {
+    this.selectedEmployee = emp;
+    this.updateData = {
+      reporting_manager_id: emp.reporting_manager_id || null,
+      leave_plan_id: emp.leave_plan_id || null,
+      shift_policy_id: emp.shift_policy_id || null,
+      attendance_policy_id: emp.attendance_policy_id || null,
+      PayGradeId: emp.PayGradeId || null
+    };
+  }
+
+  updateEmployeeProfile() {
+    if (!this.selectedEmployee) return;
+    this.employeeService.updateEmployeeProfile(this.selectedEmployee.id, this.updateData).subscribe({
+      next: () => {
+        alert('Employee profile updated successfully');
+        this.selectedEmployee = null;
+        this.loadEmployees();
+      },
+      error: () => {
+        alert('Failed to update employee profile');
+      }
     });
   }
 

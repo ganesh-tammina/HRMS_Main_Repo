@@ -31,8 +31,9 @@
 
           <ion-card-header class="row-space-between">
             <ion-card-title>Employees <small>{{allCandidates.length}}</small></ion-card-title>
-            <!-- <ion-searchbar placeholder="Search Employees, Employee ID or Department " showCancelButton="never">
-            </ion-searchbar> -->
+            <ion-searchbar *ngIf="isHR" [(ngModel)]="searchTerm" (ionInput)="loadEmployees()"
+              placeholder="Search Employees, Employee ID or Department " showCancelButton="never">
+            </ion-searchbar>
             <ion-card-subtitle>
               <div class="row-right">
                 <ion-button class="primary-btn" id="open-upload-modal">
@@ -104,12 +105,11 @@
               </ion-row>
 
               <!-- Rows -->
-              <ion-row class="table-row-list" *ngFor="let candidate of pagedCandidates">
 
+              <ion-row class="table-row-list" *ngFor="let candidate of pagedCandidates">
                 <ion-col size="2">
                   <p>{{ candidate.id }}</p>
                 </ion-col>
-
                 <ion-col size="3">
                   <p>{{ candidate.FullName || '-' }}</p>
                 </ion-col>
@@ -120,9 +120,50 @@
                   <p>{{ candidate.WorkEmail || '-' }}</p>
                 </ion-col>
                 <ion-col size="1">
-
+                  <ion-button *ngIf="isHR" fill="outline" size="small"
+                    (click)="selectEmployee(candidate)">Edit</ion-button>
                 </ion-col>
               </ion-row>
+
+              <!-- Update Employee Profile Modal for HR -->
+              <ion-modal *ngIf="isHR && selectedEmployee" [isOpen]="!!selectedEmployee"
+                (didDismiss)="selectedEmployee = null">
+                <ng-template>
+                  <ion-content class="ion-padding">
+                    <ion-card color="light">
+                      <ion-card-header>
+                        <ion-card-title>Update Employee Profile (ID: {{selectedEmployee.id}})</ion-card-title>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <ion-item>
+                          <ion-label position="stacked">Reporting Manager ID</ion-label>
+                          <ion-input type="number" [(ngModel)]="updateData.reporting_manager_id"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                          <ion-label position="stacked">Leave Plan ID</ion-label>
+                          <ion-input type="number" [(ngModel)]="updateData.leave_plan_id"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                          <ion-label position="stacked">Shift Policy ID</ion-label>
+                          <ion-input type="number" [(ngModel)]="updateData.shift_policy_id"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                          <ion-label position="stacked">Attendance Policy ID</ion-label>
+                          <ion-input type="number" [(ngModel)]="updateData.attendance_policy_id"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                          <ion-label position="stacked">Pay Grade ID</ion-label>
+                          <ion-input type="number" [(ngModel)]="updateData.PayGradeId"></ion-input>
+                        </ion-item>
+                        <div class="row-right ion-padding-top">
+                          <ion-button color="primary" (click)="updateEmployeeProfile()">Update</ion-button>
+                          <ion-button color="medium" (click)="selectedEmployee = null">Cancel</ion-button>
+                        </div>
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
 
               <!-- No Records -->
               <ion-row *ngIf="pagedCandidates.length === 0">
