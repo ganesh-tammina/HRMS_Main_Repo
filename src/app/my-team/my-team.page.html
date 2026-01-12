@@ -219,23 +219,27 @@
       <ion-card class="team-card" *ngFor="let member of teamMembers">        
             <ion-card-content>
                <!-- Avatar Section -->
+               <div class="row-left">
+
                <div class="avatar-section">
                   <ion-img [src]="getProfileImage(member)" class="avatar"></ion-img>
                      
                      <div *ngIf="member.id" class="status-badge"
                         [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
                         [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
-                        {{getEmployeePunchStatus(member.id).status === 'in' ? 'In' : 'Out'}}
                         <!-- <ion-icon
                            [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark' : 'close'"></ion-icon> -->
                      </div>
                </div>
-   
+               <div>
+                     <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
+                     <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{ member.department || member.department_name || '—' }}</p>
+                     
+               </div>              
+               </div>
                <!-- Member Info -->
                <div class="contact-details">
-                  <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
-                  <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{ member.department || member.department_name || '—' }}</p>
-                  <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}</p>
+                 <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}</p>
                   <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email || '—' }}</p>
                </div>
             </ion-card-content>

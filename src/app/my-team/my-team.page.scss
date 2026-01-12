@@ -1,5 +1,6 @@
 @import '../../global.scss';
 /* ================= GRADIENT HEADER ================= */
+$border-colors: #1F74BB, #BB2C1F, #FFB24B, #00983D;
 .gradient-header {
   --background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
   --color: white;
@@ -55,27 +56,34 @@ ion-content {
     font-weight: 500;
   }
 }
-
 /* ================= TEAM GRID ================= */
 .team-grid {
   display: flex;
   flex-wrap: wrap;  
+  margin-top: 15px;
 }
 /* ================= TEAM CARD WITH GRADIENTS ================= */
 .team-card {
-  background: url('../../assets/myteam-bg.svg');
+  background: #fff;
   background-repeat: no-repeat;
-  width: 350px;
+  width: 400px;
   background-position: top;
   border-radius: 16px;
   background-size: cover;
+  border-top: 5px solid;
+  @for $i from 1 through length($border-colors) {
+    &:nth-child(#{length($border-colors)}n + #{$i}) {
+      border-color: nth($border-colors, $i);
+    }
+  }
+   
   .avatar-section {
     position: relative;
+    margin-right: 12px;
     ion-img {
      width: 68px;
      height: 68px;
      border-radius: 50%;
-     margin: auto;
     } 
     .status-badge {
       display: flex;
@@ -83,12 +91,14 @@ ion-content {
       font-size: 10px;
       font-weight: 600;
       text-transform: capitalize;
-      border-radius: 8px;
+      border-radius: 50%;
       position: absolute;
-      left: 52%;
+      left: 45px;
       bottom: -1px;
       color: #fff;
-      padding: 4px 7px;
+      padding: 0;
+      width: 18px;
+      height: 18px;
     &.badge-out {
       background: var(--ion-color-danger);  
     }
@@ -97,26 +107,31 @@ ion-content {
     }
     }   
   }
-  .contact-details {
-    .member-name {
-      text-align: center;
-      @include text-style-bold();
-      margin-top: 8px;
-    }
-    .member-role {
-      @include body-text();
-      color: #707070;
-      margin-top: 8px;
-    }
+  .member-name {
+    text-align: left;
+    @include text-style-bold();
+    margin-top: 8px;
+    color: #333333;
+  }
+  .member-role {
+    @include body-text();
+    color: #707070;
+    margin-top: 8px;
+  }
+  .contact-details {      
+    margin-top: 12px;
+    margin-bottom: 12px;
     .detail-text {
-      display: flex;      
-      margin-top: 8px;
-      margin-bottom: 12px;
+      display: flex; 
       label {
         color: var(--ion-color-primary);
         margin-right: 8px;
       }
       @include normal-text();
+    }
+    p {
+      margin: 0;
+      margin-bottom: 8px;
     }
   }  
  
@@ -279,9 +294,6 @@ h3 {
   h2 {
     margin: 8px 0;
   }
-  ion-button::part(native)  {
-      background: red;
-    }  
 }
 
 .summary-cards {
