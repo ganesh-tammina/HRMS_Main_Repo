@@ -1,29 +1,27 @@
-
-
 <ion-content class="ion-padding page-containerOn">
-      <div class="row-space-between"> 
-         <h1 class="header-title">
-            My Team
-         </h1>
-         <ion-buttons slot="end" class="header-buttons">
-            <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
-               class="header-action-btn">
-               <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon name="document-text-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon name="calendar-clear-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon name="home-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
-            </ion-button>
-         </ion-buttons>
-      </div>
+   <div class="row-space-between">
+      <h1 class="header-title">
+         My Team
+      </h1>
+      <ion-buttons slot="end" class="header-buttons">
+         <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
+            class="header-action-btn">
+            <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon name="document-text-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon name="calendar-clear-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon name="home-outline" slot="icon-only"></ion-icon>
+         </ion-button>
+         <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="header-action-btn">
+            <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
+         </ion-button>
+      </ion-buttons>
+   </div>
 
    <!-- ⏳ Loader -->
    <div class="loading-container" *ngIf="loading">
@@ -153,7 +151,7 @@
                      <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
                      <p>{{ leave.WorkEmail }}</p>
                      <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
-                     <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
+                     <p><strong>Duration:</strong> {{ leave.start_date | date }} to {{ leave.end_date | date }}</p>
                   </ion-label>
                </ion-item>
             </ion-list>
@@ -221,30 +219,32 @@
 
    <div class="team-grid" *ngIf="!loading && !showAttendance && teamMembers.length">
 
-      <ion-card class="team-card" *ngFor="let member of teamMembers">        
-            <ion-card-content>
-               <!-- Avatar Section -->
-               <div class="avatar-section">
-                  <ion-img [src]="getProfileImage(member)" class="avatar"></ion-img>
-                     
-                     <div *ngIf="member.id" class="status-badge"
-                        [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
-                        [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
-                        {{getEmployeePunchStatus(member.id).status === 'in' ? 'In' : 'Out'}}
-                        <!-- <ion-icon
+      <ion-card class="team-card" *ngFor="let member of teamMembers">
+         <ion-card-content>
+            <!-- Avatar Section -->
+            <div class="avatar-section">
+               <ion-img [src]="getProfileImage(member)" class="avatar"></ion-img>
+
+               <div *ngIf="member.id" class="status-badge"
+                  [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
+                  [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
+                  {{getEmployeePunchStatus(member.id).status === 'in' ? 'In' : 'Out'}}
+                  <!-- <ion-icon
                            [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark' : 'close'"></ion-icon> -->
-                     </div>
                </div>
-   
-               <!-- Member Info -->
-               <div class="contact-details">
-                  <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
-                  <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{ member.department || member.department_name || '—' }}</p>
-                  <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}</p>
-                  <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email || '—' }}</p>
-               </div>
-            </ion-card-content>
-         </ion-card>
+            </div>
+
+            <!-- Member Info -->
+            <div class="contact-details">
+               <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
+               <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{ member.department
+                  || member.department_name || '—' }}</p>
+               <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}
+               </p>
+               <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email || '—' }}</p>
+            </div>
+         </ion-card-content>
+      </ion-card>
 
    </div>
 
