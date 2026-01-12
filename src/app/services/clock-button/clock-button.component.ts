@@ -232,13 +232,18 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
     // Update UI state immediately for instant feedback
     this.isClockedIn = false;
     this.statusChanged.emit({ punch_type: 'out', work_mode: this.workMode });
+    // If WFH, reset workMode to Office after clock out
+    const wasWFH = this.workMode === 'WFH';
     this.attendanceApi.apiPunchOut({
-      notes: 'Going for lunch',
+      notes: wasWFH ? 'WFH Clock-Out' : 'Going for lunch',
     }).subscribe({
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
           // this.statusChanged.emit(res); // Already emitted above
+          if (wasWFH) {
+            this.workMode = 'Office';
+          }
           console.log('✅ Clocked Out successfully on', this.currentUrl);
         }
       },

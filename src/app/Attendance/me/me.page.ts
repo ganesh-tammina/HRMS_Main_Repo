@@ -63,7 +63,10 @@ export class MePage implements OnInit {
       // If remote clock-in was successful, update clock button UI instantly
       if (data.forceRemote && this.clockButton) {
         console.log('Calling clockButton.clockIn(true)');
-        this.clockButton.clockIn(true);
+        // Set clock button to Remote mode and show Remote Clock-Out instantly
+        this.clockButton.workMode = 'Remote';
+        this.clockButton.isClockedIn = true;
+        this.clockButton.remoteActive = true;
       } else if (data.forceRemote) {
         console.warn('clockButton ViewChild not set!');
       }
@@ -219,8 +222,11 @@ export class MePage implements OnInit {
           next: () => {
             this.showToast('WFH Clock-In successful', 'success');
             this.loadTodayAttendance();
-            // Reload page to update clock button state
-            window.location.reload();
+            // Set clock button to WFH mode and show WFH Clock-Out
+            if (this.clockButton) {
+              this.clockButton.workMode = 'WFH';
+              this.clockButton.isClockedIn = true;
+            }
           },
           error: err => {
             this.showToast(err?.error?.message || 'WFH Clock-In failed', 'danger');
