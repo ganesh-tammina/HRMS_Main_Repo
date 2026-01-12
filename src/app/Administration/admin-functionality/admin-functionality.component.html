@@ -14,7 +14,54 @@
     <li [class.active]="activeTab==='designations'" (click)="setTab('designations')">Designations</li>
     <li [class.active]="activeTab==='businessUnits'" (click)="setTab('businessUnits')">Business Units</li>
     <li [class.active]="activeTab==='shifts'" (click)="setTab('shifts')">Shifts</li>
+    <li [class.active]="activeTab==='weeklyOffPolicies'" (click)="setTab('weeklyOffPolicies')">Weekly Off Policies</li>
     <li [class.active]="activeTab==='announcements'" (click)="setTab('announcements')">Announcements</li>
+    <!-- ========== WEEKLY OFF POLICIES ========== -->
+    <div class="tab-card" *ngIf="activeTab==='weeklyOffPolicies'">
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="7" class="tab-content-list mr-15">
+            <div class="tab-header">
+              <p class="header-title">Weekly Off Policies <span>{{weeklyOffPolicies.length}}</span></p>
+            </div>
+            <ion-grid class="table-block ion-no-padding">
+              <ion-row class="table-header">
+                <ion-col size="8">Weekly Off Policy</ion-col>
+                <ion-col size="4">Actions</ion-col>
+              </ion-row>
+              <ion-row class="table-row-list" *ngFor="let item of weeklyOffPolicies">
+                <ion-col size="8">
+                  {{item.name}} <span *ngIf="item.policy_code">({{item.policy_code}})</span>
+                </ion-col>
+                <ion-col size="4">
+                  <button class="mr-8" (click)="editWeeklyOffPolicy(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button (click)="deleteWeeklyOffPolicy(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+          <ion-col size="4" class="tab-content-form mr-15">
+            <p class="form-header">Add New Weekly Off Policy</p>
+            <p class="form-subheader">Create a new Weekly Off Policy in your organization</p>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="stacked">Policy Name</ion-label>
+                <ion-input [(ngModel)]="weeklyOffPolicyForm.name" placeholder="Policy name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Policy Code</ion-label>
+                <ion-input [(ngModel)]="weeklyOffPolicyForm.policy_code" placeholder="Policy code"></ion-input>
+              </ion-item>
+            </ion-list>
+            <div class="row-center">
+              <ion-button class="primary-outline-btn" (click)="cancelWeeklyOffPolicy()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingWeeklyOffPolicyId" (click)="saveWeeklyOffPolicy()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingWeeklyOffPolicyId" (click)="updateWeeklyOffPolicy()">Update</ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
   </ul>
 
   <!-- ========== LOCATIONS ========== -->

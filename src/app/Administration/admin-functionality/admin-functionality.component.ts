@@ -13,6 +13,16 @@ import { Router } from '@angular/router';
   styleUrls: ['./admin-functionality.component.scss']
 })
 export class adminFunctionalityComponent implements OnInit {
+  weeklyOffPolicies: any[] = [];
+  weeklyOffPolicyForm: any = {
+    policy_code: '',
+    name: '',
+    description: '',
+    effective_date: '',
+    is_active: 1
+    // Add more fields as needed
+  };
+  editingWeeklyOffPolicyId: number | null = null;
 
   activeTab = 'locations';
 
@@ -57,7 +67,7 @@ export class adminFunctionalityComponent implements OnInit {
   ngOnInit() {
     this.loadLocations();
   }
-      adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
 
@@ -66,24 +76,32 @@ export class adminFunctionalityComponent implements OnInit {
     if (tab === 'locations') this.loadLocations();
     if (tab === 'departments') this.loadDepartments();
     if (tab === 'shifts') this.loadShiftPolicies();
+    if (tab === 'weeklyOffPolicies') this.loadWeeklyOffPolicies();
     if (tab === 'announcements') this.loadAnnouncements();
   }
+  /* WEEKLY OFF POLICIES */
+  loadWeeklyOffPolicies() { this.service.getWeeklyOffPolicies().subscribe(r => this.weeklyOffPolicies = r); }
+  saveWeeklyOffPolicy() { this.service.createWeeklyOffPolicy(this.weeklyOffPolicyForm).subscribe(() => { this.loadWeeklyOffPolicies(); this.cancelWeeklyOffPolicy(); }); }
+  editWeeklyOffPolicy(item: any) { this.editingWeeklyOffPolicyId = item.id; this.weeklyOffPolicyForm = { ...item }; }
+  updateWeeklyOffPolicy() { this.service.updateWeeklyOffPolicy(this.editingWeeklyOffPolicyId!, this.weeklyOffPolicyForm).subscribe(() => { this.loadWeeklyOffPolicies(); this.cancelWeeklyOffPolicy(); }); }
+  deleteWeeklyOffPolicy(id: number) { this.service.deleteWeeklyOffPolicy(id).subscribe(() => this.loadWeeklyOffPolicies()); }
+  cancelWeeklyOffPolicy() { this.editingWeeklyOffPolicyId = null; this.weeklyOffPolicyForm = { policy_code: '', name: '', description: '', effective_date: '', is_active: 1 }; }
 
   /* LOCATIONS */
   loadLocations() { this.service.getLocations().subscribe(r => this.locations = r); }
   openAddLocation() { this.showLocationForm = true; this.editingLocationId = null; this.locationName = ''; }
-  saveLocation() { this.service.createLocation({ name: this.locationName }).subscribe(() => { this.loadLocations(); this.cancelLocation(); }); }
+  saveLocation() { this.service.createLocation({ name: this.locationName }).subscribe(() => { this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
   editLocation(i: any) { this.showLocationForm = true; this.locationName = i.name; this.editingLocationId = i.id; }
-  updateLocation() { this.service.updateLocation(this.editingLocationId!, { name: this.locationName }).subscribe(() => { this.loadLocations(); this.cancelLocation(); }); }
+  updateLocation() { this.service.updateLocation(this.editingLocationId!, { name: this.locationName }).subscribe(() => { this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
   deleteLocation(id: number) { this.service.deleteLocation(id).subscribe(() => this.loadLocations()); }
   cancelLocation() { this.showLocationForm = false; }
 
   /* DEPARTMENTS */
   loadDepartments() { this.service.getDepartments().subscribe(r => this.departments = r); }
   openAddDepartment() { this.showDepartmentForm = true; this.editingDepartmentId = null; this.departmentName = ''; }
-  saveDepartment() { this.service.createDepartment({ name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.cancelDepartment(); }); }
+  saveDepartment() { this.service.createDepartment({ name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
   editDepartment(i: any) { this.showDepartmentForm = true; this.departmentName = i.name; this.editingDepartmentId = i.id; }
-  updateDepartment() { this.service.updateDepartment(this.editingDepartmentId!, { name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.cancelDepartment(); }); }
+  updateDepartment() { this.service.updateDepartment(this.editingDepartmentId!, { name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
   deleteDepartment(id: number) { this.service.deleteDepartment(id).subscribe(() => this.loadDepartments()); }
   cancelDepartment() { this.showDepartmentForm = false; }
 
