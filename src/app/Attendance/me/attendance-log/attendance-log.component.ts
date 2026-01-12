@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router, NavigationEnd } from '@angular/router';
@@ -16,7 +16,13 @@ import { AttendanceApiService } from '../../../services/attendance-api.service';
   styleUrls: ['./attendance-log.component.scss'],
   imports: [IonicModule, CommonModule],
 })
-export class AttendanceLogComponent implements OnInit, OnDestroy {
+export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() refreshTrigger: any;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['refreshTrigger'] && !changes['refreshTrigger'].firstChange) {
+      this.reloadAttendance();
+    }
+  }
 
   /* ================= UI ================= */
   selectedPeriod = '30DAYS';

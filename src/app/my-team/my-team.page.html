@@ -81,16 +81,6 @@
          </ion-chip>
       </div> -->
 
-      <!-- DEBUG INFO - Remove after testing -->
-      <!-- <ion-card *ngIf="filteredMembers.length === 0" color="warning">
-         <ion-card-content>
-            <strong>Debug Info:</strong><br>
-            Total team members: {{ teamMembers.length }}<br>
-            Filtered members: {{ filteredMembers.length }}<br>
-            Current filter: {{ attendanceFilter }}<br>
-            Attendance data count: {{ attendanceData?.length || 0 }}<br>
-         </ion-card-content>
-      </ion-card> -->
 
       <!-- Summary Cards -->
       <div class="summary-cards" *ngIf="attendanceSummary">
@@ -143,6 +133,33 @@
             </ion-card-content>
          </ion-card>
       </div>
+
+      <!-- On Leave Card: Click to show/hide on-leave employees -->
+      <ion-card *ngIf="onLeaveToday.length > 0" color="warning" (click)="onOnLeaveCardClick()" style="cursor:pointer;">
+         <ion-card-header>
+            <ion-card-title>
+               <ion-icon name="calendar-outline"></ion-icon>
+               On Leave Today
+               <ion-icon [name]="showOnLeaveList ? 'chevron-up-outline' : 'chevron-down-outline'"
+                  style="float:right;"></ion-icon>
+            </ion-card-title>
+         </ion-card-header>
+         <ion-card-content *ngIf="showOnLeaveList">
+            <ion-list>
+               <ion-item *ngFor="let leave of onLeaveToday">
+                  <ion-avatar slot="start">
+                     <img [src]="getProfileImage(leave)" />
+                  </ion-avatar>
+                  <ion-label>
+                     <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
+                     <p>{{ leave.WorkEmail }}</p>
+                     <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
+                     <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
+                  </ion-label>
+               </ion-item>
+            </ion-list>
+         </ion-card-content>
+      </ion-card>
 
       <!-- Team Attendance List -->
       <ion-list class="attendance-list">

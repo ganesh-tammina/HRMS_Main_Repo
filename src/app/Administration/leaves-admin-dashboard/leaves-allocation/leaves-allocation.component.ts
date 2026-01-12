@@ -17,16 +17,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./leaves-allocation.component.scss'],
 })
 export class LeavesAllocationComponent implements OnInit {
-  // Use selectedPlanId as the source of truth for the ID
-  selectedPlanId: number | null = null;
 
+  selectedPlanId: number | null = null;
   allocationForm!: FormGroup;
   loading = false;
-
   leavePlans: any[] = [];
   leaveTypes: any[] = [];
   filteredLeaveTypes: any[] = [];
-
   loadingPlans = false;
   listLoading = false;
 
@@ -37,17 +34,20 @@ export class LeavesAllocationComponent implements OnInit {
     private leavePlanService: LeavePlanService,
     private leaveTypesService: LeaveTypeService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.allocationForm = this.fb.group({
-      name: [''], // Removed Validators.required because it's not in HTML
+      name: [''],
       description: [''],
       allocations: this.fb.array([]),
     });
-
     this.loadLeavePlans();
     this.loadLeaveTypes();
+  }
+
+  get showAllocations(): boolean {
+    return !!this.selectedPlanId;
   }
 
   get allocations(): FormArray {
@@ -55,6 +55,10 @@ export class LeavesAllocationComponent implements OnInit {
   }
 
   addAllocation(leaveTypeId: any = null, days: any = null, prorate = true): void {
+    if (!this.selectedPlanId) {
+      this.showToast('Please select a Leave Plan before adding allocations', 'warning');
+      return;
+    }
     this.allocations.push(
       this.fb.group({
         leave_type_id: [leaveTypeId, Validators.required],
@@ -69,28 +73,28 @@ export class LeavesAllocationComponent implements OnInit {
   }
 
   async submitallocationLeaves(): Promise<void> {
-    // 1. Check if a plan is selected
     if (!this.selectedPlanId) {
       this.showToast('Please select a Leave Plan first', 'warning');
       return;
     }
-
-    // 2. Check if form is valid (e.g., all leave types and days are filled)
+    if (this.allocations.length === 0) {
+      this.showToast('Please add at least one allocation before saving', 'danger');
+      return;
+    }
     if (this.allocationForm.invalid) {
       this.allocationForm.markAllAsTouched();
       this.showToast('Please fill all required fields in the allocations', 'danger');
       return;
     }
-
     this.loading = true;
-
-    // Send the ID and the form data
     this.updateAllocationService
       .updateLeaveAllocation(this.selectedPlanId, this.allocationForm.value)
       .subscribe({
         next: () => {
           this.loading = false;
           this.showToast('Leave allocation updated successfully', 'success');
+          this.allocationForm.reset();
+          this.selectedPlanId = null;
         },
         error: (err) => {
           this.loading = false;
@@ -102,14 +106,12 @@ export class LeavesAllocationComponent implements OnInit {
 
   async showToast(message: string, color: string) {
     const toast = await this.toastCtrl.create({
-      message,
+      message: message,
       duration: 2000,
-      color,
+      color: color,
     });
     toast.present();
   }
-
-  /* ================= LOAD DATA ================= */
 
   loadLeavePlans(): void {
     this.loadingPlans = true;
@@ -140,16 +142,11 @@ export class LeavesAllocationComponent implements OnInit {
   onPlanChange(planId: any): void {
     const selectedPlan = this.leavePlans.find((p) => p.id === planId);
     if (!selectedPlan) return;
-
     this.selectedPlanId = planId;
-
-    // Update form top-level values
     this.allocationForm.patchValue({
       name: selectedPlan.name,
       description: selectedPlan.description,
     });
-
-    // Clear and refill the FormArray
     this.allocations.clear();
     if (selectedPlan.allocations?.length) {
       selectedPlan.allocations.forEach((alloc: any) => {
@@ -161,14 +158,16 @@ export class LeavesAllocationComponent implements OnInit {
       });
     }
   }
+
   leavetype() {
     this.router.navigate(['./admin-leaves']);
   }
-    adminManagement() {
+
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
-  cancel(){
+
+  cancel() {
     this.router.navigate(['./admin-leaves']);
   }
-
 }

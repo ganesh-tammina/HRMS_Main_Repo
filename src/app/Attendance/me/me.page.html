@@ -132,7 +132,7 @@
                     <img src="../../assets/Icons/attendance-icons/remote.svg" width="16" height="16" />
                     Remote Clock-In
                   </ion-button>
-                  <ion-button  (click)="wfhClockIn()" fill="clear" class="clear">
+                  <ion-button (click)="wfhClockIn()" fill="clear" class="clear">
                     <img src="../../assets/Icons/attendance-icons/wfh clockin.svg" width="16" height="16" />
                     WFH Clock-In
                   </ion-button>
@@ -169,7 +169,7 @@
 
     <!-- Attendance Log Tab -->
     <div *ngIf="activeTab === 'log'">
-      <app-attendance-log></app-attendance-log>
+      <app-attendance-log [refreshTrigger]="attendanceRefresh"></app-attendance-log>
     </div>
 
     <!-- Calendar Tab -->
