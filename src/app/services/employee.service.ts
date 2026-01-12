@@ -45,7 +45,7 @@ export class EmployeeService {
     }
   ): Observable<any> {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-    return this.http.patch(
+    return this.http.put(
       `${this.API_URL}/${employeeId}`,
       updateData,
       {

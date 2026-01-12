@@ -132,13 +132,13 @@
                   <ion-content class="ion-padding">
                     <ion-card color="light">
                       <ion-card-header>
-                        <ion-card-title>Update Employee Profile (ID: {{selectedEmployee.id}})</ion-card-title>
+                        <ion-card-title>Update Employee Profile - {{selectedEmployee.FullName}}</ion-card-title>
                       </ion-card-header>
                       <ion-card-content>
-                        <ion-item>
-                          <ion-label position="stacked">Reporting Manager ID</ion-label>
-                          <ion-input type="number" [(ngModel)]="updateData.reporting_manager_id"></ion-input>
-                        </ion-item>
+                        <!-- <ion-item>
+                          <ion-label position="stacked">Reporting Manager</ion-label>
+                          <ion-input [value]="selectedEmployee?.reporting_manager_name || '-'" readonly></ion-input>
+                        </ion-item> -->
                         <ion-item>
                           <ion-label position="stacked">Leave Plan</ion-label>
                           <ion-select [(ngModel)]="updateData.leave_plan_id" interface="popover"

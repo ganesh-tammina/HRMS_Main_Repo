@@ -140,9 +140,40 @@ export class adminFunctionalityComponent implements OnInit {
   /* SHIFTS */
   loadShiftPolicies() { this.service.getShiftPolicies().subscribe(r => this.shiftPolicies = r); }
   openAddShift() { this.showShiftForm = true; this.editingShiftId = null; }
-  saveShift() { this.service.createShiftPolicy(this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
+  saveShift() {
+    console.log('Saving new shift:', this.shiftForm);
+    this.service.createShiftPolicy(this.shiftForm).subscribe({
+      next: () => {
+        console.log('Shift saved successfully');
+        this.loadShiftPolicies();
+        this.resetShiftForm();
+      },
+      error: (err) => {
+        console.error('Error saving shift:', err);
+      }
+    });
+  }
   editShift(item: any) { this.editingShiftId = item.id; this.shiftForm = { ...item }; }
+    editShift(item: any) {
+      console.log('Editing shift:', item);
+      this.editingShiftId = item.id;
+      this.shiftForm = { ...item };
+      console.log('shiftForm after edit:', this.shiftForm);
+    }
   updateShift() { this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
+    updateShift() {
+      console.log('Updating shift:', this.editingShiftId, this.shiftForm);
+      this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe({
+        next: () => {
+          console.log('Shift updated successfully');
+          this.loadShiftPolicies();
+          this.resetShiftForm();
+        },
+        error: (err) => {
+          console.error('Error updating shift:', err);
+        }
+      });
+    }
   cancelShift() { this.resetShiftForm(); this.editingShiftId = null; }
   resetShiftForm() {
     this.shiftForm = {
