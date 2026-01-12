@@ -66,11 +66,12 @@ ion-content {
 .team-card {
   background: #fff;
   background-repeat: no-repeat;
-  width: 400px;
+  width: 375px;
   background-position: top;
   border-radius: 16px;
   background-size: cover;
   border-top: 5px solid;
+  margin: 10px auto;
   @for $i from 1 through length($border-colors) {
     &:nth-child(#{length($border-colors)}n + #{$i}) {
       border-color: nth($border-colors, $i);

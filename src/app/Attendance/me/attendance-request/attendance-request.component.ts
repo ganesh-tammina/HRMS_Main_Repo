@@ -101,10 +101,10 @@ export class AttendanceRequestComponent implements OnInit {
         console.log(res);
         const wfhRecords: AttendanceRequestHistory[] = res.map(item => ({
           date: this.formatDate(item.applied_at),
-          request: 'Work From Home',
+          request: item.leave_type,
           requestedOn: this.formatRequestedOn(item.created_at),
           note: item.reason,
-          reason: 'WFH',
+          reason: item.reason,
           status: this.formatStatus(item.status),
           lastAction: item.updated_by || '-',
           nextApprover: item.next_approver || '-',
