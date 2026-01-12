@@ -1,21 +1,220 @@
-<ion-content  class="page-containerOn project-wrapper ion-padding">
-    <p class="page-header mb-8">
+<ion-content class="page-containerOn project-wrapper ion-padding">
+  <p class="page-header mb-8">
     <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
     Manage Data Lists
   </p>
-    <div class="manage-main-block">
-  <h2>Manage Data Lists</h2> 
-  <p class="sub-text">Add, edit, or remove organizational fields used across the system.</p>
+  <div class="manage-main-block">
+    <h2>Manage Data Lists</h2>
+    <p class="sub-text">Add, edit, or remove organizational fields used across the system.</p>
 
-  <!-- TABS -->
-  <ul class="custom-btn-tabs mb-15">
-    <li [class.active]="activeTab==='locations'" (click)="setTab('locations')">Locations</li>
-    <li [class.active]="activeTab==='departments'" (click)="setTab('departments')">Departments</li>
-    <li [class.active]="activeTab==='designations'" (click)="setTab('designations')">Designations</li>
-    <li [class.active]="activeTab==='businessUnits'" (click)="setTab('businessUnits')">Business Units</li>
-    <li [class.active]="activeTab==='shifts'" (click)="setTab('shifts')">Shifts</li>
-    <li [class.active]="activeTab==='weeklyOffPolicies'" (click)="setTab('weeklyOffPolicies')">Weekly Off Policies</li>
-    <li [class.active]="activeTab==='announcements'" (click)="setTab('announcements')">Announcements</li>
+    <!-- TABS -->
+    <ul class="custom-btn-tabs mb-15">
+      <li [class.active]="activeTab==='locations'" (click)="setTab('locations')">Locations</li>
+      <li [class.active]="activeTab==='departments'" (click)="setTab('departments')">Departments</li>
+      <li [class.active]="activeTab==='designations'" (click)="setTab('designations')">Designations</li>
+      <li [class.active]="activeTab==='businessUnits'" (click)="setTab('businessUnits')">Business Units</li>
+      <li [class.active]="activeTab==='shifts'" (click)="setTab('shifts')">Shifts</li>
+      <li [class.active]="activeTab==='weeklyOffPolicies'" (click)="setTab('weeklyOffPolicies')">Weekly Off Policies
+      </li>
+      <li [class.active]="activeTab==='announcements'" (click)="setTab('announcements')">Announcements</li>
+
+    </ul>
+
+    <!-- ========== LOCATIONS ========== -->
+    <div class="tab-card" *ngIf="activeTab==='locations'">
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="7" class="tab-content-list mr-15">
+            <div class="tab-header">
+              <p class="header-title">Locations <span>{{locations.length}}</span></p>
+              <!-- <button class="btn-primary" (click)="openAddLocation()">+ Add Location</button> -->
+            </div>
+
+            <ion-grid class="table-block ion-no-padding">
+              <ion-row class="table-header">
+                <ion-col size="8">
+                  Location
+                </ion-col>
+                <ion-col size="4">
+                  Actions
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="table-row-list" *ngFor="let item of locations">
+                <ion-col size="8">
+                  {{item.name}}
+                </ion-col>
+                <ion-col size="4">
+                  <button class="mr-8" (click)="editLocation(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button (click)="deleteLocation(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+          <ion-col size="4" class="tab-content-form mr-15">
+            <p class="form-header">Add New Location</p>
+            <p class="form-subheader">Create a new Location in your organization</p>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="stacked">Location Name</ion-label>
+                <ion-input [(ngModel)]="locationName" placeholder="Location name"></ion-input>
+              </ion-item>
+            </ion-list>
+            <div class="row-center">
+              <ion-button class="primary-outline-btn" (click)="cancelLocation()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingLocationId" (click)="saveLocation()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingLocationId" (click)="updateLocation()">Update</ion-button>
+            </div>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+    </div>
+
+
+    <!-- ========== DEPARTMENTS ========== -->
+    <div class="tab-card" *ngIf="activeTab==='departments'">
+
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="7" class="tab-content-list mr-15">
+            <div class="tab-header">
+              <p class="header-title">Department <span>{{departments.length}}</span></p>
+            </div>
+
+            <ion-grid class="table-block ion-no-padding">
+              <ion-row class="table-header">
+                <ion-col size="8">
+                  Department
+                </ion-col>
+                <ion-col size="4">
+                  Actions
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="table-row-list" *ngFor="let item of departments">
+                <ion-col size="8">
+                  {{item.name}}
+                </ion-col>
+                <ion-col size="4">
+                  <button class="mr-8" (click)="editDepartment(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button (click)="deleteDepartment(item.id)"><ion-img
+                      src="../../../assets/trash.svg"></ion-img></button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+          <ion-col size="4" class="tab-content-form mr-15">
+            <p class="form-header">Add New Department</p>
+            <p class="form-subheader">Create a new Department in your organization</p>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="stacked">Department Name</ion-label>
+                <ion-input [(ngModel)]="departmentName" placeholder="Department name"></ion-input>
+              </ion-item>
+            </ion-list>
+            <div class="row-center">
+              <ion-button class="primary-outline-btn" (click)="cancelDepartment()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingDepartmentId" (click)="saveDepartment()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingDepartmentId"
+                (click)="updateDepartment()">Update</ion-button>
+            </div>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- ========== SHIFTS ========== -->
+    <div class="tab-card" *ngIf="activeTab==='shifts'">
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="7" class="tab-content-list mr-15">
+            <div class="tab-header">
+              <p class="header-title">Shift Policies <span>{{shiftPolicies.length}}</span></p>
+            </div>
+
+            <ion-grid class="table-block ion-no-padding">
+              <ion-row class="table-header">
+                <ion-col size="3">
+                  Shift Name
+                </ion-col>
+                <ion-col size="2">
+                  Start Time
+                </ion-col>
+                <ion-col size="2">
+                  End Time
+                </ion-col>
+                <ion-col size="4">
+                  Description
+                </ion-col>
+                <ion-col size="1">
+                  Actions
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="table-row-list" *ngFor="let item of shiftPolicies">
+                <ion-col size="3">
+                  {{item.name}}
+                </ion-col>
+                <ion-col size="2">
+                  {{item.start_time}}
+                </ion-col>
+                <ion-col size="2">
+                  {{item.end_time}}
+                </ion-col>
+                <ion-col size="4">
+                  {{item.description}}
+                </ion-col>
+                <ion-col size="1">
+                  <button (click)="editShift(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+          <ion-col size="4" class="tab-content-form mr-15">
+            <p class="form-header">Add New Shift</p>
+            <p class="form-subheader">Create a new New Shift in your organization</p>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="stacked">Shift Name</ion-label>
+                <ion-input [(ngModel)]="shiftForm.name" placeholder="Shift name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Start Time</ion-label>
+                <ion-input type="time" [(ngModel)]="shiftForm.start_time"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">End Time</ion-label>
+                <ion-input type="time" [(ngModel)]="shiftForm.end_time"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Break minutes</ion-label>
+                <ion-input type="number" [(ngModel)]="shiftForm.break_duration_minutes"
+                  placeholder="Break minutes"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Description</ion-label>
+                <ion-textarea [(ngModel)]="shiftForm.description" placeholder="Description"></ion-textarea>
+              </ion-item>
+
+
+
+            </ion-list>
+            <div class="row-center">
+              <ion-button class="primary-outline-btn" (click)="cancelShift()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingShiftId" (click)="saveShift()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingShiftId" (click)="updateShift()">Update</ion-button>
+            </div>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+
+    </div>
+
     <!-- ========== WEEKLY OFF POLICIES ========== -->
     <div class="tab-card" *ngIf="activeTab==='weeklyOffPolicies'">
       <ion-grid class="ion-no-padding">
@@ -34,8 +233,10 @@
                   {{item.name}} <span *ngIf="item.policy_code">({{item.policy_code}})</span>
                 </ion-col>
                 <ion-col size="4">
-                  <button class="mr-8" (click)="editWeeklyOffPolicy(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button (click)="deleteWeeklyOffPolicy(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
+                  <button class="mr-8" (click)="editWeeklyOffPolicy(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button (click)="deleteWeeklyOffPolicy(item.id)"><ion-img
+                      src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -52,288 +253,189 @@
                 <ion-label position="stacked">Policy Code</ion-label>
                 <ion-input [(ngModel)]="weeklyOffPolicyForm.policy_code" placeholder="Policy code"></ion-input>
               </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Description</ion-label>
+                <ion-input [(ngModel)]="weeklyOffPolicyForm.description" placeholder="Description"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Effective Date</ion-label>
+                <ion-input type="date" [(ngModel)]="weeklyOffPolicyForm.effective_date"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Is Active</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.is_active">
+                  <ion-select-option [value]="1">Active</ion-select-option>
+                  <ion-select-option [value]="0">Inactive</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Sunday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.sunday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Monday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.monday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Tuesday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.tuesday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Wednesday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.wednesday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Thursday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.thursday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Friday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.friday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Saturday Off</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.saturday_off">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Is Payable</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.is_payable">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Holiday Overlap Rule</ion-label>
+                <ion-input [(ngModel)]="weeklyOffPolicyForm.holiday_overlap_rule" placeholder="ignore"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Sandwich Rule</ion-label>
+                <ion-select [(ngModel)]="weeklyOffPolicyForm.sandwich_rule">
+                  <ion-select-option [value]="1">Yes</ion-select-option>
+                  <ion-select-option [value]="0">No</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Minimum Work Days</ion-label>
+                <ion-input type="number" [(ngModel)]="weeklyOffPolicyForm.minimum_work_days" placeholder="5"></ion-input>
+              </ion-item>
             </ion-list>
             <div class="row-center">
               <ion-button class="primary-outline-btn" (click)="cancelWeeklyOffPolicy()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingWeeklyOffPolicyId" (click)="saveWeeklyOffPolicy()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingWeeklyOffPolicyId" (click)="updateWeeklyOffPolicy()">Update</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingWeeklyOffPolicyId"
+                (click)="saveWeeklyOffPolicy()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingWeeklyOffPolicyId"
+                (click)="updateWeeklyOffPolicy()">Update</ion-button>
             </div>
           </ion-col>
         </ion-row>
       </ion-grid>
     </div>
-  </ul>
 
-  <!-- ========== LOCATIONS ========== -->
-  <div class="tab-card" *ngIf="activeTab==='locations'">
+    <!-- ========== ANNOUNCEMENTS ========== -->
+    <div class="tab-card" *ngIf="activeTab==='announcements'">
+
       <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size="7" class="tab-content-list mr-15">
-                <div class="tab-header">
-                    <p class="header-title">Locations <span>{{locations.length}}</span></p>
-                    <!-- <button class="btn-primary" (click)="openAddLocation()">+ Add Location</button> -->
-                  </div>
-              
-              <ion-grid class="table-block ion-no-padding">
-               <ion-row class="table-header">
-                 <ion-col size="8">
-                   Location
-                 </ion-col>
-                 <ion-col size="4">
-                        Actions
-                      </ion-col>
-               </ion-row>
-               
-               <ion-row class="table-row-list" *ngFor="let item of locations">
-                  <ion-col size="8">
-                      {{item.name}}
-                    </ion-col>
-                    <ion-col size="4">
-                        <button class="mr-8" (click)="editLocation(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
-                        <button (click)="deleteLocation(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
-                         </ion-col>
-               </ion-row>
-            </ion-grid>
-            </ion-col>
-            <ion-col size="4" class="tab-content-form mr-15">
-                <p class="form-header">Add New Location</p>
-                 <p class="form-subheader">Create a new Location in your organization</p>
-                <ion-list lines="none">
-                    <ion-item>
-                        <ion-label position="stacked">Location Name</ion-label>
-                        <ion-input [(ngModel)]="locationName" placeholder="Location name"></ion-input>
-                      </ion-item>
-                    </ion-list>
-                    <div class="row-center">
-                        <ion-button class="primary-outline-btn" (click)="cancelLocation()">Cancel</ion-button>
-                        <ion-button class="primary-btn" *ngIf="!editingLocationId" (click)="saveLocation()">Save</ion-button>
-                        <ion-button class="primary-btn" *ngIf="editingLocationId" (click)="updateLocation()">Update</ion-button>
-                     </div>    
-            </ion-col>
+        <ion-row>
+          <ion-col size="7" class="tab-content-list mr-15">
+            <div class="tab-header">
+              <p class="header-title">Announcements <span>{{announcements.length}}</span></p>
+            </div>
 
-   </ion-row>
-   </ion-grid>
+            <ion-grid class="table-block ion-no-padding">
+              <ion-row class="table-header">
+                <ion-col size="3">
+                  Title
+                </ion-col>
+                <ion-col size="4">
+                  Description
+                </ion-col>
+                <ion-col size="2">
+                  Start Date
+                </ion-col>
+                <ion-col size="2">
+                  End Date
+                </ion-col>
+                <ion-col size="1">
+                  Actions
+                </ion-col>
+              </ion-row>
+
+              <ion-row class="table-row-list" *ngFor="let item of announcements">
+                <ion-col size="3">
+                  {{item.title}}
+                </ion-col>
+                <ion-col size="4">
+                  {{item.body}}
+                </ion-col>
+                <ion-col size="2">
+                  {{item.created_at | date}}
+                </ion-col>
+                <ion-col size="2">
+                  {{item.ends_at | date}}
+                </ion-col>
+
+                <ion-col size="1">
+                  <button class="mr-8" (click)="editAnnouncement(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button (click)="deleteAnnouncement(item.id)"><ion-img
+                      src="../../../assets/trash.svg"></ion-img></button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+          <ion-col size="4" class="tab-content-form mr-15">
+            <p class="form-header">Add New Announcement</p>
+            <p class="form-subheader">Create a new New Announcement</p>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="stacked">Title</ion-label>
+                <ion-input [(ngModel)]="announcementForm.title" placeholder="Title"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Message</ion-label>
+                <ion-textarea [(ngModel)]="announcementForm.body" placeholder="Message"></ion-textarea>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Start Date</ion-label>
+                <ion-input type="datetime-local" [(ngModel)]="announcementForm.starts_at"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">End Date</ion-label>
+                <ion-input type="datetime-local" [(ngModel)]="announcementForm.ends_at"></ion-input>
+              </ion-item>
+            </ion-list>
+            <div class="row-center">
+              <ion-button class="primary-outline-btn" (click)="cancelAnnouncement()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingAnnouncementId"
+                (click)="saveAnnouncement()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingAnnouncementId"
+                (click)="updateAnnouncement()">Update</ion-button>
+            </div>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+    </div>
   </div>
-
-
-  <!-- ========== DEPARTMENTS ========== -->
-  <div class="tab-card" *ngIf="activeTab==='departments'">
-
-      <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size="7" class="tab-content-list mr-15">
-                <div class="tab-header">
-                    <p class="header-title">Department <span>{{departments.length}}</span></p>
-                  </div>
-              
-              <ion-grid class="table-block ion-no-padding">
-               <ion-row class="table-header">
-                 <ion-col size="8">
-                   Department
-                 </ion-col>
-                 <ion-col size="4">
-                        Actions
-                      </ion-col>
-               </ion-row>
-               
-               <ion-row class="table-row-list" *ngFor="let item of departments">
-                  <ion-col size="8">
-                      {{item.name}}
-                    </ion-col>
-                    <ion-col size="4">
-                        <button class="mr-8" (click)="editDepartment(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
-                        <button (click)="deleteDepartment(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
-                         </ion-col>
-               </ion-row>
-            </ion-grid>
-            </ion-col>
-            <ion-col size="4" class="tab-content-form mr-15">
-                <p class="form-header">Add New Department</p>
-                 <p class="form-subheader">Create a new Department in your organization</p>
-                <ion-list lines="none">
-                    <ion-item>
-                        <ion-label position="stacked">Department Name</ion-label>
-                        <ion-input [(ngModel)]="departmentName" placeholder="Department name"></ion-input>
-                      </ion-item>
-                    </ion-list>
-                    <div class="row-center">
-                        <ion-button class="primary-outline-btn" (click)="cancelDepartment()">Cancel</ion-button>
-                        <ion-button class="primary-btn" *ngIf="!editingDepartmentId" (click)="saveDepartment()">Save</ion-button>
-                        <ion-button class="primary-btn" *ngIf="editingDepartmentId" (click)="updateDepartment()">Update</ion-button>
-                    </div>    
-            </ion-col>
-
-   </ion-row>
-   </ion-grid>
-  </div>
-
-  <!-- ========== SHIFTS ========== -->
-  <div class="tab-card" *ngIf="activeTab==='shifts'">
-      <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size="7" class="tab-content-list mr-15">
-                <div class="tab-header">
-                    <p class="header-title">Shift Policies <span>{{shiftPolicies.length}}</span></p>
-                  </div>
-              
-              <ion-grid class="table-block ion-no-padding">
-               <ion-row class="table-header">
-                 <ion-col size="3">
-                     Shift Name
-                 </ion-col>
-                 <ion-col size="2">
-                    Start Time
-                  </ion-col>
-                  <ion-col size="2">
-                     End Time
-                  </ion-col>
-                  <ion-col size="4">
-                      Description
-                  </ion-col>
-                  <ion-col size="1">
-                    Actions
-                  </ion-col>
-               </ion-row>
-               
-               <ion-row class="table-row-list" *ngFor="let item of shiftPolicies">           
-                  <ion-col size="3">
-                      {{item.name}}
-                    </ion-col>
-                    <ion-col size="2">
-                        {{item.start_time}}
-                      </ion-col>
-                      <ion-col size="2">
-                          {{item.end_time}}
-                        </ion-col>
-                        <ion-col size="4">
-                            {{item.description}}
-                          </ion-col>
-                    <ion-col size="1">
-                        <button (click)="editShift(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
-                     </ion-col>
-               </ion-row>
-            </ion-grid>
-            </ion-col>
-            <ion-col size="4" class="tab-content-form mr-15">
-                <p class="form-header">Add New Shift</p>
-                 <p class="form-subheader">Create a new New Shift in your organization</p>
-                <ion-list lines="none">
-                    <ion-item>
-                    <ion-label position="stacked">Shift Name</ion-label>
-                    <ion-input [(ngModel)]="shiftForm.name" placeholder="Shift name"></ion-input>
-                  </ion-item>
-                  <ion-item>
-                      <ion-label position="stacked">Start Time</ion-label>
-                      <ion-input type="time" [(ngModel)]="shiftForm.start_time"></ion-input>
-                    </ion-item> 
-                    <ion-item>
-                      <ion-label position="stacked">End Time</ion-label>
-                      <ion-input type="time" [(ngModel)]="shiftForm.end_time"></ion-input>
-                    </ion-item> 
-                    <ion-item>
-                        <ion-label position="stacked">Break minutes</ion-label>
-                        <ion-input type="number" [(ngModel)]="shiftForm.break_duration_minutes" placeholder="Break minutes"></ion-input>
-                    </ion-item> 
-                    <ion-item>
-                        <ion-label position="stacked">Description</ion-label>
-                        <ion-textarea [(ngModel)]="shiftForm.description" placeholder="Description"></ion-textarea>
-                    </ion-item> 
-     
-      
-      
-                    </ion-list>
-                    <div class="row-center">
-                        <ion-button class="primary-outline-btn" (click)="cancelShift()">Cancel</ion-button>
-                        <ion-button class="primary-btn" *ngIf="!editingShiftId" (click)="saveShift()">Save</ion-button>
-                        <ion-button class="primary-btn" *ngIf="editingShiftId" (click)="updateShift()">Update</ion-button>
-                     </div>    
-            </ion-col>
-
-   </ion-row>
-   </ion-grid>
-
-  </div>
-
-  <!-- ========== ANNOUNCEMENTS ========== -->
-  <div class="tab-card" *ngIf="activeTab==='announcements'">
-
-      <ion-grid class="ion-no-padding">
-          <ion-row>
-            <ion-col size="7" class="tab-content-list mr-15">
-                <div class="tab-header">
-                    <p class="header-title">Announcements <span>{{announcements.length}}</span></p>
-                  </div>
-              
-              <ion-grid class="table-block ion-no-padding">
-               <ion-row class="table-header">
-                 <ion-col size="3">
-                     Title
-                 </ion-col>
-                 <ion-col size="4">
-                    Description
-                  </ion-col>
-                  <ion-col size="2">
-                      Start Date
-                  </ion-col>
-                  <ion-col size="2">
-                      End Date
-                  </ion-col>
-                  <ion-col size="1">
-                    Actions
-                  </ion-col>
-               </ion-row>
-               
-               <ion-row class="table-row-list" *ngFor="let item of announcements">           
-                  <ion-col size="3">
-                      {{item.title}}
-                    </ion-col>
-                    <ion-col size="4">
-                        {{item.body}}
-                      </ion-col>
-                    <ion-col size="2">
-                        {{item.created_at | date}} 
-                      </ion-col>
-                      <ion-col size="2">
-                          {{item.ends_at | date}}
-                        </ion-col>
-                        
-                    <ion-col size="1">
-                        <button class="mr-8" (click)="editAnnouncement(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
-                        <button (click)="deleteAnnouncement(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
-                      </ion-col>
-               </ion-row>
-            </ion-grid>
-            </ion-col>
-            <ion-col size="4" class="tab-content-form mr-15">
-                <p class="form-header">Add New Announcement</p>
-                 <p class="form-subheader">Create a new New Announcement</p>
-                <ion-list lines="none">
-                    <ion-item>
-                    <ion-label position="stacked">Title</ion-label>
-                    <ion-input [(ngModel)]="announcementForm.title" placeholder="Title"></ion-input>
-                  </ion-item>
-                  <ion-item>
-                      <ion-label position="stacked">Message</ion-label>
-                      <ion-textarea [(ngModel)]="announcementForm.body" placeholder="Message"></ion-textarea>
-                  </ion-item>
-                  <ion-item>
-                      <ion-label position="stacked">Start Date</ion-label>
-                      <ion-input type="datetime-local" [(ngModel)]="announcementForm.starts_at"></ion-input>
-                    </ion-item> 
-                    <ion-item>
-                      <ion-label position="stacked">End Date</ion-label>
-                      <ion-input type="datetime-local" [(ngModel)]="announcementForm.ends_at"></ion-input>
-                    </ion-item>  
-                    </ion-list>
-                    <div class="row-center">
-                        <ion-button class="primary-outline-btn" (click)="cancelAnnouncement()">Cancel</ion-button>
-                        <ion-button class="primary-btn" *ngIf="!editingAnnouncementId" (click)="saveAnnouncement()">Save</ion-button>
-                        <ion-button class="primary-btn" *ngIf="editingAnnouncementId" (click)="updateAnnouncement()">Update</ion-button>
-                      </div>    
-            </ion-col>
-
-   </ion-row>
-   </ion-grid>
-</div>
-</div>
 </ion-content>

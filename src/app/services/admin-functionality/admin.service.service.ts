@@ -175,7 +175,7 @@ export class AdminService {
   }
 
   /* ===================== WEEKLY OFF POLICIES ===================== */
-  createWeeklyOffPolicy(payload: MasterPayload): Observable<ApiResponse> {
+  createWeeklyOffPolicy(payload: WeeklyOffPolicyPayload): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.baseUrl}/weekly-off-policies`, payload);
   }
 
@@ -183,7 +183,7 @@ export class AdminService {
     return this.http.get<any[]>(`${this.baseUrl}/weekly-off-policies`);
   }
 
-  updateWeeklyOffPolicy(id: number, payload: MasterPayload): Observable<ApiResponse> {
+  updateWeeklyOffPolicy(id: number, payload: WeeklyOffPolicyPayload): Observable<ApiResponse> {
     return this.http.put<ApiResponse>(`${this.baseUrl}/weekly-off-policies/${id}`, payload);
   }
 
