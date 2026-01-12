@@ -213,8 +213,7 @@
                 </div>
               </div>
               <div *ngIf="getRemoteRecords(selectedLog.records).length > 0; else noRemoteRecords">
-                <div *ngFor="let rec of getRemoteRecords(selectedLog.records).slice().reverse()"
-                  [ngStyle]="{
+                <div *ngFor="let rec of getRemoteRecords(selectedLog.records).slice().reverse()" [ngStyle]="{
                     'background': rec.pendingApproval ? '#fffbe6' : '#e0fbfc',
                     'border-radius': '8px',
                     'padding': '12px',
@@ -225,24 +224,36 @@
                     <ion-row>
                       <ion-col size="6" style="border-right: 2px solid #ddd;">
                         <div style="text-align: center;">
-                          <p style="color: #0A9396; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">⏰ Clock In</p>
-                          <h4 *ngIf="rec.check_in" style="margin: 0; font-size: 17px; font-weight: 700; color: #0A9396;">{{ rec.check_in | date:'h:mm a' }}</h4>
+                          <p
+                            style="color: #0A9396; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">
+                            ⏰ Clock In</p>
+                          <h4 *ngIf="rec.check_in"
+                            style="margin: 0; font-size: 17px; font-weight: 700; color: #0A9396;">{{ rec.check_in |
+                            date:'h:mm a' }}</h4>
                           <h4 *ngIf="!rec.check_in" style="margin: 0; font-size: 17px; color: #999;">--:--</h4>
                         </div>
                       </ion-col>
                       <ion-col size="6">
                         <div style="text-align: center;">
-                          <p style="color: #0A9396; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">⏰ Clock Out</p>
-                          <h4 *ngIf="rec.check_out" style="margin: 0; font-size: 17px; font-weight: 700; color: #dc3545;">{{ rec.check_out | date:'h:mm a' }}</h4>
-                          <h4 *ngIf="!rec.check_out" style="margin: 0; font-size: 14px; color: #28a745; font-weight: 600;">Active</h4>
+                          <p
+                            style="color: #0A9396; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">
+                            ⏰ Clock Out</p>
+                          <h4 *ngIf="rec.check_out"
+                            style="margin: 0; font-size: 17px; font-weight: 700; color: #dc3545;">{{ rec.check_out |
+                            date:'h:mm a' }}</h4>
+                          <h4 *ngIf="!rec.check_out"
+                            style="margin: 0; font-size: 14px; color: #28a745; font-weight: 600;">Active</h4>
                         </div>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
                   <div *ngIf="rec.location || rec.notes"
                     style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #ccc;">
-                    <p *ngIf="rec.location" style="font-size: 10px; color: #666; margin: 0 0 3px 0;">📍 {{ rec.location }}</p>
-                    <p *ngIf="rec.notes" [ngStyle]="{color: rec.pendingApproval ? '#b8860b' : '#555', 'font-style': rec.pendingApproval ? 'italic' : 'normal'}" style="font-size: 10px; margin: 0;">💬 {{ rec.notes }}</p>
+                    <p *ngIf="rec.location" style="font-size: 10px; color: #666; margin: 0 0 3px 0;">📍 {{ rec.location
+                      }}</p>
+                    <p *ngIf="rec.notes"
+                      [ngStyle]="{color: rec.pendingApproval ? '#b8860b' : '#555', 'font-style': rec.pendingApproval ? 'italic' : 'normal'}"
+                      style="font-size: 10px; margin: 0;">💬 {{ rec.notes }}</p>
                   </div>
                 </div>
               </div>
