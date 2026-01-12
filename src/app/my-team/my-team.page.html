@@ -13,11 +13,13 @@
                   <p><strong>Reason:</strong> {{ req.reason }}</p>
                   <p><strong>Status:</strong> {{ req.status | titlecase }}</p>
                </ion-label>
-               <ion-button color="success" size="small" [disabled]="remoteDecisionLoading[req.id]" (click)="decideRemoteClockinRequest(req.id, 'approved')">
+               <ion-button color="success" size="small" [disabled]="remoteDecisionLoading[req.id]"
+                  (click)="decideRemoteClockinRequest(req.id, 'approved')">
                   <ion-spinner *ngIf="remoteDecisionLoading[req.id]" name="dots"></ion-spinner>
                   <span *ngIf="!remoteDecisionLoading[req.id]">Approve</span>
                </ion-button>
-               <ion-button color="danger" size="small" [disabled]="remoteDecisionLoading[req.id]" (click)="decideRemoteClockinRequest(req.id, 'rejected', 'Rejected by manager')">
+               <ion-button color="danger" size="small" [disabled]="remoteDecisionLoading[req.id]"
+                  (click)="decideRemoteClockinRequest(req.id, 'rejected', 'Rejected by manager')">
                   <ion-spinner *ngIf="remoteDecisionLoading[req.id]" name="dots"></ion-spinner>
                   <span *ngIf="!remoteDecisionLoading[req.id]">Reject</span>
                </ion-button>

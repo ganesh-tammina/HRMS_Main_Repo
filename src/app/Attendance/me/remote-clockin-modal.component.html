@@ -1,23 +1,23 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Remote Clock-In Request</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="close()">Close</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title>Remote Clock-In Request</ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="close()">Close</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form (ngSubmit)="submit()">
-    <ion-item>
-      <ion-label position="stacked">Reason / Note</ion-label>
-      <ion-textarea [(ngModel)]="reason" name="reason" required [disabled]="loading"></ion-textarea>
-    </ion-item>
-    <ion-footer>
-      <ion-button expand="block" type="submit" [disabled]="loading || !reason.trim()">
-        <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
-        <span *ngIf="!loading">Submit Request</span>
-      </ion-button>
-    </ion-footer>
-  </form>
+    <form (ngSubmit)="submit()">
+        <ion-item>
+            <ion-label position="stacked">Reason / Note</ion-label>
+            <ion-textarea [(ngModel)]="reason" name="reason" required [disabled]="loading"></ion-textarea>
+        </ion-item>
+        <ion-footer>
+            <ion-button expand="block" type="submit" [disabled]="loading || !reason.trim()">
+                <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+                <span *ngIf="!loading">Submit Request</span>
+            </ion-button>
+        </ion-footer>
+    </form>
 </ion-content>

@@ -42,22 +42,22 @@ import { EmployeeService } from 'src/app/services/employee.service';
     RadialTimeGraphComponent,
     RemoteClockinModalComponent,
   ],
-// ...existing code...
+  // ...existing code...
 })
 export class MePage implements OnInit {
-    public async openRemoteClockinModal() {
-      const modal = await this.modalCtrl.create({
-        component: RemoteClockinModalComponent,
-        cssClass: 'modal-wrapper',
-        backdropDismiss: false,
-      });
-      await modal.present();
-      const { data } = await modal.onWillDismiss();
-      if (data?.success) {
-        this.showToast('Remote Clock-In request submitted', 'success');
-        // TODO: Optionally trigger refresh or update UI
-      }
+  public async openRemoteClockinModal() {
+    const modal = await this.modalCtrl.create({
+      component: RemoteClockinModalComponent,
+      cssClass: 'modal-wrapper',
+      backdropDismiss: false,
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data?.success) {
+      this.showToast('Remote Clock-In request submitted', 'success');
+      // TODO: Optionally trigger refresh or update UI
     }
+  }
   attendanceRefresh = 0;
 
   employee?: Candidate;

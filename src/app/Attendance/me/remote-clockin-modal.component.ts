@@ -6,52 +6,52 @@ import { HttpClient } from '@angular/common/http';
 import { WorkFromHomeService } from 'src/app/services/work-from-home.service';
 
 @Component({
-  selector: 'app-remote-clockin-modal',
-  templateUrl: './remote-clockin-modal.component.html',
-  styleUrls: ['./remote-clockin-modal.component.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+    selector: 'app-remote-clockin-modal',
+    templateUrl: './remote-clockin-modal.component.html',
+    styleUrls: ['./remote-clockin-modal.component.scss'],
+    standalone: true,
+    imports: [IonicModule, CommonModule, FormsModule],
 })
 export class RemoteClockinModalComponent {
-  reason: string = '';
-  loading = false;
+    reason: string = '';
+    loading = false;
 
-  constructor(
-    private modalCtrl: ModalController,
-    private http: HttpClient,
-    private toastCtrl: ToastController,
-    private wfhService: WorkFromHomeService
-  ) {}
+    constructor(
+        private modalCtrl: ModalController,
+        private http: HttpClient,
+        private toastCtrl: ToastController,
+        private wfhService: WorkFromHomeService
+    ) { }
 
-  async submit() {
-    if (!this.reason.trim()) return;
-    this.loading = true;
-    try {
-      // Use WFH endpoint but with work_mode: 'Remote'
-      const today = new Date().toISOString().split('T')[0];
-      await this.wfhService.remote({
-        date: today,
-        reason: this.reason
-      }).toPromise();
-      this.loading = false;
-      await this.modalCtrl.dismiss({ success: true, reason: this.reason });
-    } catch (err: any) {
-      this.loading = false;
-      this.showToast(err?.error?.error || 'Failed to submit request', 'danger');
+    async submit() {
+        if (!this.reason.trim()) return;
+        this.loading = true;
+        try {
+            // Use WFH endpoint but with work_mode: 'Remote'
+            const today = new Date().toISOString().split('T')[0];
+            await this.wfhService.remote({
+                date: today,
+                reason: this.reason
+            }).toPromise();
+            this.loading = false;
+            await this.modalCtrl.dismiss({ success: true, reason: this.reason });
+        } catch (err: any) {
+            this.loading = false;
+            this.showToast(err?.error?.error || 'Failed to submit request', 'danger');
+        }
     }
-  }
 
-  async close() {
-    await this.modalCtrl.dismiss();
-  }
+    async close() {
+        await this.modalCtrl.dismiss();
+    }
 
-  async showToast(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      color,
-    });
-    await toast.present();
-  }
+    async showToast(message: string, color: 'success' | 'warning' | 'danger') {
+        const toast = await this.toastCtrl.create({
+            message,
+            duration: 2500,
+            position: 'top',
+            color,
+        });
+        await toast.present();
+    }
 }
