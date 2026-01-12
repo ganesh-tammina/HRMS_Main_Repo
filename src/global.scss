@@ -173,13 +173,25 @@ ion-list-header, ion-item{
 .m-auto {
     margin: auto !important;
 }
+.mt-0 {
+    margin: 0 !important;
+}
 .mt-8 {
   margin-top: 8px !important;
 }
 .my-15 {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
 }
+.ml-15 {
+  margin-left: 15px !important;
+}
+.mr-15 {
+  margin-right: 15px !important;
+}
+.mr-8 {
+    margin-right: 8px !important;
+  }
 // Modal popup
 ion-modal {
     --width: 800px;
@@ -218,7 +230,7 @@ ion-modal {
       }
       ion-input, ion-textarea {
         border: 1px solid #C4C4C4;
-        height: 45px;
+        height: auto;
         border-radius: 4px;
         padding: 0px 12px !important;
        margin: 11px 0px;
@@ -255,8 +267,9 @@ ion-popover.select-popover {
 .primary-outline-btn {
     background: #fff;
     --color: #2986CE;
+    color: #2986CE;
     border: 1.5px solid #2986CE;
-    @extend .custom-button ;
+    @extend .custom-button ;    
 }
 .danger-outline-btn {
     border: 1.5px solid #E45353;
@@ -295,3 +308,99 @@ ion-popover ion-content::-webkit-scrollbar {
     width: 0 !important;
     height: 0 !important;
 }
+
+// filters block
+.filters {
+    display: flex;
+   .filter-block {
+     margin-right: 10px;
+   .btn-secondry { 
+     padding:12px 24px;
+     background: #fff;
+     border: 0.5px solid #DEDEDE;
+     color: #3498db;
+     box-shadow: none;
+     font-weight: 600;
+     margin: 0;    
+     @include normal-text-unbold();
+     &:first-child {
+       border-bottom-left-radius: 8px;
+       border-top-left-radius: 8px;
+     }
+     &:last-child {
+       border-bottom-right-radius: 8px;
+       border-top-right-radius: 8px;
+     }
+     &.active {
+       background: #3498DB;
+       color: #fff;
+       font-weight: 600;
+     } 
+   } 
+   }
+ 
+   .outline-btns {
+     .btn-secondry {
+   height: 44px;
+   padding: 0 10px;
+   background: #fff;
+   border: 0.5px solid #DEDEDE;
+   color: #3498db;
+   box-shadow: none;
+   font-weight: 600;
+   margin: 0;
+   &:first-child {
+     border-bottom-left-radius: 8px;
+     border-top-left-radius: 8px;
+   }
+   &:last-child {
+     border-bottom-right-radius: 8px;
+     border-top-right-radius: 8px;
+   }
+   ion-icon {
+     font-weight: 600;
+     font-size: 24px;
+   }
+   &.active {
+     background: #3498DB;
+     color: #fff;
+     font-weight: 600;
+   } 
+     }
+   }
+  }
+  
+
+  .profile-modal {
+    --width: 625px;
+    --height: 400px;
+    &::part(backdrop){
+        opacity: 0.35 !important;
+      }
+  }
+  .employee-list-modal {
+    --width: 350px;
+    --height: 400px;
+    justify-content: left;
+    padding-left: 236px;
+    align-items: baseline;
+    padding-top: 65px;
+    &::part(backdrop){
+        opacity: 0 !important;
+      }
+  }
+  ion-modal {
+    &.big-modal {
+        justify-content: right !important;
+        --max-height: 100vh;
+        --height: 100vh;
+        --border-radius: 0;
+        --width: 650px;
+    }
+    &.date-modal {
+        --width: auto;
+    --height: fit-content; 
+    --backdrop-opacity: 0.35 !important;
+    }
+}
+  

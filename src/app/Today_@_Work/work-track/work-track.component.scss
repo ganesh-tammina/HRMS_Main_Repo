@@ -1,0 +1,324 @@
+@import '../../../global.scss';
+ion-content {
+  --background: var(--ion-bg-color);
+}
+
+/* TABS */
+.manage-main-block {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  h2 {
+    @include card-sub-title();
+    margin: 0;
+    margin-bottom: 15px;
+  }
+.client-title {
+  width: fit-content;
+  border-bottom: 3px solid #00568F;
+  padding: 12px 0 8px 0;
+}
+    .custom-tabs {
+      border: 1.25px solid #CBD5E0;
+      box-shadow: 0px 1px 3px 0px #0000001A;
+      border-radius: 8px;
+      grid-auto-columns: auto;
+      justify-content: flex-start;
+      display: flex;
+      width: fit-content;
+     div {
+      width: max-content;
+      margin: 5px;
+      text-transform: capitalize;
+      min-height: 42px;
+      padding: 8px 16px;
+      &.active {
+        background: $secondry-color;
+        color: #fff;
+        --color-checked: #fff;
+        --indicator-height: 0px;
+        border: 1.25px solid #EDF2F7;
+        border-radius: 6px;
+      box-shadow: 0px 1px 3px 0px #0000001A;
+      }
+    }
+  }
+  .header-title {
+     @include card-header-title();
+     padding-left: 12px; 
+     margin: 20px 0;
+     span {
+      background: #CFECFF;
+      padding: 2px 8px;
+      border-radius: 15px;
+      @include normal-text-unbold();
+     }
+  }
+}
+.daily-block {
+  --width: 60%;
+  --max-height: 100%;
+  --position: fixed;
+  --height: 100vh;
+  margin-left: 8px;
+
+  &::part(content){
+    padding: 24px;
+    bottom: 0px !important;
+    top: 0px !important;
+  } 
+
+  .date-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #edf1ff;
+    padding: 10px 14px;
+    border-radius: 18px;
+    margin-bottom: 16px;
+    // .date {
+    //   @include normal-text-unbold();
+    //   color: $primary-color;
+    // }
+    .total-hours, .date {
+      @include normal-text();
+      color: $primary-color;
+    }
+  }
+  .glass-item {
+    display: flex;
+    ion-input {
+      border: 1px solid #ABABAB80;
+      border-radius: 8px;
+      background: #f4f6ff;
+      width: 340px;
+      margin-right: 8px;
+      padding-left: 8px !important;    
+      --highlight-color: #07488d;
+    }
+  
+  }
+  .hours-grid {
+    margin-top: 12px;
+    .hour-row {
+      border: 0.5px solid #ABABAB;
+      padding: 0 8px;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: 160px 1fr 100px;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+      .time {
+        @include normal-text();
+      }
+      ion-textarea {
+        --background: #d7d8da;
+        font-size: 14px;
+        --padding-start: 8px !important;
+        --padding-top: 8px;
+        --highlight-color: #07488d;
+      }
+
+    }
+  }
+}
+    
+
+
+.animate {
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+
+.calendar-box {
+  padding: 10px;
+  border-radius: 18px;
+  margin-bottom: 15px;
+  background: #f4f6ff;
+  width: 345px;
+  position: absolute;
+  z-index: 9;
+  right: 32px;
+  top: 79px;
+}
+
+
+.break-label {
+  color: gray;
+  font-style: italic;
+}
+
+
+/* GRAPH */
+.monthly-report {
+  &::part(content){
+    padding: 24px;   
+  } 
+  .primary-btn {
+    margin: 23px !important;
+    .ion-icon {
+      --padding-right: 8px;
+    }
+  }   
+  .total {
+    text-align: center;
+    padding: 12px;
+    padding-top: 0;
+    color: #122E44 ;
+    @include normal-text();
+  }
+}
+
+ion-accordion-group {
+  border-left: 3px solid #07488d;
+  ion-accordion {
+    margin-bottom: 8px;
+    ion-item {
+      --padding-start: 0;
+      --background: var(--ion-bg-color);
+      --border-radius: 8px;
+      ion-icon {
+        color: #00568F;
+        padding-right: 15px;
+      }
+    }
+    .table-block {
+      border: 0.5px solid #ABABAB;
+      border-radius: 8px;
+      padding: 0;
+      ion-col {
+        padding-left: 8px;
+      }
+      .table-header {
+        height: 44px;
+        border-bottom: 0.5px solid #ABABAB;
+        align-items: center;
+        ion-col {
+          @include normal-text();
+        }
+      }
+      .table-row-list {
+        height: 48px;
+        border-bottom: 0.5px solid #ABABAB;
+        @include normal-text-unbold();
+        align-items: center;
+        &:nth-child(odd) {
+          background: #f4f6ff;
+
+        }
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+    }
+  }
+}
+.details-container {
+  background: #fff;
+  border-radius: 4px;
+  margin-top: 50px;
+  position: relative;
+  padding: 24px;
+  h2 {
+    @include normal-text();
+    border-bottom: 1px solid #ababab;
+    padding-bottom: 16px;
+  }
+  .detail-item {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    p {
+      margin: 0;
+      @include normal-text-unbold();
+      &:last-child {
+        font-weight: 600;
+      }
+    }
+  }
+  .message-item {
+    border-top: 1px solid $border-color;
+    padding-top: 12px;
+    p:last-child {
+      @include normal-text();
+    }
+  }
+}
+.calendar-details-block {
+  background: #E9E9E9;
+  padding: 16px;      
+  margin-top: 15px;
+  border-radius: 8px;
+.calendar-grid {
+  .day-header {
+    height: 44px;
+  .day-header-cell {    
+    background: transparent;
+    width: 13.5%;
+    height: 44px;
+    padding: 16px 8px;
+    @include text-bold();
+    text-align: left;
+    margin: 2px;
+  }
+}
+  .day-cell-row {
+    display: flex;
+    flex-wrap: wrap;
+    .day-cell {      
+      background: #ffffff;
+      border: 0.73px solid #C3C3C3;
+      width: 13.5%;
+      height: 100px;
+      padding: 16px 8px;
+      position: relative;
+      border-radius: 4px;
+      margin: 2px;
+      &.highlight-today  {
+        background: #FEE2E2 !important;
+      }
+      &.weekoffs {
+        background: #D0D0D0BA !important;
+      }
+      .date {
+        @include text-style-normal();
+      }
+      .timing {
+      font-size: 10px;
+      margin-top: 30px;
+      position: absolute;
+      bottom: 5px;
+      }
+      &.present {
+        background: #E8F8F3;
+        border: 0.73px solid #10B981
+      }
+      &.leave {
+        background: #EF44441A;
+        border: 0.91px solid #EF444480;
+      }
+      &.holiday {
+        background: #FAD2B680;
+        border: 0.91px solid #FF7700;
+      }
+      &.comp-Offs  {
+        background: #3B82F633;
+        border: 0.91px solid #3B82F6;
+      }
+      &.weekend {
+        background: #CBD5E180;
+      }
+      &.empty {
+        background: transparent;
+        border: none;
+      }
+    }
+  }    
+}
+}

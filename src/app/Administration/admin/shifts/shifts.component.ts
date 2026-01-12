@@ -2,16 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-shifts',
   templateUrl: './shifts.component.html',
   styleUrls: ['./shifts.component.scss'],
   standalone: true,
-  imports: [ReactiveFormsModule]
+  imports: [ReactiveFormsModule, IonicModule, CommonModule]
 })
 export class ShiftsComponent implements OnInit {
   shiftForm!: FormGroup;
+  shiftsDetails:any
 
   constructor(private fb: FormBuilder, private shiftService: CandidateService) { }
 
@@ -21,19 +24,35 @@ export class ShiftsComponent implements OnInit {
       check_in: ['', Validators.required],
       check_out: ['', Validators.required]
     });
+      this.loadShifts();
+    // this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
+    //   console.log(res)
+    //   alert('Shift Saved Successfully!');
+    //   this.shiftsDetails = res;
+    // });
   }
-
+loadShifts() {
+  this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
+    this.shiftsDetails = res;
+  });
+}
   submitShift() {
     if (this.shiftForm.invalid) {
       this.shiftForm.markAllAsTouched();
       return;
     }
-
     this.shiftService.getShifts(this.shiftForm.value).subscribe((res: any) => {
+      console.log(res)
       alert('Shift Saved Successfully!');
-      console.log(res);
+      this.shiftsDetails = res;
+        this.OpenForm(false);
+         this.shiftForm.reset();
+      console.log("shiftDetails", this.shiftsDetails);
     });
+  }
+  isModalOpen = false;
 
-    console.log('Shift Data:', this.shiftForm.value);
+  OpenForm(isOpen: boolean) {
+    this.isModalOpen = isOpen;
   }
 }

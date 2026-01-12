@@ -8,7 +8,7 @@
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="['/Home']" lines="none" detail="false"
+              <ion-item  [routerLink]="['/Home']" lines="none" detail="false"
                 routerLinkActive="selected" [ngClass]="(currentUrl=='/Home') ? 'selected':''">
                 <div class="text-center">
                   <img src="assets/Icons/home-05.svg" width="24" height="24" />
@@ -18,8 +18,8 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="['/Me']" lines="none" detail="false"
-                routerLinkActive="selected" [ngClass]="(currentUrl=='/Me') ? 'selected':''">
+              <ion-item  [routerLink]="['/Me']" lines="none" detail="false"
+                [ngClass]="(currentUrl=='/Me') ? 'selected':''">
                 <div class="text-center">
                   <img src="assets/Icons/user-01.svg" width="24" height="24" />
                   <ion-label>Me</ion-label>
@@ -30,7 +30,7 @@
             <!-- <div class="dropdown-wrapper"> -->
             <!-- Org Parent Item -->
             <ion-menu-toggle auto-hide="false" id="menu-button">
-              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" 
                 [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
                 <div class="text-center">
                   <img src="assets/Icons/building-07.svg" width="24" height="24" />
@@ -115,7 +115,7 @@
 
             <!-- Admin -->
             @if(isAdmin){
-            <ion-menu-toggle auto-hide="false">
+            <ion-menu-toggle *ngIf="isAdmin" auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" detail="false"
                 routerLinkActive="selected" [ngClass]="(currentUrl=='/admin') ? 'selected':''">
                 <div class="text-center">
@@ -140,6 +140,37 @@
                 </div>
               </ion-item>
             </ion-menu-toggle>
+            <ion-menu-toggle auto-hide="false">
+              <ion-item lines="none" detail="false" routerLinkActive="selected" [routerLink]="['/workTrack']">
+                <div class="text-center">
+                  <img src="assets/Icons/Group 104.svg" width="24" height="24" />
+                  <ion-label>Work Track</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
+            <ion-menu-toggle auto-hide="false" id="menu-buttons">
+              <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
+                <div class="text-center">
+                  <img src="assets/Icons/building-07.svg" width="24" height="24" />
+                  <ion-label>My Fanance</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
+            <ion-popover trigger="menu-buttons" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdowns">
+              <ng-template>
+                <ion-content>
+                  <ion-menu-toggle auto-hide="false">
+                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+                    <ion-item routerLink="/payslip" lines="none" detail="false"
+                      [ngClass]="(currentUrl=='/payslip') ? 'selected':''">
+                      <ion-label>Pay Slips</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+
+                </ion-content>
+              </ng-template>
+            </ion-popover>
             <!-- Inbox -->
 
             <!-- ///////////////////////////////////////////////// -->
@@ -163,7 +194,7 @@
     <div *ngIf="isRefreshing" class="refresh-overlay">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
     </div>
-    
+
     <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>

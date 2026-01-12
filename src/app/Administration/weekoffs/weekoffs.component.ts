@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-weekoffs',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, IonicModule],
   templateUrl: './weekoffs.component.html',
   styleUrls: ['./weekoffs.component.scss']
 })

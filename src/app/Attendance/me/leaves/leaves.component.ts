@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { Component, OnInit, Input } from '@angular/core';
+import { IonicModule, ToastController, IonPopover } from '@ionic/angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
 import { CandidateService } from '../../../services/pre-onboarding.service';
@@ -27,6 +27,8 @@ export class LeavesComponent implements OnInit {
   IsOpenleavePopup = false; // for "Apply Leave" form modal
   isPopupOpen = false;      // for "Cancel/View" popup
   selectedLeave: any = null;
+  selectedDateTo: string = ''; //for datepicker string To
+  selectedDateFrom: string = ''; //for datepicker string from
 
   leaveData: any = {
     casual_leave_taken: 0,
@@ -38,12 +40,41 @@ export class LeavesComponent implements OnInit {
     comp_offs_taken: 0,
     comp_offs_allocated: 0,
     paid_leave_taken: 0,
-    paid_leave_allocated: 0
+    paid_leave_allocated: 0,
+    unpaid_leave_taken : 'NULL',
+    unpaid_leave_allocated:'NULL'
   };
 
   leaveRequests: any[] = [];
   leaveForm!: FormGroup;
   total_days: number = 0;
+  description = '';
+wordsCount = 0;
+minDate: string = new Date().toISOString().split('T')[0];
+
+isWeekday = (dateIsoString: string) => {
+  const date = new Date(dateIsoString);
+  const day = date.getDay();
+  // 0 = Sunday, 6 = Saturday → disable these
+  return day !== 0 && day !== 6;
+};
+
+isDateEnabled = (dateIsoString: string) => {
+  const date = new Date(dateIsoString);
+  const day = date.getDay();
+
+  //  Disable weekends
+  if (day === 0 || day === 6) {
+    return false;
+  }
+
+  //  Disable already requested leave dates
+  if (this.isDateBlocked(dateIsoString)) {
+    return false;
+  }
+
+  return true;
+};
 
   constructor(
     private candidateService: CandidateService,
@@ -62,7 +93,7 @@ export class LeavesComponent implements OnInit {
       start_date: ['', Validators.required],
       end_date: ['', [Validators.required, this.dateValidator.bind(this)]],
       remarks: ['', Validators.required],
-      notify: ['']
+      notify: [''],
     });
 
     this.leaveForm.valueChanges.subscribe(val => {
@@ -136,6 +167,14 @@ export class LeavesComponent implements OnInit {
   }
 
   submitRequest() {
+      const start = new Date(this.leaveForm.value.start_date);
+  const end = new Date(this.leaveForm.value.end_date);
+
+  if (start.getDay() === 0 || start.getDay() === 6 ||
+      end.getDay() === 0 || end.getDay() === 6) {
+    alert("Cannot apply leave on weekends!");
+    return;
+  }
     if (this.leaveForm.invalid || this.total_days <= 0) {
       this.leaveForm.markAllAsTouched();
       this.presentToast('Please fill all required fields and ensure dates are valid.', 'warning');
@@ -197,6 +236,7 @@ export class LeavesComponent implements OnInit {
 
   closeleavePopup() {
     this.IsOpenleavePopup = false;
+    this.leaveForm.reset();
   }
 
   // -----------------------------
@@ -219,4 +259,49 @@ export class LeavesComponent implements OnInit {
     }
     this.closePopup();
   }
+validateWordLimit(ev: any) {
+  let value = ev.target.value || '';
+
+  let words = value.trim().split(/\s+/);
+  this.wordsCount = words.length;
+
+  if (words.length > 100) {
+    words = words.slice(0, 100);
+    this.description = words.join(' ');
+  }
+}
+
+  /** 📅 From Date picker handler */
+  onDateChangeFrom(event: any, popover: IonPopover) {
+    const value = event.detail.value; // ISO date
+    if (value) {
+      this.selectedDateFrom = value; // store as ISO
+      this.leaveForm.patchValue({ start_date: value });
+    }
+    popover.dismiss();
+  }
+  
+  onDateChangeTo(event: any, popover: IonPopover) {
+    const value = event.detail.value;
+    if (value) {
+      this.selectedDateTo = value;
+      this.leaveForm.patchValue({ end_date: value });
+    }
+    popover.dismiss();
+  }
+
+  isDateBlocked(dateIso: string): boolean {
+  const date = new Date(dateIso);
+  date.setHours(0, 0, 0, 0);
+
+  return this.leaveRequests.some(leave => {
+    const start = new Date(leave.start_date);
+    const end = new Date(leave.end_date);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    return date >= start && date <= end;
+  });
+}
 }

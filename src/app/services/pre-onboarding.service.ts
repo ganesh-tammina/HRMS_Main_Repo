@@ -185,6 +185,8 @@ export class CandidateService {
   private leaverequesrUrl = `${this.api}manager/leave-requests`;
   private leaveactionUrl = `${this.api}leave-action`;
   private weekoffsUrl = `https://${this.env.apiURL}/api/weekoff`;
+  private holidaysApiUrl = "https://30.0.0.78:3562/api/v1/holidays";
+  private getPayslips = "https://localhost:3562/api/payslips/employee"
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -208,7 +210,7 @@ export class CandidateService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {}
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -247,7 +249,7 @@ export class CandidateService {
   }
 
   getHolidaysList(id: string): Observable<any> {
-    return this.http.get<any>(`${this.holidaysUrl}`);
+    return this.http.get<any>(`${this.holidaysApiUrl}`);
   }
   getofferStatus(): Observable<any> {
     return this.http.get<any>(this.offerStatusapi);
@@ -276,6 +278,15 @@ export class CandidateService {
   }*/
   getReportingTeam(employeeId: number): Observable<any> {
     return this.http.get(`${this.api}employees/under-manager/${employeeId}`);
+  }
+
+  getpayslips(employeeId: any): Observable<any> {
+    console.log(employeeId);
+    return this.http.get(`${this.getPayslips}/${employeeId}`);
+  }
+
+  getempslips(): Observable<any> {
+    return this.http.get<any>(this.empUrl);
   }
 
   // getLeaveRequests(leaveRequest: leaveRequests): Observable<leaveRequests> {

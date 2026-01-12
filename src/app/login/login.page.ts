@@ -197,7 +197,7 @@ export class LoginPage implements OnInit, OnDestroy {
                 console.error('Error fetching all employees:', err);
               },
             });
-
+          console.log('Role:', val.role);
           this._route_service.redirectBasedOnRole(val.role);
         },
         error: (err: any) => {
@@ -285,7 +285,13 @@ export class LoginPage implements OnInit, OnDestroy {
       .subscribe({
         next: (val: any) => {
           this.alertViewer('Information', val.message, 'OK');
-          this.router.navigate(['/Home']);
+          this._route_service.storeTokens(
+            val.access_token!,
+            val.refresh_token!,
+            val.empId!,
+            val.role!
+          );
+          this._route_service.redirectBasedOnRole(val.role);
         },
         error: (err: any) => {
           const msg = err?.error?.message ?? 'Failed to generate password.';

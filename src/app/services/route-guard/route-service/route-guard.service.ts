@@ -48,14 +48,14 @@ export class RouteGuardService {
   }
 
   redirectBasedOnRole(role: string): void {
-    switch (role.toLowerCase()) {
-      case 'admin':
+    switch (role.toUpperCase()) {
+      case 'ADMIN':
         this.router.navigate(['/admin']);
         break;
-      case 'user':
+      case 'USER':
         this.router.navigate(['/Home']);
         break;
-      case 'hr':
+      case 'HR':
         this.router.navigate(['/Home']);
         break;
       default:

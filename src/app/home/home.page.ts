@@ -6,6 +6,8 @@ import moment from 'moment';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
+import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   standalone: true,
@@ -16,20 +18,26 @@ import { ClockButtonComponent } from '../services/clock-button/clock-button.comp
 })
 export class HomePage implements OnInit {
   private static readonly REFRESH_DELAY_MS = 10; // Virtually instant refresh delay
-  
+
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
   currentEmployee: any;
   one: any;
   full_name: string = ""
   currentTime: string = '';
   allEmployees: any[] = [];
-
-  backgroundImageUrl: string = '../../assets/holidays-pics/holidays-img.svg';
+  fullName: any;
+  currentemp: any;
+  employee_id: any;
+  uploadedImageUrl: string | null = null;
+  imageUrls: any;
+  profileimg: string = environment.apiURL;
+  backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
 
   constructor(
     private candidateService: CandidateService,
     private cdr: ChangeDetectorRef,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private routeGuardService: RouteGuardService,
   ) {
     const loggedInUserStr = localStorage.getItem('loggedInUser');
     if (!loggedInUserStr) {
@@ -47,6 +55,41 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
+
+    if (this.routeGuardService.employeeID) {
+      this.candidateService.getEmpDet().subscribe({
+        next: (response: any) => {
+          this.allEmployees = response.data || [];
+          if (this.allEmployees.length > 0) {
+            this.one = this.allEmployees[0];
+            this.fullName = this.one[0].reporting_to;
+            this.employee_id = this.one[0].employee_id;
+            this.candidateService.getpayslips(this.employee_id).subscribe((response: any) => {
+              console.log('PaySlips', response);
+            })
+            if (this.one[0].image) {
+              this.imageUrls = `https://${this.profileimg}${this.one[0].image}`;
+            } else {
+              this.imageUrls = '../../../assets/user.svg';
+            }
+            console.log('profile', this.imageUrls);
+            localStorage.setItem('employee_id', this.employee_id);
+            this.candidateService.setLoggedEmployeeId(this.employee_id);
+            console.log(this.fullName);
+            this.currentemp = this.one[0];
+
+            console.log(this.currentemp);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching all employees:', err);
+        },
+      });
+      // Subscribe to current candidate observable
+
+      // Fallback: if page refreshed
+    }
+
     // Check if we should show login success popup
     const showLoginSuccess = localStorage.getItem('showLoginSuccess');
     if (showLoginSuccess === 'true') {
@@ -67,6 +110,7 @@ export class HomePage implements OnInit {
         hour12: true,
       });
     }, 1000);
+
   }
 
   async showLoginSuccessAlert() {
