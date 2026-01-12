@@ -55,7 +55,8 @@ export class MePage implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data?.success) {
       this.showToast('Remote Clock-In request submitted', 'success');
-      // TODO: Optionally trigger refresh or update UI
+      // Trigger attendance log refresh so pending entry appears immediately
+      this.attendanceRefresh++;
     }
   }
   attendanceRefresh = 0;
