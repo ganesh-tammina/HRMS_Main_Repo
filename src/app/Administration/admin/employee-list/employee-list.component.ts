@@ -5,6 +5,9 @@ import { IonicModule, IonModal } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ShiftPolicyService, ShiftPolicy } from 'src/app/services/shift-policy.service';
+import { AttendancePolicyService, AttendancePolicy } from 'src/app/services/attendance-policy.service';
+import { LeavePlanService, LeavePlan } from 'src/app/services/leave-plan.service';
 
 @Component({
   selector: 'app-employee-list',
@@ -25,6 +28,9 @@ export class EmployeeListComponent implements OnInit {
     attendance_policy_id: null,
     PayGradeId: null
   };
+  shiftPolicies: ShiftPolicy[] = [];
+  attendancePolicies: AttendancePolicy[] = [];
+  leavePlans: LeavePlan[] = [];
   /* ================= EMPLOYEES ================= */
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
@@ -36,9 +42,13 @@ export class EmployeeListComponent implements OnInit {
   EmployeeselectedFile: File | null = null;
   isUploading = false; // Loading state for upload
   @ViewChild(IonModal) modal!: IonModal;
+
   constructor(
     private uploadService: UploadService,
     private employeeService: EmployeeService,
+    private shiftPolicyService: ShiftPolicyService,
+    private attendancePolicyService: AttendancePolicyService,
+    private leavePlanService: LeavePlanService,
     private router: Router
   ) { }
 
@@ -46,6 +56,27 @@ export class EmployeeListComponent implements OnInit {
     this.userRole = (localStorage.getItem('role') || '').toLowerCase();
     this.isHR = this.userRole === 'hr';
     this.loadEmployees(); // ✅ initial load
+    this.loadShiftPolicies();
+    this.loadAttendancePolicies();
+    this.loadLeavePlans();
+  }
+
+  loadLeavePlans() {
+    this.leavePlanService.getLeavePlans().subscribe((plans: LeavePlan[]) => {
+      this.leavePlans = plans || [];
+    });
+  }
+
+  loadAttendancePolicies() {
+    this.attendancePolicyService.getAttendancePolicies().subscribe((policies: AttendancePolicy[]) => {
+      this.attendancePolicies = policies || [];
+    });
+  }
+
+  loadShiftPolicies() {
+    this.shiftPolicyService.getShiftPolicies().subscribe((policies: ShiftPolicy[]) => {
+      this.shiftPolicies = policies || [];
+    });
   }
   /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
   loadEmployees() {

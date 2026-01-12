@@ -140,16 +140,30 @@
                           <ion-input type="number" [(ngModel)]="updateData.reporting_manager_id"></ion-input>
                         </ion-item>
                         <ion-item>
-                          <ion-label position="stacked">Leave Plan ID</ion-label>
-                          <ion-input type="number" [(ngModel)]="updateData.leave_plan_id"></ion-input>
+                          <ion-label position="stacked">Leave Plan</ion-label>
+                          <ion-select [(ngModel)]="updateData.leave_plan_id" interface="popover" placeholder="Select Leave Plan">
+                            <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
+                              {{plan.name}}
+                            </ion-select-option>
+                          </ion-select>
                         </ion-item>
                         <ion-item>
-                          <ion-label position="stacked">Shift Policy ID</ion-label>
-                          <ion-input type="number" [(ngModel)]="updateData.shift_policy_id"></ion-input>
+                          <ion-label position="stacked">Shift Policy</ion-label>
+                          <ion-select [(ngModel)]="updateData.shift_policy_id" interface="popover"
+                            placeholder="Select Shift Policy">
+                            <ion-select-option *ngFor="let policy of shiftPolicies" [value]="policy.id">
+                              {{policy.name}} ({{policy.start_time}} - {{policy.end_time}})
+                            </ion-select-option>
+                          </ion-select>
                         </ion-item>
                         <ion-item>
-                          <ion-label position="stacked">Attendance Policy ID</ion-label>
-                          <ion-input type="number" [(ngModel)]="updateData.attendance_policy_id"></ion-input>
+                          <ion-label position="stacked">Attendance Policy</ion-label>
+                          <ion-select [(ngModel)]="updateData.attendance_policy_id" interface="popover"
+                            placeholder="Select Attendance Policy">
+                            <ion-select-option *ngFor="let policy of attendancePolicies" [value]="policy.id">
+                              {{policy.name}}
+                            </ion-select-option>
+                          </ion-select>
                         </ion-item>
                         <ion-item>
                           <ion-label position="stacked">Pay Grade ID</ion-label>
