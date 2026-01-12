@@ -168,21 +168,33 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   /* ================= CLOCK IN ================= */
-  clockIn(): void {
+  clockIn(isRemoteRequestSuccess?: boolean): void {
+    console.log('clockIn called with isRemoteRequestSuccess:', isRemoteRequestSuccess);
+    if (this.isClockedIn) {
+      // alert('You are already clocked in. Please punch out before punching in again.');
+      return;
+    }
     this.loading = true;
     // Determine work mode and location
     let work_mode = 'Office';
     let location = 'Mumbai Office';
     let notes = 'Morning shift';
-    if (this.remoteActive || this.workMode === 'Remote') {
+    if (isRemoteRequestSuccess || this.remoteActive || this.workMode === 'Remote') {
       work_mode = 'Remote';
       location = 'Remote';
       notes = 'Remote Clock-In';
+      this.workMode = 'Remote';
+      this.remoteActive = true;
     } else if (this.workMode === 'WFH') {
       work_mode = 'WFH';
       location = 'Home';
       notes = 'WFH Clock-In';
+    } else {
+      this.workMode = 'Office';
     }
+    // Update UI state immediately for instant feedback
+    this.isClockedIn = true;
+    this.statusChanged.emit({ punch_type: 'in', work_mode });
     this.attendanceApi.apiPunchIn({
       work_mode,
       location,
@@ -192,13 +204,24 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
         this.loading = false;
         if (res?.success) {
           // State is updated by service via tap operator
-          this.statusChanged.emit(res);
+          // this.statusChanged.emit(res); // Already emitted above
+          if (work_mode === 'Remote') {
+            this.workMode = 'Remote';
+            this.remoteActive = true;
+            this.isClockedIn = true;
+          }
           console.log('✅ Clocked In successfully on', this.currentUrl);
         }
       },
       error: (err: any) => {
         this.loading = false;
-        alert(err?.error?.message || 'Clock-In failed');
+        // Handle active punch-in error gracefully
+        if (err?.error?.message?.includes('active punch-in')) {
+          alert('You have an active punch-in. Please punch out before punching in again.');
+          this.isClockedIn = true;
+        } else {
+          alert(err?.error?.message || 'Clock-In failed');
+        }
       },
     });
   }
@@ -206,13 +229,16 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   /* ================= CLOCK OUT ================= */
   clockOut(): void {
     this.loading = true;
+    // Update UI state immediately for instant feedback
+    this.isClockedIn = false;
+    this.statusChanged.emit({ punch_type: 'out', work_mode: this.workMode });
     this.attendanceApi.apiPunchOut({
       notes: 'Going for lunch',
     }).subscribe({
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
-          this.statusChanged.emit(res);
+          // this.statusChanged.emit(res); // Already emitted above
           console.log('✅ Clocked Out successfully on', this.currentUrl);
         }
       },
@@ -226,15 +252,19 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   /* =============== REMOTE CLOCK OUT =============== */
   remoteClockOut(): void {
     this.loading = true;
+    // Update UI state immediately for instant feedback
+    this.isClockedIn = false;
+    this.remoteActive = false;
+    this.workMode = 'Office';
+    localStorage.removeItem('remoteActive');
+    this.statusChanged.emit({ punch_type: 'out', work_mode: 'Remote' });
     this.attendanceApi.apiPunchOut({
       notes: 'Remote Clock-Out',
     }).subscribe({
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
-          this.remoteActive = false;
-          localStorage.removeItem('remoteActive');
-          this.statusChanged.emit(res);
+          // this.statusChanged.emit(res); // Already emitted above
         }
       },
       error: (err) => {

@@ -36,16 +36,17 @@ export class RemoteClockinModalComponent {
                 reason: this.reason
             }).toPromise();
 
-            // After successful remote request, trigger web clock-in for Remote
-            await this.attendanceApi.apiPunchIn({
-                work_mode: 'Remote',
-                location: 'Remote',
-                notes: 'Remote Clock-In: ' + this.reason
-            }).toPromise();
-
-            // Force UI refresh and set work mode to Remote
-            this.attendanceApi.setClockState(true); // ensure clocked in
-            // Optionally, reload the page or trigger a refresh event if needed
+            // Only punch in if not already clocked in
+            const isClockedIn = this.attendanceApi.getClockState();
+            if (!isClockedIn) {
+                await this.attendanceApi.apiPunchIn({
+                    work_mode: 'Remote',
+                    location: 'Remote',
+                    notes: 'Remote Clock-In: ' + this.reason
+                }).toPromise();
+                // Force UI refresh and set work mode to Remote
+                this.attendanceApi.setClockState(true); // ensure clocked in
+            }
 
             this.loading = false;
             await this.modalCtrl.dismiss({ success: true, reason: this.reason, forceRemote: true });
