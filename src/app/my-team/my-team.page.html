@@ -39,7 +39,7 @@
       <!-- Date Picker -->
       <ion-card class="date-card">
          <ion-card-header>
-            <ion-card-title>Attendance Report</ion-card-title>
+            <ion-card-title>Attendance Reports</ion-card-title>
          </ion-card-header>
          <ion-card-content>
             <ion-item lines="none">
@@ -133,8 +133,9 @@
          </ion-card>
       </div>
 
-      <!-- On Leave Card: Click to show/hide on-leave employees -->
-      <ion-card *ngIf="onLeaveToday.length > 0" color="warning" (click)="onOnLeaveCardClick()" style="cursor:pointer;">
+      <!-- On Leave Card: Only show when 'on_leave' filter is selected -->
+      <ion-card *ngIf="attendanceFilter === 'on_leave' && onLeaveToday.length > 0" color="warning"
+         (click)="onOnLeaveCardClick()" style="cursor:pointer;">
          <ion-card-header>
             <ion-card-title>
                <ion-icon name="calendar-outline"></ion-icon>
