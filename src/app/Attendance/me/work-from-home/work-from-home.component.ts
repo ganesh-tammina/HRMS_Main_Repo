@@ -182,8 +182,8 @@ export class WorkFromHomeComponent implements OnInit {
       reason: this.note,
     };
 
-    this.wfhService.createWFHRequest(payload).subscribe({
-      next: async (res) => {
+    this.wfhService.wfh(payload).subscribe({
+      next: async (res: any) => {
         const toast = await this.toastCtrl.create({
           message: 'Work From Home request submitted successfully',
           duration: 2000,
@@ -194,7 +194,7 @@ export class WorkFromHomeComponent implements OnInit {
 
         this.modalCtrl.dismiss(res, 'success');
       },
-      error: async (err) => {
+      error: async (err: any) => {
         const toast = await this.toastCtrl.create({
           message: err?.error?.message || 'Failed to submit WFH request',
           duration: 2000,

@@ -21,6 +21,7 @@ import { AttendanceRequestComponent } from './attendance-request/attendance-requ
 import { RadialTimeGraphComponent } from './radial-time-graph/radial-time-graph.component';
 
 import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
+import { RemoteClockinModalComponent } from './remote-clockin-modal.component';
 import { AttendanceApiService } from '../../services/attendance-api.service';
 import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
 import { EmployeeService } from 'src/app/services/employee.service';
@@ -39,9 +40,24 @@ import { EmployeeService } from 'src/app/services/employee.service';
     CalendarComponent,
     AttendanceRequestComponent,
     RadialTimeGraphComponent,
+    RemoteClockinModalComponent,
   ],
+  // ...existing code...
 })
 export class MePage implements OnInit {
+  public async openRemoteClockinModal() {
+    const modal = await this.modalCtrl.create({
+      component: RemoteClockinModalComponent,
+      cssClass: 'modal-wrapper',
+      backdropDismiss: false,
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data?.success) {
+      this.showToast('Remote Clock-In request submitted', 'success');
+      // TODO: Optionally trigger refresh or update UI
+    }
+  }
   attendanceRefresh = 0;
 
   employee?: Candidate;

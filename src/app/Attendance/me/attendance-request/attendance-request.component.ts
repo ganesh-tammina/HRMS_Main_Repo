@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+
+import { HttpClient } from '@angular/common/http';
 import { WorkFromHomeService } from 'src/app/services/work-from-home.service';
 
 interface AttendanceRequestHistory {
@@ -29,11 +31,14 @@ export class AttendanceRequestComponent implements OnInit {
     records: AttendanceRequestHistory[];
   }[] = [];
 
-  constructor(private wfhService: WorkFromHomeService) { }
+  remoteClockinRequests: AttendanceRequestHistory[] = [];
+
+  constructor(private wfhService: WorkFromHomeService, private http: HttpClient) { }
 
   ngOnInit() {
     this.initializeStaticSections();
     this.loadWFHRequests();
+    this.loadRemoteClockinRequests();
   }
 
   /* ================= STATIC SECTIONS ================= */
@@ -46,29 +51,47 @@ export class AttendanceRequestComponent implements OnInit {
       },
       {
         type: 'Regularization Requestsss',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
+        dateRange: '',
         records: [],
       },
       {
         type: 'Remote Clock In Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '19 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '19 Aug 2025 by Employee',
-            note: 'I am working on some high-priority tasks.',
-            status: 'Approved',
-            lastAction: 'ABC on 19 Aug',
-          },
-        ],
+        dateRange: '',
+        records: [],
       },
       {
         type: 'Partial Day Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
+        dateRange: '',
         records: [],
       },
     ];
+  }
+  private loadRemoteClockinRequests() {
+    this.http.get<any[]>('/api/remote-clockin/my-requests').subscribe({
+      next: (res) => {
+        this.remoteClockinRequests = res.map(item => ({
+          date: this.formatDate(item.request_date),
+          request: 'Remote Clock In',
+          requestedOn: this.formatRequestedOn(item.created_at),
+          note: item.reason,
+          status: this.formatStatus(item.status),
+          lastAction: item.approved_by ? `Approved by ${item.approved_by}` : '-',
+          reason: 'Remote',
+          nextApprover: '-',
+        }));
+        const remoteGroup = this.attendanceRequestsHistory.find(g => g.type === 'Remote Clock In Requests');
+        if (remoteGroup) {
+          remoteGroup.records = this.remoteClockinRequests;
+          remoteGroup.dateRange = this.calculateDateRange(this.remoteClockinRequests);
+        }
+      },
+      error: () => {
+        const remoteGroup = this.attendanceRequestsHistory.find(g => g.type === 'Remote Clock In Requests');
+        if (remoteGroup) {
+          remoteGroup.records = [];
+        }
+      }
+    });
   }
 
   /* ================= LOAD WFH ================= */

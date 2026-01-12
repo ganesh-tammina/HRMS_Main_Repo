@@ -39,7 +39,7 @@ export class WorkFromHomeService {
      CREATE WFH REQUEST
      POST /api/leaves/wfh-request
      ================================================== */
-  createWFHRequest(payload: {
+  wfh(payload: {
     date: string;
     work_mode: 'WFH' | 'WFO';
     reason: string;
@@ -47,6 +47,25 @@ export class WorkFromHomeService {
     return this.http.post<any>(
       `${this.API_URL}/wfh-request`,
       payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /* ==================================================
+     CREATE REMOTE REQUEST (uses same endpoint, work_mode: 'Remote')
+     POST /api/leaves/wfh-request
+     ================================================== */
+  remote(payload: {
+    date: string;
+    reason: string;
+  }): Observable<any> {
+    const remotePayload = {
+      ...payload,
+      work_mode: 'Remote' as 'Remote',
+    };
+    return this.http.post<any>(
+      `${this.API_URL}/wfh-request`,
+      remotePayload,
       { headers: this.getHeaders() }
     );
   }

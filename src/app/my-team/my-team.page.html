@@ -1,36 +1,34 @@
-
-
 <ion-content class="ion-padding page-containerOn">
-      <div class="row-space-between"> 
-         <h1 class="header-title">
-            My Team
-         </h1>
-         <ion-buttons slot="end" class="header-buttons">
-            <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
-               class="primary-outline-btn" >
-               <ion-icon id="teamIcon" name="refresh-circle-outline"></ion-icon>
-               Refresh
-            </ion-button>         
-            <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" 
-            class="primary-outline-btn" id="timeApp">
-                  <ion-icon name="time-outline"></ion-icon>  Timesheet Approval        
-            </ion-button>     
-            <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" 
-            class="primary-outline-btn" id="leaveApp">
-               <ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
-               Timesheet Approval
-            </ion-button>        
-            <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" 
-            class="primary-outline-btn" id='AttApp'>
-               <ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
-               Attendance Approval
-            </ion-button>          
-            <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="primary-outline-btn">
-               <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'"></ion-icon>
-               All Approvals
-            </ion-button>        
-         </ion-buttons>
-      </div>
+   <div class="row-space-between">
+      <h1 class="header-title">
+         My Team
+      </h1>
+      <ion-buttons slot="end" class="header-buttons">
+         <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
+            class="primary-outline-btn">
+            <ion-icon id="teamIcon" name="refresh-circle-outline"></ion-icon>
+            Refresh
+         </ion-button>
+         <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="primary-outline-btn"
+            id="timeApp">
+            <ion-icon name="time-outline"></ion-icon> Timesheet Approval
+         </ion-button>
+         <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" class="primary-outline-btn"
+            id="leaveApp">
+            <ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
+            Timesheet Approval
+         </ion-button>
+         <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" class="primary-outline-btn"
+            id='AttApp'>
+            <ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
+            Attendance Approval
+         </ion-button>
+         <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="primary-outline-btn">
+            <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'"></ion-icon>
+            All Approvals
+         </ion-button>
+      </ion-buttons>
+   </div>
 
    <!-- ⏳ Loader -->
    <div class="loading-container" *ngIf="loading">
@@ -40,21 +38,21 @@
 
    <!-- 📅 Attendance View -->
    <div *ngIf="!loading && showAttendance && teamMembers.length">
-     <div class="date-card">
-      <!-- Date Picker -->
-      <h2>Attendance Reports</h2>
-      <div class="row-left">
+      <div class="date-card">
+         <!-- Date Picker -->
+         <h2>Attendance Reports</h2>
+         <div class="row-left">
             <ion-label>Select Date</ion-label>
             <ion-datetime-button datetime="attendance-date"></ion-datetime-button>
             <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                     <ion-datetime id="attendance-date" presentation="date" [value]="selectedDate"
-                        (ionChange)="onDateChange($event)"></ion-datetime>
-                  </ng-template>
-               </ion-modal>
+               <ng-template>
+                  <ion-datetime id="attendance-date" presentation="date" [value]="selectedDate"
+                     (ionChange)="onDateChange($event)"></ion-datetime>
+               </ng-template>
+            </ion-modal>
+         </div>
       </div>
-     </div>
-   
+
 
 
       <!-- Filter Chips -->
@@ -136,23 +134,23 @@
       </div>
 
       <!-- On Leave Card: Only show when 'on_leave' filter is selected -->
-      <ion-card *ngIf="attendanceFilter === 'on_leave' && onLeaveToday.length > 0"
-         (click)="onOnLeaveCardClick()" style="cursor:pointer;">
+      <ion-card *ngIf="attendanceFilter === 'on_leave' && onLeaveToday.length > 0" (click)="onOnLeaveCardClick()"
+         style="cursor:pointer;">
          <ion-card-content *ngIf="showOnLeaveList">
-               <ion-list>
-                  <ion-item *ngFor="let leave of onLeaveToday">
-                     <ion-avatar slot="start">
-                        <img [src]="getProfileImage(leave)" />
-                     </ion-avatar>
-                     <ion-label>
-                        <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
-                        <p>{{ leave.WorkEmail }}</p>
-                        <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
-                        <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
-                     </ion-label>
-                  </ion-item>
-               </ion-list>
-            </ion-card-content>
+            <ion-list>
+               <ion-item *ngFor="let leave of onLeaveToday">
+                  <ion-avatar slot="start">
+                     <img [src]="getProfileImage(leave)" />
+                  </ion-avatar>
+                  <ion-label>
+                     <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
+                     <p>{{ leave.WorkEmail }}</p>
+                     <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
+                     <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
+                  </ion-label>
+               </ion-item>
+            </ion-list>
+         </ion-card-content>
       </ion-card>
 
       <!-- Team Attendance List -->
@@ -216,34 +214,36 @@
 
    <div class="team-grid" *ngIf="!loading && !showAttendance && teamMembers.length">
 
-      <ion-card class="team-card" *ngFor="let member of teamMembers">        
-            <ion-card-content>
-               <!-- Avatar Section -->
-               <div class="row-left">
+      <ion-card class="team-card" *ngFor="let member of teamMembers">
+         <ion-card-content>
+            <!-- Avatar Section -->
+            <div class="row-left">
 
                <div class="avatar-section">
                   <ion-img [src]="getProfileImage(member)" class="avatar"></ion-img>
-                     
-                     <div *ngIf="member.id" class="status-badge"
-                        [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
-                        [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
-                        <!-- <ion-icon
+
+                  <div *ngIf="member.id" class="status-badge"
+                     [class.badge-in]="getEmployeePunchStatus(member.id).status === 'in'"
+                     [class.badge-out]="getEmployeePunchStatus(member.id).status === 'out'">
+                     <!-- <ion-icon
                            [name]="getEmployeePunchStatus(member.id).status === 'in' ? 'checkmark' : 'close'"></ion-icon> -->
-                     </div>
+                  </div>
                </div>
                <div>
-                     <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
-                     <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{ member.department || member.department_name || '—' }}</p>
-                     
-               </div>              
+                  <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
+                  <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{
+                     member.department || member.department_name || '—' }}</p>
+
                </div>
-               <!-- Member Info -->
-               <div class="contact-details">
-                 <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}</p>
-                  <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email || '—' }}</p>
-               </div>
-            </ion-card-content>
-         </ion-card>
+            </div>
+            <!-- Member Info -->
+            <div class="contact-details">
+               <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}
+               </p>
+               <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email || '—' }}</p>
+            </div>
+         </ion-card-content>
+      </ion-card>
 
    </div>
 
