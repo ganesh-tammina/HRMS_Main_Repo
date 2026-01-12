@@ -12,6 +12,7 @@ import { LeaveInitializeService } from 'src/app/services/leave-initialize.servic
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { EmployeeSelectPopoverComponent } from './employee-select-popover.component';
 import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-employee-leave-allocation',
@@ -29,7 +30,7 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
 
   employees: any[] = [];
   leavePlans: any[] = [];
-  showCreateForm = false;
+  showCreateForm = true;
   isEditMode = false;
   selectedLeaveTypeId: number | null = null;
 
@@ -42,6 +43,7 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
     private toastCtrl: ToastController,
     private popoverCtrl: PopoverController,
     private router: Router,
+    private modalCtrl: ModalController,
   ) { }
 
   ngOnInit(): void {
@@ -54,7 +56,7 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
     this.loadEmployees();
     this.loadLeavePlans(); // ✅ SAME PATTERN AS LeavesAllocationComponent
   }
-    openCreateForm(): void {
+  openCreateForm(): void {
     this.isEditMode = false;
     this.selectedLeaveTypeId = null;
     this.allocationForm.reset({
@@ -66,9 +68,11 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
     this.showCreateForm = true;
   }
   cancelCreate(): void {
+    this.allocationForm.reset();
     this.showCreateForm = false;
     this.isEditMode = false;
     this.selectedLeaveTypeId = null;
+    this.modalCtrl.dismiss();
   }
   /* ================= LOADERS ================= */
 
@@ -153,10 +157,12 @@ export class EmployeeLeaveAllocationComponent implements OnInit {
       .then(() => {
         this.showToast('Leave balance initialized for all employees');
         this.loading = false;
+        this.showCreateForm = false;
       })
       .catch(() => {
         this.showToast('Some employees failed');
         this.loading = false;
+        this.showCreateForm = false;
       });
   }
 
