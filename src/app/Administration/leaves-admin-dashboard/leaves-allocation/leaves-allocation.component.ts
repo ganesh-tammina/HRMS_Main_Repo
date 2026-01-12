@@ -34,7 +34,7 @@ export class LeavesAllocationComponent implements OnInit {
     private leavePlanService: LeavePlanService,
     private leaveTypesService: LeaveTypeService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.allocationForm = this.fb.group({

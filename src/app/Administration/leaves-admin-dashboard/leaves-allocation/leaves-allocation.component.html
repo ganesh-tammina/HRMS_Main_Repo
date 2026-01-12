@@ -1,20 +1,20 @@
- <ion-content class="ion-padding page-containerOn project-wrappers">
- <p class="page-header mb-8">
-   <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
-   <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard /</a>
-   Leave Allocation
+<ion-content class="ion-padding page-containerOn project-wrappers">
+  <p class="page-header mb-8">
+    <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
+    <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard /</a>
+    Leave Allocation
   </p>
 
-<!-- <ion-header>
+  <!-- <ion-header>
   <ion-toolbar color="primary">
     <ion-title>Leave Allocation</ion-title>
   </ion-toolbar>
 </ion-header> -->
 
-<div class="leavehead">
-  <h4>Leave Allocation</h4>
-<p>Allocate leaves to employees</p>
-</div>
+  <div class="leavehead">
+    <h4>Leave Allocation</h4>
+    <p>Allocate leaves to employees</p>
+  </div>
   <ion-card class="allocatehead">
     <ion-card-header>
       <ion-card-title>Leave Plan Details</ion-card-title>
@@ -23,20 +23,20 @@
     <ion-card-content>
       <form [formGroup]="allocationForm">
         <ion-list lines="none">
-        <ion-item  class="allocation-ipt">
-          <ion-label position="stacked">Leave Plan</ion-label>
-          <ion-select fill="outline" placeholder="Select Leave Plan" [value]="selectedPlanId"
-            (ionChange)="onPlanChange($event.detail.value)">
-            <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
-              {{ plan.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
+          <ion-item class="allocation-ipt">
+            <ion-label position="stacked">Leave Plan</ion-label>
+            <ion-select fill="outline" placeholder="Select Leave Plan" [value]="selectedPlanId"
+              (ionChange)="onPlanChange($event.detail.value)">
+              <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
+                {{ plan.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
 
-        <ion-item class="allocation-ipt">
-          <ion-label position="stacked">Description</ion-label>
-          <ion-textarea fill="outline" formControlName="description" rows="3"></ion-textarea>
-        </ion-item>
+          <ion-item class="allocation-ipt">
+            <ion-label position="stacked">Description</ion-label>
+            <ion-textarea fill="outline" formControlName="description" rows="3"></ion-textarea>
+          </ion-item>
         </ion-list>
 
 
@@ -78,7 +78,8 @@
               </ion-grid>
             </div>
           </div>
-          <ion-button expand="block" fill="outline" (click)="addAllocation()" style="margin-top: 10px;--border-radius: 20px;">
+          <ion-button expand="block" fill="outline" (click)="addAllocation()"
+            style="margin-top: 10px;--border-radius: 20px;">
             + Add New Allocation Row
           </ion-button>
         </ng-container>
@@ -92,13 +93,13 @@
     </ion-card-content>
   </ion-card>
   <div class="row-right">
-        <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" (click)="cancel()">
-          Cancel
-        </ion-button>
-        <ion-button class="ion-margin-top primary-btn create-btn" [disabled]="loading" (click)="submitallocationLeaves()">
-          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
-          <span *ngIf="!loading">Save & Allocate Leaves</span>
-        </ion-button>
+    <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" (click)="cancel()">
+      Cancel
+    </ion-button>
+    <ion-button class="ion-margin-top primary-btn create-btn" [disabled]="loading" (click)="submitallocationLeaves()">
+      <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+      <span *ngIf="!loading">Save & Allocate Leaves</span>
+    </ion-button>
 
   </div>
 
