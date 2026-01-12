@@ -146,38 +146,53 @@
               <div class="clock-flex">
                 <div style="display: flex; align-items: center; gap: 10px;">
                   <div>
-                    <h2 style="margin: 0; border-radius:20px; border: 1px solid #1F74BB; padding: 5px 15px; color: #1F74BB; font-size: 15px; font-weight: bold;background: #E6F4FF;">Work From Home</h2>
+                    <h2
+                      style="margin: 0; border-radius:20px; border: 1px solid #1F74BB; padding: 5px 15px; color: #1F74BB; font-size: 15px; font-weight: bold;background: #E6F4FF;">
+                      Work From Home</h2>
                   </div>
                 </div>
               </div>
               <div *ngIf="getWFHRecords(selectedLog.records).length > 0; else noWFHRecords">
-                <div *ngFor="let rec of getWFHRecords(selectedLog.records).slice().reverse()" style="background: #fff5f5; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #f5576c;">
+                <div *ngFor="let rec of getWFHRecords(selectedLog.records).slice().reverse()"
+                  style="background: #fff5f5; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #f5576c;">
                   <ion-grid style="padding: 0;">
                     <ion-row>
                       <ion-col size="6" style="border-right: 2px solid #ddd;">
                         <div style="text-align: center;">
-                          <p style="color: #f5576c; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">⏰ Clock In</p>
-                          <h4 *ngIf="rec.check_in" style="margin: 0; font-size: 17px; font-weight: 700; color: #28a745;">{{ rec.check_in | date:'h:mm a' }}</h4>
+                          <p
+                            style="color: #f5576c; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">
+                            ⏰ Clock In</p>
+                          <h4 *ngIf="rec.check_in"
+                            style="margin: 0; font-size: 17px; font-weight: 700; color: #28a745;">{{ rec.check_in |
+                            date:'h:mm a' }}</h4>
                           <h4 *ngIf="!rec.check_in" style="margin: 0; font-size: 17px; color: #999;">--:--</h4>
                         </div>
                       </ion-col>
                       <ion-col size="6">
                         <div style="text-align: center;">
-                          <p style="color: #f5576c; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">⏰ Clock Out</p>
-                          <h4 *ngIf="rec.check_out" style="margin: 0; font-size: 17px; font-weight: 700; color: #dc3545;">{{ rec.check_out | date:'h:mm a' }}</h4>
-                          <h4 *ngIf="!rec.check_out" style="margin: 0; font-size: 14px; color: #28a745; font-weight: 600;">Active</h4>
+                          <p
+                            style="color: #f5576c; font-size: 10px; margin: 0 0 4px 0; text-transform: uppercase; font-weight: 600;">
+                            ⏰ Clock Out</p>
+                          <h4 *ngIf="rec.check_out"
+                            style="margin: 0; font-size: 17px; font-weight: 700; color: #dc3545;">{{ rec.check_out |
+                            date:'h:mm a' }}</h4>
+                          <h4 *ngIf="!rec.check_out"
+                            style="margin: 0; font-size: 14px; color: #28a745; font-weight: 600;">Active</h4>
                         </div>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
-                  <div *ngIf="rec.location || rec.notes" style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #ccc;">
-                    <p *ngIf="rec.location" style="font-size: 10px; color: #666; margin: 0 0 3px 0;">📍 {{ rec.location }}</p>
+                  <div *ngIf="rec.location || rec.notes"
+                    style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #ccc;">
+                    <p *ngIf="rec.location" style="font-size: 10px; color: #666; margin: 0 0 3px 0;">📍 {{ rec.location
+                      }}</p>
                     <p *ngIf="rec.notes" style="font-size: 10px; color: #555; margin: 0;">💬 {{ rec.notes }}</p>
                   </div>
                 </div>
               </div>
               <ng-template #noWFHRecords>
-                <div style="text-align: center; padding: 25px 15px; background: #fff5f5; border-radius: 8px; color: #999;">
+                <div
+                  style="text-align: center; padding: 25px 15px; background: #fff5f5; border-radius: 8px; color: #999;">
                   <ion-icon name="home-outline" style="font-size: 40px; opacity: 0.3;"></ion-icon>
                   <p style="margin: 6px 0 0 0; font-size: 13px;">No WFH clock-ins</p>
                 </div>
@@ -191,12 +206,15 @@
               <div class="clock-flex">
                 <div style="display: flex; align-items: center; gap: 10px;">
                   <div>
-                    <h2 style="margin: 0; border-radius:20px; border: 1px solid #0A9396; padding: 5px 15px; color: #0A9396; font-size: 15px; font-weight: bold;background: #E0FBFC;">Remote</h2>
+                    <h2
+                      style="margin: 0; border-radius:20px; border: 1px solid #0A9396; padding: 5px 15px; color: #0A9396; font-size: 15px; font-weight: bold;background: #E0FBFC;">
+                      Remote</h2>
                   </div>
                 </div>
               </div>
               <div *ngIf="getRemoteRecords(selectedLog.records).length > 0; else noRemoteRecords">
-                <div *ngFor="let rec of getRemoteRecords(selectedLog.records).slice().reverse()" style="background: #e0fbfc; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #0A9396;">
+                <div *ngFor="let rec of getRemoteRecords(selectedLog.records).slice().reverse()"
+                  style="background: #e0fbfc; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #0A9396;">
                   <ion-grid style="padding: 0;">
                     <ion-row>
                       <ion-col>{{ rec.check_in || '-' }}</ion-col>
@@ -204,14 +222,17 @@
                       <ion-col>{{ rec.notes || '-' }}</ion-col>
                     </ion-row>
                   </ion-grid>
-                  <div *ngIf="rec.location || rec.notes" style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #ccc;">
-                    <p *ngIf="rec.location" style="font-size: 10px; color: #666; margin: 0 0 3px 0;">📍 {{ rec.location }}</p>
+                  <div *ngIf="rec.location || rec.notes"
+                    style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #ccc;">
+                    <p *ngIf="rec.location" style="font-size: 10px; color: #666; margin: 0 0 3px 0;">📍 {{ rec.location
+                      }}</p>
                     <p *ngIf="rec.notes" style="font-size: 10px; color: #555; margin: 0;">💬 {{ rec.notes }}</p>
                   </div>
                 </div>
               </div>
               <ng-template #noRemoteRecords>
-                <div style="text-align: center; padding: 25px 15px; background: #e0fbfc; border-radius: 8px; color: #999;">
+                <div
+                  style="text-align: center; padding: 25px 15px; background: #e0fbfc; border-radius: 8px; color: #999;">
                   <ion-icon name="globe-outline" style="font-size: 40px; opacity: 0.3;"></ion-icon>
                   <p style="margin: 6px 0 0 0; font-size: 13px;">No Remote clock-ins</p>
                 </div>
