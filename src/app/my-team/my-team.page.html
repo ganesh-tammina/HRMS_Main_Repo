@@ -57,7 +57,7 @@
       </ion-card>
 
       <!-- Filter Chips -->
-      <div class="filter-chips">
+      <!-- <div class="filter-chips">
          <ion-chip [color]="attendanceFilter === 'all' ? 'primary' : 'light'" (click)="setAttendanceFilter('all')">
             <ion-icon name="people-outline"></ion-icon>
             <ion-label>All ({{ attendanceSummary?.total_team || 0 }})</ion-label>
@@ -79,10 +79,10 @@
             <ion-icon name="calendar-outline"></ion-icon>
             <ion-label>On Leave ({{ attendanceSummary?.on_leave || 0 }})</ion-label>
          </ion-chip>
-      </div>
+      </div> -->
 
       <!-- DEBUG INFO - Remove after testing -->
-      <ion-card *ngIf="filteredMembers.length === 0" color="warning">
+      <!-- <ion-card *ngIf="filteredMembers.length === 0" color="warning">
          <ion-card-content>
             <strong>Debug Info:</strong><br>
             Total team members: {{ teamMembers.length }}<br>
@@ -90,13 +90,13 @@
             Current filter: {{ attendanceFilter }}<br>
             Attendance data count: {{ attendanceData?.length || 0 }}<br>
          </ion-card-content>
-      </ion-card>
+      </ion-card> -->
 
       <!-- Summary Cards -->
       <div class="summary-cards" *ngIf="attendanceSummary">
          <ion-card class="summary-card">
             <ion-card-content>
-               <div class="summary-item">
+               <div class="summary-item" (click)="setAttendanceFilter('all')">
                   <ion-icon name="people" color="primary"></ion-icon>
                   <div class="summary-text">
                      <p class="summary-label">Total Team</p>
@@ -108,7 +108,7 @@
 
          <ion-card class="summary-card">
             <ion-card-content>
-               <div class="summary-item">
+               <div class="summary-item" (click)="setAttendanceFilter('present')">
                   <ion-icon name="checkmark-circle" color="success"></ion-icon>
                   <div class="summary-text">
                      <p class="summary-label">Present</p>
@@ -120,19 +120,20 @@
 
          <ion-card class="summary-card">
             <ion-card-content>
-               <div class="summary-item">
+               <div class="summary-item" (click)="setAttendanceFilter('absent')">
                   <ion-icon name="close-circle" color="danger"></ion-icon>
                   <div class="summary-text">
                      <p class="summary-label">Absent</p>
                      <h2 class="summary-value">{{ attendanceSummary.absent }}</h2>
                   </div>
                </div>
+
             </ion-card-content>
          </ion-card>
 
          <ion-card class="summary-card">
             <ion-card-content>
-               <div class="summary-item">
+               <div class="summary-item" (click)="setAttendanceFilter('on_leave')">
                   <ion-icon name="calendar-outline" color="warning"></ion-icon>
                   <div class="summary-text">
                      <p class="summary-label">On Leave</p>
@@ -201,6 +202,7 @@
    </div>
 
    <!-- 🧑‍🤝‍🧑 Regular Team List -->
+
    <div class="team-grid" *ngIf="!loading && !showAttendance && teamMembers.length">
 
       <ion-card class="team-card" *ngFor="let member of teamMembers">
