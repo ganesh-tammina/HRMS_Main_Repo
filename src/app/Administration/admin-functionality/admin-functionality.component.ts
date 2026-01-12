@@ -153,14 +153,14 @@ export class adminFunctionalityComponent implements OnInit {
       }
     });
   }
-  editShift(item: any) { this.editingShiftId = item.id; this.shiftForm = { ...item }; }
+  // Removed duplicate editShift without debug logs
   editShift(item: any) {
     console.log('Editing shift:', item);
     this.editingShiftId = item.id;
     this.shiftForm = { ...item };
     console.log('shiftForm after edit:', this.shiftForm);
   }
-  updateShift() { this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe(() => { this.loadShiftPolicies(); this.resetShiftForm(); }); }
+  // Removed duplicate updateShift without debug logs
   updateShift() {
     console.log('Updating shift:', this.editingShiftId, this.shiftForm);
     this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe({
