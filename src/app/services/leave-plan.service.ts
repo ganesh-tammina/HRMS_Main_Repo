@@ -4,20 +4,20 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export interface LeavePlan {
-  id: number;
-  name: string;
-  description?: string;
+    id: number;
+    name: string;
+    description?: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class LeavePlanService {
-  private apiUrl = `http://${environment.apiURL}/api/leave-plans`;
+    private apiUrl = `http://${environment.apiURL}/api/leave-plans`;
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
-  getLeavePlans(): Observable<LeavePlan[]> {
-    return this.http.get<LeavePlan[]>(this.apiUrl);
-  }
+    getLeavePlans(): Observable<LeavePlan[]> {
+        return this.http.get<LeavePlan[]>(this.apiUrl);
+    }
 }

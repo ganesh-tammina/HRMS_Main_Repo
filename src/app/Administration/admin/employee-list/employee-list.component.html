@@ -141,7 +141,8 @@
                         </ion-item>
                         <ion-item>
                           <ion-label position="stacked">Leave Plan</ion-label>
-                          <ion-select [(ngModel)]="updateData.leave_plan_id" interface="popover" placeholder="Select Leave Plan">
+                          <ion-select [(ngModel)]="updateData.leave_plan_id" interface="popover"
+                            placeholder="Select Leave Plan">
                             <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
                               {{plan.name}}
                             </ion-select-option>
