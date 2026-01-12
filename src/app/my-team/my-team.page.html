@@ -7,21 +7,28 @@
          </h1>
          <ion-buttons slot="end" class="header-buttons">
             <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
-               class="header-action-btn">
-               <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon name="document-text-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon name="calendar-clear-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon name="home-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="header-action-btn">
-               <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'" slot="icon-only"></ion-icon>
-            </ion-button>
+               class="primary-outline-btn" >
+               <ion-icon id="teamIcon" name="refresh-circle-outline"></ion-icon>
+               Refresh
+            </ion-button>         
+            <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" 
+            class="primary-outline-btn" id="timeApp">
+                  <ion-icon name="time-outline"></ion-icon>  Timesheet Approval        
+            </ion-button>     
+            <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" 
+            class="primary-outline-btn" id="leaveApp">
+               <ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
+               Timesheet Approval
+            </ion-button>        
+            <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" 
+            class="primary-outline-btn" id='AttApp'>
+               <ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
+               Attendance Approval
+            </ion-button>          
+            <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="primary-outline-btn">
+               <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'"></ion-icon>
+               All Approvals
+            </ion-button>        
          </ion-buttons>
       </div>
 
@@ -33,26 +40,22 @@
 
    <!-- 📅 Attendance View -->
    <div *ngIf="!loading && showAttendance && teamMembers.length">
-
+     <div class="date-card">
       <!-- Date Picker -->
-      <ion-card class="date-card">
-         <ion-card-header>
-            <ion-card-title>Attendance Reports</ion-card-title>
-         </ion-card-header>
-         <ion-card-content>
-            <ion-item lines="none">
-               <ion-label>Select Date</ion-label>
-               <ion-datetime-button datetime="attendance-date"></ion-datetime-button>
-            </ion-item>
-
+      <h2>Attendance Reports</h2>
+      <div class="row-left">
+            <ion-label>Select Date</ion-label>
+            <ion-datetime-button datetime="attendance-date"></ion-datetime-button>
             <ion-modal [keepContentsMounted]="true">
-               <ng-template>
-                  <ion-datetime id="attendance-date" presentation="date" [value]="selectedDate"
-                     (ionChange)="onDateChange($event)"></ion-datetime>
-               </ng-template>
-            </ion-modal>
-         </ion-card-content>
-      </ion-card>
+                  <ng-template>
+                     <ion-datetime id="attendance-date" presentation="date" [value]="selectedDate"
+                        (ionChange)="onDateChange($event)"></ion-datetime>
+                  </ng-template>
+               </ion-modal>
+      </div>
+     </div>
+   
+
 
       <!-- Filter Chips -->
       <!-- <div class="filter-chips">
@@ -133,31 +136,23 @@
       </div>
 
       <!-- On Leave Card: Only show when 'on_leave' filter is selected -->
-      <ion-card *ngIf="attendanceFilter === 'on_leave' && onLeaveToday.length > 0" color="warning"
+      <ion-card *ngIf="attendanceFilter === 'on_leave' && onLeaveToday.length > 0"
          (click)="onOnLeaveCardClick()" style="cursor:pointer;">
-         <ion-card-header>
-            <ion-card-title>
-               <ion-icon name="calendar-outline"></ion-icon>
-               On Leave Today
-               <ion-icon [name]="showOnLeaveList ? 'chevron-up-outline' : 'chevron-down-outline'"
-                  style="float:right;"></ion-icon>
-            </ion-card-title>
-         </ion-card-header>
          <ion-card-content *ngIf="showOnLeaveList">
-            <ion-list>
-               <ion-item *ngFor="let leave of onLeaveToday">
-                  <ion-avatar slot="start">
-                     <img [src]="getProfileImage(leave)" />
-                  </ion-avatar>
-                  <ion-label>
-                     <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
-                     <p>{{ leave.WorkEmail }}</p>
-                     <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
-                     <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
-                  </ion-label>
-               </ion-item>
-            </ion-list>
-         </ion-card-content>
+               <ion-list>
+                  <ion-item *ngFor="let leave of onLeaveToday">
+                     <ion-avatar slot="start">
+                        <img [src]="getProfileImage(leave)" />
+                     </ion-avatar>
+                     <ion-label>
+                        <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
+                        <p>{{ leave.WorkEmail }}</p>
+                        <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
+                        <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
+                     </ion-label>
+                  </ion-item>
+               </ion-list>
+            </ion-card-content>
       </ion-card>
 
       <!-- Team Attendance List -->

@@ -9,19 +9,27 @@
 
 
 .header-buttons {
-  .header-action-btn {
-    --color: var(--ion-color-primary);
+  word-wrap: break-word;
+  .primary-outline-btn {
+    --color: #1A2B3C;
     --background-hover: rgba(255, 255, 255, 0.15);
     --border-radius: 10px;
     margin: 0 4px;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: scale(1.1);
-      --background: rgba(255, 255, 255, 0.2);
+    color: #1A2B3C;
+    font-size: 12px;
+    padding: 0px 4px;
+    height: 32px;
+    background: transparent;
+    text-transform: capitalize;
+    ion-icon {
+      margin-right: 5px;
     }
+    ion-img {
+      margin-right: 5px;
+    } 
   }
 }
+
 /* ================= CONTENT BACKGROUND ================= */
 ion-content {
   --background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
@@ -262,18 +270,18 @@ h3 {
 }
 
 .date-card {
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-  ion-card-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--ion-color-primary);
+  border: 1px solid var(--ion-color-secondary);
+  padding: 8px 24px;
+  background: #f4f5f8;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  margin-top: 15px;
+  h2 {
+    margin: 8px 0;
   }
-
-  ion-item {
-    --padding-start: 0;
-  }
+  ion-button::part(native)  {
+      background: red;
+    }  
 }
 
 .summary-cards {
@@ -287,8 +295,7 @@ h3 {
   margin: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  transition: transform 0.2s ease;
-
+  transition: transform 0.2s ease;  
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -296,6 +303,7 @@ h3 {
 
   ion-card-content {
     padding: 16px;
+    cursor: pointer;
   }
 }
 
