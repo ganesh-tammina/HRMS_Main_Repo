@@ -12,6 +12,7 @@ export class AuthService {
   private LOGIN_URL = `http://${this.env.apiURL}/api/auth/login`;
   private CHECK_EMAIL_URL = `http://${this.env.apiURL}/api/auth/employee/check`;
   private CREATE_USER_URL = `http://${this.env.apiURL}/api/auth/user/create`;
+  private CREATE_PASSWORD_URL = `http://${this.env.apiURL}/api/auth/password/create`;
   private PREVIEW_ROLE_URL = `http://${this.env.apiURL}/api/auth/user/preview-role`;
 
   constructor(
@@ -50,6 +51,20 @@ export class AuthService {
       email,
       password,
       role: 'employee'
+    });
+  }
+
+  /** CREATE PASSWORD (Forgot Password) */
+  createPassword(employee_id: string, password: string, token: string): Observable<any> {
+    return this.http.post(this.CREATE_PASSWORD_URL, {
+      employee_id,
+      password
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'accept': '*/*'
+      }
     });
   }
 
