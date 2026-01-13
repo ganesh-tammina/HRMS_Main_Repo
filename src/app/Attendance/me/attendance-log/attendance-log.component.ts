@@ -65,6 +65,10 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       });
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
   ngOnDestroy(): void {
     if (this.routeSub) {
       this.routeSub.unsubscribe();
