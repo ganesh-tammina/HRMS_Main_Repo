@@ -99,6 +99,22 @@ export class AppComponent implements OnInit {
         } else {
           this.userType = null;
         }
+
+        // Show intro screen only on first app entry or logout
+        const introSeen = localStorage.getItem('introSeen');
+
+        if (!introSeen || this.isLoginPage) {
+          this.showIntro = true;
+
+          setTimeout(() => {
+            this.showIntro = false;
+            if (!introSeen) {
+              localStorage.setItem('introSeen', 'true'); // Remember intro was shown
+            }
+          }, 3000); // Display intro for 3 seconds
+        } else {
+          this.showIntro = false;
+        }
       }
     });
     this.currentUrl = this.router.url;
@@ -109,23 +125,6 @@ export class AppComponent implements OnInit {
     this.showCategories = !this.showCategories;
   }
   ngOnInit(): void {
-
-    // 🔥 CHECK IF INTRO WAS ALREADY SHOWN
-    const introSeen = localStorage.getItem('introSeen');
-
-    if (!introSeen) {
-      // First time app opened
-      this.showIntro = true;
-
-      setTimeout(() => {
-        this.showIntro = false;
-        localStorage.setItem('introSeen', 'true'); // remember it
-      }, 2000);
-
-    } else {
-      // Intro already shown before
-      this.showIntro = false;
-    }
 
     // Existing logic
     this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
