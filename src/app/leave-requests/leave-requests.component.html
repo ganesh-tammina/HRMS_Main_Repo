@@ -4,7 +4,7 @@
   </div>
 
   <!-- ================= LEAVE REQUEST TABLE ================= -->
-  <ion-grid class="table">
+  <ion-grid class="table-block">
     <ion-row class="table-header">
       <ion-col size="2">Name</ion-col>
       <ion-col size="2">Leave Type</ion-col>
@@ -15,7 +15,7 @@
       <ion-col size="1">Actions</ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let req of leaveRequests" class="table-list-row">
+    <ion-row *ngFor="let req of leaveRequests" class="table-row-list">
       <ion-col size="2">
         <p>{{ req.employee_id }}</p>
         <p>{{ req.leave_type }}</p>
@@ -44,7 +44,7 @@
         <p class="yellow-status">{{ req.status }}</p>
       </ion-col>
 
-      <ion-col size="1">
+      <ion-col size="1" class="row-center">
         <button
           fill="clear"
           class="approve-btn"

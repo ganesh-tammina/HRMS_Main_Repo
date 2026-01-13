@@ -596,13 +596,13 @@ ion-popover ion-content::-webkit-scrollbar {
     }
   }
   .table-row-list {
-    height: 48px;
+    height: auto;
+    min-height: 44px;
     border-bottom: 0.5px solid #ABABAB;
     @include normal-text-unbold();
     align-items: center;
     &:nth-child(odd) {
       background: #f4f6ff;
-
     }
     &:last-child {
       border-bottom: 0;
