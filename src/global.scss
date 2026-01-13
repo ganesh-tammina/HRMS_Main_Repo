@@ -648,3 +648,15 @@ p.empty-text{
     margin: auto;
   }
 }
+.no-leaves-img{
+  p{
+    color: #707070;
+    font-weight: bold;
+    font-size: 12px;
+  }
+    display: flex;
+    justify-content: center;
+    img{
+        max-width: 11%;
+    }
+}
