@@ -6,46 +6,48 @@
 }
 
 .request-card {
+  border-radius: 12px;  
+  background: #fff;
     .team-header {
       @include card-sub-title();
       color: $side-bar-color;
       margin-top: 12px;
       margin-bottom: 5px;
   }
-  .table {    
-    border: 0.5px solid $border-color;
-    padding: 0;
-    .table-header {
-      @include text-bold();
-      height: 44px;
-      align-items: center;
-      background: #EBEDEF;
-      ion-col {
-        border: 0.5px solid $border-color;
-        height: 44px;
-        display: flex;
-        align-items: center;
-      }
-    }
-    .table-list-row {
-      @include body-text();
-      height: 48px;
-      align-items: center;
-      border: 0.5px solid $border-color;
-      &:nth-child(odd) {
-        background: $bg-color;
-      }
-      ion-col {
-        border-right: 0.5px solid $border-color;
-        height: 52px;
-        display: flex;
-        align-items: center;
-      }
-    }
-p {
-  margin: 0;
-}
-  }
+//   .table {    
+//     border: 0.5px solid $border-color;
+//     padding: 0;
+//     .table-header {
+//       @include text-bold();
+//       height: 44px;
+//       align-items: center;
+//       background: #EBEDEF;
+//       ion-col {
+//         border: 0.5px solid $border-color;
+//         height: 44px;
+//         display: flex;
+//         align-items: center;
+//       }
+//     }
+//     .table-list-row {
+//       @include body-text();
+//       height: 48px;
+//       align-items: center;
+//       border: 0.5px solid $border-color;
+//       &:nth-child(odd) {
+//         background: $bg-color;
+//       }
+//       ion-col {
+//         border-right: 0.5px solid $border-color;
+//         height: 52px;
+//         display: flex;
+//         align-items: center;
+//       }
+//     }
+// p {
+//   margin: 0;
+// }
+//   }
   }
 
 
@@ -118,6 +120,7 @@ ion-popover {
     border: 1px solid #9A3412;
     padding: 3px;
     border-radius: 12px;
+    text-align: center;
 }
 .red-status {
   color: #D33434;
