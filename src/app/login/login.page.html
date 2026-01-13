@@ -1,5 +1,5 @@
-  <!-- TOAST MESSAGE -->
-  <div *ngIf="toastMessage" [ngClass]="{'toast': true, 'toast-error': toastError}">{{ toastMessage }}</div>
+<!-- TOAST MESSAGE -->
+<div *ngIf="toastMessage" [ngClass]="{'toast': true, 'toast-error': toastError}">{{ toastMessage }}</div>
 <div class="login-wrapper">
   <div class="img">
     <img src="assets/login-image-background.svg" />
@@ -58,7 +58,8 @@
       </form>
 
       <!-- FORGOT PASSWORD FORM INSIDE LOGIN CARD -->
-      <form *ngIf="showForgotPassword" [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()" class="forgot-card fade-in-scale">
+      <form *ngIf="showForgotPassword" [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()"
+        class="forgot-card fade-in-scale">
         <h3 class="modal-title">Reset Password</h3>
         <div class="form-group">
           <label>Username</label>
@@ -69,7 +70,8 @@
           <input type="password" formControlName="password" placeholder="Enter new password" />
         </div>
         <div class="modal-actions">
-          <button type="submit" class="btn-primary" [disabled]="forgotPasswordForm.invalid || loading">Reset Password</button>
+          <button type="submit" class="btn-primary" [disabled]="forgotPasswordForm.invalid || loading">Reset
+            Password</button>
           <button type="button" class="btn-secondary" (click)="hideForgotPasswordForm()">Cancel</button>
         </div>
       </form>
