@@ -56,8 +56,8 @@ export class MePage implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data?.success) {
       this.showToast('Remote Clock-In request submitted', 'success');
-      // Trigger attendance log refresh so pending entry appears immediately
-      this.attendanceRefresh++;
+      // Always trigger attendance log refresh
+      this.attendanceRefresh = Date.now();
       // Debug: Log ViewChild and data
       console.log('Remote modal dismissed with:', data, 'clockButton:', this.clockButton);
       // If remote clock-in was successful, update clock button UI instantly
@@ -227,6 +227,8 @@ export class MePage implements OnInit {
               this.clockButton.workMode = 'WFH';
               this.clockButton.isClockedIn = true;
             }
+            // Always trigger attendance log refresh
+            this.attendanceRefresh = Date.now();
           },
           error: err => {
             this.showToast(err?.error?.message || 'WFH Clock-In failed', 'danger');
@@ -271,6 +273,9 @@ export class MePage implements OnInit {
 
   setTab(tab: string) {
     this.activeTab = tab;
+    if (tab === 'log') {
+      this.attendanceRefresh = Date.now();
+    }
   }
 
   async wfh() {

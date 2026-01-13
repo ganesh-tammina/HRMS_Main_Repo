@@ -171,11 +171,9 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   clockIn(isRemoteRequestSuccess?: boolean): void {
     console.log('clockIn called with isRemoteRequestSuccess:', isRemoteRequestSuccess);
     if (this.isClockedIn) {
-      // alert('You are already clocked in. Please punch out before punching in again.');
       return;
     }
     this.loading = true;
-    // Determine work mode and location
     let work_mode = 'Office';
     let location = 'Mumbai Office';
     let notes = 'Morning shift';
@@ -203,8 +201,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
-          // State is updated by service via tap operator
-          // this.statusChanged.emit(res); // Already emitted above
+          // Always emit statusChanged after API success to trigger log refresh
+          this.statusChanged.emit({ punch_type: 'in', work_mode });
           if (work_mode === 'Remote') {
             this.workMode = 'Remote';
             this.remoteActive = true;
@@ -215,7 +213,6 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         this.loading = false;
-        // Handle active punch-in error gracefully
         if (err?.error?.message?.includes('active punch-in')) {
           alert('You have an active punch-in. Please punch out before punching in again.');
           this.isClockedIn = true;
@@ -229,10 +226,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   /* ================= CLOCK OUT ================= */
   clockOut(): void {
     this.loading = true;
-    // Update UI state immediately for instant feedback
     this.isClockedIn = false;
     this.statusChanged.emit({ punch_type: 'out', work_mode: this.workMode });
-    // If WFH, reset workMode to Office after clock out
     const wasWFH = this.workMode === 'WFH';
     this.attendanceApi.apiPunchOut({
       notes: wasWFH ? 'WFH Clock-Out' : 'Going for lunch',
@@ -240,7 +235,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
-          // this.statusChanged.emit(res); // Already emitted above
+          // Always emit statusChanged after API success to trigger log refresh
+          this.statusChanged.emit({ punch_type: 'out', work_mode: this.workMode });
           if (wasWFH) {
             this.workMode = 'Office';
           }
@@ -257,7 +253,6 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   /* =============== REMOTE CLOCK OUT =============== */
   remoteClockOut(): void {
     this.loading = true;
-    // Update UI state immediately for instant feedback
     this.isClockedIn = false;
     this.remoteActive = false;
     this.workMode = 'Office';
@@ -269,7 +264,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
-          // this.statusChanged.emit(res); // Already emitted above
+          // Always emit statusChanged after API success to trigger log refresh
+          this.statusChanged.emit({ punch_type: 'out', work_mode: 'Remote' });
         }
       },
       error: (err) => {
