@@ -51,9 +51,8 @@
         </button>
 
         <!-- FORGOT PASSWORD LINK -->
-        <div class="form-group" *ngIf="!showForgotPassword">
-          <a href="javascript:void(0)" (click)="showForgotPasswordForm()"
-            style="color: #007bff; text-decoration: underline;">Forgot Password?</a>
+        <div class="form-group forgot" *ngIf="!showForgotPassword">
+          <a href="javascript:void(0)" (click)="showForgotPasswordForm()">Forgot Password?</a>
         </div>
       </form>
 
