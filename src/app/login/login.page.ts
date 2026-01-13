@@ -24,6 +24,9 @@ export class LoginPage implements OnInit {
   loading = false;
   isAdmin = false;
   rolePreviewData: any = null;
+  showForgotPassword = false;
+  forgotPasswordForm!: FormGroup;
+  forgotPasswordSuccess = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,6 +41,11 @@ export class LoginPage implements OnInit {
     this.loginForm = this.fb.group({
       email: ['', Validators.required],   // email OR admin
       password: ['']
+    });
+
+    this.forgotPasswordForm = this.fb.group({
+      employee_id: ['', Validators.required],
+      password: ['', Validators.required]
     });
   }
 
@@ -147,6 +155,58 @@ export class LoginPage implements OnInit {
         }
       });
     }
+  }
+
+  /** FORGOT PASSWORD SUBMIT */
+  onForgotPasswordSubmit(): void {
+    if (this.forgotPasswordForm.invalid) return;
+    this.loading = true;
+    const { employee_id, password } = this.forgotPasswordForm.value;
+    const token = '';
+    this.authService.createPassword(employee_id, password, token).subscribe({
+      next: () => {
+        this.loading = false;
+        this.forgotPasswordSuccess = true;
+        this.showForgotPassword = false;
+        this.showToast('Password reset successful! Logging you in...');
+        // Auto-login after password reset
+        this.authService.login({ username: employee_id, password }).subscribe({
+          next: () => this.loadEmployeeAndNavigate(),
+          error: () => {
+            this.loading = false;
+            this.showToast('Password reset, but auto-login failed. Please login manually.', true);
+          }
+        });
+      },
+      error: () => {
+        this.loading = false;
+        this.showToast('Failed to reset password.', true);
+      }
+    });
+  }
+
+  /** TOAST MESSAGE */
+  toastMessage: string = '';
+  toastError: boolean = false;
+  showToast(msg: string, error: boolean = false) {
+    this.toastMessage = msg;
+    this.toastError = error;
+    setTimeout(() => {
+      this.toastMessage = '';
+      this.toastError = false;
+    }, 3000);
+  }
+
+  /** SHOW FORGOT PASSWORD FORM */
+  showForgotPasswordForm(): void {
+    this.showForgotPassword = true;
+    this.forgotPasswordSuccess = false;
+    this.forgotPasswordForm.reset();
+  }
+
+  /** HIDE FORGOT PASSWORD FORM */
+  hideForgotPasswordForm(): void {
+    this.showForgotPassword = false;
   }
 
   /** EMPLOYEE PROFILE */
