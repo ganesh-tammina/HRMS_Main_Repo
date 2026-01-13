@@ -31,6 +31,11 @@ export class LeavesAdminDashboardComponent {
     this.loadLeaveTypes();
   }
 
+  ionViewWillEnter(): void {
+    this.loadLeavePlans();
+    this.loadLeaveTypes();
+  }
+
   goTo(path: string) {
     console.log(path);
     this.router.navigate([path]);
@@ -69,15 +74,15 @@ export class LeavesAdminDashboardComponent {
   // employeeallocation() {
   //   this.router.navigate(['/employee_lEAVE_allocation']);
   // }
-    adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
-    async employeeallocation() {
-      const modal = await this.modalCtrl.create({
-        component: EmployeeLeaveAllocationComponent,
-        cssClass: 'side-custom-popup checkinInfo-popup',
-        backdropDismiss: false,
-      });
-      await modal.present();
-    }
+  async employeeallocation() {
+    const modal = await this.modalCtrl.create({
+      component: EmployeeLeaveAllocationComponent,
+      cssClass: 'side-custom-popup checkinInfo-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
+  }
 }

@@ -65,6 +65,10 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       });
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
   ngOnDestroy(): void {
     if (this.routeSub) {
       this.routeSub.unsubscribe();
@@ -279,7 +283,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       if (r.approved !== true) {
         return {
           ...r,
-          notes: (r.notes ? r.notes + ' | ' : '') + 'Waiting for manager approval',
+          notes: (r.notes ? r.notes + ' | ' : '') + '',
           pendingApproval: true
         };
       }
@@ -287,5 +291,17 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     });
     console.log('🌐 Remote Records (all):', remoteRecs);
     return remoteRecs;
+  }
+
+  getArrivalStatus(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      present: 'On Time',
+      absent: 'Absent',
+      'half-day': 'Half Day',
+      late: 'Late Arrival',
+      'on-leave': 'On Leave',
+    };
+
+    return statusMap[status] || 'Unknown';
   }
 }

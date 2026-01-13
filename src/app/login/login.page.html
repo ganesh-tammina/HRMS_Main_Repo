@@ -16,7 +16,8 @@
         <!-- EMAIL -->
         <div *ngIf="!showForgotPassword" class="form-group">
           <label>Username</label>
-          <input type="email" formControlName="email" placeholder="Enter your Username" [disabled]="emailChecked" />
+          <input type="email" formControlName="email" placeholder="Enter your Username" [disabled]="emailChecked"
+            autofocus />
           <small class="error" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
             Username is required
           </small>

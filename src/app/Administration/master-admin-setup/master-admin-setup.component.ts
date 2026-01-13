@@ -40,6 +40,10 @@ export class MasterAdminSetupComponent implements OnInit {
     this.loadUsers();
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
   /** ================= USERS ================= */
 
   loadUsers(): void {
@@ -167,7 +171,7 @@ export class MasterAdminSetupComponent implements OnInit {
     });
     toast.present();
   }
-    adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
 }

@@ -73,7 +73,11 @@ export class AuthService {
     return this.http.get(`${this.PREVIEW_ROLE_URL}/${email}`);
   }
 
-  logout(): void {
-    this.routeGuardService.logout();
+  logout(): Observable<void> {
+    return new Observable<void>((observer) => {
+      this.routeGuardService.logout();
+      observer.next();
+      observer.complete();
+    });
   }
 }

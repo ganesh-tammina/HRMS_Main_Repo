@@ -101,7 +101,7 @@ export class LeavesComponent implements OnInit {
           applied_on: item.applied_at,
           reason: item.reason,
         }));
-        this.leaveRequests = mappedleaves;
+        this.leaveRequests = mappedleaves.filter(leave => leave.status === 'PENDING'); // Filter pending requests
         this.leaveRequestService.setLeaveRequests(mappedleaves);
         console.log(this.leaveRequests);
       }
@@ -212,6 +212,7 @@ export class LeavesComponent implements OnInit {
         this.leaveForm.reset();
         this.total_days = 0;
         this.loadLeaveBalance();
+        this.getallLeaves(); // Refresh pending leave requests immediately
       },
       error: (err: any) => {
         const msg =

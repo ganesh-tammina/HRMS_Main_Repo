@@ -1,3 +1,4 @@
+// (Removed duplicate and misplaced top-level code)
 import { Component, OnInit } from '@angular/core';
 import {
   NavigationEnd,
@@ -30,6 +31,7 @@ import { AdminService } from './services/admin-functionality/admin.service.servi
   ],
 })
 export class AppComponent implements OnInit {
+  showIntro = true;
   public showCategories = false;
   showMenu = true;
   currentUser: Observable<Candidate | null>;
@@ -97,6 +99,22 @@ export class AppComponent implements OnInit {
         } else {
           this.userType = null;
         }
+
+        // Show intro screen only on first app entry or logout
+        const introSeen = localStorage.getItem('introSeen');
+
+        if (!introSeen || this.isLoginPage) {
+          this.showIntro = true;
+
+          setTimeout(() => {
+            this.showIntro = false;
+            if (!introSeen) {
+              localStorage.setItem('introSeen', 'true'); // Remember intro was shown
+            }
+          }, 5000); // Display intro for 3 seconds
+        } else {
+          this.showIntro = false;
+        }
       }
     });
     this.currentUrl = this.router.url;
@@ -106,79 +124,67 @@ export class AppComponent implements OnInit {
   toggleDropdown() {
     this.showCategories = !this.showCategories;
   }
-
   ngOnInit(): void {
-    // Get userRole from RouteGuardService
-    this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
-    console.log('🔍 App Component ngOnInit - User Role:', this.userRole);
 
+    // Existing logic
+    this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
     this.isAdmin = false;
 
     const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
     if (role === 'admin' || role === 'hr') {
       this.isAdmin = true;
-    } else {
-      this.isAdmin = false
     }
 
-    this.service.getAnnouncements().subscribe(r => console.log(r));
+    this.service.getAnnouncements().subscribe((r: any) => console.log(r));
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
+  dismissIntro() {
+    this.showIntro = false;
+  }
+
+  // (Removed duplicate role-checking methods)
   // Role checking helper methods
   isAdminOnly(): boolean {
     return this.userRole === 'admin';
   }
-
   isHROnly(): boolean {
     return this.userRole === 'hr';
   }
-
   isAdminOrHR(): boolean {
     return this.userRole === 'admin' || this.userRole === 'hr';
   }
-
   isManager(): boolean {
     return this.userRole === 'manager';
   }
-
   isManagerOrAbove(): boolean {
     return this.userRole === 'manager' || this.userRole === 'hr';
   }
-
   isEmployeeOrManagerOrHr(): boolean {
     return this.userRole === 'employee' || this.userRole === 'manager' || this.userRole === 'hr';
   }
-
   isEmployee(): boolean {
     return this.userRole === 'employee';
   }
   preonboard() {
-    //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
     this.router.navigate(['/pre-onboarding-cards']);
-    //});
   }
-
   logout() {
     localStorage.clear();
     this.employeeService.clearEmployee();
     sessionStorage.clear();
+    localStorage.removeItem('introSeen')
     this.router.navigate(['/login'], { replaceUrl: true });
   }
-
-  private handlePageRefresh(url: string) {
+  handlePageRefresh(url: string) {
     // Check if user is logged in and navigating to main pages
     const isLoggedIn =
       this.routeGaurdService.token && this.routeGaurdService.refreshToken;
     const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
     const isMainPage = mainPages.some((page) => url.includes(page));
 
-    if (isLoggedIn && isMainPage && !this.isRefreshing) {
-      this.isRefreshing = true;
-
-      // Quick refresh effect - show loading for milliseconds
-      setTimeout(() => {
-        this.isRefreshing = false;
-      }, 100); // 100ms refresh effect
-    }
   }
 }

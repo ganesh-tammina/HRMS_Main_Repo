@@ -119,18 +119,14 @@ export class LeaveplansComponent implements OnInit {
       : this.leavePlanService.createLeavePlan(payload);
 
     request$.subscribe({
-      next: (response) => {
+      next: () => {
         this.loading = false;
-        this.showCreateForm = false;
-        this.isEditMode = false;
-        this.editingPlanId = null;
-        alert(this.isEditMode ? 'Leave plan updated successfully!' : 'Leave plan created successfully!');
-        this.loadLeavePlans();
+        this.showCreateForm = false; // Close the modal on success
+        this.loadLeavePlans(); // Refresh the leave plans immediately
       },
-      error: (error) => {
-        console.error('Error submitting leave plan:', error);
+      error: () => {
         this.loading = false;
-        alert('Failed to ' + (this.isEditMode ? 'update' : 'create') + ' leave plan: ' + (error.error?.error || error.message || 'Unknown error'));
+        alert('Failed to submit leave plan');
       },
     });
   }
