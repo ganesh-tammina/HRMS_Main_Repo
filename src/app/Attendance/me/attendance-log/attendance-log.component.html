@@ -43,7 +43,7 @@
 
     <ion-col size="2">{{ log.effective_hours || '-' }}</ion-col>
     <ion-col size="2">{{ log.gross_hours || '-' }}</ion-col>
-    <ion-col size="2">{{ log.arrival || '-' }}</ion-col>
+    <ion-col size="2">{{ getArrivalStatus(log.status) }}</ion-col>
 
     <ion-col size="1">
       <ion-icon name="information-circle-outline" color="primary" style="cursor:pointer" (click)="openLogDetails(log)">

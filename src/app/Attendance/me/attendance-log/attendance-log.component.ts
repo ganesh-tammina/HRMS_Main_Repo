@@ -292,4 +292,16 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     console.log('🌐 Remote Records (all):', remoteRecs);
     return remoteRecs;
   }
+
+  getArrivalStatus(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      present: 'On Time',
+      absent: 'Absent',
+      'half-day': 'Half Day',
+      late: 'Late Arrival',
+      'on-leave': 'On Leave',
+    };
+
+    return statusMap[status] || 'Unknown';
+  }
 }
