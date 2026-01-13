@@ -220,7 +220,7 @@ export class ManagerLeaveApprovalsPage implements OnInit {
         }
         return 'assets/user.svg';
     }
-        goBack() {
+    goBack() {
         this.router.navigate(['/myteam']);
         const modal = document.querySelector('ion-modal');
         if (modal) {
