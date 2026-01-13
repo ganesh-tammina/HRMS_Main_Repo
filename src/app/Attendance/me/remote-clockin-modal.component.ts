@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { WorkFromHomeService } from 'src/app/services/work-from-home.service';
+import { AttendanceApiService } from 'src/app/services/attendance-api.service';
 
 @Component({
     selector: 'app-remote-clockin-modal',
@@ -20,7 +21,8 @@ export class RemoteClockinModalComponent {
         private modalCtrl: ModalController,
         private http: HttpClient,
         private toastCtrl: ToastController,
-        private wfhService: WorkFromHomeService
+        private wfhService: WorkFromHomeService,
+        private attendanceApi: AttendanceApiService
     ) { }
 
     async submit() {
@@ -33,8 +35,21 @@ export class RemoteClockinModalComponent {
                 date: today,
                 reason: this.reason
             }).toPromise();
+
+            // Only punch in if not already clocked in
+            const isClockedIn = this.attendanceApi.getClockState();
+            if (!isClockedIn) {
+                await this.attendanceApi.apiPunchIn({
+                    work_mode: 'Remote',
+                    location: 'Remote',
+                    notes: 'Remote Clock-In: ' + this.reason
+                }).toPromise();
+                // Force UI refresh and set work mode to Remote
+                this.attendanceApi.setClockState(true); // ensure clocked in
+            }
+
             this.loading = false;
-            await this.modalCtrl.dismiss({ success: true, reason: this.reason });
+            await this.modalCtrl.dismiss({ success: true, reason: this.reason, forceRemote: true });
         } catch (err: any) {
             this.loading = false;
             this.showToast(err?.error?.error || 'Failed to submit request', 'danger');

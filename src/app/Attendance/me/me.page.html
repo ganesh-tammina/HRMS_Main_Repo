@@ -128,15 +128,16 @@
                     Since Last Login: {{ timeSinceLastLogin }}
                   </div> -->
 
-                  <ion-button (click)="openRemoteClockinModal()" fill="clear" class="clear">
+                  <ion-button (click)="openRemoteClockinModal()" fill="clear" class="clear"
+                    [disabled]="clockButton?.isClockedIn">
                     <img src="../../assets/Icons/attendance-icons/remote.svg" width="16" height="16" />
                     Remote Clock-In
                   </ion-button>
-                  <ion-button (click)="wfhClockIn()" fill="clear" class="clear">
+                  <ion-button (click)="wfhClockIn()" fill="clear" class="clear" [disabled]="clockButton?.isClockedIn">
                     <img src="../../assets/Icons/attendance-icons/wfh clockin.svg" width="16" height="16" />
                     WFH Clock-In
                   </ion-button>
-                  <ion-button (click)="wfh()" fill="clear" class="clear">
+                  <ion-button (click)="wfh()" fill="clear" class="clear" [disabled]="clockButton?.isClockedIn">
                     <img src="../../assets/Icons/attendance-icons/WFH.svg" width="16" height="16" />
                     Work From Home
                   </ion-button>

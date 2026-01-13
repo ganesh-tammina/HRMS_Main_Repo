@@ -29,6 +29,31 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * Update employee profile fields (HR only)
+   * @param employeeId The employee's ID
+   * @param updateData The fields to update
+   */
+  updateEmployeeProfile(
+    employeeId: number,
+    updateData: {
+      reporting_manager_id?: number;
+      leave_plan_id?: number;
+      shift_policy_id?: number;
+      attendance_policy_id?: number;
+      PayGradeId?: number | null;
+    }
+  ): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    return this.http.put(
+      `${this.API_URL}/${employeeId}`,
+      updateData,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+  }
+
   /* ================= EXISTING CODE (UNCHANGED) ================= */
 
   getMyProfile(force = false): Observable<any> {
@@ -80,6 +105,7 @@ export class EmployeeService {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
+
 
   /* Get all employees */
   getAllEmployees(): Observable<any[]> {
