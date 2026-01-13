@@ -76,7 +76,7 @@
       <p class="divider"></p>
       <div *ngIf="selectedLog?.records?.length; else noRecords">
         <ion-grid style="padding: 0;">
-          <ion-row >
+          <ion-row>
             <!-- ========== LEFT SIDE: OFFICE LOGS ========== -->
             <ion-col size="12" size-md="12" style="padding-right: 8px;">
               <div class="clock-flex">
@@ -86,12 +86,11 @@
                   </div>
                 </div>
               </div>
-
+              <p>Web Clock In</p>
               <div *ngIf="getOfficeRecords(selectedLog.records).length > 0; else noOfficeRecords">
                 <div *ngFor="let rec of getOfficeRecords(selectedLog.records).slice().reverse()">
 
                   <ion-grid class="clockin-out" style="padding: 0;">
-                    <p>Web Clock In</p>
                     <ion-row>
                       <ion-col size="6">
                         <div style="text-align: center;">
@@ -154,7 +153,6 @@
               <div *ngIf="getWFHRecords(selectedLog.records).length > 0; else noWFHRecords">
                 <div *ngFor="let rec of getWFHRecords(selectedLog.records).slice().reverse()">
                   <ion-grid style="padding: 0;">
-                    <p style="font-weight: bold;">WFH Clock In</p>
                     <ion-row class="clockin-out">
                       <ion-col size="6">
                         <div class="clockin-img" style="text-align: center;">
@@ -164,7 +162,7 @@
                         </div>
                       </ion-col>
                       <ion-col size="6">
-                        <div class="clockout-img"  style="text-align: center;">
+                        <div class="clockout-img" style="text-align: center;">
                           <ion-img src="../../../../assets/clockout.svg"></ion-img>
                           <h4 *ngIf="rec.check_out">{{ rec.check_out | date:'h:mm a' }}</h4>
                           <h4 *ngIf="!rec.check_out">Active</h4>
@@ -182,7 +180,7 @@
               <ng-template #noWFHRecords>
                 <div>
                   <ion-icon name="home-outline"></ion-icon>
-                  <p >No WFH clock-ins</p>
+                  <p>No WFH clock-ins</p>
                 </div>
               </ng-template>
             </ion-col>
@@ -199,7 +197,7 @@
                 </div>
               </div>
               <div *ngIf="getRemoteRecords(selectedLog.records).length > 0; else noRemoteRecords">
-                <div *ngFor="let rec of getRemoteRecords(selectedLog.records).slice().reverse()" >
+                <div *ngFor="let rec of getRemoteRecords(selectedLog.records).slice().reverse()">
                   <p style="font-weight:bold">Remote Clock In</p>
                   <ion-grid class="clockin-out" style="padding: 0;">
                     <ion-row>
@@ -212,7 +210,7 @@
                       </ion-col>
                       <ion-col size="6">
                         <div class="clockout-img" style="text-align: center;">
-                         <ion-img src="../../../../assets/clockout.svg"></ion-img>
+                          <ion-img src="../../../../assets/clockout.svg"></ion-img>
                           <h4 *ngIf="rec.check_out">{{ rec.check_out | date:'h:mm a' }}</h4>
                           <h4 *ngIf="!rec.check_out">Active</h4>
                         </div>
@@ -221,7 +219,7 @@
                   </ion-grid>
                   <div *ngIf="rec.location || rec.notes"
                     style="margin-top: 8px; padding-top: 6px; border-bottom: 1px dashed #ccc;">
-                    <p *ngIf="rec.location" >{{ rec.location }}</p>
+                    <p *ngIf="rec.location">{{ rec.location }}</p>
                     <p *ngIf="rec.notes">{{ rec.notes }}</p>
                   </div>
                 </div>
@@ -229,7 +227,7 @@
               <ng-template #noRemoteRecords>
                 <div>
                   <ion-icon name="globe-outline" style="font-size: 40px; opacity: 0.3;"></ion-icon>
-                  <p >No Remote clock-ins</p>
+                  <p>No Remote clock-ins</p>
                 </div>
               </ng-template>
             </ion-col>
