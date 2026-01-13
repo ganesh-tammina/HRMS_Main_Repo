@@ -99,6 +99,17 @@ $bg-color: #f4f5f8;
     @include font-normal();
 }
 
+@mixin small-text {
+  font-size: 1.4388489208633093vh; //10px
+  line-height: 14px;    
+  @include font-normal();
+}
+@mixin small-text-bold {
+  font-size: 1.4388489208633093vh; //10px
+  line-height: 14px;    
+  @include font-bold();
+}
+
 body{
   color: #333333;
 }

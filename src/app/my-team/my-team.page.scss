@@ -61,17 +61,18 @@ ion-content {
   display: flex;
   flex-wrap: wrap;  
   margin-top: 15px;
+  justify-content: center;
 }
 /* ================= TEAM CARD WITH GRADIENTS ================= */
 .team-card {
   background: #fff;
   background-repeat: no-repeat;
-  width: 375px;
+  width: 57.55395683453237vh;
   background-position: top;
   border-radius: 16px;
   background-size: cover;
   border-top: 5px solid;
-  margin: 10px auto;
+  margin: 10px;
   @for $i from 1 through length($border-colors) {
     &:nth-child(#{length($border-colors)}n + #{$i}) {
       border-color: nth($border-colors, $i);
@@ -135,7 +136,75 @@ ion-content {
       margin-bottom: 8px;
     }
   }  
+
+
+  //attandance status
+  .attendance-details {
+    .attendance-info {
+      text-align: right;
+      width: min-content;
+      ion-chip {
+        @include small-text-bold();
+        height: 22px;        
+      }
+      .present {
+        background: #E6F4FF;
+        border: 0.34px solid #077B4B;
+        color: #077B4B; 
+        &::before {
+          content: '';
+          content: "";
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          position: relative;
+          left: -7px;
+          top: 0px;
+          z-index: 2;
+          background: #077B4B;
+        }       
+      }
+      .absent {
+        background: #FFD8D8;
+        border: 0.5px solid #C80000;
+        color: #C80000; 
+        &::before {
+          content: '';
+          content: "";
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          position: relative;
+          left: -7px;
+          top: 0px;
+          z-index: 2;
+          background: #C80000;
+        }       
+      }
+    }
+  }
  
+}
+/* HTML: <div class="ribbon">Your text content</div> */
+.ribbon {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+}
+.ribbon {
+  --f: 0.5em;
+  --r: 0.8em;
+  position: absolute;
+  top: 57px;
+  right: calc(-1 * var(--f));
+  padding-inline: 1em;
+  background: #122E44;
+  border-top: var(--f) solid #0005;
+  border-left: var(--r) solid #0000;
+  clip-path: 
+    polygon(0 100%,100% 100%,100% var(--f),calc(100% - var(--f)) 0,
+      calc(100% - var(--f)) var(--f),0 var(--f),
+      var(--r) calc(50% + var(--f)/2));
 }
 
 /* ================= ANIMATIONS ================= */
@@ -298,56 +367,91 @@ h3 {
 }
 
 .summary-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.summary-card {
-  margin: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  transition: transform 0.2s ease;  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  ion-card-content {
-    padding: 16px;
-    cursor: pointer;
-  }
-}
-
-.summary-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-
-  ion-icon {
-    font-size: 32px;
+  flex-wrap: wrap;
+  width: 100%;
+  .summary-card {
+    cursor: pointer;
+    width: 22%;
+    height: 80px;
+    padding: 8px 8px 0 8px;
+    border-radius: 10px;
+    border-width: 1px;
+    background: #122E44;
+    margin-right: 24px;
+    transition: transform 0.2s ease;  
+    &:hover {
+      transform: translateY(-2px);
+    }
+    .summary-item {
+      display: flex;
+      justify-content: left;
+      align-items: self-start;
+      color: #fff;
+      ion-img {
+        margin-right: 8px;        
+      }
+    }
+    .summary-label {
+      @include normal-text-unbold();
+    }
+    .summary-value {      
+      @include card-sub-title();
+      margin: 0;
+    }      
+  }
+  ion-card-content {
+    display: flex;
+    justify-content: space-between;   
+    padding: 0 !important;
+    height: 80px; 
   }
 }
 
-.summary-text {
-  flex: 1;
+// .summary-card {
+//   margin: 0;
+//   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+//   border-radius: 12px;
+//   transition: transform 0.2s ease;  
+//   &:hover {
+//     transform: translateY(-2px);
+//     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+//   }
 
-  .summary-label {
-    margin: 0;
-    font-size: 12px;
-    color: var(--ion-color-medium);
-    text-transform: uppercase;
-    font-weight: 500;
-  }
+//   ion-card-content {
+//     padding: 16px;
+//     cursor: pointer;
+//   }
+// }
 
-  .summary-value {
-    margin: 4px 0 0;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ion-color-dark);
-  }
-}
+// .summary-item {
+//   display: flex;
+//   align-items: center;
+//   gap: 12px;
+
+//   ion-icon {
+//     font-size: 32px;
+//   }
+// }
+
+// .summary-text {
+//   flex: 1;
+
+//   .summary-label {
+//     margin: 0;
+//     font-size: 12px;
+//     color: var(--ion-color-medium);
+//     text-transform: uppercase;
+//     font-weight: 500;
+//   }
+
+//   .summary-value {
+//     margin: 4px 0 0;
+//     font-size: 24px;
+//     font-weight: 700;
+//     color: var(--ion-color-dark);
+//   }
+// }
 
 .attendance-list {
   margin-top: 16px;
@@ -400,32 +504,32 @@ h3 {
   }
 }
 
-.attendance-details {
-  margin-top: 8px;
-}
+// .attendance-details {
+//   margin-top: 8px;
+// }
 
-.attendance-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
+// .attendance-info {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 6px;
+//   margin-top: 8px;
+// }
 
-.info-chip {
-  height: 28px;
-  font-size: 12px;
-  --padding-start: 8px;
-  --padding-end: 8px;
+// .info-chip {
+//   height: 28px;
+//   font-size: 12px;
+//   --padding-start: 8px;
+//   --padding-end: 8px;
 
-  ion-icon {
-    font-size: 16px;
-    margin-right: 4px;
-  }
+//   ion-icon {
+//     font-size: 16px;
+//     margin-right: 4px;
+//   }
 
-  ion-label {
-    font-weight: 500;
-  }
-}
+//   ion-label {
+//     font-weight: 500;
+//   }
+// }
 
 .status-badge {
   display: flex;
