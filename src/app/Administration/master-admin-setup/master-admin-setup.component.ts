@@ -171,7 +171,7 @@ export class MasterAdminSetupComponent implements OnInit {
     });
     toast.present();
   }
-    adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
 }
