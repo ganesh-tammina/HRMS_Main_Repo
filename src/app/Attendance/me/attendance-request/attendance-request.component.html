@@ -6,7 +6,7 @@
     </ion-card-header>
 
     <ion-card-content>
-      <!-- Check if this group's records are empty -->
+      <!-- DATA -->
       <ng-container *ngIf="reqGroup.records.length > 0; else noRequests">
         <ion-grid class="table-block">
           <ion-row class="table-header">
@@ -37,12 +37,15 @@
         </ion-grid>
       </ng-container>
 
-      <!-- Show "No Requests" message -->
+      <!-- EMPTY -->
       <ng-template #noRequests>
-        <p class="empty-data empty-text">
+        <div class="no-leaves-img">
+        <p class="empty-data">
           <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
           No {{ reqGroup.type }} Available
         </p>
+        </div>
+
       </ng-template>
     </ion-card-content>
   </ion-card>

@@ -220,10 +220,13 @@
           </ion-button>
         </div>
 
-        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data empty-text">
+        <div class="no-leaves-img">
+        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data ">
           <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
           No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
         </p>
+        </div>
+
 
       </ion-card-content>
     </ion-card>
@@ -499,10 +502,13 @@
           </ion-button>
         </div>
 
-        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data empty-text">
+        <div class="no-leaves-img">
+        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data ">
           <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
           No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
         </p>
+        </div>
+
       </ion-card-content>
     </ion-card>
 

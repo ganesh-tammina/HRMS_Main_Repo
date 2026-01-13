@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 
@@ -45,6 +45,7 @@ import { EmployeeService } from 'src/app/services/employee.service';
   // ...existing code...
 })
 export class MePage implements OnInit {
+  @ViewChild(ClockButtonComponent) clockButton!: ClockButtonComponent;
   public async openRemoteClockinModal() {
     const modal = await this.modalCtrl.create({
       component: RemoteClockinModalComponent,
@@ -55,7 +56,20 @@ export class MePage implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data?.success) {
       this.showToast('Remote Clock-In request submitted', 'success');
-      // TODO: Optionally trigger refresh or update UI
+      // Trigger attendance log refresh so pending entry appears immediately
+      this.attendanceRefresh++;
+      // Debug: Log ViewChild and data
+      console.log('Remote modal dismissed with:', data, 'clockButton:', this.clockButton);
+      // If remote clock-in was successful, update clock button UI instantly
+      if (data.forceRemote && this.clockButton) {
+        console.log('Calling clockButton.clockIn(true)');
+        // Set clock button to Remote mode and show Remote Clock-Out instantly
+        this.clockButton.workMode = 'Remote';
+        this.clockButton.isClockedIn = true;
+        this.clockButton.remoteActive = true;
+      } else if (data.forceRemote) {
+        console.warn('clockButton ViewChild not set!');
+      }
     }
   }
   attendanceRefresh = 0;
@@ -208,8 +222,11 @@ export class MePage implements OnInit {
           next: () => {
             this.showToast('WFH Clock-In successful', 'success');
             this.loadTodayAttendance();
-            // Reload page to update clock button state
-            window.location.reload();
+            // Set clock button to WFH mode and show WFH Clock-Out
+            if (this.clockButton) {
+              this.clockButton.workMode = 'WFH';
+              this.clockButton.isClockedIn = true;
+            }
           },
           error: err => {
             this.showToast(err?.error?.message || 'WFH Clock-In failed', 'danger');

@@ -218,13 +218,17 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     punches.forEach(p => {
       console.log('  Processing punch:', p.punch_type, 'work_mode:', p.work_mode);
 
+      // Always treat remote punch-in as work_mode: 'Remote' if location or notes indicate remote
+      let isRemote = (p.work_mode === 'Remote') || (p.location && p.location.toLowerCase().includes('remote')) || (p.notes && p.notes.toLowerCase().includes('remote'));
+
       if (p.punch_type === 'in') {
         current = {
           check_in: p.punch_time,
           check_out: null,
-          work_mode: p.work_mode || 'Office',
+          work_mode: isRemote ? 'Remote' : (p.work_mode || 'Office'),
           location: p.location,
-          notes: p.notes
+          notes: p.notes,
+          approved: p.approved !== undefined ? p.approved : undefined // map approved property if present
         };
         records.push(current);
         console.log('    ✅ Created record:', current);
@@ -262,13 +266,26 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     return wfhRecs;
   }
 
+  /**
+   * Returns all remote records, both approved and pending, for display.
+   * Adds a note for pending approval.
+   */
   getRemoteRecords(records: any[]): any[] {
     const remoteRecs = records.filter(r => {
       const location = r.location?.toLowerCase() || '';
-      const isRemote = r.work_mode === 'Remote' && !location.includes('home') && !location.includes('office');
-      return isRemote;
+      return r.work_mode === 'Remote' && !location.includes('home') && !location.includes('office');
+    }).map(r => {
+      // If not approved, add waiting note
+      if (r.approved !== true) {
+        return {
+          ...r,
+          notes: (r.notes ? r.notes + ' | ' : '') + 'Waiting for manager approval',
+          pendingApproval: true
+        };
+      }
+      return { ...r, pendingApproval: false };
     });
-    console.log('🌐 Remote Records:', remoteRecs);
+    console.log('🌐 Remote Records (all):', remoteRecs);
     return remoteRecs;
   }
 }

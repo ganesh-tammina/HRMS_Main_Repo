@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-
 import { HttpClient } from '@angular/common/http';
 import { WorkFromHomeService } from 'src/app/services/work-from-home.service';
 
@@ -18,10 +17,10 @@ interface AttendanceRequestHistory {
 
 @Component({
   selector: 'app-attendance-request',
-  templateUrl: './attendance-request.component.html',
-  styleUrls: ['./attendance-request.component.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule],
+  templateUrl: './attendance-request.component.html',
+  styleUrls: ['./attendance-request.component.scss'],
 })
 export class AttendanceRequestComponent implements OnInit {
 
@@ -31,9 +30,10 @@ export class AttendanceRequestComponent implements OnInit {
     records: AttendanceRequestHistory[];
   }[] = [];
 
-  remoteClockinRequests: AttendanceRequestHistory[] = [];
-
-  constructor(private wfhService: WorkFromHomeService, private http: HttpClient) { }
+  constructor(
+    private wfhService: WorkFromHomeService,
+    private http: HttpClient
+  ) { }
 
   ngOnInit() {
     this.initializeStaticSections();
@@ -47,7 +47,7 @@ export class AttendanceRequestComponent implements OnInit {
       {
         type: 'Work From Home / On Duty Requests',
         dateRange: '',
-        records: [], // will be filled from API
+        records: [],
       },
       {
         type: 'Regularization Requestsss',
@@ -66,72 +66,78 @@ export class AttendanceRequestComponent implements OnInit {
       },
     ];
   }
+
+  /* ================= WFH + REGULARIZATION ================= */
+  private loadWFHRequests() {
+    this.wfhService.getAllWFHRequests().subscribe({
+      next: (res: any[]) => {
+
+        const wfhRecords = res
+          .filter(item => item.leave_type === 'WFH')
+          .map(item => this.mapWFHRecord(item, 'WFH'));
+
+        const regularizationRecords = res
+          .filter(item => item.leave_type === 'Remote')
+          .map(item => this.mapWFHRecord(item, 'Regularization'));
+
+        this.assignGroup('Work From Home / On Duty Requests', wfhRecords);
+        this.assignGroup('Regularization Requestsss', regularizationRecords);
+      },
+      error: () => {
+        this.assignGroup('Work From Home / On Duty Requests', []);
+        this.assignGroup('Regularization Requestsss', []);
+      },
+    });
+  }
+
+  /* ================= REMOTE CLOCK-IN ================= */
   private loadRemoteClockinRequests() {
     this.http.get<any[]>('/api/remote-clockin/my-requests').subscribe({
       next: (res) => {
-        this.remoteClockinRequests = res.map(item => ({
+        const records = res.map(item => ({
           date: this.formatDate(item.request_date),
           request: 'Remote Clock In',
           requestedOn: this.formatRequestedOn(item.created_at),
           note: item.reason,
-          status: this.formatStatus(item.status),
-          lastAction: item.approved_by ? `Approved by ${item.approved_by}` : '-',
           reason: 'Remote',
+          status: this.formatStatus(item.status),
+          lastAction: item.approved_by
+            ? `Approved by ${item.approved_by}`
+            : '-',
           nextApprover: '-',
         }));
-        const remoteGroup = this.attendanceRequestsHistory.find(g => g.type === 'Remote Clock In Requests');
-        if (remoteGroup) {
-          remoteGroup.records = this.remoteClockinRequests;
-          remoteGroup.dateRange = this.calculateDateRange(this.remoteClockinRequests);
-        }
+
+        this.assignGroup('Remote Clock In Requests', records);
       },
       error: () => {
-        const remoteGroup = this.attendanceRequestsHistory.find(g => g.type === 'Remote Clock In Requests');
-        if (remoteGroup) {
-          remoteGroup.records = [];
-        }
+        this.assignGroup('Remote Clock In Requests', []);
       }
     });
   }
 
-  /* ================= LOAD WFH ================= */
-  private loadWFHRequests() {
-    this.wfhService.getAllWFHRequests().subscribe({
-      next: (res: any[]) => {
-        console.log(res);
-        const wfhRecords: AttendanceRequestHistory[] = res.map(item => ({
-          date: this.formatDate(item.applied_at),
-          request: item.leave_type,
-          requestedOn: this.formatRequestedOn(item.created_at),
-          note: item.reason,
-          reason: item.reason,
-          status: this.formatStatus(item.status),
-          lastAction: item.updated_by || '-',
-          nextApprover: item.next_approver || '-',
-        }));
-
-        const wfhGroup = this.attendanceRequestsHistory.find(
-          g => g.type === 'Work From Home / On Duty Requests'
-        );
-
-        if (wfhGroup) {
-          wfhGroup.records = wfhRecords;
-          wfhGroup.dateRange = this.calculateDateRange(wfhRecords);
-        }
-      },
-      error: () => {
-        // Fail safe → show empty list
-        const wfhGroup = this.attendanceRequestsHistory.find(
-          g => g.type === 'Work From Home / On Duty Requests'
-        );
-        if (wfhGroup) {
-          wfhGroup.records = [];
-        }
-      },
-    });
+  /* ================= MAPPERS ================= */
+  private mapWFHRecord(item: any, requestLabel: string): AttendanceRequestHistory {
+    return {
+      date: this.formatDate(item.applied_at),
+      request: requestLabel,
+      requestedOn: this.formatRequestedOn(item.created_at),
+      note: item.reason,
+      reason: item.reason,
+      status: this.formatStatus(item.status),
+      lastAction: item.updated_by || '-',
+      nextApprover: item.next_approver || '-',
+    };
   }
 
   /* ================= HELPERS ================= */
+  private assignGroup(type: string, records: AttendanceRequestHistory[]) {
+    const group = this.attendanceRequestsHistory.find(g => g.type === type);
+    if (group) {
+      group.records = records;
+      group.dateRange = this.calculateDateRange(records);
+    }
+  }
+
   private formatDate(dateStr: string): string {
     const d = new Date(dateStr);
     return d.toLocaleDateString('en-GB', {
@@ -143,9 +149,9 @@ export class AttendanceRequestComponent implements OnInit {
     });
   }
 
-  private formatRequestedOn(createdAt: string): string {
-    if (!createdAt) return '-';
-    const d = new Date(createdAt);
+  private formatRequestedOn(dateStr: string): string {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
     return d.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',
@@ -156,15 +162,17 @@ export class AttendanceRequestComponent implements OnInit {
   }
 
   private formatStatus(status: string): string {
-    return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Pending';
+    return status
+      ? status.charAt(0).toUpperCase() + status.slice(1)
+      : 'Pending';
   }
 
   private calculateDateRange(records: AttendanceRequestHistory[]): string {
     if (!records.length) return '';
 
-    const dates = records.map(r => new Date(r.date));
-    const min = new Date(Math.min(...dates.map(d => d.getTime())));
-    const max = new Date(Math.max(...dates.map(d => d.getTime())));
+    const dates = records.map(r => new Date(r.date).getTime());
+    const min = new Date(Math.min(...dates));
+    const max = new Date(Math.max(...dates));
 
     return `${this.formatDate(min.toISOString())} - ${this.formatDate(
       max.toISOString()
