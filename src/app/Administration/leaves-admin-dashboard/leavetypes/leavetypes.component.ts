@@ -104,11 +104,10 @@ export class LeavetypesComponent implements OnInit {
     request$.subscribe({
       next: async () => {
         this.loading = false;
-        this.showCreateForm = false;
+        this.showCreateForm = false; // Close the modal on success
         this.isEditMode = false;
         this.selectedLeaveTypeId = null;
-
-        this.loadLeaveTypes();
+        this.loadLeaveTypes(); // Refresh the leave types immediately
 
         const toast = await this.toastCtrl.create({
           message: this.isEditMode
@@ -150,5 +149,8 @@ export class LeavetypesComponent implements OnInit {
   }
     adminManagement() {
     this.router.navigate(['./admin']);
+  }
+  ionViewWillEnter(): void {
+    this.loadLeaveTypes();
   }
 }

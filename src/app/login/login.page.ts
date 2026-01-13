@@ -321,4 +321,19 @@ export class LoginPage implements OnInit {
       alert(message.trim());
     }
   }
+
+  /** LOGOUT */
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.loginForm.reset(); // Reset the form to clear all fields
+        this.emailChecked = false; // Reset admin flow state
+        this.showPassword = false; // Hide password field
+        this.router.navigate(['/login']); // Navigate to login page
+      },
+      error: (err) => {
+        console.error('Logout failed:', err);
+      }
+    });
+  }
 }

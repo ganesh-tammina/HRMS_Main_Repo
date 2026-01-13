@@ -31,6 +31,11 @@ export class LeavesAdminDashboardComponent {
     this.loadLeaveTypes();
   }
 
+  ionViewWillEnter(): void {
+    this.loadLeavePlans();
+    this.loadLeaveTypes();
+  }
+
   goTo(path: string) {
     console.log(path);
     this.router.navigate([path]);

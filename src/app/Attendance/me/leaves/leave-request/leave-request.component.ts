@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { IonicModule, ToastController, IonPopover } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -22,6 +22,7 @@ import { LeaverequestService } from 'src/app/services/leaverequest.service';
   ]
 })
 export class LeaveRequestComponent implements OnInit {
+  @Output() leaveSubmitted = new EventEmitter<void>(); // Notify parent
 
   currentYear = new Date().getFullYear();
 
@@ -132,6 +133,8 @@ export class LeaveRequestComponent implements OnInit {
         this.selectedDateFrom = '';
         this.selectedDateTo = '';
         this.presentToast('Leave request submitted successfully', 'success');
+
+        this.leaveSubmitted.emit(); // Emit event to parent
       },
       error: (err) => {
         this.presentToast(

@@ -30,7 +30,7 @@
       </ion-header>
 
       <ion-content class="ion-padding">
-        <app-leave-request></app-leave-request>
+        <app-leave-request (leaveSubmitted)="getallLeaves(); closeleavePopup()"></app-leave-request> <!-- Close modal on submit -->
       </ion-content>
     </ng-template>
   </ion-modal>
@@ -103,31 +103,31 @@
 
       <ion-row class="table-list-row" *ngFor="let leave of leaveRequests">
         <ng-container *ngIf="leave.status === 'PENDING'">
-        <ion-col size="2">
-          <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
-        </ion-col>
-        <ion-col size="2">
-          <p>{{ leave.leave_type }}</p>
-        </ion-col>
-        <ion-col size="1">
-          <p>{{ leave.days }}</p>
-        </ion-col>
+          <ion-col size="2">
+            <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
+          </ion-col>
+          <ion-col size="2">
+            <p>{{ leave.leave_type }}</p>
+          </ion-col>
+          <ion-col size="1">
+            <p>{{ leave.days }}</p>
+          </ion-col>
 
-        <ion-col size="2">
-          <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
-        </ion-col>
-        <ion-col size="2">
-          <p [ngClass]="{
+          <ion-col size="2">
+            <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
+          </ion-col>
+          <ion-col size="2">
+            <p [ngClass]="{
               'pending': leave.status === 'PENDING',
               'approved': leave.status === 'APPROVED',
               'rejected': leave.status === 'REJECTED'
             }">
-            {{ leave.status }}
-          </p>
-        </ion-col>
-        <ion-col size="3">
-          <p>{{ leave.reason }}</p>
-        </ion-col>
+              {{ leave.status }}
+            </p>
+          </ion-col>
+          <ion-col size="3">
+            <p>{{ leave.reason }}</p>
+          </ion-col>
         </ng-container>
 
 
@@ -210,7 +210,7 @@
       <ion-row>
         <ion-col size="12">
           <!-- <p>Your leave request for <strong>{{ currentMonthFirstDateText }}</strong> has been approved</p> -->
-           <h4> Leave requests history for {{ currentMonthFirstDateText }}</h4>
+          <h4> Leave requests history for {{ currentMonthFirstDateText }}</h4>
         </ion-col>
         <!-- <ion-col size="2">
           <p class="Approved">Approved</p>
@@ -219,40 +219,40 @@
 
           <ion-grid class="table-block">
             <ion-row class="table-header">
-      <ion-col size="3">Start & End Date</ion-col>
-      <ion-col size="2">Leave Type</ion-col>
-      <ion-col size="1">Days</ion-col>
-      <ion-col size="2">Reason</ion-col>
-      <ion-col size="2">Applied date</ion-col>
-      <ion-col size="2">Status</ion-col>
+              <ion-col size="3">Start & End Date</ion-col>
+              <ion-col size="2">Leave Type</ion-col>
+              <ion-col size="1">Days</ion-col>
+              <ion-col size="2">Reason</ion-col>
+              <ion-col size="2">Applied date</ion-col>
+              <ion-col size="2">Status</ion-col>
             </ion-row>
-              <ng-container *ngFor="let leave of leaveRequests">
-          <ion-row class=" table-row-list "  *ngIf="leave.status == 'APPROVED' || leave.status == 'REJECTED'">
-          
-               <ion-col size="3">
-                <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
-              </ion-col>
-              <ion-col size="2">
-                <p>{{ leave.leave_type }}</p>
-              </ion-col>
-              <ion-col size="1">
-                <p>{{ leave.days }}</p>
-              </ion-col>
-              <ion-col size="2">
-                <p>{{ leave.reason }}</p>
-              </ion-col>
-              <ion-col size="2">
-                <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
-              </ion-col>
-              <ion-col size="2">
-                <p>
-                  {{ leave.status }}
-                </p>
-              </ion-col>
-   
+            <ng-container *ngFor="let leave of leaveRequests">
+              <ion-row class=" table-row-list " *ngIf="leave.status == 'APPROVED' || leave.status == 'REJECTED'">
 
-          </ion-row>
-                   </ng-container>
+                <ion-col size="3">
+                  <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
+                </ion-col>
+                <ion-col size="2">
+                  <p>{{ leave.leave_type }}</p>
+                </ion-col>
+                <ion-col size="1">
+                  <p>{{ leave.days }}</p>
+                </ion-col>
+                <ion-col size="2">
+                  <p>{{ leave.reason }}</p>
+                </ion-col>
+                <ion-col size="2">
+                  <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
+                </ion-col>
+                <ion-col size="2">
+                  <p>
+                    {{ leave.status }}
+                  </p>
+                </ion-col>
+
+
+              </ion-row>
+            </ng-container>
           </ion-grid>
 
 
