@@ -241,6 +241,9 @@ ion-modal {
             padding: 0px 12px !important;
             margin: 11px 0px;
           }
+          ion-label {
+            transform: none !important;
+          }
         }
         .form-footer {
           position: fixed;
@@ -279,11 +282,11 @@ ion-modal {
         padding: 0px 12px !important;
         margin: 11px 0px;
       }
-      ion-button {
-        --background: #122F44;
-        height: 42px;
-        border-radius: 6px;
-      }      
+      // ion-button {
+      //   --background: #122F44;
+      //   height: 42px;
+      //   border-radius: 6px;
+      // }      
   }
 }
 ion-popover.select-popover {
@@ -659,4 +662,11 @@ p.empty-text{
     img{
         max-width: 11%;
     }
+}
+
+ion-select::part(icon){
+  transform: scale(1.5) !important;
+}
+ion-select::part(container){
+width: 100vh;
 }

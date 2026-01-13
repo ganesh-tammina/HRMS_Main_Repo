@@ -1,11 +1,3 @@
-<ion-item>
-  <ion-label position="stacked">Weekly Off Policy</ion-label>
-  <ion-select [(ngModel)]="updateData.weekly_off_policy_id" interface="popover" placeholder="Select Weekly Off Policy">
-    <ion-select-option *ngFor="let policy of weeklyOffPolicies" [value]="policy.id">
-      {{policy.name}}
-    </ion-select-option>
-  </ion-select>
-</ion-item>
 <!-- Beautiful Loading Overlay (outside ion-content for proper z-index) -->
 <div class="upload-loading-overlay" *ngIf="isUploading">
   <div class="loading-content">
@@ -129,28 +121,27 @@
                 </ion-col>
                 <ion-col size="1">
                   <ion-button *ngIf="isHR" fill="outline" size="small"
-                    (click)="selectEmployee(candidate)">Edit</ion-button>
+                    (click)="selectEmployee(candidate)"><img src="../../../../assets/Icons/pencil.svg"></ion-button>
                 </ion-col>
               </ion-row>
 
               <!-- Update Employee Profile Modal for HR -->
               <ion-modal *ngIf="isHR && selectedEmployee" [isOpen]="!!selectedEmployee"
-                (didDismiss)="selectedEmployee = null">
+                (didDismiss)="selectedEmployee = null"  class="side-custom-popup custom-popup checkinInfo-popup">
                 <ng-template>
                   <ion-content class="ion-padding">
-                    <ion-card color="light">
-                      <ion-card-header>
-                        <ion-card-title>Update Employee Profile - {{selectedEmployee.FullName}}</ion-card-title>
-                      </ion-card-header>
-                      <ion-card-content>
+                      <ion-title>Update Employee Profile <br>
+                        (<small>{{selectedEmployee.FullName}}</small>)</ion-title>                       
+                      <div class="form-block">
                         <!-- <ion-item>
                           <ion-label position="stacked">Reporting Manager</ion-label>
                           <ion-input [value]="selectedEmployee?.reporting_manager_name || '-'" readonly></ion-input>
                         </ion-item> -->
+                        <ion-list lines="none" class="form-container">
                         <ion-item>
                           <ion-label position="stacked">Leave Plan</ion-label>
                           <ion-select [(ngModel)]="updateData.leave_plan_id" interface="popover"
-                            placeholder="Select Leave Plan">
+                            placeholder="Select Leave Plan" toggleIcon="chevron-down" expandedIcon="chevron-up">
                             <ion-select-option *ngFor="let plan of leavePlans" [value]="plan.id">
                               {{plan.name}}
                             </ion-select-option>
@@ -159,7 +150,7 @@
                         <ion-item>
                           <ion-label position="stacked">Shift Policy</ion-label>
                           <ion-select [(ngModel)]="updateData.shift_policy_id" interface="popover"
-                            placeholder="Select Shift Policy">
+                            placeholder="Select Shift Policy" toggleIcon="chevron-down" expandedIcon="chevron-up">
                             <ion-select-option *ngFor="let policy of shiftPolicies" [value]="policy.id">
                               {{policy.name}} ({{policy.start_time}} - {{policy.end_time}})
                             </ion-select-option>
@@ -168,7 +159,7 @@
                         <ion-item>
                           <ion-label position="stacked">Attendance Policy</ion-label>
                           <ion-select [(ngModel)]="updateData.attendance_policy_id" interface="popover"
-                            placeholder="Select Attendance Policy">
+                            placeholder="Select Attendance Policy" toggleIcon="chevron-down" expandedIcon="chevron-up">
                             <ion-select-option *ngFor="let policy of attendancePolicies" [value]="policy.id">
                               {{policy.name}}
                             </ion-select-option>
@@ -177,7 +168,7 @@
                         <ion-item>
                           <ion-label position="stacked">Weekly Off Policy</ion-label>
                           <ion-select [(ngModel)]="updateData.weekly_off_policy_id" interface="popover"
-                            placeholder="Select Weekly Off Policy">
+                            placeholder="Select Weekly Off Policy" toggleIcon="chevron-down" expandedIcon="chevron-up">
                             <ion-select-option *ngFor="let policy of weeklyOffPolicies" [value]="policy.id">
                               {{policy.name}}
                             </ion-select-option>
@@ -187,12 +178,12 @@
                           <ion-label position="stacked">Pay Grade ID</ion-label>
                           <ion-input type="number" [(ngModel)]="updateData.PayGradeId"></ion-input>
                         </ion-item>
-                        <div class="row-right ion-padding-top">
-                          <ion-button color="primary" (click)="updateEmployeeProfile()">Update</ion-button>
-                          <ion-button color="medium" (click)="selectedEmployee = null">Cancel</ion-button>
+                        </ion-list>
+                        <div class="ion-padding-top form-footer">
+                          <ion-button class="primary-outline-btn" (click)="selectedEmployee = null">Cancel</ion-button>
+                          <ion-button class="primary-btn" (click)="updateEmployeeProfile()">Update</ion-button>
                         </div>
-                      </ion-card-content>
-                    </ion-card>
+                      </div>
                   </ion-content>
                 </ng-template>
               </ion-modal>
