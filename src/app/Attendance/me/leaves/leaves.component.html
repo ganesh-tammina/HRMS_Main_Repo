@@ -69,9 +69,9 @@
     <div class="row-space-between">
       <div class="row-left">
         <ion-img src="../../../assets/leave-icons/CL.svg"></ion-img>
-        <p class="header-title">Leave History</p>
+        <p class="header-title">Pending Leave History</p>
       </div>
-      <p>Total: {{ leaveRequests?.length || 0 }}</p>
+      <!-- <p>Total: {{ leaveRequests?.length || 0 }}</p> -->
     </div>
 
     <!-- Check if there are leaves -->
@@ -86,14 +86,15 @@
         <ion-col size="1">
           <p>Days</p>
         </ion-col>
-        <ion-col size="3">
-          <p>Reason</p>
-        </ion-col>
+
         <ion-col size="2">
           <p>Submitted On</p>
         </ion-col>
         <ion-col size="2">
           <p>Status</p>
+        </ion-col>
+        <ion-col size="3">
+          <p>Reason</p>
         </ion-col>
         <!-- <ion-col size="1">
           <p>Action</p>
@@ -101,6 +102,7 @@
       </ion-row>
 
       <ion-row class="table-list-row" *ngFor="let leave of leaveRequests">
+        <ng-container *ngIf="leave.status === 'PENDING'">
         <ion-col size="2">
           <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
         </ion-col>
@@ -110,13 +112,11 @@
         <ion-col size="1">
           <p>{{ leave.days }}</p>
         </ion-col>
-        <ion-col size="3">
-          <p>{{ leave.reason }}</p>
-        </ion-col>
+
         <ion-col size="2">
           <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
         </ion-col>
-        <ion-col size="1">
+        <ion-col size="2">
           <p [ngClass]="{
               'pending': leave.status === 'PENDING',
               'approved': leave.status === 'APPROVED',
@@ -125,6 +125,11 @@
             {{ leave.status }}
           </p>
         </ion-col>
+        <ion-col size="3">
+          <p>{{ leave.reason }}</p>
+        </ion-col>
+        </ng-container>
+
 
         <!-- Action Buttons -->
         <!-- <ion-col size="1">
@@ -201,16 +206,17 @@
   </ion-modal>
   <div class="side-by-side-grids">
     <ion-grid class="card-leaves-block">
-      <h4 class="card-header">Leave Requests</h4>
+      <h4 class="card-header">Leave Requests History</h4>
       <ion-row>
-        <ion-col size="10">
+        <ion-col size="12">
           <!-- <p>Your leave request for <strong>{{ currentMonthFirstDateText }}</strong> has been approved</p> -->
-           <h4> Approved leave requests from {{ currentMonthFirstDateText }}</h4>
+           <h4> Leave requests history for {{ currentMonthFirstDateText }}</h4>
         </ion-col>
-        <ion-col size="2">
+        <!-- <ion-col size="2">
           <p class="Approved">Approved</p>
-        </ion-col>
+        </ion-col> -->
         <ion-col *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
+
           <ion-grid class="table-block">
             <ion-row class="table-header">
       <ion-col size="3">Start & End Date</ion-col>
@@ -220,8 +226,9 @@
       <ion-col size="2">Applied date</ion-col>
       <ion-col size="2">Status</ion-col>
             </ion-row>
-          <ion-row class=" table-row-list " *ngFor="let leave of leaveRequests">
-            <ng-container *ngIf="leave.status === 'APPROVED'">
+              <ng-container *ngFor="let leave of leaveRequests">
+          <ion-row class=" table-row-list "  *ngIf="leave.status == 'APPROVED' || leave.status == 'REJECTED'">
+          
                <ion-col size="3">
                 <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
               </ion-col>
@@ -238,17 +245,14 @@
                 <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
               </ion-col>
               <ion-col size="2">
-                <p [ngClass]="{
-              'pending': leave.status === 'PENDING',
-              'approved': leave.status === 'APPROVED',
-              'rejected': leave.status === 'REJECTED'
-            }">
+                <p>
                   {{ leave.status }}
                 </p>
               </ion-col>
-            </ng-container>
+   
 
           </ion-row>
+                   </ng-container>
           </ion-grid>
 
 
