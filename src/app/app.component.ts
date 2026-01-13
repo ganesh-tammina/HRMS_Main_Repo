@@ -108,22 +108,34 @@ export class AppComponent implements OnInit {
   toggleDropdown() {
     this.showCategories = !this.showCategories;
   }
-
   ngOnInit(): void {
-    // Show intro screen on first load
-    setTimeout(() => {
-      this.showIntro = false;
-    }, 2000);
 
-    // Get userRole from RouteGuardService
+    // 🔥 CHECK IF INTRO WAS ALREADY SHOWN
+    const introSeen = localStorage.getItem('introSeen');
+
+    if (!introSeen) {
+      // First time app opened
+      this.showIntro = true;
+
+      setTimeout(() => {
+        this.showIntro = false;
+        localStorage.setItem('introSeen', 'true'); // remember it
+      }, 2000);
+
+    } else {
+      // Intro already shown before
+      this.showIntro = false;
+    }
+
+    // Existing logic
     this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
     this.isAdmin = false;
+
     const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
     if (role === 'admin' || role === 'hr') {
       this.isAdmin = true;
-    } else {
-      this.isAdmin = false;
     }
+
     this.service.getAnnouncements().subscribe((r: any) => console.log(r));
   }
 
@@ -161,6 +173,7 @@ export class AppComponent implements OnInit {
     localStorage.clear();
     this.employeeService.clearEmployee();
     sessionStorage.clear();
+    localStorage.removeItem('introSeen')
     this.router.navigate(['/login'], { replaceUrl: true });
   }
   handlePageRefresh(url: string) {
@@ -170,13 +183,5 @@ export class AppComponent implements OnInit {
     const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
     const isMainPage = mainPages.some((page) => url.includes(page));
 
-    if (isLoggedIn && isMainPage && !this.isRefreshing) {
-      this.isRefreshing = true;
-
-      // Quick refresh effect - show loading for milliseconds
-      setTimeout(() => {
-        this.isRefreshing = false;
-      }, 100); // 100ms refresh effect
-    }
   }
 }
