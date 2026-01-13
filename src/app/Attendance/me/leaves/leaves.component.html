@@ -211,8 +211,18 @@
           <p class="Approved">Approved</p>
         </ion-col>
         <ion-col *ngIf="leaveRequests && leaveRequests.length > 0; else noLeavesInside">
-          <ion-row class="table-list-row" *ngFor="let leave of leaveRequests">
-            <ng-container *ngIf="leave.status === 'APPROVED'"> <ion-col size="2">
+          <ion-grid class="table-block">
+            <ion-row class="table-header">
+      <ion-col size="3">Start & End Date</ion-col>
+      <ion-col size="2">Leave Type</ion-col>
+      <ion-col size="1">Days</ion-col>
+      <ion-col size="2">Reason</ion-col>
+      <ion-col size="2">Applied date</ion-col>
+      <ion-col size="2">Status</ion-col>
+            </ion-row>
+          <ion-row class=" table-row-list " *ngFor="let leave of leaveRequests">
+            <ng-container *ngIf="leave.status === 'APPROVED'">
+               <ion-col size="3">
                 <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
               </ion-col>
               <ion-col size="2">
@@ -227,7 +237,7 @@
               <ion-col size="2">
                 <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
               </ion-col>
-              <ion-col size="1">
+              <ion-col size="2">
                 <p [ngClass]="{
               'pending': leave.status === 'PENDING',
               'approved': leave.status === 'APPROVED',
@@ -239,6 +249,8 @@
             </ng-container>
 
           </ion-row>
+          </ion-grid>
+
 
         </ion-col>
       </ion-row>
