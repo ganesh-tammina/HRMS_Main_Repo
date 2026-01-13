@@ -41,6 +41,8 @@ export class adminFunctionalityComponent implements OnInit {
   announcements: any[] = [];
   designations: any[] = [];
   businessUnits: any[] = [];
+  businessUnitName: string = '';
+  editingBusinessUnitId: number | null = null;
 
   showLocationForm = false;
   showDepartmentForm = false;
@@ -94,6 +96,9 @@ export class adminFunctionalityComponent implements OnInit {
     if (tab === 'announcements') this.loadAnnouncements();
     if (tab === 'designations') {
       this.getDesignations();
+    }
+    if (tab === 'businessUnits') {
+      this.getBusinessUnits();
     }
   }
   /* WEEKLY OFF POLICIES */
@@ -271,6 +276,70 @@ export class adminFunctionalityComponent implements OnInit {
   }
   /* BUSINESS UNITS */
   loadBusinessUnits() {
-    this.service.getBusinessUnits().subscribe((r: any[]) => { this.businessUnits = r; });
+    this.service.getBusinessUnits().subscribe(
+      (data) => {
+        this.businessUnits = data;
+      },
+      (error) => {
+        console.error('Error fetching business units:', error);
+      }
+    );
+  }
+
+  saveBusinessUnit() {
+    const payload = { name: this.businessUnitName };
+    this.service.createBusinessUnit(payload).subscribe(
+      () => {
+        this.loadBusinessUnits();
+        this.businessUnitName = '';
+        this.cancelBusinessUnit();
+      },
+      (error) => {
+        console.error('Error creating business unit:', error);
+      }
+    );
+  }
+
+  editBusinessUnit(item: any) {
+    this.businessUnitName = item.name;
+    this.editingBusinessUnitId = item.id;
+  }
+
+  updateBusinessUnit() {
+    const payload = { name: this.businessUnitName };
+    if (this.editingBusinessUnitId) {
+      this.service.updateBusinessUnit(this.editingBusinessUnitId, payload).subscribe(
+        () => {
+          this.loadBusinessUnits();
+          this.cancelBusinessUnit();
+        },
+        (error) => {
+          console.error('Error updating business unit:', error);
+        }
+      );
+    }
+  }
+
+  deleteBusinessUnit(id: number) {
+    this.service.deleteBusinessUnit(id).subscribe(
+      () => {
+        this.loadBusinessUnits();
+      },
+      (error) => {
+        console.error('Error deleting business unit:', error);
+      }
+    );
+  }
+
+  cancelBusinessUnit() {
+    this.businessUnitName = '';
+    this.editingBusinessUnitId = null;
+  }
+
+  openAddBusinessUnit() {
+    this.cancelBusinessUnit();
+  }
+  getBusinessUnits() {
+    this.loadBusinessUnits();
   }
 }

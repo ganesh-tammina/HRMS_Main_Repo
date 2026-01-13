@@ -485,5 +485,50 @@
         </ion-row>
       </ion-grid>
     </div>
+
+    <!-- ========== BUSINESS UNITS ========== -->
+    <div class="tab-card" *ngIf="activeTab==='businessUnits'">
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="7" class="tab-content-list mr-15">
+            <div class="tab-header">
+              <p class="header-title">Business Units <span>{{businessUnits.length}}</span></p>
+              <button class="btn-primary" (click)="openAddBusinessUnit()">+ Add Business Unit</button>
+            </div>
+
+            <ion-grid class="table-block ion-no-padding">
+              <ion-row class="table-header">
+                <ion-col size="8">Name</ion-col>
+                <ion-col size="4">Actions</ion-col>
+              </ion-row>
+
+              <ion-row class="table-row-list" *ngFor="let item of businessUnits">
+                <ion-col size="8">{{item.name}}</ion-col>
+                <ion-col size="4">
+                  <ion-button class="primary-outline-btn" (click)="editBusinessUnit(item)">Edit</ion-button>
+                  <ion-button class="danger-outline-btn" (click)="deleteBusinessUnit(item.id)">Delete</ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+
+          <ion-col size="4" class="tab-content-form mr-15">
+            <p class="form-header">Add New Business Unit</p>
+            <p class="form-subheader">Create a new Business Unit in your organization</p>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label position="stacked">Business Unit Name</ion-label>
+                <ion-input [(ngModel)]="businessUnitName" placeholder="Business Unit name"></ion-input>
+              </ion-item>
+            </ion-list>
+            <div class="row-center">
+              <ion-button class="primary-outline-btn" (click)="cancelBusinessUnit()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingBusinessUnitId" (click)="saveBusinessUnit()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingBusinessUnitId" (click)="updateBusinessUnit()">Update</ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
   </div>
 </ion-content>
