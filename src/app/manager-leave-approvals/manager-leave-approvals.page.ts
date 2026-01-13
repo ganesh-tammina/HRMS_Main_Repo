@@ -46,6 +46,10 @@ export class ManagerLeaveApprovalsPage implements OnInit {
         this.loadPendingLeaves();
     }
 
+    ionViewWillEnter() {
+        this.ngOnInit();
+    }
+
     loadLeaveTypes() {
         this.leaveTypeService.getLeaveTypes().subscribe({
             next: (types) => {

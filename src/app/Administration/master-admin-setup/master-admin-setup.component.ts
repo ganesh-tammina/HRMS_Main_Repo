@@ -40,6 +40,10 @@ export class MasterAdminSetupComponent implements OnInit {
     this.loadUsers();
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
   /** ================= USERS ================= */
 
   loadUsers(): void {

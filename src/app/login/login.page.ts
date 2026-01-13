@@ -49,6 +49,10 @@ export class LoginPage implements OnInit {
     });
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
   /** 🔍 ADMIN CHECK */
   private isAdminLogin(value: string): boolean {
     return value === 'admin';

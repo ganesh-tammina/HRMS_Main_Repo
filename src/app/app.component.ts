@@ -139,6 +139,10 @@ export class AppComponent implements OnInit {
     this.service.getAnnouncements().subscribe((r: any) => console.log(r));
   }
 
+  ionViewWillEnter(): void {
+    this.ngOnInit();
+  }
+
   dismissIntro() {
     this.showIntro = false;
   }
