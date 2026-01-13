@@ -10,92 +10,93 @@
     </div>
   </div>
   <div [class.hrms-blur]="showIntro">
-  <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage" [employee]="one"></app-header>
+    <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage"
+      [employee]="one"></app-header>
 
-  <ion-split-pane contentId="main-content"
-    [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''">
-    <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
-      <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
-        <ion-content class="menu-content sidenav-content">
-          <ion-list class="side-menu-list">
-            <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())"
-              auto-hide="false">
-              <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable':''">
-                <div class="row-left">
-                  <img src="../assets/icon/home.svg" width="24" height="24" class="inactive-menu" />
-                  <img src="../assets/icon/home-active.svg" width="24" height="24" class="active-menu" />
-                  <ion-label>Home</ion-label>
-                </div>
-              </ion-item>
-            </ion-menu-toggle>
-
-            <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false">
-              <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
-                <div class="row-left">
-                  <img src="../assets/icon/Me.svg" width="24" height="24" class="inactive-menu" title="Leave" />
-                  <img src="../assets/icon/Me-active.svg" width="24" height="24" class="active-menu" title="Leave" />
-                  <ion-label>Leave</ion-label>
-                </div>
-              </ion-item>
-            </ion-menu-toggle>
-
-            <!-- Org Parent Item - Only for HR -->
-            <ng-container *ngIf="isHROnly()">
-              <ion-menu-toggle auto-hide="false" id="menu-button">
-                <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
+    <ion-split-pane contentId="main-content"
+      [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''">
+      <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
+        <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
+          <ion-content class="menu-content sidenav-content">
+            <ion-list class="side-menu-list">
+              <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())"
+                auto-hide="false">
+                <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable':''">
                   <div class="row-left">
-                    <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu"
-                      title="My Team" />
-                    <img src="../assets/icon/oraganization-active.svg" width="24" height="24" class="active-menu"
-                      title="My Team" />
-                    <ion-label>Org</ion-label>
+                    <img src="../assets/icon/home.svg" width="24" height="24" class="inactive-menu" />
+                    <img src="../assets/icon/home-active.svg" width="24" height="24" class="active-menu" />
+                    <ion-label>Home</ion-label>
                   </div>
                 </ion-item>
               </ion-menu-toggle>
-              <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown"
-                side="right">
-                <ng-template>
-                  <ion-content>
-                    <ion-menu-toggle auto-hide="false">
-                      <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false"
-                        [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected':''">
-                        <ion-label>Pre Onboarding</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                    <ion-menu-toggle auto-hide="false">
-                      <ion-item routerLink="/post-onboarding" lines="none" detail="false">
-                        <ion-label>Post Onboarding</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                    <ion-menu-toggle auto-hide="false">
-                      <ion-item lines="none" detail="false">
-                        <ion-label>Candidate Status</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ion-content>
-                </ng-template>
-              </ion-popover>
-            </ng-container>
 
-            <!-- My Team - Only for Manager, HR, Employee -->
-            <ng-container *ngIf="isManager() || isHROnly() || isEmployee()">
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
-                  routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">
+              <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false">
+                <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                   <div class="row-left">
-                    <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu"
-                      title="My Team" />
-                    <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu"
-                      title="My Team" />
-                    <ion-label>My Team</ion-label>
+                    <img src="../assets/icon/Me.svg" width="24" height="24" class="inactive-menu" title="Leave" />
+                    <img src="../assets/icon/Me-active.svg" width="24" height="24" class="active-menu" title="Leave" />
+                    <ion-label>Leave</ion-label>
                   </div>
                 </ion-item>
               </ion-menu-toggle>
-            </ng-container>
-            <!-- <ion-menu-toggle auto-hide="false">
+
+              <!-- Org Parent Item - Only for HR -->
+              <ng-container *ngIf="isHROnly()">
+                <ion-menu-toggle auto-hide="false" id="menu-button">
+                  <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+                    [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
+                    <div class="row-left">
+                      <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu"
+                        title="My Team" />
+                      <img src="../assets/icon/oraganization-active.svg" width="24" height="24" class="active-menu"
+                        title="My Team" />
+                      <ion-label>Org</ion-label>
+                    </div>
+                  </ion-item>
+                </ion-menu-toggle>
+                <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown"
+                  side="right">
+                  <ng-template>
+                    <ion-content>
+                      <ion-menu-toggle auto-hide="false">
+                        <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false"
+                          [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected':''">
+                          <ion-label>Pre Onboarding</ion-label>
+                        </ion-item>
+                      </ion-menu-toggle>
+                      <ion-menu-toggle auto-hide="false">
+                        <ion-item routerLink="/post-onboarding" lines="none" detail="false">
+                          <ion-label>Post Onboarding</ion-label>
+                        </ion-item>
+                      </ion-menu-toggle>
+                      <ion-menu-toggle auto-hide="false">
+                        <ion-item lines="none" detail="false">
+                          <ion-label>Candidate Status</ion-label>
+                        </ion-item>
+                      </ion-menu-toggle>
+                    </ion-content>
+                  </ng-template>
+                </ion-popover>
+              </ng-container>
+
+              <!-- My Team - Only for Manager, HR, Employee -->
+              <ng-container *ngIf="isManager() || isHROnly() || isEmployee()">
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
+                    routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">
+                    <div class="row-left">
+                      <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu"
+                        title="My Team" />
+                      <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu"
+                        title="My Team" />
+                      <ion-label>My Team</ion-label>
+                    </div>
+                  </ion-item>
+                </ion-menu-toggle>
+              </ng-container>
+              <!-- <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/organisation_info']" lines="none" detail="false"
                 routerLinkActive="selected">
                 <div class="row-left">
@@ -106,39 +107,39 @@
             </ion-menu-toggle> -->
 
 
-            <!-- Org Tree - Accessible to all except admin -->
-            <ng-container *ngIf="!isAdminOnly()">
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/org-tree') ? 'selected ion-activatable':''">
-                  <div class="row-left">
-                    <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu" />
-                    <img src="../assets/icon/oraganization-active.svg" width="24" height="24" class="active-menu" />
-                    <ion-label>Org Tree</ion-label>
-                  </div>
-                </ion-item>
-              </ion-menu-toggle>
-            </ng-container>
+              <!-- Org Tree - Accessible to all except admin -->
+              <ng-container *ngIf="!isAdminOnly()">
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
+                    [ngClass]="(currentUrl=='/org-tree') ? 'selected ion-activatable':''">
+                    <div class="row-left">
+                      <img src="../assets/icon/oraganization.svg" width="24" height="24" class="inactive-menu" />
+                      <img src="../assets/icon/oraganization-active.svg" width="24" height="24" class="active-menu" />
+                      <ion-label>Org Tree</ion-label>
+                    </div>
+                  </ion-item>
+                </ion-menu-toggle>
+              </ng-container>
 
-            <!-- Admin - Only for admin and HR -->
-            <ng-container *ngIf="isAdminOnly() || isHROnly()">
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable':''">
-                  <div class="row-left">
-                    <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu" />
-                    <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu" />
-                    <ion-label>Admin</ion-label>
-                  </div>
-                </ion-item>
-              </ion-menu-toggle>
-            </ng-container>
+              <!-- Admin - Only for admin and HR -->
+              <ng-container *ngIf="isAdminOnly() || isHROnly()">
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
+                    [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable':''">
+                    <div class="row-left">
+                      <img src="../assets/icon/my-team.svg" width="24" height="24" class="inactive-menu" />
+                      <img src="../assets/icon/my-team-active.svg" width="24" height="24" class="active-menu" />
+                      <ion-label>Admin</ion-label>
+                    </div>
+                  </ion-item>
+                </ion-menu-toggle>
+              </ng-container>
 
-            <!-- ///////////////////////////////////////////////// -->
-            <!-- ///////////////////////////////////////////////// -->
+              <!-- ///////////////////////////////////////////////// -->
+              <!-- ///////////////////////////////////////////////// -->
 
-            <!-- Inbox -->
-            <!-- <ion-menu-toggle auto-hide="false">
+              <!-- Inbox -->
+              <!-- <ion-menu-toggle auto-hide="false">
               <ion-item lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/inbox') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -148,28 +149,28 @@
                 </div>
               </ion-item>
             </ion-menu-toggle> -->
-            <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
-              <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
-                <div class="row-left">
-                  <img src="../assets/icon/work-track.svg" width="24" height="24" class="inactive-menu" />
-                  <img src="../assets/icon/work-track-active.svg" width="24" height="24" class="active-menu" />
-                  <ion-label>Work Track</ion-label>
-                </div>
-              </ion-item>
-            </ion-menu-toggle>
-            <!-- <ion-popover trigger="menu-buttons2" [dismissOnSelect]="true" class="menu-dropdown" side="right">
+              <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
+                <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
+                  <div class="row-left">
+                    <img src="../assets/icon/work-track.svg" width="24" height="24" class="inactive-menu" />
+                    <img src="../assets/icon/work-track-active.svg" width="24" height="24" class="active-menu" />
+                    <ion-label>Work Track</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
+              <!-- <ion-popover trigger="menu-buttons2" [dismissOnSelect]="true" class="menu-dropdown" side="right">
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false"> -->
-                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <!-- <ion-item [routerLink]="['/workTrack']" lines="none" detail="false">
+              <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+              <!-- <ion-item [routerLink]="['/workTrack']" lines="none" detail="false">
                       <ion-label>My Work Track</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
                   <ion-menu-toggle auto-hide="false"> -->
-                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <!-- <ion-item [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
+              <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+              <!-- <ion-item [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
                       <ion-label>Client Work Track </ion-label>
                     </ion-item>
                   </ion-menu-toggle>
@@ -178,7 +179,7 @@
             </ion-popover> -->
 
 
-            <!-- <ion-menu-toggle auto-hide="false" id="menu-buttons1">
+              <!-- <ion-menu-toggle auto-hide="false" id="menu-buttons1">
               <ion-item lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable':''">
                 <div class="row-left">
@@ -189,44 +190,45 @@
                 </div>
               </ion-item>
             </ion-menu-toggle> -->
-            <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" class="menu-dropdown menu-drop1" side="right">
-              <ng-template>
-                <ion-content>
-                  <ion-menu-toggle auto-hide="false">
-                    <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                    <ion-item routerLink="/payslip" lines="none" detail="false">
-                      <ion-label>Pay Slips</ion-label>
-                    </ion-item>
-                  </ion-menu-toggle>
-                </ion-content>
-              </ng-template>
-            </ion-popover>
-            <!-- Inbox -->
+              <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" class="menu-dropdown menu-drop1"
+                side="right">
+                <ng-template>
+                  <ion-content>
+                    <ion-menu-toggle auto-hide="false">
+                      <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
+                      <ion-item routerLink="/payslip" lines="none" detail="false">
+                        <ion-label>Pay Slips</ion-label>
+                      </ion-item>
+                    </ion-menu-toggle>
+                  </ion-content>
+                </ng-template>
+              </ion-popover>
+              <!-- Inbox -->
 
-            <!-- ///////////////////////////////////////////////// -->
+              <!-- ///////////////////////////////////////////////// -->
 
-            <!-- Log Out -->
-            <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
-                routerLinkActive="selected">
-                <div class="row-left">
-                  <img src="../assets/icon/logout.svg" width="24" height="24" class="inactive-menu" />
-                  <img src="../assets/icon/logout-active.svg" width="24" height="24" class="active-menu" />
-                  <ion-label>Log out</ion-label>
-                </div>
-              </ion-item>
-            </ion-menu-toggle>
-            <!-- Log Out -->
-          </ion-list>
-        </ion-content>
-      </ion-menu>
-    </ng-container>
-    <!-- Quick refresh overlay -->
-    <div *ngIf="isRefreshing" class="refresh-overlay">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-    </div>
+              <!-- Log Out -->
+              <ion-menu-toggle auto-hide="false">
+                <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
+                  routerLinkActive="selected">
+                  <div class="row-left">
+                    <img src="../assets/icon/logout.svg" width="24" height="24" class="inactive-menu" />
+                    <img src="../assets/icon/logout-active.svg" width="24" height="24" class="active-menu" />
+                    <ion-label>Log out</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
+              <!-- Log Out -->
+            </ion-list>
+          </ion-content>
+        </ion-menu>
+      </ng-container>
+      <!-- Quick refresh overlay -->
+      <div *ngIf="isRefreshing" class="refresh-overlay">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+      </div>
 
-    <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
-  </ion-split-pane>
+      <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
+    </ion-split-pane>
   </div>
 </ion-app>
