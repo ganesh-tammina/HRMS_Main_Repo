@@ -283,7 +283,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       if (r.approved !== true) {
         return {
           ...r,
-          notes: (r.notes ? r.notes + ' | ' : '') + 'Waiting for manager approval',
+          notes: (r.notes ? r.notes + ' | ' : '') + '',
           pendingApproval: true
         };
       }
