@@ -1,4 +1,15 @@
 <ion-app>
+  <!-- HRMS Intro Screen -->
+  <div *ngIf="showIntro" class="hrms-intro-screen">
+    <div class="hrms-intro-content">
+      <img src="assets/TT_blue_logo.svg" alt="HRMS Logo" class="hrms-intro-logo animated-logo" />
+      <div class="hrms-intro-title animated-title">Welcome to <span class="brand-gradient">Master HRMS</span></div>
+      <div class="hrms-intro-tagline animated-tagline">Your complete Human Resource Management Solution</div>
+      <img src="assets/hrms-welcome.gif" alt="HRMS Animation" class="hrms-intro-gif" />
+      <div class="hrms-intro-wow">Empowering People. <span class="wow-highlight">Empowering Business.</span></div>
+    </div>
+  </div>
+  <div [class.hrms-blur]="showIntro">
   <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage" [employee]="one"></app-header>
 
   <ion-split-pane contentId="main-content"
@@ -217,4 +228,5 @@
 
     <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
   </ion-split-pane>
+  </div>
 </ion-app>
