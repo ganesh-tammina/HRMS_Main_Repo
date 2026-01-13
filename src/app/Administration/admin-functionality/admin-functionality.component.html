@@ -523,8 +523,10 @@
             </ion-list>
             <div class="row-center">
               <ion-button class="primary-outline-btn" (click)="cancelBusinessUnit()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingBusinessUnitId" (click)="saveBusinessUnit()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingBusinessUnitId" (click)="updateBusinessUnit()">Update</ion-button>
+              <ion-button class="primary-btn" *ngIf="!editingBusinessUnitId"
+                (click)="saveBusinessUnit()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="editingBusinessUnitId"
+                (click)="updateBusinessUnit()">Update</ion-button>
             </div>
           </ion-col>
         </ion-row>
