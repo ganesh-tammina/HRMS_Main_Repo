@@ -144,10 +144,10 @@ export class LeavetypesComponent implements OnInit {
       },
     });
   }
-      leavetype() {
+  leavetype() {
     this.router.navigate(['./admin-leaves']);
   }
-    adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
   ionViewWillEnter(): void {

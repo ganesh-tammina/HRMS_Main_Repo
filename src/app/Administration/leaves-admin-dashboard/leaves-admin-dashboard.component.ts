@@ -74,15 +74,15 @@ export class LeavesAdminDashboardComponent {
   // employeeallocation() {
   //   this.router.navigate(['/employee_lEAVE_allocation']);
   // }
-    adminManagement() {
+  adminManagement() {
     this.router.navigate(['./admin']);
   }
-    async employeeallocation() {
-      const modal = await this.modalCtrl.create({
-        component: EmployeeLeaveAllocationComponent,
-        cssClass: 'side-custom-popup checkinInfo-popup',
-        backdropDismiss: false,
-      });
-      await modal.present();
-    }
+  async employeeallocation() {
+    const modal = await this.modalCtrl.create({
+      component: EmployeeLeaveAllocationComponent,
+      cssClass: 'side-custom-popup checkinInfo-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
+  }
 }

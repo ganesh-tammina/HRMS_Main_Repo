@@ -41,7 +41,7 @@ export class LeaveRequestComponent implements OnInit {
     private employeeLeaves: EmployeeLeavesService,
     private leaveRequestService: LeaverequestService,
     private toastController: ToastController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.buildForm();
