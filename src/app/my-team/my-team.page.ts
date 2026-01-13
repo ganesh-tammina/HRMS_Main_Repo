@@ -1,6 +1,7 @@
+import { ManagerTimesheetApprovalsPage } from './../manager-timesheet-approvals/manager-timesheet-approvals.page';
 import { AttendanceApiService } from '../services/attendance-api.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +10,8 @@ import { RouteGuardService } from '../services/route-guard/route-service/route-g
 import { environment } from 'src/environments/environment';
 import { Subject, takeUntil } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ManagerLeaveApprovalsPage } from '../manager-leave-approvals/manager-leave-approvals.page';
+import { ManagerWfhApprovalsPage } from '../manager-wfh-approvals/manager-wfh-approvals.page';
 
 @Component({
   selector: 'app-my-team',
@@ -59,7 +62,8 @@ export class MyTeamPage implements OnInit, OnDestroy {
     private routeGuardService: RouteGuardService,
     private router: Router,
     private http: HttpClient,
-    private attendanceApi: AttendanceApiService
+    private attendanceApi: AttendanceApiService,
+    private modalCtrl: ModalController
   ) { }
 
 
@@ -475,16 +479,40 @@ export class MyTeamPage implements OnInit, OnDestroy {
   }
 
   /* ================= NAVIGATE TO APPROVALS PAGES ================= */
-
-  navigateToTimesheetApprovals() {
-    this.router.navigate(['/ManagerTimesheetApprovals']);
+  async navigateToTimesheetApprovals() {
+    const modal = await this.modalCtrl.create({
+      component: ManagerTimesheetApprovalsPage,
+      cssClass: 'side-custom-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
   }
 
-  navigateToLeaveApprovals() {
-    this.router.navigate(['/ManagerLeaveApprovals']);
-  }
 
-  navigateToWfhApprovals() {
-    this.router.navigate(['/ManagerWfhApprovals']);
+  // navigateToTimesheetApprovals() {
+  //   this.router.navigate(['/ManagerTimesheetApprovals']);
+  // }
+
+  async navigateToLeaveApprovals() {
+    const modal = await this.modalCtrl.create({
+      component: ManagerLeaveApprovalsPage,
+      cssClass: 'side-custom-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
   }
+  // navigateToLeaveApprovals() {
+  //   this.router.navigate(['/ManagerLeaveApprovals']);
+  // }
+  async navigateToWfhApprovals() {
+    const modal = await this.modalCtrl.create({
+      component: ManagerWfhApprovalsPage,
+      cssClass: 'side-custom-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
+  }
+  // navigateToWfhApprovals() {
+  //   this.router.navigate(['/ManagerWfhApprovals']);
+  // }
 }

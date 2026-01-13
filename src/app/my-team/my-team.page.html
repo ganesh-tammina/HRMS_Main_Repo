@@ -182,19 +182,7 @@
                                  <ion-label>Absent</ion-label>
                         </ion-chip>
                         </div>
-                        <div class="attendance-info" *ngIf="member.attendance.status === 'present'">
-                           <!-- <ion-chip color="light" class="info-chip">
-                              <ion-icon name="log-in-outline"></ion-icon>
-                              <ion-label>In: {{ formatTime(member.attendance.attendance?.check_in) }}</ion-label>
-                           </ion-chip>
-                           <ion-chip color="light" class="info-chip" *ngIf="member.attendance.attendance?.check_out">
-                              <ion-icon name="log-out-outline"></ion-icon>
-                              <ion-label>Out: {{ formatTime(member.attendance.attendance?.check_out) }}</ion-label>
-                           </ion-chip>
-                           <ion-chip color="primary" class="info-chip">
-                              <ion-icon name="time-outline"></ion-icon>
-                              <ion-label>{{ formatHours(member.attendance.attendance?.total_hours) }}</ion-label>
-                           </ion-chip> -->
+                        <div class="attendance-info" *ngIf="member.attendance.status === 'present'">                          
                            <ion-chip class="present">
                                  <ion-label>Present</ion-label>
                            </ion-chip>
