@@ -19,66 +19,41 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, IonicModule],
   template: `
+
   <div class="ion-text-left">
-      <!-- Clock In Button -->
-      <div class="row-center" *ngIf="!isClockedIn && currentUrl !== '/Me'">
-      <ion-button
-      class="btn-clockin"      
-      (click)="clockIn()">
-      Web Clock-In
-    </ion-button></div>
-     
-
-      <!-- CLOCK IN -->
-      <ion-button
-        fill="clear"
-        class="clear"
-        *ngIf="!isClockedIn && currentUrl == '/Me'"
-        (click)="clockIn()"
-      >
-        <img
-          src="../../assets/Icons/attendance-icons/Web clockin.svg"
-          width="16"
-          height="16"
-        />
-        Web Clock-In
-      </ion-button>
-
-
-
-      <!-- Clock Out Button - Office -->
-      <div class="row-center" *ngIf="isClockedIn && workMode === 'Office' && currentUrl !== '/Me'">
-        <ion-button class="btn-clockout" (click)="clockOut()">Web Clock-Out</ion-button>
-      </div>
-
-      <!-- Clock Out Button - Remote (only once) -->
-      <div class="row-center" *ngIf="isClockedIn && workMode === 'Remote' && currentUrl !== '/Me'">
-        <ion-button class="btn-clockout remote-clockout" (click)="remoteClockOut()">Remote Clock-Out</ion-button>
-      </div>
-
-      <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'Office'" class="btn-clockout me-clock-out" (click)="clockOut()">Web Clock-Out</ion-button>
-      <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'Remote'" class="btn-clockout me-clock-out remote-clockout" (click)="remoteClockOut()">Remote Clock-Out</ion-button>
-
-
-
-      <!-- Clock Out Button - WFH -->
-      <div class="row-center" *ngIf="isClockedIn && workMode === 'WFH' && currentUrl !== '/Me'">
-      <ion-button
-        class="btn-clockout"        
-        (click)="clockOut()">
-        WFH Clock-Out
-      </ion-button></div>
-
-      <ion-button
-        class="btn-clockout me-clock-out"
-        *ngIf="isClockedIn && workMode === 'WFH' && currentUrl == '/Me'"
-        (click)="clockOut()"
-      >
-        WFH Clock-Out
-      </ion-button>
-
+    <!-- Clock In Button (Web only) -->
+    <div class="row-center" *ngIf="!isClockedIn && currentUrl !== '/Me'">
+      <ion-button class="btn-clockin" (click)="clockIn('Office')">Web Clock-In</ion-button>
     </div>
 
+    <!-- Clock In Button for /Me page (Web only) -->
+    <div *ngIf="!isClockedIn && currentUrl == '/Me'">
+      <ion-button fill="clear" class="clear" (click)="clockIn('Office')">
+        <img src="../../assets/Icons/attendance-icons/Web clockin.svg" width="16" height="16" />
+        Web Clock-In
+      </ion-button>
+    </div>
+
+    <!-- Clock Out Button - Office -->
+    <div class="row-center" *ngIf="isClockedIn && workMode === 'Office' && currentUrl !== '/Me'">
+      <ion-button class="btn-clockout" (click)="clockOut()">Web Clock-Out</ion-button>
+    </div>
+
+    <!-- Clock Out Button - Remote -->
+    <div class="row-center" *ngIf="isClockedIn && workMode === 'Remote' && currentUrl !== '/Me'">
+      <ion-button class="btn-clockout remote-clockout" (click)="remoteClockOut()">Remote Clock-Out</ion-button>
+    </div>
+
+    <!-- Clock Out Button - WFH -->
+    <div class="row-center" *ngIf="isClockedIn && workMode === 'WFH' && currentUrl !== '/Me'">
+      <ion-button class="btn-clockout wfh-clockout" (click)="clockOut()">WFH Clock-Out</ion-button>
+    </div>
+
+    <!-- Clock Out Buttons for /Me page -->
+    <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'Office'" class="btn-clockout me-clock-out" (click)="clockOut()">Web Clock-Out</ion-button>
+    <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'Remote'" class="btn-clockout me-clock-out remote-clockout" (click)="remoteClockOut()">Remote Clock-Out</ion-button>
+    <ion-button *ngIf="isClockedIn && currentUrl == '/Me' && workMode === 'WFH'" class="btn-clockout me-clock-out wfh-clockout" (click)="clockOut()">WFH Clock-Out</ion-button>
+  </div>
   `,
 })
 export class ClockButtonComponent implements OnInit, OnDestroy {
@@ -168,25 +143,23 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
   }
 
   /* ================= CLOCK IN ================= */
-  clockIn(isRemoteRequestSuccess?: boolean): void {
-    console.log('clockIn called with isRemoteRequestSuccess:', isRemoteRequestSuccess);
+  clockIn(mode: 'Office' | 'Remote' | 'WFH'): void {
     if (this.isClockedIn) {
       return;
     }
     this.loading = true;
-    let work_mode = 'Office';
+    let work_mode = mode;
     let location = 'Mumbai Office';
     let notes = 'Morning shift';
-    if (isRemoteRequestSuccess || this.remoteActive || this.workMode === 'Remote') {
-      work_mode = 'Remote';
+    if (mode === 'Remote') {
       location = 'Remote';
       notes = 'Remote Clock-In';
       this.workMode = 'Remote';
       this.remoteActive = true;
-    } else if (this.workMode === 'WFH') {
-      work_mode = 'WFH';
+    } else if (mode === 'WFH') {
       location = 'Home';
       notes = 'WFH Clock-In';
+      this.workMode = 'WFH';
     } else {
       this.workMode = 'Office';
     }
@@ -206,6 +179,14 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
           if (work_mode === 'Remote') {
             this.workMode = 'Remote';
             this.remoteActive = true;
+            this.isClockedIn = true;
+          }
+          if (work_mode === 'WFH') {
+            this.workMode = 'WFH';
+            this.isClockedIn = true;
+          }
+          if (work_mode === 'Office') {
+            this.workMode = 'Office';
             this.isClockedIn = true;
           }
           console.log('✅ Clocked In successfully on', this.currentUrl);
