@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="/my-team"></ion-back-button>
+            <ion-back-button (click)="goBack()" defaultHref="/my-team"></ion-back-button>
         </ion-buttons>
         <ion-title>Leave Approvals</ion-title>
         <ion-buttons slot="end">
@@ -19,13 +19,20 @@
 
     <ion-toolbar>
         <ion-item lines="none">
-            <ion-label>Leave Type:</ion-label>
-            <ion-select [(ngModel)]="leaveTypeFilter" (ionChange)="onTypeFilterChange($event)" interface="popover">
-                <ion-select-option value="all">All Types</ion-select-option>
-                <ion-select-option *ngFor="let type of leaveTypes" [value]="type.type_code">
-                    {{ type.type_name }}
-                </ion-select-option>
-            </ion-select>
+            <div>
+                <ion-label>Leave Type:</ion-label>
+                <div>
+                    <ion-select [(ngModel)]="leaveTypeFilter" (ionChange)="onTypeFilterChange($event)"
+                        interface="popover">
+                        <ion-select-option value="all">Select Leaves</ion-select-option>
+                        <ion-select-option *ngFor="let type of leaveTypes" [value]="type.type_code">
+                            {{ type.type_name }}
+                        </ion-select-option>
+                    </ion-select>
+                </div>
+
+            </div>
+
         </ion-item>
     </ion-toolbar>
 </ion-header>

@@ -11,16 +11,16 @@
             <ion-icon id="teamIcon" name="refresh-circle-outline"></ion-icon>
             Refresh
          </ion-button>
-         <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length" class="primary-outline-btn"
+         <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length && isManager" class="primary-outline-btn"
             id="timeApp">
             <ion-icon name="time-outline"></ion-icon> Timesheet Approval
          </ion-button>
-         <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length" class="primary-outline-btn"
+         <ion-button (click)="navigateToLeaveApprovals()" *ngIf="teamMembers.length && isManager" class="primary-outline-btn"
             id="leaveApp">
             <ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
             Leaves Approval
          </ion-button>
-         <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length" class="primary-outline-btn"
+         <ion-button (click)="navigateToWfhApprovals()" *ngIf="teamMembers.length && isManager" class="primary-outline-btn"
             id='AttApp'>
             <ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
             Attendance Approval
