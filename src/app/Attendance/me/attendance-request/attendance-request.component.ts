@@ -81,11 +81,11 @@ export class AttendanceRequestComponent implements OnInit {
           .map(item => this.mapWFHRecord(item, 'Regularization'));
 
         this.assignGroup('Work From Home / On Duty Requests', wfhRecords);
-        this.assignGroup('Regularization Requestsss', regularizationRecords);
+        this.assignGroup('Remote Clock In Requests', regularizationRecords);
       },
       error: () => {
         this.assignGroup('Work From Home / On Duty Requests', []);
-        this.assignGroup('Regularization Requestsss', []);
+        this.assignGroup('Remote Clock In Requests', []);
       },
     });
   }

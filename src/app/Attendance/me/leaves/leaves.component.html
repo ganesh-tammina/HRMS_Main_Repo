@@ -86,7 +86,7 @@
         <ion-col size="1">
           <p>Days</p>
         </ion-col>
-        <ion-col size="2">
+        <ion-col size="3">
           <p>Reason</p>
         </ion-col>
         <ion-col size="2">
@@ -95,9 +95,9 @@
         <ion-col size="2">
           <p>Status</p>
         </ion-col>
-        <ion-col size="1">
+        <!-- <ion-col size="1">
           <p>Action</p>
-        </ion-col>
+        </ion-col> -->
       </ion-row>
 
       <ion-row class="table-list-row" *ngFor="let leave of leaveRequests">
@@ -110,7 +110,7 @@
         <ion-col size="1">
           <p>{{ leave.days }}</p>
         </ion-col>
-        <ion-col size="2">
+        <ion-col size="3">
           <p>{{ leave.reason }}</p>
         </ion-col>
         <ion-col size="2">
