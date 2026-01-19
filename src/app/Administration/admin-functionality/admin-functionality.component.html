@@ -32,22 +32,22 @@
 
             <ion-grid class="table-block ion-no-padding">
               <ion-row class="table-header">
-                <ion-col size="8">
+                <ion-col size="10">
                   Location
                 </ion-col>
-                <ion-col size="4">
+                <ion-col size="2">
                   Actions
                 </ion-col>
               </ion-row>
 
               <ion-row class="table-row-list" *ngFor="let item of locations">
-                <ion-col size="8">
+                <ion-col size="10">
                   {{item.name}}
                 </ion-col>
-                <ion-col size="4">
-                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editLocation(item)"><ion-img
+                <ion-col size="2">
+                  <button class="mr-8 edit-btn" *ngIf="isAdminOrHR" (click)="editLocation(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button *ngIf="isAdminOrHR" (click)="deleteLocation(item.id)"><ion-img
+                  <button class="delete-btn" *ngIf="isAdminOrHR" (click)="deleteLocation(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
@@ -88,22 +88,22 @@
 
             <ion-grid class="table-block ion-no-padding">
               <ion-row class="table-header">
-                <ion-col size="8">
+                <ion-col size="10">
                   Department
                 </ion-col>
-                <ion-col size="4">
+                <ion-col size="2">
                   Actions
                 </ion-col>
               </ion-row>
 
               <ion-row class="table-row-list" *ngFor="let item of departments">
-                <ion-col size="8">
+                <ion-col size="10">
                   {{item.name}}
                 </ion-col>
-                <ion-col size="4">
-                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editDepartment(item)"><ion-img
+                <ion-col size="2">
+                  <button class="mr-8 edit-btn" *ngIf="isAdminOrHR" (click)="editDepartment(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button *ngIf="isAdminOrHR" (click)="deleteDepartment(item.id)"><ion-img
+                  <button class="delete-btn" *ngIf="isAdminOrHR" (click)="deleteDepartment(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
@@ -143,17 +143,23 @@
 
             <ion-grid class="table-block ion-no-padding">
               <ion-row class="table-header">
-                <ion-col size="8">Name</ion-col>
-                <ion-col size="4">Actions</ion-col>
+                <ion-col size="10">Name</ion-col>
+                <ion-col size="2">Actions</ion-col>
               </ion-row>
 
               <ion-row class="table-row-list" *ngFor="let item of designations">
-                <ion-col size="8">{{item.name}}</ion-col>
-                <ion-col size="4">
+                <ion-col size="10">{{item.name}}</ion-col>
+                <!-- <ion-col size="4">
                   <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
                     (click)="editDesignation(item)">Edit</ion-button>
                   <ion-button class="danger-outline-btn" *ngIf="isAdminOrHR"
                     (click)="deleteDesignation(item.id)">Delete</ion-button>
+                </ion-col> -->
+                  <ion-col size="2">
+                  <button class="mr-8 edit-btn" *ngIf="isAdminOrHR" (click)="editDesignation(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button class="delete-btn" *ngIf="isAdminOrHR" (click)="deleteDesignation(item.id)"><ion-img
+                      src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -201,10 +207,10 @@
                 <ion-col size="2">
                   End Time
                 </ion-col>
-                <ion-col size="4">
+                <ion-col size="3">
                   Description
                 </ion-col>
-                <ion-col size="1">
+                <ion-col size="2">
                   Actions
                 </ion-col>
               </ion-row>
@@ -219,10 +225,10 @@
                 <ion-col size="2">
                   {{item.end_time}}
                 </ion-col>
-                <ion-col size="4">
+                <ion-col size="3">
                   {{item.description}}
                 </ion-col>
-                <ion-col size="1">
+                <ion-col size="2">
                   <button *ngIf="isAdminOrHR" (click)="editShift(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
                 </ion-col>
@@ -286,13 +292,13 @@
                 <ion-col size="4">Actions</ion-col>
               </ion-row>
               <ion-row class="table-row-list" *ngFor="let item of weeklyOffPolicies">
-                <ion-col size="8">
+                <ion-col size="10">
                   {{item.name}} <span *ngIf="item.policy_code">({{item.policy_code}})</span>
                 </ion-col>
-                <ion-col size="4">
-                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editWeeklyOffPolicy(item)"><ion-img
+                <ion-col size="2">
+                  <button class="mr-8 edit-btn" *ngIf="isAdminOrHR" (click)="editWeeklyOffPolicy(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button *ngIf="isAdminOrHR" (click)="deleteWeeklyOffPolicy(item.id)"><ion-img
+                  <button class="delete-btn" *ngIf="isAdminOrHR" (click)="deleteWeeklyOffPolicy(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
@@ -426,7 +432,7 @@
                 <ion-col size="3">
                   Title
                 </ion-col>
-                <ion-col size="4">
+                <ion-col size="3">
                   Description
                 </ion-col>
                 <ion-col size="2">
@@ -435,7 +441,7 @@
                 <ion-col size="2">
                   End Date
                 </ion-col>
-                <ion-col size="1">
+                <ion-col size="2">
                   Actions
                 </ion-col>
               </ion-row>
@@ -444,7 +450,7 @@
                 <ion-col size="3">
                   {{item.title}}
                 </ion-col>
-                <ion-col size="4">
+                <ion-col size="3">
                   {{item.body}}
                 </ion-col>
                 <ion-col size="2">
@@ -454,7 +460,7 @@
                   {{item.ends_at | date}}
                 </ion-col>
 
-                <ion-col size="1">
+                <ion-col size="2">
                   <button class="mr-8" *ngIf="isAdminOrHR" (click)="editAnnouncement(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
                   <button *ngIf="isAdminOrHR" (click)="deleteAnnouncement(item.id)"><ion-img
@@ -510,17 +516,23 @@
 
             <ion-grid class="table-block ion-no-padding">
               <ion-row class="table-header">
-                <ion-col size="8">Name</ion-col>
-                <ion-col size="4">Actions</ion-col>
+                <ion-col size="10">Name</ion-col>
+                <ion-col size="2">Actions</ion-col>
               </ion-row>
 
               <ion-row class="table-row-list" *ngFor="let item of businessUnits">
-                <ion-col size="8">{{item.name}}</ion-col>
-                <ion-col size="4">
+                <ion-col size="10">{{item.name}}</ion-col>
+                <!-- <ion-col size="2">
                   <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
                     (click)="editBusinessUnit(item)">Edit</ion-button>
                   <ion-button class="danger-outline-btn" *ngIf="isAdminOrHR"
                     (click)="deleteBusinessUnit(item.id)">Delete</ion-button>
+                </ion-col> -->
+                 <ion-col size="2">
+                  <button class="mr-8 edit-btn" *ngIf="isAdminOrHR" (click)="editBusinessUnit(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button class="delete-btn" *ngIf="isAdminOrHR" (click)="deleteBusinessUnit(item.id)"><ion-img
+                      src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
