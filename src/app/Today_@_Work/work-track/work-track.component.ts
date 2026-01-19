@@ -501,12 +501,12 @@ export class WorkTrackComponent implements OnInit {
     switch (statusLower) {
       case 'verified':
       case 'approved':
-        return 'success';
+        return 'accept';
       case 'rejected':
-        return 'danger';
+        return 'reject';
       case 'submitted':
       case 'pending':
-        return 'warning';
+        return 'pending';
       default:
         return 'medium';
     }

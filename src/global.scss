@@ -718,15 +718,15 @@ width: 100vh;
 ion-badge {
   border-radius: 20px;
   padding: 6px 12px;
- &.pending {
+ &.pending, &.ion-color-pending {
  color: #A95300;
  background: #FFE9D2;     
  }
- &.accept {
+ &.accept, &.ion-color-accept {
    background: #D1FAE5;
    color: #059669;
  }
- &.reject {
+ &.reject, &.ion-color-reject {
    background: #FFD8D8;
   color: #C80000;
  }
