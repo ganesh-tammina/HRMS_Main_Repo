@@ -634,23 +634,7 @@ ion-searchbar {
       height: 36px;
       @include body-text();
       text-transform: capitalize;
-     }
-     ion-badge {
-       border-radius: 20px;
-       padding: 6px 12px;
-      &.pending {
-      color: #A95300;
-      background: #FFE9D2;     
-      }
-      &.accept {
-        background: #D1FAE5;
-        color: #059669;
-      }
-      &.reject {
-        background: #FFD8D8;
-       color: #C80000;
-      }
-     }
+     }   
    }  
   }
   .select-tag {

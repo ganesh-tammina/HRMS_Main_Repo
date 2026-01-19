@@ -711,3 +711,20 @@ ion-select::part(icon){
 ion-select::part(container){
 width: 100vh;
 }
+//status labels
+ion-badge {
+  border-radius: 20px;
+  padding: 6px 12px;
+ &.pending {
+ color: #A95300;
+ background: #FFE9D2;     
+ }
+ &.accept {
+   background: #D1FAE5;
+   color: #059669;
+ }
+ &.reject {
+   background: #FFD8D8;
+  color: #C80000;
+ }
+}
