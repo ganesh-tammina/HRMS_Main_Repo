@@ -40,6 +40,7 @@
       border: 1px solid #ABABAB;
       border-radius: 20px;
       height: 38px;
+      // width: 86%; 
     }
     
     ion-segment-button {
@@ -60,6 +61,9 @@
         } 
      }
   
+    }
+    p{
+       text-transform: lowercase;
     }
   }
 }

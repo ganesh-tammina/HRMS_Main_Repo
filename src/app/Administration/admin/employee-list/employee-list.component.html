@@ -66,12 +66,12 @@
                       </div>
                     </div>
 
-                    <div class="modal-actions">
+                    <!-- <div class="modal-actions">
                       <ion-button fill="outline" color="medium" (click)="modal.dismiss()">Cancel</ion-button>
                       <ion-button class="primary-btn" (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">
                         Upload File
                       </ion-button>
-                    </div>
+                    </div> -->
 
                   </ion-content>
                 </ng-template>
@@ -87,20 +87,29 @@
               <!-- Header -->
               <ion-row class="table-header">
                 <ion-col size="2">
-                  <p>Employee ID</p>
-                </ion-col>
-                <ion-col size="3">
-                  <p>Name</p>
+                  <p style="margin-left: 25px;">Employee ID</p>
                 </ion-col>
                 <ion-col size="2">
+                  <p>Name</p>
+                </ion-col>
+                <!-- <ion-col size="1">
                   <p>Gender</p>
+                </ion-col> -->
+                <ion-col size="3">
+                  <p> Email Id</p>
                 </ion-col>
-                <ion-col size="4">
-                  <p> Contact</p>
+                <ion-col size="2">
+                  <p> Role</p>
                 </ion-col>
-                <ion-col size="1">
+                  <ion-col size="1">
+                  <p> Department</p>
+                </ion-col>
+                  <ion-col size="2">
+                  <p> Phone Number</p>
+                </ion-col>
+                <!-- <ion-col size="1">
                   <p>Actions</p>
-                </ion-col>
+                </ion-col> -->
 
               </ion-row>
 
@@ -108,21 +117,32 @@
 
               <ion-row class="table-row-list" *ngFor="let candidate of pagedCandidates">
                 <ion-col size="2">
-                  <p>{{ candidate.id }}</p>
+                  <p style="margin-left: 25px;">{{ candidate.id }}</p>
                 </ion-col>
-                <ion-col size="3">
+                  <ion-col size="2">
                   <p>{{ candidate.FullName || '-' }}</p>
                 </ion-col>
-                <ion-col size="2">
-                  <p>{{ candidate.Gender || '-' }}</p>
-                </ion-col>
-                <ion-col size="4">
+                  <ion-col size="3">
                   <p>{{ candidate.WorkEmail || '-' }}</p>
                 </ion-col>
-                <ion-col size="1">
+                <ion-col size="2">
+                  <p></p>
+                </ion-col>
+                  <ion-col size="1">
+                  <p></p>
+                </ion-col>
+                <ion-col size="2">
+                  <p></p>
+                </ion-col>
+
+                <!-- <ion-col size="2">
+                  <p>{{ candidate.Gender || '-' }}</p>
+                </ion-col> -->
+
+                <!-- <ion-col size="1">
                   <ion-button *ngIf="isHR" fill="outline" size="small"
                     (click)="selectEmployee(candidate)"><img src="../../../../assets/Icons/pencil.svg"></ion-button>
-                </ion-col>
+                </ion-col> -->
               </ion-row>
 
               <!-- Update Employee Profile Modal for HR -->
