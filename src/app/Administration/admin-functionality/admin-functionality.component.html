@@ -154,8 +154,8 @@
           </ion-col>
 
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Designation</p>
-            <p class="form-subheader">Create a new Designation in your organization</p>
+            <p class="form-header">{{ editingDesignationId ? 'Update Designation' : 'Add New Designation' }}</p>
+            <p class="form-subheader">{{ editingDesignationId ? 'Update the selected designation' : 'Create a new Designation in your organization' }}</p>
             <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Designation Name</ion-label>
