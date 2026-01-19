@@ -39,7 +39,7 @@
    </div>
 
    <!-- 📅 Attendance View -->
-   <div *ngIf="!loading && showAttendance && teamMembers.length">
+   <div *ngIf="!loading && showAttendance && (teamMembers.length || attendanceSummary)">
       <div class="date-card">
          <!-- Date Picker -->
          <h2>Attendance Reports</h2>
@@ -160,7 +160,6 @@
 
       <!-- Team Attendance List -->
       <div class="team-grid">
-
          <ion-card class="team-card" *ngFor="let member of filteredMembers">
             <ion-card-content>
                <!-- Avatar Section -->
@@ -212,7 +211,6 @@
                </div>
             </ion-card-content>
          </ion-card>
-
       </div>
 
 
@@ -288,11 +286,6 @@
 
    </div>
 
-   <!-- ❌ Empty State -->
-   <div class="empty-state" *ngIf="!loading && !teamMembers.length">
-      <ion-icon name="people-outline" class="empty-icon"></ion-icon>
-      <h3>No Team Members</h3>
-      <p>You don't have any team members assigned yet.</p>
-   </div>
+   <!-- No empty state: always show team grid, even if empty -->
 
 </ion-content>
