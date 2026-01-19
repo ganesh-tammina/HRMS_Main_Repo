@@ -92,13 +92,20 @@ export class EmployeeListComponent implements OnInit {
   loadEmployees() {
     this.employeeService.getAllEmployees().subscribe((res: any[]) => {
       this.allCandidates = res || [];
+      this.sortEmployeesById(); // Sort employees by ID
       this.applySearch();
       // reset pagination
       this.currentPage = 1;
       this.calculatePagination();
       this.updatePagedCandidates();
-      console.log('Employees loaded:', this.allCandidates);
+      console.log('Employees loaded and sorted by ID:', this.allCandidates);
     });
+  }
+
+  /* ================= SORT EMPLOYEES BY ID ================= */
+  sortEmployeesById() {
+    this.allCandidates.sort((a, b) => a.id - b.id);
+    this.updatePagedCandidates();
   }
 
   applySearch() {

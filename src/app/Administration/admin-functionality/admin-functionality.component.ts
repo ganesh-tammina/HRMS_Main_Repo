@@ -5,6 +5,9 @@ import { AdminService, ShiftPolicyPayload } from 'src/app/services/admin-functio
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 
+
+import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
+
 @Component({
   selector: 'app-admin-functionality',
   standalone: true,
@@ -12,7 +15,12 @@ import { Router } from '@angular/router';
   templateUrl: './admin-functionality.component.html',
   styleUrls: ['./admin-functionality.component.scss']
 })
+
 export class adminFunctionalityComponent implements OnInit {
+  userRole: string | null = null;
+  get isAdminOrHR(): boolean {
+    return this.userRole === 'admin' || this.userRole === 'hr';
+  }
   weeklyOffPolicies: any[] = [];
   weeklyOffPolicyForm: any = {
     policy_code: '',
@@ -78,9 +86,11 @@ export class adminFunctionalityComponent implements OnInit {
   designationName: string = '';
   editingDesignationId: number | null = null;
 
-  constructor(private service: AdminService, private router: Router) { }
+  constructor(private service: AdminService, private router: Router, private routeGaurdService: RouteGuardService) { }
 
   ngOnInit() {
+    // Try to get userRole from routeGaurdService, fallback to localStorage
+    this.userRole = (this.routeGaurdService.userRole?.toLowerCase() || localStorage.getItem('userRole')?.toLowerCase() || null);
     this.loadLocations();
   }
   adminManagement() {

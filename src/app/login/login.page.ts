@@ -336,4 +336,11 @@ export class LoginPage implements OnInit {
       }
     });
   }
+
+  /** HANDLE ENTER KEY PRESS */
+  onKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !this.emailChecked && !this.showForgotPassword) {
+      this.onNext();
+    }
+  }
 }
