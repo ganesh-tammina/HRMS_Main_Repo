@@ -45,9 +45,10 @@
                   {{item.name}}
                 </ion-col>
                 <ion-col size="4">
-                  <button class="mr-8" (click)="editLocation(item)"><ion-img
+                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editLocation(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button (click)="deleteLocation(item.id)"><ion-img src="../../../assets/trash.svg"></ion-img></button>
+                  <button *ngIf="isAdminOrHR" (click)="deleteLocation(item.id)"><ion-img
+                      src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -62,9 +63,11 @@
               </ion-item>
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelLocation()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingLocationId" (click)="saveLocation()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingLocationId" (click)="updateLocation()">Update</ion-button>
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR" (click)="cancelLocation()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingLocationId"
+                (click)="saveLocation()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingLocationId"
+                (click)="updateLocation()">Update</ion-button>
             </div>
           </ion-col>
 
@@ -98,9 +101,9 @@
                   {{item.name}}
                 </ion-col>
                 <ion-col size="4">
-                  <button class="mr-8" (click)="editDepartment(item)"><ion-img
+                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editDepartment(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button (click)="deleteDepartment(item.id)"><ion-img
+                  <button *ngIf="isAdminOrHR" (click)="deleteDepartment(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
@@ -116,9 +119,11 @@
               </ion-item>
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelDepartment()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingDepartmentId" (click)="saveDepartment()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingDepartmentId"
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                (click)="cancelDepartment()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingDepartmentId"
+                (click)="saveDepartment()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingDepartmentId"
                 (click)="updateDepartment()">Update</ion-button>
             </div>
           </ion-col>
@@ -134,7 +139,7 @@
           <ion-col size="7" class="tab-content-list mr-15">
             <div class="tab-header">
               <p class="header-title">Designations <span>{{designations.length}}</span></p>
-              <button class="btn-primary" (click)="openAddDesignation()">+ Add Designation</button>
+              <button class="btn-primary" *ngIf="isAdminOrHR" (click)="openAddDesignation()">+ Add Designation</button>
             </div>
 
             <ion-grid class="table-block ion-no-padding">
@@ -146,8 +151,10 @@
               <ion-row class="table-row-list" *ngFor="let item of designations">
                 <ion-col size="8">{{item.name}}</ion-col>
                 <ion-col size="4">
-                  <ion-button class="primary-outline-btn" (click)="editDesignation(item)">Edit</ion-button>
-                  <ion-button class="danger-outline-btn" (click)="deleteDesignation(item.id)">Delete</ion-button>
+                  <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                    (click)="editDesignation(item)">Edit</ion-button>
+                  <ion-button class="danger-outline-btn" *ngIf="isAdminOrHR"
+                    (click)="deleteDesignation(item.id)">Delete</ion-button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -163,10 +170,11 @@
               </ion-item>
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelDesignation()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingDesignationId"
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                (click)="cancelDesignation()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingDesignationId"
                 (click)="saveDesignation()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingDesignationId"
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingDesignationId"
                 (click)="updateDesignation()">Update</ion-button>
             </div>
           </ion-col>
@@ -216,7 +224,8 @@
                   {{item.description}}
                 </ion-col>
                 <ion-col size="1">
-                  <button (click)="editShift(item)"><ion-img src="../../../assets/edit-gray.svg"></ion-img></button>
+                  <button *ngIf="isAdminOrHR" (click)="editShift(item)"><ion-img
+                      src="../../../assets/edit-gray.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -251,9 +260,11 @@
 
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelShift()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingShiftId" (click)="saveShift()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingShiftId" (click)="updateShift()">Update</ion-button>
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR" (click)="cancelShift()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingShiftId"
+                (click)="saveShift()">Save</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingShiftId"
+                (click)="updateShift()">Update</ion-button>
             </div>
           </ion-col>
 
@@ -280,9 +291,9 @@
                   {{item.name}} <span *ngIf="item.policy_code">({{item.policy_code}})</span>
                 </ion-col>
                 <ion-col size="4">
-                  <button class="mr-8" (click)="editWeeklyOffPolicy(item)"><ion-img
+                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editWeeklyOffPolicy(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button (click)="deleteWeeklyOffPolicy(item.id)"><ion-img
+                  <button *ngIf="isAdminOrHR" (click)="deleteWeeklyOffPolicy(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
@@ -389,10 +400,11 @@
               </ion-item>
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelWeeklyOffPolicy()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingWeeklyOffPolicyId"
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                (click)="cancelWeeklyOffPolicy()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingWeeklyOffPolicyId"
                 (click)="saveWeeklyOffPolicy()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingWeeklyOffPolicyId"
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingWeeklyOffPolicyId"
                 (click)="updateWeeklyOffPolicy()">Update</ion-button>
             </div>
           </ion-col>
@@ -444,9 +456,9 @@
                 </ion-col>
 
                 <ion-col size="1">
-                  <button class="mr-8" (click)="editAnnouncement(item)"><ion-img
+                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editAnnouncement(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button (click)="deleteAnnouncement(item.id)"><ion-img
+                  <button *ngIf="isAdminOrHR" (click)="deleteAnnouncement(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
@@ -474,10 +486,11 @@
               </ion-item>
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelAnnouncement()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingAnnouncementId"
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                (click)="cancelAnnouncement()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingAnnouncementId"
                 (click)="saveAnnouncement()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingAnnouncementId"
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingAnnouncementId"
                 (click)="updateAnnouncement()">Update</ion-button>
             </div>
           </ion-col>
@@ -493,7 +506,8 @@
           <ion-col size="7" class="tab-content-list mr-15">
             <div class="tab-header">
               <p class="header-title">Business Units <span>{{businessUnits.length}}</span></p>
-              <button class="btn-primary" (click)="openAddBusinessUnit()">+ Add Business Unit</button>
+              <button class="btn-primary" *ngIf="isAdminOrHR" (click)="openAddBusinessUnit()">+ Add Business
+                Unit</button>
             </div>
 
             <ion-grid class="table-block ion-no-padding">
@@ -505,8 +519,10 @@
               <ion-row class="table-row-list" *ngFor="let item of businessUnits">
                 <ion-col size="8">{{item.name}}</ion-col>
                 <ion-col size="4">
-                  <ion-button class="primary-outline-btn" (click)="editBusinessUnit(item)">Edit</ion-button>
-                  <ion-button class="danger-outline-btn" (click)="deleteBusinessUnit(item.id)">Delete</ion-button>
+                  <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                    (click)="editBusinessUnit(item)">Edit</ion-button>
+                  <ion-button class="danger-outline-btn" *ngIf="isAdminOrHR"
+                    (click)="deleteBusinessUnit(item.id)">Delete</ion-button>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -522,10 +538,11 @@
               </ion-item>
             </ion-list>
             <div class="row-center">
-              <ion-button class="primary-outline-btn" (click)="cancelBusinessUnit()">Cancel</ion-button>
-              <ion-button class="primary-btn" *ngIf="!editingBusinessUnitId"
+              <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
+                (click)="cancelBusinessUnit()">Cancel</ion-button>
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && !editingBusinessUnitId"
                 (click)="saveBusinessUnit()">Save</ion-button>
-              <ion-button class="primary-btn" *ngIf="editingBusinessUnitId"
+              <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingBusinessUnitId"
                 (click)="updateBusinessUnit()">Update</ion-button>
             </div>
           </ion-col>
