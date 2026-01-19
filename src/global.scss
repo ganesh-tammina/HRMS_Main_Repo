@@ -262,12 +262,15 @@ ion-modal {
           width: max-content;
           display: flex;
           list-style: none;
-          padding: 8px;
+          padding: 5px;
           margin: 15px auto;
+          --min-height: 48px;
+          height: 48px;
           ion-segment-button {
           width: max-content;
           text-transform: capitalize;
-          min-height: 37px;
+          min-height: 36px;
+          height: 36px;
           padding: 0px 5px;
           display: flex;
           align-items: center;

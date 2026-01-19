@@ -1,281 +1,31 @@
-/* ================= STATISTICS CARD ================= */
+@import '../my-team/my-team.page.scss';
 
-.statistics-card {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  
-  ion-card-header {
-    padding: 12px 16px;
-    
-    ion-card-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      
-      ion-icon {
-        font-size: 1.3rem;
-      }
-    }
-
-    ion-card-subtitle {
-      margin-top: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-
-      ion-chip {
-        margin: 0;
-        font-size: 0.85rem;
-
-        ion-icon {
-          font-size: 1rem;
-        }
-      }
-    }
-  }
-  
-  ion-card-content {
-    padding: 16px;
-  }
-  
-  .statistics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px;
-    
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: var(--ion-color-light);
-      border-radius: 8px;
-      transition: transform 0.2s;
-      
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
-      
-      .stat-icon {
-        ion-icon {
-          font-size: 2rem;
-        }
-      }
-      
-      .stat-content {
-        flex: 1;
-        
-        h2 {
-          margin: 0;
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: var(--ion-color-dark);
-        }
-        
-        p {
-          margin: 4px 0 0 0;
-          font-size: 0.8rem;
-          color: var(--ion-color-medium);
-          font-weight: 500;
-        }
-      }
-    }
-  }
-  
-  .statistics-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    
-    ion-spinner {
-      margin-bottom: 8px;
-    }
-    
-    p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--ion-color-medium);
-    }
-  }
+ion-content {
+  --background: #ffffff;
 }
-
-/* ================= TIMESHEET CARD ================= */
-
-.timesheet-card {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  
-  ion-card-header {
-    padding: 16px;
-    
-    .timesheet-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      
-      ion-avatar {
-        width: 50px;
-        height: 50px;
-        
-        img {
-          object-fit: cover;
-        }
-      }
-      
-      .employee-info {
-        flex: 1;
-        
-        h2 {
-          margin: 0 0 4px 0;
-          font-size: 1.1rem;
-          font-weight: 600;
-          color: var(--ion-color-dark);
-        }
-        
-        p {
-          margin: 0 0 6px 0;
-          font-size: 0.85rem;
-          color: var(--ion-color-medium);
-        }
-        
-        ion-badge {
-          font-size: 0.75rem;
-        }
-      }
-      
-      ion-chip {
-        margin: 0;
-      }
-    }
-  }
-  
-  ion-card-content {
-    padding: 16px;
-  }
-}
-
-/* ================= TIMESHEET DETAILS ================= */
-
-.timesheet-details {
-  margin-bottom: 16px;
-  
-  .detail-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    
-    ion-icon {
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    
-    span {
-      font-size: 0.9rem;
-      color: var(--ion-color-dark);
-      
-      strong {
-        font-weight: 600;
-      }
-    }
-  }
-  
-  .work-description,
-  .notes {
-    margin: 4px 0 12px 32px;
-    padding: 10px;
-    background: var(--ion-color-light);
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: var(--ion-color-medium-shade);
-    line-height: 1.5;
-  }
-  
-  .hours-breakdown {
-    margin-top: 12px;
-    padding: 12px;
-    background: var(--ion-color-light);
-    border-radius: 8px;
-    
-    h4 {
-      margin: 0 0 8px 0;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--ion-color-dark);
-    }
-    
-    ion-chip {
-      margin: 4px 4px 4px 0;
-    }
-  }
-}
-
-/* ================= ACTION BUTTONS ================= */
-
-.action-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 16px;
-  
-  ion-button {
-    margin: 0;
-    font-weight: 600;
-    text-transform: none;
-  }
-}
-
-/* ================= FILTER CARD ================= */
-
-.filter-card {
-  margin-bottom: 16px;
-  
-  ion-card-content {
-    padding: 8px;
-  }
-  
-  ion-item {
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    
-    ion-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    
-    ion-input {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      border: 1px solid var(--ion-color-light-shade);
-      border-radius: 8px;
-      margin-top: 4px;
-    }
-  }
-}
-
-/* ================= SUMMARY BADGE ================= */
-
-.summary-badge {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-  
-  ion-chip {
-    font-size: 1rem;
-    font-weight: 600;
-  }
-}
-
 /* ================= LOADING CONTAINER ================= */
+ion-chip {
+  margin-left: 5px;
+  padding: 0 12px;
+}
+.filter-block {
+  label {
+      @include body-text();
+    }
+    ion-input {
+      border: 1px solid #ababab;
+      border-radius: 8px;
+      padding: 0 8px !important;
+      min-height: 36px;
+      height: 36px;
+      --highlight-height: 0;
+      margin-top: 8px;
+  }
+  ion-button {
+    margin-top: 8px;
+  }
+    }
+  
 
 .loading-container {
   display: flex;
