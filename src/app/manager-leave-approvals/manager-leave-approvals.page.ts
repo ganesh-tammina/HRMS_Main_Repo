@@ -53,7 +53,7 @@ export class ManagerLeaveApprovalsPage implements OnInit {
     loadLeaveTypes() {
         this.leaveTypeService.getLeaveTypes().subscribe({
             next: (types) => {
-                this.leaveTypes = types;
+                this.leaveTypes = types.sort((a, b) => a.type_name.localeCompare(b.type_name)); // Sort leave types alphabetically by name
             },
             error: (error) => {
                 console.error('Error loading leave types:', error);
@@ -219,5 +219,12 @@ export class ManagerLeaveApprovalsPage implements OnInit {
             return `http://${environment.apiURL}${leave.profile_image}?t=${Date.now()}`;
         }
         return 'assets/user.svg';
+    }
+    goBack() {
+        this.router.navigate(['/myteam']);
+        const modal = document.querySelector('ion-modal');
+        if (modal) {
+            modal.dismiss();
+        }
     }
 }

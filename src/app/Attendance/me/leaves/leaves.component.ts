@@ -53,6 +53,8 @@ export class LeavesComponent implements OnInit {
   leaveCards: any[] = [];
   leaveRequests: any[] = [];
   leaveRequestsDeatils: any[] = [];
+  approvedLeaves: any[] = []; // Approved leaves
+  rejectedLeaves: any[] = []; // Rejected leaves
   leaveTypes: { code: string; name: string; available: number }[] = [];
 
   /** FORM */
@@ -89,9 +91,7 @@ export class LeavesComponent implements OnInit {
   getallLeaves() {
     this.leaveRequestService.getMyLeaves(this.currentYear).subscribe({
       next: (res: any[]) => {
-        this.leaveRequestsDeatils = res;
-        console.log(res);
-        const mappedleaves = res.map(item => ({
+        this.leaveRequestsDeatils = res.map(item => ({
           id: item.id,
           leave_type: item.type_name,
           from_date: item.start_date,
@@ -101,10 +101,10 @@ export class LeavesComponent implements OnInit {
           applied_on: item.applied_at,
           reason: item.reason,
         }));
-        this.leaveRequests = mappedleaves.filter(leave => leave.status === 'PENDING'); // Filter pending requests
-        this.leaveRequestService.setLeaveRequests(mappedleaves);
-        console.log(this.leaveRequests);
-      }
+
+        console.log('Mapped Leave Details:', this.leaveRequestsDeatils);
+      },
+      error: err => console.error('Error fetching leave details:', err),
     });
   }
 

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TimesheetService } from '../services/timesheets.service';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-manager-timesheet-approvals',
@@ -37,7 +38,8 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
     constructor(
         private timesheetService: TimesheetService,
         private alertController: AlertController,
-        private toastController: ToastController
+        private toastController: ToastController,
+        private router: Router
     ) { }
 
     ngOnInit() {
@@ -320,5 +322,12 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
         setTimeout(() => {
             event.target.complete();
         }, 1000);
+    }
+            goBack() {
+        this.router.navigate(['/myteam']);
+        const modal = document.querySelector('ion-modal');
+        if (modal) {
+            modal.dismiss();
+        }
     }
 }

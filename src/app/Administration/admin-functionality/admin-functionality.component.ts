@@ -34,14 +34,15 @@ export class adminFunctionalityComponent implements OnInit {
   };
   editingWeeklyOffPolicyId: number | null = null;
 
-  activeTab = 'locations';
-
+  activeTab: string = 'locations';
   locations: any[] = [];
   departments: any[] = [];
   shiftPolicies: any[] = [];
   announcements: any[] = [];
   designations: any[] = [];
   businessUnits: any[] = [];
+  businessUnitName: string = '';
+  editingBusinessUnitId: number | null = null;
 
   showLocationForm = false;
   showDepartmentForm = false;
@@ -74,6 +75,9 @@ export class adminFunctionalityComponent implements OnInit {
     ends_at: ''
   };
 
+  designationName: string = '';
+  editingDesignationId: number | null = null;
+
   constructor(private service: AdminService, private router: Router) { }
 
   ngOnInit() {
@@ -90,6 +94,12 @@ export class adminFunctionalityComponent implements OnInit {
     if (tab === 'shifts') this.loadShiftPolicies();
     if (tab === 'weeklyOffPolicies') this.loadWeeklyOffPolicies();
     if (tab === 'announcements') this.loadAnnouncements();
+    if (tab === 'designations') {
+      this.getDesignations();
+    }
+    if (tab === 'businessUnits') {
+      this.getBusinessUnits();
+    }
   }
   /* WEEKLY OFF POLICIES */
   loadWeeklyOffPolicies() { this.service.getWeeklyOffPolicies().subscribe(r => this.weeklyOffPolicies = r); }
@@ -198,11 +208,138 @@ export class adminFunctionalityComponent implements OnInit {
   cancelAnnouncement() { this.showAnnouncementForm = false; }
 
   /* DESIGNATIONS */
-  loadDesignations() {
-    this.service.getDesignations().subscribe((r: any[]) => { this.designations = r; });
+  getDesignations() {
+    this.service.getDesignations().subscribe(
+      (data) => {
+        this.designations = data;
+      },
+      (error) => {
+        console.error('Error fetching designations:', error);
+      }
+    );
+  }
+
+  saveDesignation() {
+    const payload = { name: this.designationName };
+    this.service.createDesignation(payload).subscribe(
+      (response) => {
+        console.log('Designation created:', response);
+        this.getDesignations();
+        this.designationName = '';
+      },
+      (error) => {
+        console.error('Error creating designation:', error);
+      }
+    );
+  }
+
+  editDesignation(item: any) {
+    this.designationName = item.name;
+    this.editingDesignationId = item.id;
+  }
+
+  updateDesignation() {
+    const payload = { name: this.designationName };
+    if (this.editingDesignationId) {
+      this.service.updateDesignation(this.editingDesignationId, payload).subscribe(
+        (response) => {
+          console.log('Designation updated:', response);
+          this.getDesignations();
+          this.cancelDesignation();
+        },
+        (error) => {
+          console.error('Error updating designation:', error);
+        }
+      );
+    }
+  }
+
+  deleteDesignation(id: number) {
+    this.service.deleteDesignation(id).subscribe(
+      (response) => {
+        console.log('Designation deleted:', response);
+        this.getDesignations();
+      },
+      (error) => {
+        console.error('Error deleting designation:', error);
+      }
+    );
+  }
+
+  cancelDesignation() {
+    this.designationName = '';
+    this.editingDesignationId = null;
+  }
+
+  openAddDesignation() {
+    this.cancelDesignation();
   }
   /* BUSINESS UNITS */
   loadBusinessUnits() {
-    this.service.getBusinessUnits().subscribe((r: any[]) => { this.businessUnits = r; });
+    this.service.getBusinessUnits().subscribe(
+      (data) => {
+        this.businessUnits = data;
+      },
+      (error) => {
+        console.error('Error fetching business units:', error);
+      }
+    );
+  }
+
+  saveBusinessUnit() {
+    const payload = { name: this.businessUnitName };
+    this.service.createBusinessUnit(payload).subscribe(
+      () => {
+        this.loadBusinessUnits();
+        this.businessUnitName = '';
+        this.cancelBusinessUnit();
+      },
+      (error) => {
+        console.error('Error creating business unit:', error);
+      }
+    );
+  }
+
+  editBusinessUnit(item: any) {
+    this.businessUnitName = item.name;
+    this.editingBusinessUnitId = item.id;
+  }
+
+  updateBusinessUnit() {
+    const payload = { name: this.businessUnitName };
+    if (this.editingBusinessUnitId) {
+      this.service.updateBusinessUnit(this.editingBusinessUnitId, payload).subscribe(
+        () => {
+          this.loadBusinessUnits();
+          this.cancelBusinessUnit();
+        },
+        (error) => {
+          console.error('Error updating business unit:', error);
+        }
+      );
+    }
+  }
+
+  deleteBusinessUnit(id: number) {
+    this.service.deleteBusinessUnit(id).subscribe(
+      () => {
+        this.loadBusinessUnits();
+      },
+      (error) => {
+        console.error('Error deleting business unit:', error);
+      }
+    );
+  }
+
+  cancelBusinessUnit() {
+    this.businessUnitName = '';
+    this.editingBusinessUnitId = null;
+  }
+
+  openAddBusinessUnit() {
+    this.cancelBusinessUnit();
+  }
+  getBusinessUnits() {
+    this.loadBusinessUnits();
   }
 }

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="/Home"></ion-back-button>
+            <ion-back-button (click)="goBack()" defaultHref="/Home"></ion-back-button>
         </ion-buttons>
         <ion-title>Timesheet Approvals</ion-title>
         <ion-buttons slot="end">
@@ -12,7 +12,7 @@
     </ion-toolbar>
 
     <!-- Filter Bar -->
-    
+
     <ion-toolbar>
         <ion-segment [(ngModel)]="filterType" (ionChange)="onFilterTypeChange($event)">
             <ion-segment-button value="all">

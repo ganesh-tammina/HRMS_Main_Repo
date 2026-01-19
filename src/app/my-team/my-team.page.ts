@@ -4,7 +4,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
 import { environment } from 'src/environments/environment';
@@ -64,14 +64,21 @@ export class MyTeamPage implements OnInit, OnDestroy {
     private http: HttpClient,
     private attendanceApi: AttendanceApiService,
     private modalCtrl: ModalController
-  ) { }
+  ) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.updateRole();
+      }
+    });
+  }
 
 
   ngOnInit() {
     console.log('🚀 My Team Component Initialized');
     console.log('⏰ Setting up 30-second auto-refresh for attendance status');
     this.subscribeToProfileImageUpdates();
-    this.isManager = this.userRole === 'manager';
+    this.updateRole();
+
     if (this.isManager) {
       this.loadPendingRemoteClockinRequests();
     }
@@ -79,10 +86,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
     // Refresh attendance status every 30 seconds for real-time updates
     this.statusRefreshInterval = setInterval(() => {
-      if (!this.showAttendance && this.teamMembers.length > 0) {
-        console.log('⏰ Auto-refresh triggered (30s interval)');
-        this.loadEmployeeAttendanceStatus();
-      }
+      this.loadEmployeeAttendanceStatus();
     }, 30000); // Changed from 120000 (2 min) to 30000 (30 sec)
   }
 
@@ -515,4 +519,9 @@ export class MyTeamPage implements OnInit, OnDestroy {
   // navigateToWfhApprovals() {
   //   this.router.navigate(['/ManagerWfhApprovals']);
   // }
+
+  private updateRole() {
+    this.userRole = this.routeGuardService.userRole?.toLowerCase() || null;
+    this.isManager = this.userRole === 'manager';
+  }
 }
