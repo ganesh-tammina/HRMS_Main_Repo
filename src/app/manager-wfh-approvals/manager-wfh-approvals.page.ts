@@ -86,6 +86,7 @@ export class ManagerWfhApprovalsPage implements OnInit {
 
             return matchesSearch && matchesMode;
         });
+        console.log('leaves requests', this.filteredRequests );
     }
 
     onSearchChange(event: any) {
@@ -176,9 +177,9 @@ export class ManagerWfhApprovalsPage implements OnInit {
 
     getStatusColor(status: string): string {
         return {
-            pending: 'warning',
-            approved: 'success',
-            rejected: 'danger'
+            pending: 'pending',
+            approved: 'accept',
+            rejected: 'reject'
         }[status?.toLowerCase()] || 'medium';
     }
 

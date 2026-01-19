@@ -587,3 +587,83 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+
+// Popup styles
+ion-searchbar {
+  --background: var(--ion-background-color, #fff);
+  border-radius: 8px;
+  --box-shadow: none;
+  border: 1px solid #ABABAB;
+  --min-height: 36px;
+  height: 42px;
+  margin: auto;
+  width: 90%;
+}
+
+.requests-container {
+   ion-card {
+     border-radius: 8px;
+     border: 0.74px solid #ABABAB;
+     box-shadow: none;
+     margin: 15px;
+     label {
+      color: #707070;
+      @include small-text();
+     }
+     p {
+     @include body-text();
+     color: #333333;
+     margin: 4px 0;
+     }
+     .info-row {
+      label {
+        color: #1F74BB;
+        @include body-text();
+      }
+      p{
+        @include normal-text-unbold();
+      }
+      background: #E6F4FF;
+      border-radius: 6px;
+      padding: 8px;
+      margin: 15px 0px;
+     }
+     ion-button {
+      min-height: 30px;
+      height: 36px;
+      @include body-text();
+      text-transform: capitalize;
+     }
+     ion-badge {
+       border-radius: 20px;
+       padding: 6px 12px;
+      &.pending {
+      color: #A95300;
+      background: #FFE9D2;     
+      }
+      &.accept {
+        background: #D1FAE5;
+        color: #059669;
+      }
+      &.reject {
+        background: #FFD8D8;
+       color: #C80000;
+      }
+     }
+   }  
+  }
+  .select-tag {
+    width: 100%;
+    margin-right: 10px;
+    ion-label {
+      width: max-content;
+      margin-right: 12px;
+      }
+     ion-select {
+       width: 150px;
+       border: 1px solid #ABABAB;
+       border-radius: 8px;
+       padding: 0 8px;
+     } 
+  }

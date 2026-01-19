@@ -19,11 +19,11 @@
 
     <ion-toolbar>
         <ion-item lines="none">
-            <div>
+            <div class="select-tag row-right">
                 <ion-label>Leave Type:</ion-label>
                 <div>
                     <ion-select [(ngModel)]="leaveTypeFilter" (ionChange)="onTypeFilterChange($event)"
-                        interface="popover">
+                    interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up">
                         <ion-select-option value="all">Select Leaves</ion-select-option>
                         <ion-select-option *ngFor="let type of leaveTypes" [value]="type.type_code">
                             {{ type.type_name }}
@@ -56,18 +56,21 @@
     </div>
 
     <!-- Leave Cards -->
-    <div class="leaves-container" *ngIf="!isLoading && filteredLeaves.length > 0">
-        <ion-card *ngFor="let leave of filteredLeaves" class="leave-card">
-            <ion-card-header>
-                <div class="card-header-content">
-                    <ion-avatar class="employee-avatar">
+    <div class="requests-container" *ngIf="!isLoading && filteredLeaves.length > 0">
+        <ion-card *ngFor="let leave of filteredLeaves" class="wfh-card">
+                <ion-card-header>
+                        <div class="card-header-content row-space-between">
+                            <div class="row-left">
+                                <ion-avatar class="employee-avatar mr-8">
                         <img [src]="getProfileImage(leave)" />
                     </ion-avatar>
                     <div class="employee-info">
                         <ion-card-title>{{ leave.FirstName }} {{ leave.LastName }}</ion-card-title>
-                        <p class="employee-number">{{ leave.EmployeeNumber }}</p>
-                    </div>
-                    <ion-badge [color]="getStatusColor(leave.status)">
+                    <p class="employee-number">{{ leave.EmployeeNumber }}</p>
+                        </div>
+                </div>     
+                   
+                    <ion-badge [ngClass]="getStatusColor(leave.status)">
                         {{ leave.status || 'pending' }}
                     </ion-badge>
                 </div>
@@ -75,26 +78,29 @@
 
             <ion-card-content>
                 <!-- Leave Type -->
-                <div class="info-row">
-                    <ion-icon name="folder-outline"></ion-icon>
+                <div class="row-space-between">
                     <div>
-                        <strong>Leave Type:</strong>
+                        <label>Leave Type:</label>
                         <p>{{ leave.type_name }} ({{ leave.type_code }})</p>
                     </div>
-                </div>
-
-                <!-- Duration -->
-                <div class="info-row">
-                    <ion-icon name="calendar-outline"></ion-icon>
                     <div>
-                        <strong>Duration:</strong>
+                        <label>Start Date - End Date</label>
                         <p>{{ leave.start_date | date:'mediumDate' }} - {{ leave.end_date | date:'mediumDate' }}</p>
+                    </div>
+                    <div>
+                        <label>Duration:</label>
                         <p class="total-days">{{ leave.total_days }} day(s)</p>
                     </div>
+                    <div>
+                            <label>Applied On:</label>
+                            <p>{{ leave.applied_at | date }}</p>
+                        </div>
                 </div>
 
+         
+
                 <!-- Available Balance -->
-                <div class="info-row" *ngIf="leave.available_balance !== undefined">
+                <!-- <div class="info-row" *ngIf="leave.available_balance !== undefined">
                     <ion-icon name="wallet-outline"></ion-icon>
                     <div>
                         <strong>Available Balance:</strong>
@@ -102,36 +108,25 @@
                             {{ leave.available_balance }} days
                         </p>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Reason -->
                 <div class="info-row" *ngIf="leave.reason">
-                    <ion-icon name="document-text-outline"></ion-icon>
-                    <div>
-                        <strong>Reason:</strong>
+                        <label>Reason:</label>
                         <p>{{ leave.reason }}</p>
-                    </div>
                 </div>
 
-                <!-- Applied Date -->
-                <div class="info-row">
-                    <ion-icon name="time-outline"></ion-icon>
-                    <div>
-                        <strong>Applied On:</strong>
-                        <p>{{ leave.applied_at | date:'medium' }}</p>
-                    </div>
-                </div>
+       
 
                 <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <ion-button expand="block" color="success" (click)="approveLeave(leave)">
-                        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                <div class="row-right">
+                    <ion-button class="primary-outline-btn" (click)="rejectLeave(leave)">
+                            Reject
+                        </ion-button>
+                    <ion-button class="primary-btn" (click)="approveLeave(leave)">
                         Approve
                     </ion-button>
-                    <ion-button expand="block" color="danger" (click)="rejectLeave(leave)">
-                        <ion-icon name="close-circle" slot="start"></ion-icon>
-                        Reject
-                    </ion-button>
+              
                 </div>
             </ion-card-content>
         </ion-card>

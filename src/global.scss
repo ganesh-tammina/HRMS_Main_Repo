@@ -286,6 +286,9 @@ ion-modal {
           }    
         }
       }
+      &.team-popup {
+        --width: 500px;
+      }
     }
 }
 .custom-popup {

@@ -207,9 +207,9 @@ export class ManagerLeaveApprovalsPage implements OnInit {
 
     getStatusColor(status: string): string {
         const statusColors: any = {
-            'pending': 'warning',
-            'approved': 'success',
-            'rejected': 'danger'
+            'pending': 'pending',
+            'approved': 'accept',
+            'rejected': 'reject'
         };
         return statusColors[status?.toLowerCase()] || 'medium';
     }

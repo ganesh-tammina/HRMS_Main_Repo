@@ -20,7 +20,7 @@
     </ion-toolbar>
 
     <!-- Mode Filter -->
-    <ion-toolbar>
+    <!-- <ion-toolbar>
         <ion-segment [(ngModel)]="modeFilter" (ionChange)="onModeFilterChange($event)">
             <ion-segment-button value="all">
                 <ion-label>All</ion-label>
@@ -32,7 +32,7 @@
                 <ion-label>WFO</ion-label>
             </ion-segment-button>
         </ion-segment>
-    </ion-toolbar>
+    </ion-toolbar> -->
 </ion-header>
 
 <ion-content>
@@ -58,25 +58,25 @@
         <ion-card *ngFor="let request of filteredRequests" class="wfh-card">
 
             <ion-card-header>
-                <div class="card-header-content">
-                    <ion-avatar class="employee-avatar">
-                        <img [src]="getProfileImage(request)" />
-                    </ion-avatar>
-
-                    <div class="employee-info">
-                        <ion-card-title>
-                            {{ request.FirstName }} {{ request.LastName }}
-                        </ion-card-title>
-                        <p class="employee-number">{{ request.EmployeeNumber }}</p>
-                    </div>
-
+                <div class="card-header-content row-space-between">
+                    <div class="row-left">
+                        <ion-avatar class="employee-avatar mr-8">
+                                <img [src]="getProfileImage(request)" />
+                            </ion-avatar>
+                        <div class="employee-info">
+                                <ion-card-title>
+                                    {{ request.FirstName }} {{ request.LastName }}
+                                </ion-card-title>
+                                <p class="employee-number">{{ request.EmployeeNumber }}</p>
+                            </div>
+                    </div>     
                     <div class="badges">
-                        <ion-badge [color]="getModeColor(request.work_mode)">
+                        <!-- <ion-badge [color]="getModeColor(request.work_mode)">
                             <ion-icon [name]="getModeIcon(request.work_mode)"></ion-icon>
                             {{ request.work_mode }}
-                        </ion-badge>
+                        </ion-badge> -->
 
-                        <ion-badge [color]="getStatusColor(request.status)">
+                        <ion-badge [ngClass]="getStatusColor(request.status)">
                             {{ request.status || 'pending' }}
                         </ion-badge>
                     </div>
@@ -84,57 +84,52 @@
             </ion-card-header>
 
             <ion-card-content>
-
                 <!-- Dates -->
-                <div class="info-row">
-                    <ion-icon name="calendar-outline"></ion-icon>
+                <div class="row-space-between">
                     <div>
-                        <strong>Start Date:</strong>
+                        <label>Start Date</label>
                         <p>{{ request.start_date | date }}</p>
                     </div>
                     <div>
-                        <strong>End Date:</strong>
+                        <label>End Date</label>
                         <p>{{ request.end_date | date }}</p>
                     </div>
+                    <div>
+                            <label>Requested On</label>
+                            <p>{{ request.created_at | date }}</p>
+                        </div>
+                        <div>
+                                <label>Duration</label>
+                                <p>{{ request.total_days }}</p>
+                            </div>
                 </div>
 
                 <!-- Mode -->
-                <div class="info-row">
+                <!-- <div class="info-row">
                     <ion-icon [name]="getModeIcon(request.work_mode)"></ion-icon>
                     <div>
-                        <strong>Work Mode:</strong>
+                        <label>Work Mode:</label>
                         <p>{{ request.leave_type }}</p>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Reason -->
                 <div class="info-row" *ngIf="request.reason">
-                    <ion-icon name="document-text-outline"></ion-icon>
                     <div>
-                        <strong>Reason:</strong>
+                        <label>Reason</label>
                         <p>{{ request.reason }}</p>
                     </div>
                 </div>
 
-                <!-- Applied -->
-                <div class="info-row">
-                    <ion-icon name="time-outline"></ion-icon>
-                    <div>
-                        <strong>Requested On:</strong>
-                        <p>{{ request.created_at | date:'medium' }}</p>
-                    </div>
-                </div>
+                
 
                 <!-- Actions -->
-                <div class="action-buttons">
-                    <ion-button expand="block" color="success" (click)="approveWFH(request)">
-                        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                <div class="row-right">                    
+                    <ion-button class="primary-outline-btn" (click)="rejectWFH(request)">
+                            Reject
+                        </ion-button>
+                    <ion-button class="primary-btn" (click)="approveWFH(request)">
                         Approve
-                    </ion-button>
-
-                    <ion-button expand="block" color="danger" (click)="rejectWFH(request)">
-                        <ion-icon name="close-circle" slot="start"></ion-icon>
-                        Reject
                     </ion-button>
                 </div>
 

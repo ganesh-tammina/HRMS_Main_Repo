@@ -118,9 +118,7 @@
     }
   }
 .side-by-side-grids {
-  display: flex;
-  gap: 16px;
-  margin: 16px;
+  margin: 0 6px;
 
   .card-leaves-block {
     flex: 1;              // equal width
@@ -208,6 +206,7 @@ ion-popover {
   }
     display: flex;
     justify-content: center;
+    width: 100%;
     img{
         max-width: 11%;
     }

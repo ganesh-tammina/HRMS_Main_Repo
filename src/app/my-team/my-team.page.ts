@@ -486,7 +486,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   async navigateToTimesheetApprovals() {
     const modal = await this.modalCtrl.create({
       component: ManagerTimesheetApprovalsPage,
-      cssClass: 'side-custom-popup',
+      cssClass: 'side-custom-popup team-popup',
       backdropDismiss: false,
     });
     await modal.present();
@@ -500,7 +500,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   async navigateToLeaveApprovals() {
     const modal = await this.modalCtrl.create({
       component: ManagerLeaveApprovalsPage,
-      cssClass: 'side-custom-popup',
+      cssClass: 'side-custom-popup team-popup',
       backdropDismiss: false,
     });
     await modal.present();
@@ -511,7 +511,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   async navigateToWfhApprovals() {
     const modal = await this.modalCtrl.create({
       component: ManagerWfhApprovalsPage,
-      cssClass: 'side-custom-popup',
+      cssClass: 'side-custom-popup team-popup',
       backdropDismiss: false,
     });
     await modal.present();
