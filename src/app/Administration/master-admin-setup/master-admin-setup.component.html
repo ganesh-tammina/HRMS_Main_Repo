@@ -36,7 +36,7 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
-        <div class="form-block">
+        <div class="form-block form-container">
             <div>
                 <ion-label>Employee</ion-label>
                   <ion-input labelPlacement="stacked"></ion-input>
@@ -60,7 +60,7 @@
                   </ion-select>
               </div>
         </div>     
-        <div class="row-center">
+        <div class="row-center form-footer">
             <ion-button (click)="toggleCreateUser()" class="primary-outline-btn mr-8">Close</ion-button>
             <ion-button class="primary-btn" (click)="createUser()">
               Create User
@@ -115,7 +115,7 @@
         <p>Assign Role</p>
       </ion-col>
       <ion-col size="4">
-        <p>Actions</p>
+        <p class="row-center">Actions</p>
       </ion-col>
     </ion-row>
     <ion-row class="table-row-list" *ngFor="let user of filteredUsers">
@@ -131,7 +131,7 @@
       <ion-col size="1">
         <p> {{ user.role | uppercase }}</p>
       </ion-col>
-      <ion-col size="4" class="row-left">
+      <ion-col style="padding: 0 40px;" size="4" class="row-left">
         <!-- <ion-button expand="block" color="success"
               (click)="makeHR(user.id)" [disabled]="user.role === 'hr'">
               HR

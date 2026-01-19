@@ -312,6 +312,7 @@ ion-modal {
         border-radius: 4px;
         padding: 0px 12px !important;
         margin: 11px 0px;
+        min-height: 45px;
       }
       ion-input, ion-textarea {
         border: 1px solid #C4C4C4;
@@ -319,6 +320,7 @@ ion-modal {
         border-radius: 4px;
         padding: 0px 12px !important;
         margin: 11px 0px;
+        min-height: 42px;
       }
       // ion-button {
       //   --background: #122F44;
@@ -623,7 +625,8 @@ ion-popover ion-content::-webkit-scrollbar {
   border-radius: 8px;
   padding: 0;
   ion-col {
-    padding-left: 8px;
+    // padding-left: 8px;
+    padding-left: 20px;
   }
   .table-header {
     height: 44px;

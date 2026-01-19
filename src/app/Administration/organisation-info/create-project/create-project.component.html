@@ -81,7 +81,8 @@
                   [clearInput]="true"></ion-input>
 
                 <!-- Selected Manager Display -->
-                <div *ngIf="selectedManager"
+                  <!-- <div *ngIf="selectedManager"> -->
+                <!-- <div *ngIf="selectedManager"
                   style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 8px; background: #e8f5e9; border-radius: 4px;">
                   <ion-icon name="person-circle-outline" style="font-size: 24px; color: #4caf50;"></ion-icon>
                   <div style="flex: 1;">
@@ -92,16 +93,15 @@
                   <ion-button fill="clear" size="small" (click)="clearManagerSelection()">
                     <ion-icon name="close-circle" slot="icon-only" color="danger"></ion-icon>
                   </ion-button>
-                </div>
+                </div> -->
 
                 <!-- Dropdown Results -->
-                <div *ngIf="filteredManagers.length > 0"
-                  style="position: absolute; z-index: 1000; width: 100%; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 4px;">
+                <div class="projectmanager" *ngIf="filteredManagers.length > 0">
                   <ion-list lines="full">
                     <ion-item button *ngFor="let emp of filteredManagers" (click)="selectManager(emp)">
                       <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
                       <ion-label>
-                        <h3>{{ emp.FirstName }} {{ emp.LastName }}</h3>
+                        <h4>{{ emp.FirstName }} {{ emp.LastName }}</h4>
                         <p>{{ emp.EmployeeNumber }} • {{ emp.WorkEmail }}</p>
                       </ion-label>
                     </ion-item>
