@@ -49,11 +49,14 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && filteredLeaves.length === 0" class="empty-state">
-        <ion-icon name="calendar-outline" size="large"></ion-icon>
-        <h2>No Pending Leaves</h2>
-        <p>All leave requests have been processed.</p>
-    </div>
+    <ion-row class="no-leaves" *ngIf="!isLoading && filteredLeaves.length === 0" >
+        <ion-col size="12" class="ion-text-center">
+          <img src="../../../../assets/no_leavedata_img.svg">
+          <p>No Pending Leaves</p>
+          <p>All leave requests have been processed.</p>
+        </ion-col>
+      </ion-row>
+  
 
     <!-- Leave Cards -->
     <div class="requests-container" *ngIf="!isLoading && filteredLeaves.length > 0">
