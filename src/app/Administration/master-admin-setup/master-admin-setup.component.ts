@@ -95,10 +95,19 @@ export class MasterAdminSetupComponent implements OnInit {
         this.makeHR(userId);
         break;
       case 'employee':
-        // Optionally add a method to demote to employee
-        this.presentToast('Role changed to Employee');
+        this.makeEmployee(userId);
         break;
     }
+  }
+
+  makeEmployee(userId: number): void {
+    this.adminSetupService.makeEmployee(userId).subscribe({
+      next: () => {
+        this.presentToast('User demoted to Employee');
+        this.loadUsers();
+      },
+      error: () => this.presentToast('Failed to demote to Employee'),
+    });
   }
 
 

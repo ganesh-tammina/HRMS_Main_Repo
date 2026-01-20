@@ -44,6 +44,14 @@ export class AdminSetup {
       this.getHeaders()
     );
   }
+  /** MAKE EMPLOYEE */
+  makeEmployee(userId: number): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/${userId}/make-employee`,
+      {},
+      this.getHeaders()
+    );
+  }
 
   /** MAKE ADMIN */
   makeAdmin(userId: number): Observable<any> {
