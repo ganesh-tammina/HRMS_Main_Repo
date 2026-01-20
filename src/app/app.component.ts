@@ -43,6 +43,7 @@ export class AppComponent implements OnInit {
   userRole: string | null = null;
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   userDesignation: string | null = null;
+  userDepartment: string | null = null;
 
   constructor(
     private router: Router,
@@ -82,9 +83,10 @@ export class AppComponent implements OnInit {
         } else {
           this.showIntro = false;
         }
-        // Fetch user designation from profile
+        // Fetch user department from profile
         this.employeeService.getMyProfile().subscribe(emp => {
           this.userDesignation = (emp?.designation_name || emp?.designation || '').toLowerCase();
+          this.userDepartment = (emp?.department_name || emp?.department || '').toLowerCase();
         });
       }
     });
@@ -111,14 +113,8 @@ export class AppComponent implements OnInit {
 
   shouldShowWorkTrack(): boolean {
     if (!this.isEmployeeOrManagerOrHr()) return false;
-    const restricted = [
-      'ceo',
-      'vice president delivery technology',
-      'delivery manager',
-      'manager'
-    ];
-    if (this.userDesignation) {
-      return !restricted.includes(this.userDesignation.trim().toLowerCase());
+    if (this.userDepartment && this.userDepartment.trim().toLowerCase() === 'management') {
+      return false;
     }
     return true;
   }
