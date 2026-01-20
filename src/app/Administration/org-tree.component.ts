@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class OrgTreeComponent implements OnInit {
-    orgTree: any = null;
+    orgTree: any[] = [];
     loading = false;
     error: string | null = null;
 
@@ -23,37 +23,47 @@ export class OrgTreeComponent implements OnInit {
 
     ngOnInit() {
         this.loading = true;
-        this.employeeService.getMyProfile().subscribe({
-            next: (emp) => {
-                if (!emp || !emp.id) {
-                    this.error = 'Could not load employee profile.';
+        this.employeeService.getAllEmployees().subscribe({
+            next: (employees) => {
+                if (!Array.isArray(employees) || employees.length === 0) {
+                    this.error = 'No employees found.';
                     this.loading = false;
                     return;
                 }
-                this.buildHierarchy(emp).then(tree => {
-                    this.orgTree = tree;
-                    // Expand the root manager/team by default
-                    if (tree && tree.id) {
-                        this.expanded[tree.id] = true;
+                this.orgTree = this.buildOrgTree(employees);
+                // Expand all root nodes by default
+                this.orgTree.forEach(root => {
+                    if (root && root.id) {
+                        this.expanded[root.id] = true;
                     }
-                    this.loading = false;
-                }).catch(err => {
-                    this.error = 'Failed to build org tree.';
-                    this.loading = false;
                 });
+                this.loading = false;
             },
             error: () => {
-                this.error = 'Could not load employee profile.';
+                this.error = 'Could not load employees.';
                 this.loading = false;
             }
         });
     }
 
-    // Recursively build the reporting hierarchy
-    async buildHierarchy(employee: any): Promise<any> {
-        const directReports = await this.employeeService.getReportingEmployees(employee.id).toPromise();
-        employee.directReports = Array.isArray(directReports) ? directReports : [];
-        await Promise.all(employee.directReports.map((e: any) => this.buildHierarchy(e)));
-        return employee;
+    // Build the full org tree from a flat employee list
+    buildOrgTree(employees: any[]): any[] {
+        const map: { [id: string]: any } = {};
+        const roots: any[] = [];
+
+        // Prepare map and clear directReports
+        employees.forEach(emp => {
+            map[emp.id] = { ...emp, directReports: [] };
+        });
+
+        employees.forEach(emp => {
+            const managerId = emp.reporting_manager_id || emp.manager_id || emp.reportingTo || emp.reporting_to;
+            if (managerId && map[managerId]) {
+                map[managerId].directReports.push(map[emp.id]);
+            } else {
+                roots.push(map[emp.id]);
+            }
+        });
+        return roots;
     }
 }

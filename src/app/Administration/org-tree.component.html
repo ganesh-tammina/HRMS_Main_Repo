@@ -19,9 +19,12 @@
         </ion-card-content>
     </ion-card>
 
-    <ng-container *ngIf="orgTree">
+
+    <ng-container *ngIf="orgTree && orgTree.length">
         <div class="org-tree-root">
-            <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: orgTree, level: 0 }"></ng-container>
+            <ng-container *ngFor="let root of orgTree">
+                <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: root, level: 0 }"></ng-container>
+            </ng-container>
         </div>
     </ng-container>
 
