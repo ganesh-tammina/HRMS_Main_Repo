@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { AlertController, ToastController
+import { IonicModule, ModalController } from '@ionic/angular';
+import {
+    AlertController, ToastController
 } from '@ionic/angular/standalone';
 import { WorkFromHomeService } from '../services/work-from-home.service';
 import { environment } from 'src/environments/environment';
@@ -14,7 +15,7 @@ import { environment } from 'src/environments/environment';
     templateUrl: './manager-wfh-approvals.page.html',
     styleUrls: ['./manager-wfh-approvals.page.scss'],
     imports: [
-        CommonModule, FormsModule,IonicModule
+        CommonModule, FormsModule, IonicModule
     ]
 })
 export class ManagerWfhApprovalsPage implements OnInit {
@@ -30,7 +31,8 @@ export class ManagerWfhApprovalsPage implements OnInit {
         private wfhService: WorkFromHomeService,
         private alertController: AlertController,
         private toastController: ToastController,
-        private router: Router
+        private router: Router,
+        private modalCtrl: ModalController
     ) { }
 
     ngOnInit() {
@@ -78,7 +80,7 @@ export class ManagerWfhApprovalsPage implements OnInit {
 
             return matchesSearch && matchesMode;
         });
-        console.log('leaves requests', this.filteredRequests );
+        console.log('leaves requests', this.filteredRequests);
     }
 
     onSearchChange(event: any) {
@@ -199,11 +201,25 @@ export class ManagerWfhApprovalsPage implements OnInit {
         });
         await toast.present();
     }
-    goBack() {
-        this.router.navigate(['/myteam']);
-        const modal = document.querySelector('ion-modal');
-        if (modal) {
-            modal.dismiss();
-        }
+    async goBack() {
+        const alert = await this.alertController.create({
+            header: 'Confirm',
+            message: 'Are you sure you want to go back?',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Yes',
+                    role: 'confirm',
+                    handler: async () => {
+                        await this.modalCtrl.dismiss();
+                        this.router.navigate(['/myteam']);
+                    }
+                }
+            ]
+        });
+        await alert.present();
     }
 }

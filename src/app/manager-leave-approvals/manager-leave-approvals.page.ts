@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { AlertController, ToastController
+import { IonicModule, ModalController } from '@ionic/angular';
+import {
+    AlertController, ToastController
 } from '@ionic/angular/standalone';
 import { LeaverequestService } from '../services/leaverequest.service';
 import { LeaveTypeService } from '../services/leavetype.service';
@@ -31,7 +32,8 @@ export class ManagerLeaveApprovalsPage implements OnInit {
         private leaveTypeService: LeaveTypeService,
         private alertController: AlertController,
         private toastController: ToastController,
-        private router: Router
+        private router: Router,
+        private modalCtrl: ModalController
     ) { }
 
     ngOnInit() {
@@ -213,11 +215,8 @@ export class ManagerLeaveApprovalsPage implements OnInit {
         }
         return 'assets/user.svg';
     }
-    goBack() {
-        this.router.navigate(['/myteam']);
-        const modal = document.querySelector('ion-modal');
-        if (modal) {
-            modal.dismiss();
-        }
+    async goBack() {
+        await this.modalCtrl.dismiss();
+        // No alert, just close the modal
     }
 }

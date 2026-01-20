@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule, AlertController, ToastController } from '@ionic/angular';
+import { IonicModule, AlertController, ToastController, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TimesheetService } from '../services/timesheets.service';
@@ -39,7 +39,8 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
         private timesheetService: TimesheetService,
         private alertController: AlertController,
         private toastController: ToastController,
-        private router: Router
+        private router: Router,
+        private modalCtrl: ModalController
     ) { }
 
     ngOnInit() {
@@ -323,11 +324,25 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
             event.target.complete();
         }, 1000);
     }
-            goBack() {
-        this.router.navigate(['/myteam']);
-        const modal = document.querySelector('ion-modal');
-        if (modal) {
-            modal.dismiss();
-        }
+    async goBack() {
+        const alert = await this.alertController.create({
+            header: 'Confirm',
+            message: 'Are you sure you want to go back?',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Yes',
+                    role: 'confirm',
+                    handler: async () => {
+                        await this.modalCtrl.dismiss();
+                        // Do NOT navigate to /myteam, just close the modal
+                    }
+                }
+            ]
+        });
+        await alert.present();
     }
 }
