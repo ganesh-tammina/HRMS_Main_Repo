@@ -66,13 +66,16 @@
                     </div>
                 </ion-card>
                 <!-- vertical line down from this node if has children -->
-                <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]" class="org-vertical-line"></div>
+                <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]"
+                    class="org-vertical-line"></div>
             </div>
             <!-- horizontal line and children -->
-            <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]" class="org-children-flex">
+            <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]"
+                class="org-children-flex">
                 <div class="org-horizontal-line"></div>
                 <ng-container *ngFor="let sub of employee.directReports">
-                    <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
                 </ng-container>
             </div>
         </div>
