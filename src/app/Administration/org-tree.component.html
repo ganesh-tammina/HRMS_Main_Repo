@@ -51,26 +51,30 @@
     </ng-container>
 
     <ng-template #recursiveTree let-employee let-level="level">
-        <div class="org-team-member" [ngStyle]="{ 'margin-left.px': level * 32 }">
-            <ion-card class="org-card org-card-member">
-                <div class="org-member-header" style="display: flex; align-items: center; gap: 0.5em;">
-                    <span>{{ employee.name || employee.FirstName + ' ' + employee.LastName }}</span>
-                    <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>
-                    <button *ngIf="employee.directReports && employee.directReports.length > 0" type="button"
-                        class="expand-btn"
-                        (click)="$event.stopPropagation(); expanded[employee.id] = !expanded[employee.id]"
-                        [attr.aria-expanded]="expanded[employee.id]">
-                        <ion-icon [name]="expanded[employee.id] ? 'chevron-down' : 'chevron-forward'"></ion-icon>
-                    </button>
-                </div>
-                <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]"
-                    class="org-sub-team">
-                    <ng-container *ngFor="let sub of employee.directReports">
-                        <ng-container
-                            *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
-                    </ng-container>
-                </div>
-            </ion-card>
+        <div class="org-tree-node-flex">
+            <div class="org-tree-node-card">
+                <ion-card class="org-card org-card-member">
+                    <div class="org-member-header" style="display: flex; align-items: center; gap: 0.5em;">
+                        <span>{{ employee.name || employee.FirstName + ' ' + employee.LastName }}</span>
+                        <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>
+                        <button *ngIf="employee.directReports && employee.directReports.length > 0" type="button"
+                            class="expand-btn"
+                            (click)="$event.stopPropagation(); expanded[employee.id] = !expanded[employee.id]"
+                            [attr.aria-expanded]="expanded[employee.id]">
+                            <ion-icon [name]="expanded[employee.id] ? 'chevron-down' : 'chevron-forward'"></ion-icon>
+                        </button>
+                    </div>
+                </ion-card>
+                <!-- vertical line down from this node if has children -->
+                <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]" class="org-vertical-line"></div>
+            </div>
+            <!-- horizontal line and children -->
+            <div *ngIf="employee.directReports && employee.directReports.length > 0 && expanded[employee.id]" class="org-children-flex">
+                <div class="org-horizontal-line"></div>
+                <ng-container *ngFor="let sub of employee.directReports">
+                    <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
+                </ng-container>
+            </div>
         </div>
     </ng-template>
 </ion-content>

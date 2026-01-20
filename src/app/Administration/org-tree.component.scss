@@ -1,3 +1,73 @@
+.org-tree-node-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.org-tree-node-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.org-vertical-line {
+  width: 2px;
+  height: 24px;
+  background: #0077b6;
+  margin: 0 auto;
+}
+
+.org-children-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  margin-top: 0;
+}
+
+.org-horizontal-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #0077b6;
+  z-index: 0;
+}
+
+.org-children-flex > * {
+  margin: 0 16px;
+}
+.org-team-member-wrapper {
+  position: relative;
+}
+
+.org-team-member {
+  position: relative;
+}
+
+.org-connector {
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  width: 16px;
+  height: 2px;
+  background: #b2e2ff;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.org-children {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-left: 16px;
+  border-left: 2px solid #b2e2ff;
+  padding-left: 8px;
+}
 .org-tree-node.selected {
   box-shadow: 0 0 0 3px #3880ff44;
   border-color: #3880ff;
