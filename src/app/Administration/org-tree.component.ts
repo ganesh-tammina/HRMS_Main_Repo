@@ -1,5 +1,7 @@
 
+
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { EmployeeService } from '../services/employee.service';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -10,7 +12,24 @@ import { CommonModule } from '@angular/common';
     styleUrls: ['./org-tree.component.scss'],
     standalone: true,
     imports: [IonicModule, CommonModule],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    animations: [
+        trigger('expandCollapse', [
+            state('expanded', style({
+                maxHeight: '1000px',
+                opacity: 1,
+                overflow: 'visible',
+            })),
+            state('collapsed', style({
+                maxHeight: '0',
+                opacity: 0,
+                overflow: 'hidden',
+            })),
+            transition('expanded <=> collapsed', [
+                animate('400ms cubic-bezier(0.4,0,0.2,1)')
+            ]),
+        ])
+    ]
 })
 export class OrgTreeComponent implements OnInit {
     orgTree: any[] = [];
@@ -18,9 +37,97 @@ export class OrgTreeComponent implements OnInit {
     error: string | null = null;
     expanded: { [id: string]: boolean } = {};
     private myEmployeeId: number | null = null;
+    parentMap: { [childId: string]: number | null } = {};
 
     constructor(private employeeService: EmployeeService) { }
 
+    // Collapse all siblings and expand only the selected node
+    exclusiveExpand(nodeId: number) {
+        // Build parentMap if not present
+        if (!this.parentMap || Object.keys(this.parentMap).length === 0) {
+            this.parentMap = {};
+            const buildParentMap = (nodes: any[], parentId: number | null) => {
+                for (const node of nodes) {
+                    this.parentMap[node.id] = parentId;
+                    if (node.directReports && node.directReports.length > 0) {
+                        buildParentMap(node.directReports, node.id);
+                    }
+                }
+            };
+            buildParentMap(this.orgTree, null);
+        }
+        const parentId = this.parentMap[nodeId];
+        let siblings: number[] = [];
+        if (parentId === null) {
+            siblings = Object.keys(this.parentMap)
+                .filter(id => this.parentMap[id] === null)
+                .map(id => +id);
+        } else {
+            siblings = Object.keys(this.parentMap)
+                .filter(id => this.parentMap[id] === parentId)
+                .map(id => +id);
+        }
+        siblings.forEach(id => {
+            if (id !== nodeId) this.expanded[id] = false;
+        });
+        this.expanded[nodeId] = !this.expanded[nodeId];
+    }
+
+    // Find a node by employee id in the org tree
+    findEmployeeNode(nodes: any[], id: number): any | null {
+        for (const node of nodes) {
+            if (node.id === id) return node;
+            if (node.directReports && node.directReports.length > 0) {
+                const found = this.findEmployeeNode(node.directReports, id);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    // Build the full org tree from a flat employee list
+    buildOrgTree(employees: any[]): any[] {
+        const map: { [id: string]: any } = {};
+        const roots: any[] = [];
+
+        // Prepare map and clear directReports
+        employees.forEach(emp => {
+            map[emp.id] = { ...emp, directReports: [] };
+        });
+
+        employees.forEach(emp => {
+            const managerId = emp.reporting_manager_id || emp.manager_id || emp.reportingTo || emp.reporting_to;
+            if (managerId && map[managerId]) {
+                map[managerId].directReports.push(map[emp.id]);
+            } else {
+                roots.push(map[emp.id]);
+            }
+        });
+        return roots;
+    }
+
+    // Expand only the logged-in user's team, collapse others
+    setInitialExpansion(nodes: any[], myId: number | null) {
+        if (!myId) return;
+        // Find the node for the logged-in user and expand its path
+        const expandPath = (node: any): boolean => {
+            if (node.id === myId) {
+                this.expanded[node.id] = true;
+                return true;
+            }
+            if (node.directReports && node.directReports.length > 0) {
+                for (const dr of node.directReports) {
+                    if (expandPath(dr)) {
+                        this.expanded[node.id] = true;
+                        return true;
+                    }
+                }
+            }
+            this.expanded[node.id] = false;
+            return false;
+        };
+        nodes.forEach(root => expandPath(root));
+    }
     ngOnInit() {
         this.loading = true;
         // Get logged-in employee profile first
@@ -116,61 +223,5 @@ export class OrgTreeComponent implements OnInit {
                 this.loading = false;
             }
         });
-    }
-
-    // Find a node by employee id in the org tree
-    findEmployeeNode(nodes: any[], id: number): any | null {
-        for (const node of nodes) {
-            if (node.id === id) return node;
-            if (node.directReports && node.directReports.length > 0) {
-                const found = this.findEmployeeNode(node.directReports, id);
-                if (found) return found;
-            }
-        }
-        return null;
-    }
-
-    // Build the full org tree from a flat employee list
-    buildOrgTree(employees: any[]): any[] {
-        const map: { [id: string]: any } = {};
-        const roots: any[] = [];
-
-        // Prepare map and clear directReports
-        employees.forEach(emp => {
-            map[emp.id] = { ...emp, directReports: [] };
-        });
-
-        employees.forEach(emp => {
-            const managerId = emp.reporting_manager_id || emp.manager_id || emp.reportingTo || emp.reporting_to;
-            if (managerId && map[managerId]) {
-                map[managerId].directReports.push(map[emp.id]);
-            } else {
-                roots.push(map[emp.id]);
-            }
-        });
-        return roots;
-    }
-
-    // Expand only the logged-in user's team, collapse others
-    setInitialExpansion(nodes: any[], myId: number | null) {
-        if (!myId) return;
-        // Find the node for the logged-in user and expand its path
-        const expandPath = (node: any): boolean => {
-            if (node.id === myId) {
-                this.expanded[node.id] = true;
-                return true;
-            }
-            if (node.directReports && node.directReports.length > 0) {
-                for (const dr of node.directReports) {
-                    if (expandPath(dr)) {
-                        this.expanded[node.id] = true;
-                        return true;
-                    }
-                }
-            }
-            this.expanded[node.id] = false;
-            return false;
-        };
-        nodes.forEach(root => expandPath(root));
     }
 }
