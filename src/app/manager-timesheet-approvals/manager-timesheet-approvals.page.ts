@@ -325,24 +325,7 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
         }, 1000);
     }
     async goBack() {
-        const alert = await this.alertController.create({
-            header: 'Confirm',
-            message: 'Are you sure you want to go back?',
-            buttons: [
-                {
-                    text: 'Cancel',
-                    role: 'cancel'
-                },
-                {
-                    text: 'Yes',
-                    role: 'confirm',
-                    handler: async () => {
-                        await this.modalCtrl.dismiss();
-                        // Do NOT navigate to /myteam, just close the modal
-                    }
-                }
-            ]
-        });
-        await alert.present();
+        await this.modalCtrl.dismiss();
+        // No alert, just close the modal
     }
 }
