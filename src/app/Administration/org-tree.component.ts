@@ -16,31 +16,43 @@ export class OrgTreeComponent implements OnInit {
     orgTree: any[] = [];
     loading = false;
     error: string | null = null;
-
     expanded: { [id: string]: boolean } = {};
+    private myEmployeeId: number | null = null;
 
     constructor(private employeeService: EmployeeService) { }
 
     ngOnInit() {
         this.loading = true;
-        this.employeeService.getAllEmployees().subscribe({
-            next: (employees) => {
-                if (!Array.isArray(employees) || employees.length === 0) {
-                    this.error = 'No employees found.';
+        // Get logged-in employee profile first
+        this.employeeService.getMyProfile().subscribe({
+            next: (me) => {
+                if (!me || !me.id) {
+                    this.error = 'Could not load employee profile.';
                     this.loading = false;
                     return;
                 }
-                this.orgTree = this.buildOrgTree(employees);
-                // Expand all root nodes by default
-                this.orgTree.forEach(root => {
-                    if (root && root.id) {
-                        this.expanded[root.id] = true;
+                this.myEmployeeId = me.id;
+                // Now get all employees
+                this.employeeService.getAllEmployees().subscribe({
+                    next: (employees) => {
+                        if (!Array.isArray(employees) || employees.length === 0) {
+                            this.error = 'No employees found.';
+                            this.loading = false;
+                            return;
+                        }
+                        this.orgTree = this.buildOrgTree(employees);
+                        // Expand only the logged-in user's team, collapse others
+                        this.setInitialExpansion(this.orgTree, this.myEmployeeId);
+                        this.loading = false;
+                    },
+                    error: () => {
+                        this.error = 'Could not load employees.';
+                        this.loading = false;
                     }
                 });
-                this.loading = false;
             },
             error: () => {
-                this.error = 'Could not load employees.';
+                this.error = 'Could not load employee profile.';
                 this.loading = false;
             }
         });
@@ -65,5 +77,28 @@ export class OrgTreeComponent implements OnInit {
             }
         });
         return roots;
+    }
+
+    // Expand only the logged-in user's team, collapse others
+    setInitialExpansion(nodes: any[], myId: number | null) {
+        if (!myId) return;
+        // Find the node for the logged-in user and expand its path
+        const expandPath = (node: any): boolean => {
+            if (node.id === myId) {
+                this.expanded[node.id] = true;
+                return true;
+            }
+            if (node.directReports && node.directReports.length > 0) {
+                for (const dr of node.directReports) {
+                    if (expandPath(dr)) {
+                        this.expanded[node.id] = true;
+                        return true;
+                    }
+                }
+            }
+            this.expanded[node.id] = false;
+            return false;
+        };
+        nodes.forEach(root => expandPath(root));
     }
 }
