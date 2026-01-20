@@ -24,20 +24,23 @@
         <div class="org-tree-root">
             <ng-container *ngFor="let root of orgTree">
                 <!-- Top Manager node -->
-                <div *ngIf="root.topManager">
-                    <div style="margin: 0 0 8px 0; font-weight: 500; color: #0077b6;">Top Manager</div>
+                <div class="org-vertical-stack">
+                    <div *ngIf="root.topManager">
+                        <div style="margin: 0 0 8px 0; font-weight: 500; color: #0077b6;">Top Manager</div>
+                        <ng-container
+                            *ngTemplateOutlet="recursiveTree; context: { $implicit: root.topManager, level: 0 }"></ng-container>
+                        <div class="org-vertical-connector"></div>
+                    </div>
+                    <div *ngIf="root.manager">
+                        <div style="margin: 16px 0 8px 0; font-weight: 500; color: #0077b6;">Manager</div>
+                        <ng-container
+                            *ngTemplateOutlet="recursiveTree; context: { $implicit: root.manager, level: 0 }"></ng-container>
+                        <div class="org-vertical-connector"></div>
+                    </div>
+                    <div style="margin: 24px 0 0 0; font-weight: 500; color: #023e8a;">You</div>
                     <ng-container
-                        *ngTemplateOutlet="recursiveTree; context: { $implicit: root.topManager, level: 0 }"></ng-container>
+                        *ngTemplateOutlet="recursiveTree; context: { $implicit: root, level: 0 }"></ng-container>
                 </div>
-                <!-- Manager node -->
-                <div *ngIf="root.manager">
-                    <div style="margin: 16px 0 8px 0; font-weight: 500; color: #0077b6;">Manager</div>
-                    <ng-container
-                        *ngTemplateOutlet="recursiveTree; context: { $implicit: root.manager, level: 0 }"></ng-container>
-                </div>
-                <!-- Main employee node -->
-                <div style="margin: 24px 0 0 0; font-weight: 500; color: #023e8a;">You</div>
-                <ng-container *ngTemplateOutlet="recursiveTree; context: { $implicit: root, level: 0 }"></ng-container>
                 <!-- Co-team (peers) -->
                 <div *ngIf="root.coTeam && root.coTeam.length" class="org-co-team">
                     <div style="margin: 16px 0 8px 0; font-weight: 500; color: #0077b6;">Your Peers</div>
