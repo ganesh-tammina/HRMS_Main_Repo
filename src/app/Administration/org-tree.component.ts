@@ -40,9 +40,69 @@ export class OrgTreeComponent implements OnInit {
                             this.loading = false;
                             return;
                         }
-                        this.orgTree = this.buildOrgTree(employees);
-                        // Expand only the logged-in user's team, collapse others
-                        this.setInitialExpansion(this.orgTree, this.myEmployeeId);
+                        const orgTree = this.buildOrgTree(employees);
+                        // Only proceed if myEmployeeId is not null
+                        if (this.myEmployeeId !== null) {
+                            const myNode = this.findEmployeeNode(orgTree, this.myEmployeeId);
+                            if (myNode) {
+                                // Find manager
+                                const myManagerId = myNode.reporting_manager_id || myNode.manager_id || myNode.reportingTo || myNode.reporting_to;
+                                let coTeam: any[] = [];
+                                let managerNode: any = null;
+                                let managerTeam: any[] = [];
+                                let topManagerNode: any = null;
+                                if (myManagerId) {
+                                    managerNode = this.findEmployeeNode(orgTree, myManagerId);
+                                    if (managerNode && managerNode.directReports) {
+                                        coTeam = managerNode.directReports.filter((e: any) => e.id !== this.myEmployeeId);
+                                    }
+                                    // Find manager's manager (top of the manager)
+                                    const managerManagerId = managerNode ? (managerNode.reporting_manager_id || managerNode.manager_id || managerNode.reportingTo || managerNode.reporting_to) : null;
+                                    if (managerManagerId) {
+                                        topManagerNode = this.findEmployeeNode(orgTree, managerManagerId);
+                                        if (topManagerNode && topManagerNode.directReports) {
+                                            managerTeam = topManagerNode.directReports.filter((e: any) => e.id !== myManagerId);
+                                        }
+                                    }
+                                }
+                                // Compose the focused view: top manager, manager, my node, co-team
+                                const focusNode = {
+                                    ...myNode,
+                                    coTeam: coTeam,
+                                    manager: managerNode,
+                                    managerTeam: managerTeam,
+                                    topManager: topManagerNode
+                                };
+                                this.orgTree = [focusNode];
+                                this.expanded = {};
+                                this.expanded[myNode.id] = true;
+                                if (myNode.directReports) {
+                                    myNode.directReports.forEach((dr: any) => {
+                                        this.expanded[dr.id] = false;
+                                    });
+                                }
+                                if (coTeam) {
+                                    coTeam.forEach((ct: any) => {
+                                        this.expanded[ct.id] = false;
+                                    });
+                                }
+                                if (managerNode) {
+                                    this.expanded[managerNode.id] = false;
+                                }
+                                if (managerTeam) {
+                                    managerTeam.forEach((mt: any) => {
+                                        this.expanded[mt.id] = false;
+                                    });
+                                }
+                                if (topManagerNode) {
+                                    this.expanded[topManagerNode.id] = false;
+                                }
+                            } else {
+                                this.orgTree = [];
+                            }
+                        } else {
+                            this.orgTree = [];
+                        }
                         this.loading = false;
                     },
                     error: () => {
@@ -56,6 +116,18 @@ export class OrgTreeComponent implements OnInit {
                 this.loading = false;
             }
         });
+    }
+
+    // Find a node by employee id in the org tree
+    findEmployeeNode(nodes: any[], id: number): any | null {
+        for (const node of nodes) {
+            if (node.id === id) return node;
+            if (node.directReports && node.directReports.length > 0) {
+                const found = this.findEmployeeNode(node.directReports, id);
+                if (found) return found;
+            }
+        }
+        return null;
     }
 
     // Build the full org tree from a flat employee list
