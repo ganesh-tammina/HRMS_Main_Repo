@@ -104,6 +104,7 @@ export class PreonboardingComponent implements OnInit {
   async openCandidateForm() {
     const modal = await this.modalCtrl.create({
       component: CandiateCreateComponent,
+       cssClass: 'side-custom-popup ',
     });
 
     await modal.present();
