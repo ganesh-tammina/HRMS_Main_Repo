@@ -111,7 +111,7 @@ export class AppComponent implements OnInit {
             if (!introSeen) {
               localStorage.setItem('introSeen', 'true'); // Remember intro was shown
             }
-          }, 5000); // Display intro for 3 seconds
+          }, 6000); // Display intro for 3 seconds
         } else {
           this.showIntro = false;
         }
