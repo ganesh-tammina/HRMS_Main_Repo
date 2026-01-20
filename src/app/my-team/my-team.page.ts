@@ -522,6 +522,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
   private updateRole() {
     this.userRole = this.routeGuardService.userRole?.toLowerCase() || null;
-    this.isManager = this.userRole === 'manager';
+    // Treat HR as manager for UI purposes
+    this.isManager = this.userRole === 'manager' || this.userRole === 'hr';
   }
 }
