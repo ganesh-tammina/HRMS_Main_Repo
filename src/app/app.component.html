@@ -31,7 +31,7 @@
                 </ion-item>
               </ion-menu-toggle>
 
-              <ion-menu-toggle *ngIf="!isAdminOnly()" auto-hide="false">
+              <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowLeave()" auto-hide="false">
                 <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                   <div class="row-left">

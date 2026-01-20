@@ -83,7 +83,7 @@ export class AppComponent implements OnInit {
         } else {
           this.showIntro = false;
         }
-        // Fetch user department from profile
+        // Fetch user department and designation from profile
         this.employeeService.getMyProfile().subscribe(emp => {
           this.userDesignation = (emp?.designation_name || emp?.designation || '').toLowerCase();
           this.userDepartment = (emp?.department_name || emp?.department || '').toLowerCase();
@@ -117,6 +117,11 @@ export class AppComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  shouldShowLeave(): boolean {
+    // Hide leave for CEO
+    return !(this.userDesignation && this.userDesignation.trim().toLowerCase() === 'ceo');
   }
 
   isAdminOnly(): boolean {
