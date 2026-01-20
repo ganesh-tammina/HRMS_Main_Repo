@@ -70,8 +70,7 @@
             </div>
             <!-- horizontal line and children -->
             <div *ngIf="employee.directReports && employee.directReports.length > 0"
-                [@expandCollapse]="expanded[employee.id] ? 'expanded' : 'collapsed'"
-                class="org-children-flex">
+                [@expandCollapse]="expanded[employee.id] ? 'expanded' : 'collapsed'" class="org-children-flex">
                 <div class="org-horizontal-line"></div>
                 <ng-container *ngIf="expanded[employee.id]">
                     <ng-container *ngFor="let sub of employee.directReports">
