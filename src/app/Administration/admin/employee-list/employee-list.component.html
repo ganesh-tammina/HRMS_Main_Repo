@@ -67,12 +67,12 @@
                       </div>
                     </div>
 
-                    <!-- <div class="modal-actions">
+                    <div class="modal-actions">
                       <ion-button fill="outline" color="medium" (click)="modal.dismiss()">Cancel</ion-button>
                       <ion-button class="primary-btn" (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">
                         Upload File
                       </ion-button>
-                    </div> -->
+                    </div>
 
                   </ion-content>
                 </ng-template>
@@ -102,10 +102,10 @@
                 <ion-col *ngIf="isHR" size="1">
                   <p>Actions</p>
                 </ion-col>
-                  <ion-col size="2">
+                <ion-col size="2">
                   <p> Department</p>
                 </ion-col>
-                  <ion-col size="2">
+                <ion-col size="2">
                   <p> Phone Number</p>
                 </ion-col>
                 <!-- <ion-col size="1">
@@ -120,10 +120,10 @@
                 <ion-col size="2">
                   <p style="margin-left: 25px;">{{ candidate.id }}</p>
                 </ion-col>
-                  <ion-col size="2">
+                <ion-col size="2">
                   <p>{{ candidate.FullName || '-' }}</p>
                 </ion-col>
-                  <ion-col size="3">
+                <ion-col size="3">
                   <p>{{ candidate.WorkEmail || '-' }}</p>
                 </ion-col>
                 <ion-col size="1">
