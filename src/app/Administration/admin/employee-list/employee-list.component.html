@@ -32,7 +32,7 @@
           <ion-card-header class="row-space-between">
             <ion-card-title>Employees <small>{{allCandidates.length}}</small></ion-card-title>
             <!-- *ngIf="isHR" -->
-            <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="loadEmployees()"
+            <ion-searchbar *ngIf="isHR" [(ngModel)]="searchTerm" (ionInput)="loadEmployees()"
               placeholder="Search Employees, Employee ID or Department " showCancelButton="never">
             </ion-searchbar>
             <ion-card-subtitle>
@@ -67,12 +67,12 @@
                       </div>
                     </div>
 
-                    <!-- <div class="modal-actions">
+                    <div class="modal-actions">
                       <ion-button fill="outline" color="medium" (click)="modal.dismiss()">Cancel</ion-button>
                       <ion-button class="primary-btn" (click)="EmployeesUpload()" [disabled]="!EmployeeselectedFile">
                         Upload File
                       </ion-button>
-                    </div> -->
+                    </div>
 
                   </ion-content>
                 </ng-template>
@@ -87,8 +87,8 @@
 
               <!-- Header -->
               <ion-row class="table-header">
-                <ion-col size="2">
-                  <p style="margin-left: 25px;">Employee ID</p>
+                <ion-col size="1">
+                  <p>Employee ID</p>
                 </ion-col>
                 <ion-col size="2">
                   <p>Name</p>
@@ -99,14 +99,17 @@
                 <ion-col size="3">
                   <p> Email Id</p>
                 </ion-col>
-                <ion-col *ngIf="isHR" size="1">
-                  <p>Actions</p>
-                </ion-col>
-                  <ion-col size="2">
+                <ion-col size="2">
                   <p> Department</p>
                 </ion-col>
-                  <ion-col size="2">
+                <ion-col [size]="isHR ? 1 : 2">
+                  <p>Designation</p>
+                </ion-col>
+                <ion-col size="2">
                   <p> Phone Number</p>
+                </ion-col>
+                <ion-col *ngIf="isHR" size="1">
+                  <p>Actions</p>
                 </ion-col>
                 <!-- <ion-col size="1">
                   <p>Actions</p>
@@ -117,17 +120,26 @@
               <!-- Rows -->
 
               <ion-row class="table-row-list" *ngFor="let candidate of pagedCandidates">
-                <ion-col size="2">
-                  <p style="margin-left: 25px;">{{ candidate.id }}</p>
+                <ion-col size="1">
+                  <p>{{ candidate.id }}</p>
                 </ion-col>
-                  <ion-col size="2">
+                <ion-col size="2">
                   <p>{{ candidate.FullName || '-' }}</p>
                 </ion-col>
-                  <ion-col size="3">
+                <ion-col size="3">
                   <p>{{ candidate.WorkEmail || '-' }}</p>
                 </ion-col>
-                <ion-col size="1">
-                  <ion-button *ngIf="isHR" fill="outline" size="small" (click)="selectEmployee(candidate)"><img
+                <ion-col size="2">
+                  <p>Department</p>
+                </ion-col>
+                <ion-col [size]="isHR ? 1 : 2">
+                  <p>Designation</p>
+                </ion-col>
+                <ion-col size="2">
+                  <p>Phone Number</p>
+                </ion-col>
+                <ion-col size="1" *ngIf="isHR">
+                  <ion-button fill="clear" size="small" (click)="selectEmployee(candidate)"><img
                       src="../../../../assets/Icons/pencil.svg"></ion-button>
                 </ion-col>
               </ion-row>

@@ -1,4 +1,4 @@
-<ion-content class="ion-padding custom-popup">
+<ion-content class="ion-padding custom-popup ">
 
   <!-- HEADER -->
   <div class="modal-header row-space-between">
@@ -12,15 +12,15 @@
   </div>
 
   <form [formGroup]="candidateForm" (ngSubmit)="submitForm()">
-
-    <!-- PERSONAL INFO -->
+   <div class="form-continer">
+  <!-- PERSONAL INFO -->
     <div class="section-card">
       <div class="section-title">
         <ion-icon name="person-outline"></ion-icon>
         Personal Information
       </div>
 
-      <ion-grid>
+      <ion-grid class="info">
         <ion-row>
           <ion-col size="4">
             <ion-item>
@@ -69,7 +69,7 @@
         Contact Details
       </div>
 
-      <ion-grid>
+      <ion-grid class="info">
         <ion-row>
           <ion-col size="6">
             <ion-item>
@@ -95,7 +95,7 @@
         Job Information
       </div>
 
-      <ion-grid>
+      <ion-grid class="info">
         <ion-row>
           <ion-col size="4">
             <ion-item>
@@ -147,7 +147,7 @@
         Organization Details
       </div>
 
-      <ion-item>
+      <ion-item class="info">
         <ion-label position="stacked">Designation</ion-label>
         <ion-select formControlName="designation_id">
           <ion-select-option *ngFor="let d of designations" [value]="d.id">
@@ -156,7 +156,7 @@
         </ion-select>
       </ion-item>
 
-      <ion-item>
+      <ion-item class="info">
         <ion-label position="stacked">Department</ion-label>
         <ion-select formControlName="department_id">
           <ion-select-option *ngFor="let d of departments" [value]="d.id">
@@ -165,7 +165,7 @@
         </ion-select>
       </ion-item>
 
-      <ion-item>
+      <ion-item class="info">
         <ion-label position="stacked">Location</ion-label>
         <ion-select formControlName="location_id">
           <ion-select-option *ngFor="let l of locations" [value]="l.id">
@@ -174,11 +174,15 @@
         </ion-select>
       </ion-item>
     </div>
+   </div>
 
     <!-- ACTION -->
-    <ion-button expand="block" class="primary-btn" type="submit" [disabled]="submitting">
+ <div class="form-footer row-right">
+     <ion-button  expand="block" class="primary-btn" type="submit" [disabled]="submitting">
       {{ submitting ? 'Saving...' : 'Save & Continue' }}
     </ion-button>
-
+  </div>
   </form>
+ 
+ 
 </ion-content>

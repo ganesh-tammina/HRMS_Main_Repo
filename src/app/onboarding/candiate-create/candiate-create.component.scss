@@ -1,3 +1,5 @@
+@import '../../../global.scss';
+
 ion-content {
   --background: #f4f6fb;
 }
@@ -8,7 +10,7 @@ ion-content {
 }
 
 .modal-header {
-  margin-bottom: 16px;
+  margin-bottom: 0px !important;
 
   h2 {
     font-size: 22px;
@@ -60,12 +62,13 @@ ion-item {
 
 ion-input,
 ion-select {
-  background: #fff;
+  background: #fff !important;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 0px 10px;
   min-height: 42px;
   font-size: 14px;
+  opacity: 1 !important;
 }
 
 ion-input[readonly] {
@@ -77,4 +80,12 @@ ion-input[readonly] {
   --border-radius: 8px;
   font-weight: 600;
   height: 44px;
+}
+.info{
+  ion-input{
+    min-height: 36px;
+  }
+}
+.form-footer{
+  background: transparent !important;
 }
