@@ -287,4 +287,10 @@ export class PreonboardingComponent implements OnInit {
     this.router.navigate(['./onboarding_Tasks']);
     //});
   }
+    onboard() {
+    this.router.navigate(['./preonboarding-setup']);
+  }
+  org() {
+    this.router.navigate(['./pre-onboarding-cards']);
+  }
 }

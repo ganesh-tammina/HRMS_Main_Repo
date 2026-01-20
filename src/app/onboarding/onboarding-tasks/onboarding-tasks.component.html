@@ -4,8 +4,14 @@
     <app-onboarding-mainheader></app-onboarding-mainheader>
   </ion-header>
   <ion-content class="pre-on-boarding-block" fullscreen>
-      <p class="page-header mb-8"> Org > Onboarding > Onboarding tasks </p>
-      <ion-row class="mt-30 mb-15">
+    <!-- <ion-content class="pre-on-boarding-block" fullscreen> -->
+    <p class="page-header mt-0 mb-8">
+    <a routerLink="/preonboarding-cards" (click)="org()">Org /</a>
+    <a routerLink="/pre-onboarding-setup" (click)="onboard()">Onboarding /</a>
+    Onboarding tasks
+  </p>
+      <!-- <p class="page-header mb-8"> Org > Onboarding > Onboarding tasks </p> -->
+      <ion-row class="mt-20 mb-10">
         <ion-col>
          <p class="page-sub-header">Onboarding tasks</p>
          <p> Track employees who are assigned onboarding tasks and employees whose onboarding is not initiated.

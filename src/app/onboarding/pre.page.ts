@@ -262,4 +262,10 @@ export class PostPage implements OnInit {
     });
     await modal.present();
   }
+    onboard() {
+    this.router.navigate(['./preonboarding-setup']);
+  }
+  org() {
+    this.router.navigate(['./pre-onboarding-cards']);
+  }
 }

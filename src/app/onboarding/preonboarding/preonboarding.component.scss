@@ -27,6 +27,7 @@ ion-item.ion-no-border {
   margin-top: 15px; 
 }
 .page-sub-header {
+  font-size: 18px !important;
   @include card-header();
   margin: 0;
 }
