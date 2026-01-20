@@ -31,7 +31,7 @@
                 </ion-item>
               </ion-menu-toggle>
 
-              <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false">
+              <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowWorkTrack()" auto-hide="false">
                 <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                   <div class="row-left">
@@ -149,7 +149,7 @@
                 </div>
               </ion-item>
             </ion-menu-toggle> -->
-              <ion-menu-toggle *ngIf="!isAdminOnly() && isEmployeeOrManagerOrHr()" auto-hide="false" id='menu-buttons2'>
+              <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowWorkTrack()" auto-hide="false" id='menu-buttons2'>
                 <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
                   <div class="row-left">

@@ -1,13 +1,5 @@
-// (Removed duplicate and misplaced top-level code)
 import { Component, OnInit } from '@angular/core';
-import {
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-} from '@angular/router';
-// import { addIcons } from 'ionicons';
-// import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Candidate, CandidateService } from './services/pre-onboarding.service';
@@ -17,6 +9,7 @@ import { RouteGuardService } from './services/route-guard/route-service/route-gu
 import { NavController } from '@ionic/angular';
 import { EmployeeService } from './services/employee.service';
 import { AdminService } from './services/admin-functionality/admin.service.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -48,93 +41,63 @@ export class AppComponent implements OnInit {
   currentUrl: any; //get current page
   isRefreshing = false;
   userRole: string | null = null;
-
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
+  userDesignation: string | null = null;
+
   constructor(
     private router: Router,
     private candidateService: CandidateService,
     private routeGaurdService: RouteGuardService,
     private employeeService: EmployeeService,
     private service: AdminService,
-    private navCtrl: NavController // ✅ add this
+    private navCtrl: NavController
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
-    // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
-
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // Hide menu on login page
         this.showMenu = !event.urlAfterRedirects.includes('/login');
-        console.log('this.showMenu', this.showMenu);
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
-        console.log('this.isLoginPage', this.isLoginPage);
-        this.iscandiateofferPage =
-          event.urlAfterRedirects.includes('/candidate_status');
-        console.log('this.iscandiateofferPage', this.iscandiateofferPage);
-        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes(
-          '/candidate-offer-letter'
-        );
-        console.log(
-          'this.iscandiateofferLetterPage',
-          this.iscandiateofferLetterPage
-        );
-        this.iscandiateofferPage =
-          event.urlAfterRedirects.includes('/candidate_status');
-        console.log('this.iscandiateofferPage', this.iscandiateofferPage);
-
-        // Update user role on navigation to ensure menu visibility is correct
+        this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
+        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter');
         this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
-        console.log('🔍 Navigation Event - User Role:', this.userRole);
         const role = this.userRole || '';
         this.isAdmin = (role === 'admin' || role === 'hr');
-
-        // Quick refresh effect for main navigation pages after login
         this.handlePageRefresh(event.urlAfterRedirects);
-
         const userData = localStorage.getItem('loggedInUser');
         if (userData) {
           const parsedData = JSON.parse(userData);
           this.userType = parsedData.type;
-          console.log('User type:', this.userType);
         } else {
           this.userType = null;
         }
-
-        // Show intro screen only on first app entry or logout
         const introSeen = localStorage.getItem('introSeen');
-
         if (!introSeen || this.isLoginPage) {
           this.showIntro = true;
-
           setTimeout(() => {
             this.showIntro = false;
             if (!introSeen) {
-              localStorage.setItem('introSeen', 'true'); // Remember intro was shown
+              localStorage.setItem('introSeen', 'true');
             }
-          }, 6000); // Display intro for 3 seconds
+          }, 6000);
         } else {
           this.showIntro = false;
         }
+        // Fetch user designation from profile
+        this.employeeService.getMyProfile().subscribe(emp => {
+          this.userDesignation = (emp?.designation_name || emp?.designation || '').toLowerCase();
+        });
       }
     });
     this.currentUrl = this.router.url;
-    console.log("URL", this.currentUrl);
   }
 
-  toggleDropdown() {
-    this.showCategories = !this.showCategories;
-  }
   ngOnInit(): void {
-
-    // Existing logic
     this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
     this.isAdmin = false;
-
     const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
     if (role === 'admin' || role === 'hr') {
       this.isAdmin = true;
     }
-
     this.service.getAnnouncements().subscribe((r: any) => console.log(r));
   }
 
@@ -146,8 +109,20 @@ export class AppComponent implements OnInit {
     this.showIntro = false;
   }
 
-  // (Removed duplicate role-checking methods)
-  // Role checking helper methods
+  shouldShowWorkTrack(): boolean {
+    if (!this.isEmployeeOrManagerOrHr()) return false;
+    const restricted = [
+      'ceo',
+      'vice president delivery technology',
+      'delivery manager',
+      'manager'
+    ];
+    if (this.userDesignation) {
+      return !restricted.includes(this.userDesignation.trim().toLowerCase());
+    }
+    return true;
+  }
+
   isAdminOnly(): boolean {
     return this.userRole === 'admin';
   }
@@ -185,6 +160,6 @@ export class AppComponent implements OnInit {
       this.routeGaurdService.token && this.routeGaurdService.refreshToken;
     const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
     const isMainPage = mainPages.some((page) => url.includes(page));
-
+    // ...existing logic if needed
   }
 }
