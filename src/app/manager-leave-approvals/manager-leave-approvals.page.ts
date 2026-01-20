@@ -2,11 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
-    IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon,
-    IonBadge, IonSearchbar, IonSelect, IonSelectOption, IonLabel, IonItem, IonAvatar,
-    IonRefresher, IonRefresherContent, IonSpinner, AlertController, ToastController
+import { IonicModule } from '@ionic/angular';
+import { AlertController, ToastController
 } from '@ionic/angular/standalone';
 import { LeaverequestService } from '../services/leaverequest.service';
 import { LeaveTypeService } from '../services/leavetype.service';
@@ -18,11 +15,7 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./manager-leave-approvals.page.scss'],
     standalone: true,
     imports: [
-        CommonModule, FormsModule,
-        IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
-        IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon,
-        IonBadge, IonSearchbar, IonSelect, IonSelectOption, IonLabel, IonItem, IonAvatar,
-        IonRefresher, IonRefresherContent, IonSpinner
+        CommonModule, FormsModule, IonicModule
     ]
 })
 export class ManagerLeaveApprovalsPage implements OnInit {

@@ -237,14 +237,17 @@
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="!loading && filteredTimesheets.length === 0">
-        <ion-icon name="checkmark-done-circle-outline" color="success"></ion-icon>
-        <h3>No Pending Timesheets</h3>
-        <p>All timesheets have been reviewed!</p>
-        <ion-button fill="outline" (click)="clearFilters()">
+    <ion-row class="no-leaves" *ngIf="!loading && filteredTimesheets.length === 0">
+        <ion-col size="12" class="ion-text-center">
+          <img src="../../../../assets/no_leavedata_img.svg">
+          <p class="no-data-text">No Pending Timesheets</p>
+          <p>All timesheets have been reviewed!</p>
+          <ion-button fill="outline" (click)="clearFilters()">
             <ion-icon slot="start" name="refresh-outline"></ion-icon>
             Reset Filters
         </ion-button>
-    </div>
+        </ion-col>
+      </ion-row>
+  
 
 </ion-content>

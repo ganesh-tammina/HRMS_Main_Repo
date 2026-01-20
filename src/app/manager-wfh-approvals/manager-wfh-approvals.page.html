@@ -46,12 +46,14 @@
         <p>Loading pending WFH requests...</p>
     </div>
 
-    <!-- Empty -->
-    <div *ngIf="!isLoading && filteredRequests.length === 0" class="empty-state">
-        <ion-icon name="home-outline" size="large"></ion-icon>
-        <h2>No Pending Requests</h2>
+      <!-- Empty State -->
+      <ion-row class="no-leaves" *ngIf="!isLoading && filteredRequests.length === 0">
+        <ion-col size="12" class="ion-text-center">
+          <img src="../../../../assets/no_leavedata_img.svg">
+          <h2>No Pending Requests</h2>
         <p>All WFH requests have been processed.</p>
-    </div>
+        </ion-col>
+      </ion-row>
 
     <!-- Cards -->
     <div class="requests-container" *ngIf="!isLoading && filteredRequests.length > 0">

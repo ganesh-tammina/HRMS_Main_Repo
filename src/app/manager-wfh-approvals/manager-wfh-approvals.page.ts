@@ -2,12 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
-    IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon,
-    IonBadge, IonSearchbar, IonSegment, IonSegmentButton, IonLabel, IonAvatar,
-    IonRefresher, IonRefresherContent, IonSpinner,
-    AlertController, ToastController
+import { IonicModule } from '@ionic/angular';
+import { AlertController, ToastController
 } from '@ionic/angular/standalone';
 import { WorkFromHomeService } from '../services/work-from-home.service';
 import { environment } from 'src/environments/environment';
@@ -18,11 +14,7 @@ import { environment } from 'src/environments/environment';
     templateUrl: './manager-wfh-approvals.page.html',
     styleUrls: ['./manager-wfh-approvals.page.scss'],
     imports: [
-        CommonModule, FormsModule,
-        IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
-        IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon,
-        IonBadge, IonSearchbar, IonSegment, IonSegmentButton, IonLabel, IonAvatar,
-        IonRefresher, IonRefresherContent, IonSpinner
+        CommonModule, FormsModule,IonicModule
     ]
 })
 export class ManagerWfhApprovalsPage implements OnInit {
