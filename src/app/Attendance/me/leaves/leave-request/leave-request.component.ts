@@ -56,9 +56,14 @@ export class LeaveRequestComponent implements OnInit {
   loadPendingLeaves() {
     this.leaveRequestService.getMyLeaves(this.currentYear).subscribe({
       next: (leaves: any[]) => {
+        // Always use start_date and end_date from backend, fallback to from_date/to_date if needed
         this.existingLeaves = leaves
           .filter(l => l.status === 'PENDING' || l.status === 'APPROVED' || l.status === 'REJECTED')
-          .map(l => ({ from_date: l.from_date || l.start_date, to_date: l.to_date || l.end_date, status: l.status }));
+          .map(l => ({
+            from_date: l.start_date || l.from_date,
+            to_date: l.end_date || l.to_date || l.start_date || l.from_date, // fallback for single day
+            status: l.status
+          }));
       },
       error: () => {
         this.existingLeaves = [];
@@ -185,6 +190,7 @@ export class LeaveRequestComponent implements OnInit {
           err?.error?.error || 'Failed to submit leave',
           'danger'
         );
+        this.loadPendingLeaves(); // Always refresh leaves after error too
       }
     });
   }
