@@ -168,7 +168,7 @@
                         <p>{{ formatDate(timesheet.date) }}</p>
                     </div>
                     <div>
-                        <label>Submitted:</label>
+                        <label>Submitted On:</label>
                         <p>{{ formatDate(timesheet.submission_date) }}</p>
                     </div>
                     <div>
@@ -239,8 +239,8 @@
     <ion-row class="no-leaves" *ngIf="!loading && filteredTimesheets.length === 0">
         <ion-col size="12" class="ion-text-center">
             <img src="../../../../assets/no_leavedata_img.svg">
-            <p class="no-data-text">No Pending Timesheets</p>
-            <p>All timesheets have been reviewed!</p>
+            <p class="no-data-text">
+                    All timesheets have been reviewed, and there are no pending Timesheets.</p>
             <ion-button fill="outline" (click)="clearFilters()">
                 <ion-icon slot="start" name="refresh-outline"></ion-icon>
                 Reset Filters

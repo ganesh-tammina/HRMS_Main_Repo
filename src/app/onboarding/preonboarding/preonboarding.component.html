@@ -106,7 +106,7 @@
       <ion-col size="2" class="row-left">
         <p>Candidate Name</p>
       </ion-col>
-      <ion-col size="2">
+      <ion-col size="1">
         <p>Offer Status</p>
       </ion-col>
 
@@ -114,7 +114,7 @@
         <p>Business Unit</p>
       </ion-col>
 
-      <ion-col size="2">
+      <ion-col size="1">
         <p>Department</p>
       </ion-col>
 
@@ -122,49 +122,13 @@
         <p>Location</p>
       </ion-col>
 
-      <ion-col size="2">
+      <ion-col size="1">
         <p>Joining Date</p>
       </ion-col>
 
-      <ion-col size="2">
-        <p>Actions</p>
-      </ion-col>
-      <!-- <div class="header-table">
-           <ion-col size="2" class="row-left">
-        <ion-checkbox class="pr-15"></ion-checkbox>
-        <p>Candidate Name</p>
-      </ion-col>
-      </div>
-      <div class="header-table">
-      <ion-col size="1">
-        <p>Offer Status</p>
-      </ion-col>
-      </div>
-      <div class="header-table">
-            <ion-col size="1">
-  <p>Business Unit</p>
-</ion-col>
-      </div>
-      <div class="header-table">
-      <ion-col size="1">
-        <p>Department</p>
-      </ion-col>
-      </div>
-      <div class="header-table">
-      <ion-col size="2">
-        <p>Location</p>
-      </ion-col>
-      </div>
-      <div class="header-table">
-      <ion-col size="2">
-        <p>Joining Date</p>
-      </ion-col>
-      </div>
-      <div class="header-table">
       <ion-col size="3">
         <p>Actions</p>
-      </ion-col> -->
-      <!-- </div> -->
+      </ion-col>   
 
     </ion-row>
     <div class="table-list">
@@ -190,7 +154,7 @@
               {{candidate.status}}</h5>
             <!-- <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div> -->
           </ion-col>
-          <ion-col size="1">
+          <ion-col size="2">
             <p>{{ candidate.BusinessUnit }}</p>
           </ion-col>
           <ion-col size="1">
@@ -199,7 +163,7 @@
           <ion-col size="2">
             <p>{{candidate.JobLocation}}</p>
           </ion-col>
-          <ion-col size="2">
+          <ion-col size="1">
             <p>{{candidate.date_joined}}</p>
           </ion-col>
           <ion-col size="3">

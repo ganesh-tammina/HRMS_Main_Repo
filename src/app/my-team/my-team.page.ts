@@ -486,7 +486,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
   async navigateToTimesheetApprovals() {
     const modal = await this.modalCtrl.create({
       component: ManagerTimesheetApprovalsPage,
-      cssClass: 'side-custom-popup team-popup',
+      cssClass: 'side-custom-popup timesheet-popup',
       backdropDismiss: false,
     });
     await modal.present();

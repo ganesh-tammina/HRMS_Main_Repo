@@ -153,13 +153,14 @@ ion-item.ion-no-border {
 }
 .tab {
   padding: 12px 16px;
-  font-size: 14px;
+  @include normal-text-unbold();
   font-weight: 500;
   color: var(--ion-text-color);
   border-bottom: 2px solid transparent;
   cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
- 
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
 }
 .tab.active {  
   color: var(--ion-white-color);
