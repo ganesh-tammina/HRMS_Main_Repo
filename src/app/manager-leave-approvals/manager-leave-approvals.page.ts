@@ -120,7 +120,7 @@ export class ManagerLeaveApprovalsPage implements OnInit {
     async rejectLeave(leave: any) {
         const alert = await this.alertController.create({
             header: 'Reject Leave',
-            message: `Reject ${leave.FirstName} ${leave.LastName}'s ${leave.type_name} request?`,
+            message: `Are you sure you want to reject this leave request?`,
             inputs: [
                 {
                     name: 'rejection_reason',

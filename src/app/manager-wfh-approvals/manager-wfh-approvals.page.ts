@@ -111,6 +111,7 @@ export class ManagerWfhApprovalsPage implements OnInit {
     async rejectWFH(request: any) {
         const alert = await this.alertController.create({
             header: 'Reject WFH Request',
+            message: `Are you sure you want to reject this WFH request?`,
             inputs: [
                 {
                     name: 'remarks',

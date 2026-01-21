@@ -652,9 +652,9 @@ ion-popover ion-content::-webkit-scrollbar {
     border-bottom: 0.5px solid #ABABAB;
     align-items: center;
     ion-col {
-      @include normal-text();
+      @include table-text-bold();
       p {
-        @include normal-text();
+        @include table-text-bold();
       }
     }
   }
@@ -753,4 +753,40 @@ ion-badge {
    background: #FFD8D8;
   color: #C80000;
  }
+}
+
+.alert-wrapper {
+  min-width:300px !important;
+  textarea {
+    border: 1px solid #ABABAB !important;
+    border-radius: 8px;
+    padding: 8px !important;
+    min-height: 100px !important;
+  }
+  .alert-message {
+   padding-bottom: 0 !important;
+  }
+  .alert-button.sc-ion-alert-md.alert-button-role-cancel {
+    @extend .primary-outline-btn;
+    padding: 3px 14px;
+  }
+  .alert-button.sc-ion-alert-md {
+    @extend .primary-btn;
+    padding: 3px 14px;
+    @include text-bold();
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+}
+
+.text-wrap {
+  p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+  }
+ 
 }

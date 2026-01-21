@@ -77,18 +77,18 @@
 
     <ion-grid class="table-block" *ngIf="leaveRequestsDeatils && leaveRequestsDeatils.length > 0; else noPendingLeaves">
       <ion-row class="table-header">
-        <ion-col size="3">Start & End Date</ion-col>
+        <ion-col size="2">Start & End Date</ion-col>
         <ion-col size="2">Leave Type</ion-col>
         <ion-col size="1">Days</ion-col>
-        <ion-col size="2">Reason</ion-col>
         <ion-col size="2">Applied Date</ion-col>
-        <ion-col size="2">Status</ion-col>
+        <ion-col size="2">Status</ion-col>        
+        <ion-col size="3">Reason</ion-col>
       </ion-row>
 
       <ng-container *ngFor="let leave of leaveRequestsDeatils">
         <ng-container *ngIf="leave.status === 'PENDING'">
           <ion-row class="table-row-list">
-            <ion-col size="3">
+            <ion-col size="2">
               <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
             </ion-col>
             <ion-col size="2">
@@ -98,13 +98,13 @@
               <p>{{ leave.days }}</p>
             </ion-col>
             <ion-col size="2">
-              <p>{{ leave.reason }}</p>
-            </ion-col>
-            <ion-col size="2">
               <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
             </ion-col>
             <ion-col size="2">
               <p class="pending">{{ leave.status }}</p>
+            </ion-col>
+            <ion-col size="3" class="text-wrap">
+              <p>{{ leave.reason }}</p>
             </ion-col>
           </ion-row>
         </ng-container>
@@ -154,7 +154,7 @@
                 <ion-col size="1">
                   <p>{{ leave.days }}</p>
                 </ion-col>
-                <ion-col size="2">
+                <ion-col size="2" class="text-wrap">
                   <p>{{ leave.reason }}</p>
                 </ion-col>
                 <ion-col size="2">
