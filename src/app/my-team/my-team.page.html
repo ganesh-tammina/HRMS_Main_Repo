@@ -6,11 +6,11 @@
       </div>
 
       <ion-buttons slot="end" class="header-buttons">
-         <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
+         <!-- <ion-button (click)="refreshAttendanceStatus()" *ngIf="teamMembers.length && !showAttendance"
             class="primary-outline-btn">
             <ion-icon id="teamIcon" name="refresh-circle-outline"></ion-icon>
             Refresh
-         </ion-button>
+         </ion-button> -->
          <ion-button (click)="navigateToTimesheetApprovals()" *ngIf="teamMembers.length && isManager"
             class="primary-outline-btn" id="timeApp">
             <ion-icon name="time-outline"></ion-icon> Timesheet Approval
@@ -86,7 +86,7 @@
       <!-- Summary Cards -->
       <div class="summary-cards" *ngIf="attendanceSummary">
          <ion-card class="summary-card">
-            <ion-card-content  (click)="setAttendanceFilter('all')">
+            <ion-card-content (click)="setAttendanceFilter('all')">
                <div class="summary-item">
                   <ion-img src="../../assets/all-team-bg-blue.svg"></ion-img>
                   <div class="summary-text">

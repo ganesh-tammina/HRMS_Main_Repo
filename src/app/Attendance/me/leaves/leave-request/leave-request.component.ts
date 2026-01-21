@@ -36,6 +36,9 @@ export class LeaveRequestComponent implements OnInit {
   selectedDateTo = '';
   minDate = new Date().toISOString().split('T')[0];
 
+  /** Store all leaves for date check (pending, approved, rejected) */
+  existingLeaves: { from_date: string; to_date: string; status: string }[] = [];
+
   constructor(
     private fb: FormBuilder,
     private employeeLeaves: EmployeeLeavesService,
@@ -47,6 +50,25 @@ export class LeaveRequestComponent implements OnInit {
     this.buildForm();
     this.loadLeaveBalance();
     this.handleDateChanges();
+    this.loadPendingLeaves();
+  }
+  /** Load all leaves (pending, approved, rejected) for this employee */
+  loadPendingLeaves() {
+    this.leaveRequestService.getMyLeaves(this.currentYear).subscribe({
+      next: (leaves: any[]) => {
+        // Always use start_date and end_date from backend, fallback to from_date/to_date if needed
+        this.existingLeaves = leaves
+          .filter(l => l.status === 'PENDING' || l.status === 'APPROVED' || l.status === 'REJECTED')
+          .map(l => ({
+            from_date: l.start_date || l.from_date,
+            to_date: l.end_date || l.to_date || l.start_date || l.from_date, // fallback for single day
+            status: l.status
+          }));
+      },
+      error: () => {
+        this.existingLeaves = [];
+      }
+    });
   }
 
   /* ================= FORM ================= */
@@ -100,21 +122,48 @@ export class LeaveRequestComponent implements OnInit {
     }
 
     const form = this.leaveForm.value;
-
-    const selectedLeave = this.leaveTypes.find(
-      l => l.id === form.leave_type
-    );
-
+    const selectedLeave = this.leaveTypes.find(l => l.id === form.leave_type);
     if (!selectedLeave) {
       this.presentToast('Invalid leave type', 'danger');
       return;
     }
-
     if (this.total_days > selectedLeave.available) {
-      this.presentToast(
-        `Only ${selectedLeave.available} days available`,
-        'warning'
-      );
+      this.presentToast(`Only ${selectedLeave.available} days available`, 'warning');
+      return;
+    }
+
+
+    // Check if any date in the new request is already taken (pending, approved, or rejected)
+    const normalize = (date: any) => {
+      if (!date) return '';
+      if (typeof date === 'string' && date.length === 10) return date; // already YYYY-MM-DD
+      const d = new Date(date);
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
+
+    const newFrom = new Date(form.start_date);
+    const newTo = new Date(form.end_date);
+    let dateConflict = false;
+    for (let d = new Date(newFrom); d <= newTo; d.setDate(d.getDate() + 1)) {
+      const dStr = normalize(d);
+      for (const l of this.existingLeaves) {
+        const lFrom = new Date(l.from_date);
+        const lTo = new Date(l.to_date);
+        for (let ld = new Date(lFrom); ld <= lTo; ld.setDate(ld.getDate() + 1)) {
+          const ldStr = normalize(ld);
+          // Debug log for troubleshooting
+          // console.log('Comparing', dStr, 'with', ldStr, 'status:', l.status);
+          if (dStr === ldStr) {
+            dateConflict = true;
+            break;
+          }
+        }
+        if (dateConflict) break;
+      }
+      if (dateConflict) break;
+    }
+    if (dateConflict) {
+      this.presentToast('A leave request already exists for at least one of these dates. Duplicate leave requests are not allowed.', 'danger');
       return;
     }
 
@@ -133,14 +182,15 @@ export class LeaveRequestComponent implements OnInit {
         this.selectedDateFrom = '';
         this.selectedDateTo = '';
         this.presentToast('Leave request submitted successfully', 'success');
-
         this.leaveSubmitted.emit(); // Emit event to parent
+        this.loadPendingLeaves(); // Refresh pending leaves
       },
       error: (err) => {
         this.presentToast(
           err?.error?.error || 'Failed to submit leave',
           'danger'
         );
+        this.loadPendingLeaves(); // Always refresh leaves after error too
       }
     });
   }
