@@ -67,7 +67,6 @@
   <div class="table">
     <ion-row class="table-header">
       <ion-col size="2" class="row-left">
-        <ion-checkbox class="pr-15"></ion-checkbox>
         <p>NAME & JOB TITLE</p>
       </ion-col>
       <ion-col size="2">
@@ -90,8 +89,7 @@
     <div class="table-list">
       <ion-grid *ngFor="let items of candidateList">
         <ion-row class="table-list-row" *ngIf="candidateList.length !== 0">
-          <ion-col size="3" class="row-left">
-            <ion-checkbox class="pr-15"></ion-checkbox>
+          <ion-col size="3">
             <div class="cell">
               <img src="../../../assets/Icons/user-01.svg" width="18">
               <div class="name-stack">

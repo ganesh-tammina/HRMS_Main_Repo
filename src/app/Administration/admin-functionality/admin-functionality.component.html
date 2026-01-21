@@ -54,8 +54,9 @@
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Location</p>
-            <p class="form-subheader">Create a new Location in your organization</p>
+            <p class="form-header">{{ editingLocationId ? 'Update Location' : 'Add New Location' }}</p>
+            <p class="form-subheader">{{ editingLocationId ? 'Update the selected Location' : 'Create a new Location in your organization' }}</p>
+     
             <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Location Name</ion-label>
@@ -110,9 +111,9 @@
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Department</p>
-            <p class="form-subheader">Create a new Department in your organization</p>
-            <ion-list lines="none">
+              <p class="form-header">{{ editingDepartmentId ? 'Update Department' : 'Add New Department' }}</p>
+              <p class="form-subheader">{{ editingDepartmentId ? 'Update the selected Department' : 'Create a new Department in your organization' }}</p>
+          <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Department Name</ion-label>
                 <ion-input [(ngModel)]="departmentName" placeholder="Department name"></ion-input>
@@ -236,9 +237,10 @@
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Shift</p>
-            <p class="form-subheader">Create a new New Shift in your organization</p>
-            <ion-list lines="none">
+              <p class="form-header">{{ editingShiftId ? 'Update Shift' : 'Add New Shift' }}</p>
+              <p class="form-subheader">{{ editingShiftId ? 'Update the selected Shift' : 'Create a new Shift in your organization' }}</p>
+       
+         <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Shift Name</ion-label>
                 <ion-input [(ngModel)]="shiftForm.name" placeholder="Shift name"></ion-input>
@@ -305,8 +307,9 @@
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Weekly Off Policy</p>
-            <p class="form-subheader">Create a new Weekly Off Policy in your organization</p>
+             <p class="form-header">{{ editingWeeklyOffPolicyId ? 'Update Weekly Off Policy' : 'Add New Weekly Off Policy' }}</p>
+            <p class="form-subheader">{{ editingWeeklyOffPolicyId ? 'Update the selected Weekly Off Policy' : 'Create a new Weekly Off Policy in your organization' }}</p>
+     
             <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Policy Name</ion-label>
@@ -470,8 +473,9 @@
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Announcement</p>
-            <p class="form-subheader">Create a new New Announcement</p>
+            <p class="form-header">{{ editingAnnouncementId ? 'Update Announcement' : 'Add New Announcement' }}</p>
+            <p class="form-subheader">{{ editingAnnouncementId ? 'Update the selected Announcement' : 'Create a new Announcement in your organization' }}</p>
+     
             <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Title</ion-label>
@@ -539,8 +543,9 @@
           </ion-col>
 
           <ion-col size="4" class="tab-content-form mr-15">
-            <p class="form-header">Add New Business Unit</p>
-            <p class="form-subheader">Create a new Business Unit in your organization</p>
+            <p class="form-header">{{ editingBusinessUnitId ? 'Update Business Unit' : 'Add New Business Unit' }}</p>
+            <p class="form-subheader">{{ editingBusinessUnitId ? 'Update the selected Business Unit' : 'Create a new Business Unit in your organization' }}</p>
+     
             <ion-list lines="none">
               <ion-item>
                 <ion-label position="stacked">Business Unit Name</ion-label>

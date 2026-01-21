@@ -282,7 +282,7 @@ ion-modal {
           height: 36px;
           padding: 0px 5px;
           display: flex;
-          align-items: center;
+          align-items: center;         
           cursor: pointer;
           ion-label{
             margin: 0;
@@ -655,7 +655,7 @@ ion-popover ion-content::-webkit-scrollbar {
     height: auto;
     min-height: 44px;
     border-bottom: 0.5px solid #ABABAB;
-    @include normal-text-unbold();
+    @include table-text();
     align-items: center;
     &:nth-child(odd) {
       background: #f4f6ff;
