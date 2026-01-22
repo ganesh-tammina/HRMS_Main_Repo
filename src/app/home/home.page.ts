@@ -15,6 +15,7 @@ import { EmployeeService } from '../services/employee.service';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
 import { EmployeeLeavesService } from '../services/employee-leaves.service';
+import { AttendanceService } from '../services/attendance.service';
 
 
 @Component({
@@ -41,6 +42,8 @@ export class HomePage implements OnInit {
   currentTime: string = '';
   currentYear = new Date().getFullYear();
   workMode: string = 'On-Site';
+  monthlyAttendanceReport: any[] = [];
+  attendanceRate = 0;
   leaveTypes: { code: string; name: string; available: number }[] = [];
 
 
@@ -57,15 +60,16 @@ export class HomePage implements OnInit {
 
   /* ================= DASHBOARD ================= */
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
-
+  cdRef: ChangeDetectorRef;
   constructor(
     private employeeService: EmployeeService,
     private candidateService: CandidateService,
     private alertController: AlertController,
     private router: Router,
+    private attendanceService: AttendanceService,
     private employeeLeaves: EmployeeLeavesService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) { this.cdRef = cdr; }
 
   /* =====================================================
      🔹 ngOnInit → runs ONCE (static data only)
@@ -76,6 +80,23 @@ export class HomePage implements OnInit {
     this.setupClock();
     this.setupDays();
     this.loadLeaveBalance()
+
+    // ✅ RECEIVE MONTHLY ATTENDANCE
+    this.attendanceService.monthlyReport$.subscribe(report => {
+      this.monthlyAttendanceReport = report;
+      console.log('🏠 Home received monthly attendance:', this.monthlyAttendanceReport);
+
+      // Example calculation
+      if (report.length) {
+        const presentDays = report.filter(r => r.status === 'present').length;
+        this.attendanceRate = Math.round(
+          (presentDays / report.length) * 100
+        );
+      }
+
+      // Force UI update if needed
+      this.cdr.detectChanges();
+    });
 
     const showLoginSuccess = localStorage.getItem('showLoginSuccess');
     if (showLoginSuccess === 'true') {

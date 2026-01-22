@@ -42,7 +42,9 @@ export class AttendanceService {
   constructor(
     private http: HttpClient,
     private routeGuardService: RouteGuardService
-  ) {}
+  ) { }
+  private monthlyReportSource = new BehaviorSubject<any[]>([]);
+  monthlyReport$ = this.monthlyReportSource.asObservable();
   private getKey(employeeId: number): string {
     return `${this.prefix}${employeeId}`;
   }
@@ -315,5 +317,12 @@ export class AttendanceService {
     return this.http.get(this.baseURL + '/check-status/' + empId, {
       withCredentials: true,
     });
+  }
+  setMonthlyReport(report: any[]): void {
+    this.monthlyReportSource.next(report);
+  }
+
+  getMonthlyReports(): any[] {
+    return this.monthlyReportSource.getValue();
   }
 }

@@ -23,8 +23,12 @@
                   </p>
                   <!-- ✅ DYNAMIC DATE -->
                   <p class="date">
-                    <span>{{ todayDate }}. </span>
-                    <span>{{ workMode }}</span>
+                    <span>{{ todayDate }}</span>
+                    <span *ngIf="monthlyAttendanceReport.length">
+                      <span *ngFor="let item of monthlyAttendanceReport">
+                        {{ item.location}}
+                      </span>
+                    </span>
                   </p>
 
                   <ion-buttons>
@@ -62,38 +66,42 @@
     <ion-row>
       <ion-col size-sm="12" size-md="12" size-lg="6" size-xl="6">
         <!-- Today Overview card -->
-        <ion-card class="overview-block">
+        <ion-card class="overview-block" *ngIf="monthlyAttendanceReport.length">
           <div class="row-space-between border-bottom">
             <div>
               <h3 class="card-header">Today’s Overview</h3>
               <p class="card-dec">Your attendance, progress, and status at a glance</p>
             </div>
             <div class="label">
-              <p>On Time • 94% this month</p>
+              <p>On Time • {{ attendanceRate }}% this Week</p>
             </div>
           </div>
 
-          <div class="card-content">
+          <div class="card-content" *ngFor="let item of monthlyAttendanceReport">
             <ion-row>
               <ion-col size="7">
                 <div class="row-space-between">
                   <p class="label-test">Clock In</p>
-                  <p class="time">09:04 AM</p>
+                  <p class="time">{{item.first_check_in | date:'h:mm a'}}</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Last Punch Out</p>
+                  <p class="time">{{item.last_check_out | date:'h:mm a'}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Status</p>
-                  <p class="status">Active</p>
+                  <p class="status">{{item.status}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Gross Hours</p>
-                  <p class="time">3h 20min</p>
+                  <p class="time">{{item.gross_hours}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Effective Hours</p>
                   <p class="time">68% of 8hrs</p>
                 </div>
                 <div class="label">
-                  <p class="w-auto">Mode: Remote</p>
+                  <p class="w-auto">Mode: {{item.work_mode}}</p>
                 </div>
               </ion-col>
               <ion-col size="5">

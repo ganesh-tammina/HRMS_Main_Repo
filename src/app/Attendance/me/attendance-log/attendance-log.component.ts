@@ -117,7 +117,10 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       year: this.currentYear,
     }).subscribe({
       next: res => {
+        // console.log('monthly report', res);
         this.currentMonthreport = res?.attendance || [];
+            this.attendanceService.setMonthlyReport(this.currentMonthreport);
+        console.log('monthly report', this.currentMonthreport);
       },
       error: () => {
         this.currentMonthreport = [];
