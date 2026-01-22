@@ -38,7 +38,15 @@ export class OrgTreeComponent implements OnInit {
     expanded: { [id: string]: boolean } = {};
     private myEmployeeId: number | null = null;
     parentMap: { [childId: string]: number | null } = {};
-
+    avatarColors = [
+        'linear-gradient(135deg, #6366F1, #4F46E5)', // Indigo
+        'linear-gradient(135deg, #3B82F6, #2563EB)', // Blue
+        'linear-gradient(135deg, #10B981, #059669)', // Green
+        'linear-gradient(135deg, #F59E0B, #D97706)', // Amber
+        'linear-gradient(135deg, #EF4444, #DC2626)', // Red
+        'linear-gradient(135deg, #8B5CF6, #7C3AED)', // Violet
+        'linear-gradient(135deg, #EC4899, #DB2777)'  // Pink
+      ];
     constructor(private employeeService: EmployeeService) { }
 
     // Collapse all siblings and expand only the selected node
@@ -224,4 +232,15 @@ export class OrgTreeComponent implements OnInit {
             }
         });
     }
+    getAvatarColor(emp: any): string {
+        const key = emp.id || emp.email || emp.name;
+        let hash = 0;
+      
+        for (let i = 0; i < String(key).length; i++) {
+          hash = String(key).charCodeAt(i) + ((hash << 5) - hash);
+        }
+      
+        const index = Math.abs(hash) % this.avatarColors.length;
+        return this.avatarColors[index];
+      }
 }
