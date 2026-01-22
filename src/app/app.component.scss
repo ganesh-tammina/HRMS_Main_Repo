@@ -239,6 +239,10 @@ ion-menu {
       background: #122E44 !important;
       padding-left: 8px !important;
       padding-top: 8px !important;
+      img{
+        width:3.309vh ;    //23px
+        height: 3.309vh;  //23px
+      }
     }
     ion-item {
        --min-height: 55px;
