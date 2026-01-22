@@ -29,7 +29,8 @@ ion-content {
       width: max-content;
       display: flex;
       list-style: none;
-      padding: 8px;
+      // padding: 8px;
+      padding: 5px;
    li {
       width: max-content;
       text-transform: capitalize;
@@ -54,6 +55,7 @@ ion-content {
      @include card-header-title();
      padding-left: 12px; 
      margin: 12px 0;
+     font-size: 15px !important;
      span {
       background: $primary-color;
       color: #ffffff;
@@ -87,6 +89,7 @@ ion-content {
    
   }
   .tab-content-form {
+    padding: 24px 0px 24px 24px !important;
    @extend .border-block;
    padding: 24px;
    .form-header {
@@ -107,7 +110,8 @@ ion-content {
        ion-input {
         border: 1px solid #ABABAB;
         border-radius: 8px;
-        height: 37px;
+        // height: 37px;
+        min-height: 36px;
         padding-left: 12px !important; 
         width: 95%;
        }
@@ -123,6 +127,7 @@ ion-content {
    }
     ion-button{
           width: 25%;
+          padding: 0;
         }
   }
   
@@ -135,4 +140,16 @@ ion-content {
 .delete-btn{
   background: transparent;
   padding: 5px;
+}
+.pagination-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding-right: 12px; // aligns with table padding
+}
+.tab-hgt{
+max-height: 54vh;
+overflow-y: scroll;
+scrollbar-width: thin;
 }

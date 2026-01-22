@@ -40,7 +40,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-row class="table-row-list" *ngFor="let item of locations">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedLocations">
                 <ion-col size="10">
                   {{item.name}}
                 </ion-col>
@@ -71,7 +71,19 @@
                 (click)="updateLocation()">Update</ion-button>
             </div>
           </ion-col>
+          <ion-col size="7" class="pagination-row mt-10" *ngIf="totalLocationPages > 1">
+          <ion-button fill="clear" (click)="goToPreviousLocationPage()" [disabled]="currentLocationPage === 1">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
 
+          <span class="page-info">
+            {{ currentLocationPage }} of {{ totalLocationPages }}
+          </span>
+
+          <ion-button fill="clear"  (click)="goToNextLocationPage()" [disabled]="currentLocationPage === totalLocationPages">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
         </ion-row>
       </ion-grid>
     </div>
@@ -97,7 +109,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-row class="table-row-list" *ngFor="let item of departments">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedDepartments">
                 <ion-col size="10">
                   {{item.name}}
                 </ion-col>
@@ -128,10 +140,24 @@
                 (click)="updateDepartment()">Update</ion-button>
             </div>
           </ion-col>
+          <ion-col size="7" class="pagination-row mt-10" *ngIf="depttotalPages > 1">
+          <ion-button fill="clear" (click)="goToPreviousdeptPage()" [disabled]="deptcurrentPage === 1">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
 
+          <span class="page-info">
+            {{ deptcurrentPage }} of {{ depttotalPages }}
+          </span>
+
+          <ion-button fill="clear"  (click)="goToNextdeptPage()" [disabled]="deptcurrentPage === depttotalPages">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+          </ion-col>
         </ion-row>
       </ion-grid>
+          
     </div>
+
 
     <!-- ========== DESIGNATIONS ========== -->
     <div class="tab-card" *ngIf="activeTab==='designations'">
@@ -148,7 +174,7 @@
                 <ion-col size="2">Actions</ion-col>
               </ion-row>
 
-              <ion-row class="table-row-list" *ngFor="let item of designations">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedDesignations">
                 <ion-col size="10">{{item.name}}</ion-col>
                 <!-- <ion-col size="4">
                   <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
@@ -184,6 +210,18 @@
                 (click)="updateDesignation()">Update</ion-button>
             </div>
           </ion-col>
+          <ion-col size="7" class="pagination-row mt-10" *ngIf="designationTotalPages > 1" >
+          <ion-button fill="clear" (click)="goToPreviousDesignationPage()" [disabled]="designationCurrentPage === 1" >
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
+
+          <span class="page-info">
+            {{ designationCurrentPage }} of {{ designationTotalPages }}
+          </span>
+          <ion-button fill="clear" (click)="goToNextDesignationPage()" [disabled]="designationCurrentPage === designationTotalPages"  >
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+          </ion-col>
         </ion-row>
       </ion-grid>
     </div>
@@ -216,7 +254,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-row class="table-row-list" *ngFor="let item of shiftPolicies">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedShiftPolicies">
                 <ion-col size="3">
                   {{item.name}}
                 </ion-col>
@@ -230,13 +268,14 @@
                   {{item.description}}
                 </ion-col>
                 <ion-col size="2">
-                  <button *ngIf="isAdminOrHR" (click)="editShift(item)"><ion-img
+                  <button *ngIf="isAdminOrHR" class="edit-btn" (click)="editShift(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-col>
-          <ion-col size="4" class="tab-content-form mr-15">
+          <ion-col size="4" class="tab-content-form  mr-15">
+            <div class="tab-hgt">
               <p class="form-header">{{ editingShiftId ? 'Update Shift' : 'Add New Shift' }}</p>
               <p class="form-subheader">{{ editingShiftId ? 'Update the selected Shift' : 'Create a new Shift in your organization' }}</p>
        
@@ -273,8 +312,20 @@
               <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingShiftId"
                 (click)="updateShift()">Update</ion-button>
             </div>
+            </div>
           </ion-col>
+          <ion-col size="7" class="pagination-row mt-10">
+          <ion-button fill="clear" (click)="goToPreviousShiftPage()" [disabled]="shiftCurrentPage === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
 
+        <span>{{ shiftCurrentPage }} / {{ shiftTotalPages }}</span>
+
+        <ion-button fill="clear" (click)="goToNextShiftPage()" [disabled]="shiftCurrentPage === shiftTotalPages">
+         <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+        </ion-col>
+        
         </ion-row>
       </ion-grid>
 
@@ -293,7 +344,7 @@
                 <ion-col size="8">Weekly Off Policy</ion-col>
                 <ion-col size="4">Actions</ion-col>
               </ion-row>
-              <ion-row class="table-row-list" *ngFor="let item of weeklyOffPolicies">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedWeeklyOffPolicies">
                 <ion-col size="10">
                   {{item.name}} <span *ngIf="item.policy_code">({{item.policy_code}})</span>
                 </ion-col>
@@ -307,6 +358,7 @@
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
+            <div class="tab-hgt">
              <p class="form-header">{{ editingWeeklyOffPolicyId ? 'Update Weekly Off Policy' : 'Add New Weekly Off Policy' }}</p>
             <p class="form-subheader">{{ editingWeeklyOffPolicyId ? 'Update the selected Weekly Off Policy' : 'Create a new Weekly Off Policy in your organization' }}</p>
      
@@ -415,6 +467,18 @@
               <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingWeeklyOffPolicyId"
                 (click)="updateWeeklyOffPolicy()">Update</ion-button>
             </div>
+            </div>
+          </ion-col>
+          <ion-col size="7" class="pagination-row mt-10">
+          <ion-button fill="clear"  (click)="goToPreviousWeeklyOffPage()"  [disabled]="weeklyOffCurrentPage === 1">
+           <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
+
+          <span>{{ weeklyOffCurrentPage }} / {{ weeklyOffTotalPages }}</span>
+
+          <ion-button fill="clear" (click)="goToNextWeeklyOffPage()"  [disabled]="weeklyOffCurrentPage === weeklyOffTotalPages">
+           <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -449,7 +513,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-row class="table-row-list" *ngFor="let item of announcements">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedAnnouncements">
                 <ion-col size="3">
                   {{item.title}}
                 </ion-col>
@@ -464,15 +528,16 @@
                 </ion-col>
 
                 <ion-col size="2">
-                  <button class="mr-8" *ngIf="isAdminOrHR" (click)="editAnnouncement(item)"><ion-img
+                  <button class="mr-8" *ngIf="isAdminOrHR" class="edit-btn" (click)="editAnnouncement(item)"><ion-img
                       src="../../../assets/edit-gray.svg"></ion-img></button>
-                  <button *ngIf="isAdminOrHR" (click)="deleteAnnouncement(item.id)"><ion-img
+                  <button *ngIf="isAdminOrHR" class="delete-btn" (click)="deleteAnnouncement(item.id)"><ion-img
                       src="../../../assets/trash.svg"></ion-img></button>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-col>
           <ion-col size="4" class="tab-content-form mr-15">
+            <div class="tab-hgt">
             <p class="form-header">{{ editingAnnouncementId ? 'Update Announcement' : 'Add New Announcement' }}</p>
             <p class="form-subheader">{{ editingAnnouncementId ? 'Update the selected Announcement' : 'Create a new Announcement in your organization' }}</p>
      
@@ -502,6 +567,20 @@
               <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingAnnouncementId"
                 (click)="updateAnnouncement()">Update</ion-button>
             </div>
+            </div>
+          </ion-col>
+          <ion-col size="7" class="pagination-row mt-10">
+          <ion-button fill="clear" (click)="goToPreviousAnnouncementPage()" [disabled]="announcementCurrentPage === 1">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </ion-button>
+
+          <span>
+            {{ announcementCurrentPage }} / {{ announcementTotalPages }}
+          </span>
+
+          <ion-button fill="clear" (click)="goToNextAnnouncementPage()" [disabled]="announcementCurrentPage === announcementTotalPages">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </ion-button>
           </ion-col>
 
         </ion-row>
@@ -524,7 +603,7 @@
                 <ion-col size="2">Actions</ion-col>
               </ion-row>
 
-              <ion-row class="table-row-list" *ngFor="let item of businessUnits">
+              <ion-row class="table-row-list" *ngFor="let item of paginatedBusinessUnits">
                 <ion-col size="10">{{item.name}}</ion-col>
                 <!-- <ion-col size="2">
                   <ion-button class="primary-outline-btn" *ngIf="isAdminOrHR"
@@ -560,6 +639,19 @@
               <ion-button class="primary-btn" *ngIf="isAdminOrHR && editingBusinessUnitId"
                 (click)="updateBusinessUnit()">Update</ion-button>
             </div>
+          </ion-col>
+          <ion-col size="7" class="pagination-row ion-text-center mt-10" >
+            <button class="pagination-btn" (click)="goToPreviousBusinessUnitPage()" [disabled]="businessUnitCurrentPage === 1">
+             <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+
+            <span>
+              {{ businessUnitCurrentPage }} / {{ businessUnitTotalPages }}
+            </span>
+
+            <button class="pagination-btn" (click)="goToNextBusinessUnitPage()" [disabled]="businessUnitCurrentPage === businessUnitTotalPages">
+             <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
           </ion-col>
         </ion-row>
       </ion-grid>
