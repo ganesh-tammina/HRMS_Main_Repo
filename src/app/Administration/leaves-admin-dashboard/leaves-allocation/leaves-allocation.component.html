@@ -1,9 +1,9 @@
-<ion-content class="ion-padding page-containerOn project-wrappers">
-  <p class="page-header mb-8">
+<ion-content class="ion-padding  project-wrappers">
+  <!-- <p class="page-header mb-8">
     <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
     <a routerLink="/admin-leaves" (click)="leavetype()">Leaves Admin Dashboard /</a>
     Leave Allocation
-  </p>
+  </p> -->
 
   <!-- <ion-header>
   <ion-toolbar color="primary">
@@ -15,12 +15,13 @@
     <h4>Leave Allocation</h4>
     <p>Allocate leaves to employees</p>
   </div>
-  <ion-card class="allocatehead">
-    <ion-card-header>
-      <ion-card-title>Leave Plan Details</ion-card-title>
-    </ion-card-header>
+  <div class="form-container">
+  <div class="allocatehead">
+    <ion-header>
+      <ion-title>Leave Plan Details</ion-title>
+    </ion-header>
 
-    <ion-card-content>
+    <div>
       <form [formGroup]="allocationForm">
         <ion-list lines="none">
           <ion-item class="allocation-ipt">
@@ -78,21 +79,25 @@
               </ion-grid>
             </div>
           </div>
-          <ion-button expand="block" fill="outline" (click)="addAllocation()"
+        </ng-container>
+        <div style="padding: 0 15px;">
+            <ion-button expand="block" fill="outline" (click)="addAllocation()"
             style="margin-top: 10px;--border-radius: 20px;">
             + Add New Allocation Row
           </ion-button>
-        </ng-container>
         <ng-template #selectPlanMsg>
           <ion-text color="medium">
-            <p style="margin-top: 16px;">Please select a Leave Plan to add allocations.</p>
+            <p style="margin-top: 16px;padding: 0 15px;">Please select a Leave Plan to add allocations.</p>
           </ion-text>
         </ng-template>
+        </div>
+
 
       </form>
-    </ion-card-content>
-  </ion-card>
-  <div class="row-right">
+    </div>
+  </div>
+   </div>
+  <div class="row-right form-footer">
     <ion-button class="ion-margin-top  primary-outline-btn cancel-btn" (click)="cancel()">
       Cancel
     </ion-button>

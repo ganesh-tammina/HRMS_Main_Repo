@@ -5,6 +5,7 @@ ion-item {
 .section-title {
   font-weight: 600;
   margin-bottom: 10px;
+  padding: 0 15px;
 }
 
 .allocation-card {
@@ -25,10 +26,11 @@ ion-item {
 }
 
 .leavehead{
-  margin: 0 20px;
+  // margin: 0 20px;
 h4{
   font-weight: bold;
   margin-bottom: 3px;
+  margin-top: 0;
 }
 p{
   margin-top: 3px;
@@ -40,7 +42,7 @@ p{
   ion-card-title{
     font-weight: bold;
   }
-  border: 1px solid #ccc;
+  // border: 1px solid #ccc;
   border-radius: 10px;
 }
 

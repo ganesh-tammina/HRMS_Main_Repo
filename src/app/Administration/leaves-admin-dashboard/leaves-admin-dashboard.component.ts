@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { LeaveTypeService } from 'src/app/services/leavetype.service';
 import { EmployeeLeaveAllocationComponent } from './employee-leave-allocation/employee-leave-allocation.component';
+import { LeavesAllocationComponent } from './leaves-allocation/leaves-allocation.component';
 
 @Component({
   selector: 'app-leaves-admin-dashboard',
@@ -68,8 +69,14 @@ export class LeavesAdminDashboardComponent {
     });
   }
 
-  leavesallocation() {
-    this.router.navigate(['/leaves_allocation']);
+  async leavesallocation() {
+    // this.router.navigate(['/leaves_allocation']);
+        const modal = await this.modalCtrl.create({
+      component: LeavesAllocationComponent,
+      cssClass: 'side-custom-popup checkinInfo-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
   }
   // employeeallocation() {
   //   this.router.navigate(['/employee_lEAVE_allocation']);
