@@ -58,10 +58,17 @@
         <div class="org-tree-node-flex">
             <div class="org-tree-node-card">
                 <ion-card class="org-card org-card-member">
-                    <div class="org-member-header" style="display: flex; align-items: center; gap: 0.5em;">
+                    <div class="org-member-header" style="display: flex; align-items: center; gap: 0.5em;" >
+                        <div
+                        class="avatar"
+                        [style.background]="getAvatarColor(employee)">
+                        {{ employee.FirstName?.[0] || employee.name?.[0] }}
+                      </div>                      
+
                         <span>{{ employee.name || employee.FirstName + ' ' + employee.LastName }}</span>
-                        <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>
-                        <button *ngIf="employee.directReports && employee.directReports.length > 0" type="button"
+                        <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>                      
+                       
+                          <button *ngIf="employee.directReports && employee.directReports.length > 0" type="button"
                             class="expand-btn" (click)="$event.stopPropagation(); exclusiveExpand(employee.id)"
                             [attr.aria-expanded]="expanded[employee.id]">
                             <ion-icon [name]="expanded[employee.id] ? 'chevron-down' : 'chevron-forward'"></ion-icon>
