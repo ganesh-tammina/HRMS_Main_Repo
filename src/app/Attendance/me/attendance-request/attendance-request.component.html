@@ -13,24 +13,24 @@
             <ion-col size="2">Date</ion-col>
             <ion-col size="2">Request</ion-col>
             <ion-col size="2">Requested On</ion-col>
-            <ion-col size="2">Note</ion-col>
-            <ion-col size="2">Reason</ion-col>
+            <!-- <ion-col size="2">Note</ion-col> -->
             <ion-col size="2">Status</ion-col>
+            <ion-col size="4">Reason</ion-col>
             <!-- <ion-col size="1">Last Action</ion-col>
             <ion-col size="2">Next Approver</ion-col> -->
           </ion-row>
 
           <ion-row *ngFor="let record of reqGroup.records" class="table-list-row">
-            <ion-col size="2">{{ record.date }}</ion-col>
-            <ion-col size="2">{{ record.request }}</ion-col>
-            <ion-col size="2">{{ record.requestedOn }}</ion-col>
-            <ion-col size="2">{{ record.note }}</ion-col>
-            <ion-col size="2">{{ record.reason || '-' }}</ion-col>
+            <ion-col size="2"><p>{{ record.date }}</p></ion-col>
+            <ion-col size="2"><p>{{ record.request }}</p></ion-col>
+            <ion-col size="2"><p>{{ record.requestedOn }}</p></ion-col>
+            <!-- <ion-col size="2">{{ record.note }}</ion-col> -->           
             <ion-col size="2">
               <span class="status" [ngClass]="record.status.toLowerCase()">
                 {{ record.status }}
               </span>
             </ion-col>
+            <ion-col size="4" class="text-wrap"><p>{{ record.reason || '-' }}</p></ion-col>
             <!-- <ion-col size="1">{{ record.lastAction }}</ion-col>
             <ion-col size="2">{{ record.nextApprover || '-' }}</ion-col> -->
           </ion-row>

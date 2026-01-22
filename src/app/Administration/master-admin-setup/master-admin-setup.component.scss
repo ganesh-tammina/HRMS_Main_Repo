@@ -4,7 +4,8 @@
 }
 
 .filter-card {
-  margin-bottom: 16px;  
+  margin-bottom: 12px;
+  margin-top: 12px;  
   ion-searchbar {
     --background: var(--ion-background-color, #fff);
     border-radius: 20px;
@@ -18,7 +19,8 @@
   }
   ion-select {
     border: 1px solid #C4C4C4;
-    height: 38px;
+    height: 36px;
+    min-height: 36px;
     border-radius: 20px;
     padding: 0 24px !important;
     background: #fff;
