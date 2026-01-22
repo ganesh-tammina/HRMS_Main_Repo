@@ -50,7 +50,7 @@ export class AttendanceRequestComponent implements OnInit {
         records: [],
       },
       {
-        type: 'Regularization Requestsss',
+        type: 'Regularization Requests',
         dateRange: '',
         records: [],
       },
