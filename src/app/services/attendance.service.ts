@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { RouteGuardService } from './route-guard/route-service/route-guard.service';
+import { AttendanceApiService } from './attendance-api.service';
 
 export interface AttendanceEvent {
   type: 'CLOCK_IN' | 'CLOCK_OUT';
@@ -318,6 +319,36 @@ export class AttendanceService {
       withCredentials: true,
     });
   }
+
+  loadMonthlyReportOnAppStart(
+    attendanceApi: AttendanceApiService,
+    year: number,
+    month: number
+  ): void {
+
+    const startDate = `${year}-${month}-01`;
+    const endDate = `${year}-${month}-31`;
+
+    console.log('📡 Loading monthly attendance from service');
+
+    attendanceApi.getMonthlyReport({
+      startDate,
+      endDate,
+      month,
+      year,
+    }).subscribe({
+      next: res => {
+        const report = res?.attendance || [];
+        console.log('✅ Monthly report loaded (service)', report);
+        this.monthlyReportSource.next(report);
+      },
+      error: err => {
+        console.error('❌ Monthly report failed', err);
+        this.monthlyReportSource.next([]);
+      }
+    });
+  }
+
   setMonthlyReport(report: any[]): void {
     this.monthlyReportSource.next(report);
   }

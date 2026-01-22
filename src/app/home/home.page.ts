@@ -16,6 +16,7 @@ import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
 import { EmployeeLeavesService } from '../services/employee-leaves.service';
 import { AttendanceService } from '../services/attendance.service';
+import { AttendanceApiService } from '../services/attendance-api.service';
 
 
 @Component({
@@ -67,6 +68,7 @@ export class HomePage implements OnInit {
     private alertController: AlertController,
     private router: Router,
     private attendanceService: AttendanceService,
+    private attendanceApi: AttendanceApiService,
     private employeeLeaves: EmployeeLeavesService,
     private cdr: ChangeDetectorRef
   ) { this.cdRef = cdr; }
@@ -80,6 +82,15 @@ export class HomePage implements OnInit {
     this.setupClock();
     this.setupDays();
     this.loadLeaveBalance()
+
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+
+    this.attendanceService.loadMonthlyReportOnAppStart(
+      this.attendanceApi,
+      year,
+      month
+    );
 
     // ✅ RECEIVE MONTHLY ATTENDANCE
     this.attendanceService.monthlyReport$.subscribe(report => {
