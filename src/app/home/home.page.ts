@@ -14,6 +14,8 @@ import { environment } from 'src/environments/environment';
 import { EmployeeService } from '../services/employee.service';
 import { CandidateService } from '../services/pre-onboarding.service';
 import { ClockButtonComponent } from '../services/clock-button/clock-button.component';
+import { EmployeeLeavesService } from '../services/employee-leaves.service';
+
 
 @Component({
   standalone: true,
@@ -37,7 +39,10 @@ export class HomePage implements OnInit {
   greeting: string = '';
   todayDate: string = '';
   currentTime: string = '';
+  currentYear = new Date().getFullYear();
   workMode: string = 'On-Site';
+  leaveTypes: { code: string; name: string; available: number }[] = [];
+
 
   /* ================= EMPLOYEE ================= */
   currentEmployee: any = null;
@@ -45,6 +50,8 @@ export class HomePage implements OnInit {
   /* ================= IMAGES ================= */
   env: string = '';
   imageUrls: any;
+  leaveCards: any[] = [];
+  leaveCodeIdMap: any = {};
   backgroundImageUrl: string =
     '../../assets/holidays-pics/christmas_pic.svg';
 
@@ -56,6 +63,7 @@ export class HomePage implements OnInit {
     private candidateService: CandidateService,
     private alertController: AlertController,
     private router: Router,
+    private employeeLeaves: EmployeeLeavesService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -67,6 +75,7 @@ export class HomePage implements OnInit {
     this.setupGreetingAndDate();
     this.setupClock();
     this.setupDays();
+    this.loadLeaveBalance()
 
     const showLoginSuccess = localStorage.getItem('showLoginSuccess');
     if (showLoginSuccess === 'true') {
@@ -190,5 +199,52 @@ export class HomePage implements OnInit {
   /* ================= OPTIONAL LOGOUT (SAFE) ================= */
   logout() {
 
+  }
+  /* ===================== LEAVE TYPE → ID ===================== */
+  private mapLeaveCodeToId(code: string): number {
+    const id = this.leaveCodeIdMap[code];
+
+    if (!id) {
+      console.error('Leave type ID not found for code:', code);
+    }
+
+    return id;
+  }
+  /* ===================== LEAVE BALANCE ===================== */
+  loadLeaveBalance() {
+    this.employeeLeaves.getLeaveBalance(this.currentYear).subscribe({
+      next: (res: any[]) => {
+        this.leaveCodeIdMap = {};
+        res.forEach(item => {
+          this.leaveCodeIdMap[item.type_code] = item.leave_type_id || item.id;
+        });
+        this.leaveCards = res.map(item => ({
+          title: item.type_name,
+          allocated_days: Number(item.allocated_days),
+          used: Number(item.used_days),
+          available: Number(item.available_days),
+          icon: this.getLeaveIcon(item.type_code),
+        }));
+        console.log(this.leaveCards, 'leaves')
+
+        this.leaveTypes = res.map(item => ({
+          code: item.type_code,
+          name: item.type_name,
+          available: Number(item.available_days),
+        }));
+      },
+      error: err => console.error(err),
+    });
+  }
+  getLeaveIcon(code: string): string {
+    const map: any = {
+      CL: 'CL.svg',
+      SL: 'SL.svg',
+      ML: 'ML.svg',
+      CO: 'CO.svg',
+      PL: 'CL.svg',
+      UL: 'UL.svg',
+    };
+    return `../../../assets/leave-icons/${map[code] || 'CL.svg'}`;
   }
 }
