@@ -1,7 +1,7 @@
 <form class="form-block" [formGroup]="leaveForm">
 
   <!-- Leave Type -->
-  <div>
+  <div  class="leaveselect">
     <label>Leave Type</label>
     <ion-select formControlName="leave_type" placeholder="Select Leave Type">
       <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.id" [disabled]="leave.available <= 0">
@@ -12,7 +12,7 @@
   </div>
 
   <!-- Dates -->
-  <div class="row-left">
+  <div class="row-left leaveselect">
     <div class="from-input">
       <label>From</label>
       <ion-input id="from-input" placeholder="Select Start Date" readonly [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''">
@@ -56,7 +56,7 @@
   </div>
 
   <!-- Notify -->
-  <div>
+  <div class="leaveselect">
     <label>Notify</label>
     <ion-input  placeholder="Search Employee"  formControlName="notify"></ion-input>
   </div>

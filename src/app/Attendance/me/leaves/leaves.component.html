@@ -19,7 +19,7 @@
   <ion-modal [isOpen]="IsOpenleavePopup" (didDismiss)="closeleavePopup()" class="custom-popup">
     <ng-template>
       <ion-header>
-        <ion-toolbar>
+        <ion-toolbar class="leave-header">
           <ion-title>Apply Leave</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeleavePopup()">
@@ -238,20 +238,20 @@
                 <p> Location : vizag</p>
               </div>
               <ion-row>
-                <ion-col size="10" class="holiday">
+                <ion-col size="9" class="holiday">
                   <h6>Christmas</h6>
                   <ion-text>21 October 2025</ion-text>
                 </ion-col>
-                <ion-col size="2">
+                <ion-col size="3">
                   <p>15 days left</p>
                 </ion-col>
               </ion-row>
               <ion-row>
-                <ion-col size="10" class="holiday">
+                <ion-col size="9" class="holiday">
                   <h6>Sankranti</h6>
                   <ion-text>14 October 2025</ion-text>
                 </ion-col>
-                <ion-col size="2">
+                <ion-col size="3">
                   <p>33 days left</p>
                 </ion-col>
               </ion-row>

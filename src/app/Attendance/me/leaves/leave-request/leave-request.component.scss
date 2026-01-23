@@ -22,3 +22,16 @@
   height: 18px;
   margin-right: 5px;
 }
+ion-select::part(container){
+width: 113vh !important;
+}
+.leaveselect {
+  ion-select{
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+  ion-input{
+    height: 40px !important;
+    min-height: 40px !important; 
+  }
+}
