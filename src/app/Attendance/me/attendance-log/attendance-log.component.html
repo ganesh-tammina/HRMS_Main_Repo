@@ -76,7 +76,7 @@
       <p class="divider"></p>
       <div *ngIf="selectedLog?.records?.length; else noRecords">
         <ion-grid style="padding: 0;">
-          <ion-row>
+          <ion-row *ngIf="getOfficeRecords(selectedLog.records).length > 0">
             <!-- ========== LEFT SIDE: OFFICE LOGS ========== -->
             <ion-col size="12" size-md="12" style="padding-right: 8px;">
               <div class="clock-flex">
@@ -140,7 +140,7 @@
 
           <!-- ========== RIGHT SIDE: WFH LOGS ========== -->
 
-          <ion-row>
+          <ion-row *ngIf="getWFHRecords(selectedLog.records).length > 0">
             <ion-col size="12" size-md="12" style="padding-left: 8px;">
               <div class="clock-flex">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -187,7 +187,7 @@
           </ion-row>
 
           <!-- ========== REMOTE LOGS ========== -->
-          <ion-row>
+          <ion-row *ngIf="getRemoteRecords(selectedLog.records).length > 0">
             <ion-col size="12" size-md="12" style="padding-left: 8px;">
               <div class="clock-flex">
                 <div style="display: flex; align-items: center; gap: 10px;">
