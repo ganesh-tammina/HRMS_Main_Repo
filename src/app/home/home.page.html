@@ -54,7 +54,7 @@
               <ion-col size="12" size-sm="4" size-md="4" size-lg="4" size-xl="4" class="time-block">
                 <p class="clock mb-30">Current Time</p>
                 <p class="time">{{ currentTime }}</p>
-                <app-clock-button></app-clock-button>
+                <app-clock-button *ngIf="!isCEO()"></app-clock-button>
               </ion-col>
 
             </ion-row>
