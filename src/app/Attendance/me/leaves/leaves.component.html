@@ -101,7 +101,9 @@
               <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
             </ion-col>
             <ion-col size="2">
-              <p class="pending">{{ leave.status }}</p>
+              <ion-badge class="pending">
+                  {{ leave.status }}
+              </ion-badge>
             </ion-col>
             <ion-col size="3" class="text-wrap">
               <p>{{ leave.reason }}</p>
@@ -161,12 +163,12 @@
                   <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
                 </ion-col>
                 <ion-col size="2">
-                  <p [ngClass]="{
-                    'approved': leave.status === 'APPROVED',
-                    'rejected': leave.status === 'REJECTED'
-                  }">
-                    {{ leave.status }}
-                  </p>
+                    <ion-badge [ngClass]="{
+                      'accept': leave.status === 'APPROVED',
+                      'reject': leave.status === 'REJECTED'
+                    }">
+                        {{ leave.status }}
+                    </ion-badge>                 
                 </ion-col>
               </ion-row>
             </ng-container>
