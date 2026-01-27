@@ -126,6 +126,7 @@ export class EmployeeListComponent implements OnInit {
       leave_plan_id: emp.leave_plan_id || null,
       shift_policy_id: emp.shift_policy_id || null,
       attendance_policy_id: emp.attendance_policy_id || null,
+      weekly_off_policy_id: emp.weekly_off_policy_id || null,
       PayGradeId: emp.PayGradeId || null
     };
   }
