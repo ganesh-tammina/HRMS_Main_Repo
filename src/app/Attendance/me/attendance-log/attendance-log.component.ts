@@ -170,6 +170,39 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
+   * Force reload employee profile and week off policy from server
+   * Call this after HR updates employee profile (e.g. after modal save)
+   */
+  refreshEmployeeProfileAndWeekOff() {
+    this.employeeService.getMyProfile(true).subscribe({
+      next: (profile) => {
+        this.employeeProfile = profile;
+        const weeklyOffPolicyId = profile?.weekly_off_policy_id;
+        if (weeklyOffPolicyId) {
+          this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe({
+            next: (policies) => {
+              this.weeklyOffPolicy = policies.find(p => p.id === weeklyOffPolicyId) || null;
+              this.loadLeaveDaysAndMonthlyReport();
+            },
+            error: () => {
+              this.weeklyOffPolicy = null;
+              this.loadLeaveDaysAndMonthlyReport();
+            }
+          });
+        } else {
+          this.weeklyOffPolicy = null;
+          this.loadLeaveDaysAndMonthlyReport();
+        }
+      },
+      error: () => {
+        this.employeeProfile = null;
+        this.weeklyOffPolicy = null;
+        this.loadLeaveDaysAndMonthlyReport();
+      }
+    });
+  }
+
+  /**
    * Loads leave days for the current year, then loads the monthly report and merges leave/weekend info.
    */
   private loadLeaveDaysAndMonthlyReport(): void {
