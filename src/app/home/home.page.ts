@@ -42,7 +42,6 @@ export class HomePage implements OnInit {
   todayDate: string = '';
   currentTime: string = '';
   currentYear = new Date().getFullYear();
-  workMode: string = 'On-Site';
   monthlyAttendanceReport: any[] = [];
   attendanceRate = 0;
   leaveTypes: { code: string; name: string; available: number }[] = [];
