@@ -38,19 +38,15 @@
           --progress-background: #3498db;
         }
         &.weekoff-row {
-          padding: 0 12px;
-          background: #F2F1EC;    
-          .text-center {
-            display: flex;
-            justify-content: center;
+          background: #F2F1EC;
+          ion-col {
+            color: #1F74BB;
           }
-          label {
-            background: #ABABAB;
-            color: #fff;
-            border-radius: 3px;
-            @include body-text();
-            padding: 2px 8px;
-            margin-left: 8px;
+        }
+        &.leave-row {
+          background: #F7F7F7;
+          ion-col {
+            color: #ABABAB;
           }
         }
       }

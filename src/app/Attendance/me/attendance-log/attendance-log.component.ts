@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { AttendanceService } from 'src/app/services/attendance.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { AttendanceApiService } from '../../../services/attendance-api.service';
+import { LeaverequestService, MyLeave } from 'src/app/services/leaverequest.service';
 
 @Component({
   selector: 'app-attendance-log',
@@ -43,14 +44,28 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   /* ================= INTERNAL ================= */
   private refreshInterval: any;
   private routeSub!: Subscription;
+  leaveDaysMap: Map<string, string> = new Map(); // date string -> leave type
+
 
   constructor(
     private attendanceService: AttendanceService,
     private routeGuard: RouteGuardService,
     private attendanceApi: AttendanceApiService,
+    private leaveService: LeaverequestService, // <-- inject leave service
     private router: Router
   ) {
     this.reloadAttendance();
+  }
+
+  private resetState(): void {
+    this.currentMonthreport = [];
+    this.todayPunches = [];
+    this.selectedLog = null;
+    this.showSlider = false;
+
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   /* =================================================
@@ -117,19 +132,32 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     console.log('🔄 Reloading attendance data');
 
     this.resetState();
-    this.loadMonthlyReport();
+    this.loadLeaveDaysAndMonthlyReport();
     this.loadTodayAttendance();
   }
 
-  private resetState(): void {
-    this.currentMonthreport = [];
-    this.todayPunches = [];
-    this.selectedLog = null;
-    this.showSlider = false;
-
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
+  /**
+   * Loads leave days for the current year, then loads the monthly report and merges leave/weekend info.
+   */
+  private loadLeaveDaysAndMonthlyReport(): void {
+    this.leaveService.getMyLeaves(this.currentYear).subscribe({
+      next: (leaves: MyLeave[]) => {
+        this.leaveDaysMap = new Map();
+        leaves.filter(l => l.status === 'APPROVED').forEach(leave => {
+          const from = new Date(leave.from_date);
+          const to = new Date(leave.to_date);
+          for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+            const dateStr = this.formatDateOnly(d);
+            this.leaveDaysMap.set(dateStr, leave.leave_type);
+          }
+        });
+        this.loadMonthlyReport();
+      },
+      error: () => {
+        this.leaveDaysMap = new Map();
+        this.loadMonthlyReport();
+      }
+    });
   }
 
   /* ================= REPORT ================= */
@@ -159,19 +187,44 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
         this.currentMonthreport = allDates.map(date => {
           const existing = attendanceMap.get(date);
 
-          if (existing) {
-            return existing; // ✔️ has logs
-          }
+          // Weekend check
+          const day = new Date(date).getDay();
+          const isWeekend = (day === 0 || day === 6); // Sunday=0, Saturday=6
+          const leaveType = this.leaveDaysMap.get(date);
 
-          // ❌ No logs → create empty record
-          return {
-            attendance_date: date,
-            effective_hours: null,
-            gross_hours: null,
-            status: 'absent',
-            records: [],
-            noLogs: true
-          };
+          if (leaveType) {
+            return {
+              attendance_date: date,
+              effective_hours: null,
+              gross_hours: null,
+              status: 'on-leave',
+              leaveType: leaveType,
+              records: [],
+              noLogs: true
+            };
+          } else if (isWeekend) {
+            return {
+              attendance_date: date,
+              effective_hours: null,
+              gross_hours: null,
+              status: 'weekend',
+              leaveType: 'Full day week off',
+              records: [],
+              noLogs: true
+            };
+          } else if (existing) {
+            return existing; // ✔️ has logs
+          } else {
+            // ❌ No logs → create empty record
+            return {
+              attendance_date: date,
+              effective_hours: null,
+              gross_hours: null,
+              status: 'absent',
+              records: [],
+              noLogs: true
+            };
+          }
         });
 
         // Optional: latest date on top
