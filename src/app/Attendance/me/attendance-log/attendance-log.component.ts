@@ -9,6 +9,8 @@ import { AttendanceService } from 'src/app/services/attendance.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { AttendanceApiService } from '../../../services/attendance-api.service';
 import { LeaverequestService, MyLeave } from 'src/app/services/leaverequest.service';
+import { EmployeeService } from 'src/app/services/employee.service';
+import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly-off-policy.service';
 
 @Component({
   selector: 'app-attendance-log',
@@ -47,11 +49,16 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   leaveDaysMap: Map<string, string> = new Map(); // date string -> leave type
 
 
+  employeeProfile: any = null;
+  weeklyOffPolicy: WeeklyOffPolicy | null = null;
+
   constructor(
     private attendanceService: AttendanceService,
     private routeGuard: RouteGuardService,
     private attendanceApi: AttendanceApiService,
-    private leaveService: LeaverequestService, // <-- inject leave service
+    private leaveService: LeaverequestService,
+    private employeeService: EmployeeService,
+    private weeklyOffPolicyService: WeeklyOffPolicyService,
     private router: Router
   ) {
     this.reloadAttendance();
@@ -130,9 +137,35 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
 
   private reloadAttendance(): void {
     console.log('🔄 Reloading attendance data');
-
     this.resetState();
-    this.loadLeaveDaysAndMonthlyReport();
+    // 1. Fetch employee profile
+    this.employeeService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.employeeProfile = profile;
+        const weeklyOffPolicyId = profile?.weekly_off_policy_id;
+        if (weeklyOffPolicyId) {
+          // 2. Fetch weekly off policy
+          this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe({
+            next: (policies) => {
+              this.weeklyOffPolicy = policies.find(p => p.id === weeklyOffPolicyId) || null;
+              this.loadLeaveDaysAndMonthlyReport();
+            },
+            error: () => {
+              this.weeklyOffPolicy = null;
+              this.loadLeaveDaysAndMonthlyReport();
+            }
+          });
+        } else {
+          this.weeklyOffPolicy = null;
+          this.loadLeaveDaysAndMonthlyReport();
+        }
+      },
+      error: () => {
+        this.employeeProfile = null;
+        this.weeklyOffPolicy = null;
+        this.loadLeaveDaysAndMonthlyReport();
+      }
+    });
     this.loadTodayAttendance();
   }
 
@@ -171,27 +204,28 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     }).subscribe({
       next: res => {
         const apiAttendance = res?.attendance || [];
-
-        // 1️⃣ Create a map by date (YYYY-MM-DD)
         const attendanceMap = new Map<string, any>();
-
         apiAttendance.forEach((item: any) => {
           const dateKey = this.formatDateOnly(item.attendance_date);
           attendanceMap.set(dateKey, item);
         });
-
-        // 2️⃣ Generate ALL dates in range
         const allDates = this.getAllDatesBetween(this.startDate, this.endDate);
-
-        // 3️⃣ Merge → ensure every date exists
+        // Determine week off days from policy
+        const weekOffDays: number[] = [];
+        if (this.weeklyOffPolicy) {
+          if (this.weeklyOffPolicy.sunday_off) weekOffDays.push(0);
+          if (this.weeklyOffPolicy.monday_off) weekOffDays.push(1);
+          if (this.weeklyOffPolicy.tuesday_off) weekOffDays.push(2);
+          if (this.weeklyOffPolicy.wednesday_off) weekOffDays.push(3);
+          if (this.weeklyOffPolicy.thursday_off) weekOffDays.push(4);
+          if (this.weeklyOffPolicy.friday_off) weekOffDays.push(5);
+          if (this.weeklyOffPolicy.saturday_off) weekOffDays.push(6);
+        }
         this.currentMonthreport = allDates.map(date => {
           const existing = attendanceMap.get(date);
-
-          // Weekend check
           const day = new Date(date).getDay();
-          const isWeekend = (day === 0 || day === 6); // Sunday=0, Saturday=6
           const leaveType = this.leaveDaysMap.get(date);
-
+          const isWeekOff = weekOffDays.includes(day);
           if (leaveType) {
             return {
               attendance_date: date,
@@ -202,7 +236,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
               records: [],
               noLogs: true
             };
-          } else if (isWeekend) {
+          } else if (isWeekOff) {
             return {
               attendance_date: date,
               effective_hours: null,
@@ -213,9 +247,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
               noLogs: true
             };
           } else if (existing) {
-            return existing; // ✔️ has logs
+            return existing;
           } else {
-            // ❌ No logs → create empty record
             return {
               attendance_date: date,
               effective_hours: null,
@@ -226,12 +259,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
             };
           }
         });
-
-        // Optional: latest date on top
         this.currentMonthreport.reverse();
-
         this.attendanceService.setMonthlyReport(this.currentMonthreport);
-
         console.log('✅ Normalized monthly report:', this.currentMonthreport);
       },
       error: () => {
