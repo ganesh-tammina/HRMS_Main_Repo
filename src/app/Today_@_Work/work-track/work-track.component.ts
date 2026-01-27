@@ -6,6 +6,7 @@ import {
   FormArray,
   Validators,
   ReactiveFormsModule,
+  FormsModule,
 } from '@angular/forms';
 import {
   IonicModule,
@@ -19,11 +20,53 @@ import { TimesheetPreviewComponent } from './timesheet-preview.component';
 @Component({
   selector: 'app-work-track',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, FormsModule],
   templateUrl: './work-track.component.html',
   styleUrls: ['./work-track.component.scss'],
 })
 export class WorkTrackComponent implements OnInit {
+  // Client timesheet upload state
+  clientUploadFile: File | null = null;
+  clientUploadMonth: number = new Date().getMonth() + 1;
+  clientUploadYear: number = new Date().getFullYear();
+  clientUploadProjectId: number | null = null;
+  clientUploadLoading = false;
+  /**
+   * Handle file input change for client timesheet upload
+   */
+  onClientUploadFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.clientUploadFile = file;
+    }
+  }
+
+  /**
+   * Upload client timesheet for selected project
+   */
+  async uploadClientTimesheet(projectId: number) {
+    if (!this.clientUploadFile) {
+      this.showToast('Please select a file to upload');
+      return;
+    }
+    this.clientUploadLoading = true;
+    const formData = new FormData();
+    formData.append('file', this.clientUploadFile);
+    formData.append('month', this.clientUploadMonth.toString());
+    formData.append('year', this.clientUploadYear.toString());
+    formData.append('project_id', projectId.toString());
+    this.timesheetService.uploadClientTimesheet(formData).subscribe({
+      next: (res) => {
+        this.clientUploadLoading = false;
+        this.showToast(res?.message || 'Client timesheet uploaded successfully');
+        this.clientUploadFile = null;
+      },
+      error: (err) => {
+        this.clientUploadLoading = false;
+        this.showToast('Failed to upload client timesheet');
+      }
+    });
+  }
 
   /* ================= EXISTING ================= */
   workTrackForm!: FormGroup;

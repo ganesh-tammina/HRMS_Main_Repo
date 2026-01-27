@@ -54,6 +54,7 @@ export class HomePage implements OnInit {
   env: string = '';
   imageUrls: any;
   leaveCards: any[] = [];
+  userDesignation: string | null = null;
   leaveCodeIdMap: any = {};
   backgroundImageUrl: string =
     '../../assets/holidays-pics/christmas_pic.svg';
@@ -138,6 +139,9 @@ export class HomePage implements OnInit {
     this.employeeService.getMyProfile().subscribe({
       next: (res: any) => {
         this.currentEmployee = res;
+        this.userDesignation = res.designation_name || res.designation || null;
+
+      console.log("Employee Designation 👉", this.userDesignation);
         console.log('Logged-in Employee 👉', this.currentEmployee);
 
         // Force UI refresh
@@ -278,4 +282,8 @@ export class HomePage implements OnInit {
     };
     return `../../../assets/leave-icons/${map[code] || 'CL.svg'}`;
   }
+
+isCEO(): boolean {
+  return this.currentEmployee?.designation_name?.toLowerCase() === 'ceo';
+}
 }

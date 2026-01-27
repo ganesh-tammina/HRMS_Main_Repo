@@ -9,6 +9,7 @@ import { RouteGuardService } from './services/route-guard/route-service/route-gu
 import { NavController } from '@ionic/angular';
 import { EmployeeService } from './services/employee.service';
 import { AdminService } from './services/admin-functionality/admin.service.service';
+import { AuthService } from './services/login-services.service';
 
 @Component({
   selector: 'app-root',
@@ -51,7 +52,8 @@ export class AppComponent implements OnInit {
     private routeGaurdService: RouteGuardService,
     private employeeService: EmployeeService,
     private service: AdminService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private authService: AuthService
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
     this.router.events.subscribe((event) => {
@@ -150,7 +152,7 @@ export class AppComponent implements OnInit {
   }
   logout() {
     localStorage.clear();
-    this.employeeService.clearEmployee();
+    this.authService.logout();
     sessionStorage.clear();
     localStorage.removeItem('introSeen')
     this.router.navigate(['/login'], { replaceUrl: true });
