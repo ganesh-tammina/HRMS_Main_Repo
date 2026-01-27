@@ -7,6 +7,16 @@ import { environment } from 'src/environments/environment'
   providedIn: 'root',
 })
 export class TimesheetService {
+  /**
+   * Upload client timesheet (Excel/PDF/Image) for validation
+   * @param formData FormData with file, month, year, project_id
+   */
+  uploadClientTimesheet(formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/client-timesheet/upload`,
+      formData
+    );
+  }
 
   private env = environment;
   private baseUrl = `http://${this.env.apiURL}/api/timesheets`;

@@ -221,10 +221,10 @@
         </div>
 
         <div class="no-leaves-img">
-        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data ">
-          <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
-          No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
-        </p>
+          <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data ">
+            <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
+            No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
+          </p>
         </div>
 
 
@@ -241,7 +241,6 @@
     </div>
 
     <ion-card *ngFor="let a of assignments" class="worklog-block project-assignment-card ion-margin-bottom">
-
       <ion-card-content>
         <div class="project-info-grid">
           <div class="info-item">
@@ -287,117 +286,34 @@
             </div>
           </div>
         </div>
-      </ion-card-content>
-
-    </ion-card>
-    <!-- ================= PROJECT WORK REPORT ================= -->
-    <ion-card class="worklog-block project-report">
-
-      <ion-card-header>
-        <div class="header-content">
-          <div>
-            <ion-card-title>
-              <ion-icon name="analytics-outline"></ion-icon>
-              Project Work Report
-            </ion-card-title>
-            <p>Submit detailed hourly work report for your project</p>
-          </div>
+        <!-- Client Timesheet Upload UI -->
+        <div class="client-upload-block ion-margin-top">
+          <ion-item lines="none">
+            <ion-label position="stacked">Upload Client Timesheet</ion-label>
+            <input type="file" (change)="onClientUploadFileChange($event)" accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png" />
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Month</ion-label>
+            <ion-select [(ngModel)]="clientUploadMonth">
+              <ion-select-option *ngFor="let m of months" [value]="m.value">{{m.name}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Year</ion-label>
+            <ion-select [(ngModel)]="clientUploadYear">
+              <ion-select-option *ngFor="let y of years" [value]="y">{{y}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-button class="primary-btn ion-margin-top" (click)="uploadClientTimesheet(a.project_id)"
+            [disabled]="!clientUploadFile || clientUploadLoading">
+            <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+            {{ clientUploadLoading ? 'Uploading...' : 'Upload Client Timesheet' }}
+          </ion-button>
+          <ion-note *ngIf="clientUploadFile" color="success">
+            Selected: {{clientUploadFile.name}}
+          </ion-note>
         </div>
-      </ion-card-header>
-
-      <ion-card-content>
-
-        <form [formGroup]="workTrackForm">
-
-          <!-- DATE -->
-          <div class="date-selector">
-            <label>
-              Select Date
-            </label>
-            <ion-input type="date" formControlName="date" [max]="today"></ion-input>
-          </div>
-          <!-- <ion-item lines="none">
-            <ion-label position="stacked">Date</ion-label>
-            <ion-input type="date" formControlName="date" [max]="today"></ion-input>
-          </ion-item> -->
-
-          <!-- HOURS BREAKDOWN -->
-          <ion-grid class="table-block ion-no-padding">
-
-            <ion-row class="table-header">
-              <ion-col size="3">Time Slot</ion-col>
-              <ion-col size="6">Task</ion-col>
-              <ion-col size="2">Hours</ion-col>
-              <ion-col size="1">Action</ion-col>
-            </ion-row>
-
-            <div formArrayName="hours_breakdown">
-
-              <ion-row class="table-list-row" *ngFor="let row of breakdowns.controls; let i = index"
-                [formGroupName]="i">
-
-                <ion-col size="3">
-                  <ion-input formControlName="hour" placeholder="09:00-10:00">
-                  </ion-input>
-                </ion-col>
-
-                <ion-col size="6">
-                  <ion-textarea formControlName="task" placeholder="Work done in this hour">
-                  </ion-textarea>
-                </ion-col>
-
-                <ion-col size="2">
-                  <ion-input type="number" formControlName="hours" placeholder="1" (ionChange)="onHoursChange(i)">
-                  </ion-input>
-                </ion-col>
-
-                <!-- DELETE -->
-                <ion-col size="1">
-                  <ion-button fill="clear" color="danger" size="small" *ngIf="breakdowns.length > 1"
-                    (click)="removeRow(i)">
-                    <ion-img src="../../../assets/delete.svg"></ion-img>
-                  </ion-button>
-
-                  <ion-button fill="clear" color="danger" size="small" *ngIf="breakdowns.length === 1" disabled>
-                    <ion-img src="../../../assets/delete.svg"></ion-img>
-                  </ion-button>
-                </ion-col>
-
-              </ion-row>
-
-            </div>
-            <!-- TOTAL -->
-            <div class="total-hours-card">
-              <div class="total-content">
-                <ion-icon name="time" color="primary"></ion-icon>
-                <span class="total-label">Total Hours</span>
-              </div>
-              <ion-badge class="total-badge">{{ calculateTotalHours() }} hrs</ion-badge>
-            </div>
-            <!-- ADD TIME SLOT -->
-            <ion-row>
-              <ion-col size="12" class="row-right pr-30">
-                <ion-button class="primary-outline-btn mr-8" (click)="addRow()">
-                  + Add Time Slot
-                </ion-button>
-                <!-- SUBMIT -->
-                <ion-button class="primary-btn" (click)="submit()" [disabled]="loading">
-                  {{ loading ? 'Submitting...' : 'Submit Project Work' }}
-                </ion-button>
-              </ion-col>
-            </ion-row>
-
-          </ion-grid>
-
-
-
-
-
-
-        </form>
-
       </ion-card-content>
-
     </ion-card>
 
     <!-- ================= MY PROJECT TIMESHEETS ================= -->
@@ -503,10 +419,10 @@
         </div>
 
         <div class="no-leaves-img">
-        <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data ">
-          <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
-          No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
-        </p>
+          <p *ngIf="!loadingList && !myTimesheets.length" class="empty-data ">
+            <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
+            No timesheets found for {{ months[selectedMonth - 1]?.name }} {{ selectedYear }}
+          </p>
         </div>
 
       </ion-card-content>

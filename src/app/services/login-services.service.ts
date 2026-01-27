@@ -14,6 +14,7 @@ export class AuthService {
   private CREATE_USER_URL = `http://${this.env.apiURL}/api/auth/user/create`;
   private CREATE_PASSWORD_URL = `http://${this.env.apiURL}/api/auth/password/create`;
   private PREVIEW_ROLE_URL = `http://${this.env.apiURL}/api/auth/user/preview-role`;
+  private LOGOUT_URL = `http://${this.env.apiURL}/api/auth/logout`;
 
   constructor(
     private http: HttpClient,
@@ -74,10 +75,22 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return new Observable<void>((observer) => {
-      this.routeGuardService.logout();
-      observer.next();
-      observer.complete();
-    });
+    const token = localStorage.getItem('token');
+
+    return this.http.post<any>(this.LOGOUT_URL,
+      {}, // empty body like curl -d ''
+      {
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ).pipe(
+      tap(() => {
+        // Clear storage after successful logout
+        this.routeGuardService.logout();
+      })
+    );
   }
+
 }
