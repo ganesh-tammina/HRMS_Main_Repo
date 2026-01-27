@@ -24,9 +24,9 @@
                   <!-- ✅ DYNAMIC DATE -->
                   <p class="date">
                     <span>{{ todayDate }}</span>
-                    <span *ngIf="monthlyAttendanceReport.length">
-                      <span *ngFor="let item of monthlyAttendanceReport">
-                        {{ item.location}}
+                    <span>
+                      <span *ngIf="currentEmployee as emp">
+                        {{ emp.location_name}}
                       </span>
                     </span>
                   </p>
