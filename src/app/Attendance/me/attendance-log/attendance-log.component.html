@@ -56,7 +56,15 @@
       <ion-icon name="information-circle-outline" color="primary" style="cursor:pointer" (click)="openLogDetails(log)">
       </ion-icon>
     </ion-col>
+    <ion-col size="2">
+      <span *ngIf="!log.noLogs; else noLogs">
+        {{ log.effective_hours || '-' }}
+      </span>
 
+      <ng-template #noLogs>
+        <span style="color:#999;font-size:12px">No logs</span>
+      </ng-template>
+    </ion-col>
   </ion-row>
 
 </ion-grid>

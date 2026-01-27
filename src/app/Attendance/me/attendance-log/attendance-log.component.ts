@@ -82,18 +82,18 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
 
   private getAllDatesBetween(start: string, end: string): string[] {
     const dates: string[] = [];
- 
+
     const startDate = new Date(start);
- 
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // normalize
- 
+
     const endDate = new Date(end);
     endDate.setHours(0, 0, 0, 0);
- 
+
     // 🔑 Use the earlier date: end OR today
     const finalEndDate = endDate > today ? today : endDate;
- 
+
     for (
       let d = new Date(startDate);
       d <= finalEndDate;
@@ -101,12 +101,9 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     ) {
       dates.push(this.formatDateOnly(d));
     }
- 
+
     return dates;
   }
-
-
-
 
   private formatDateOnly(date: string | Date): string {
     const d = new Date(date);
@@ -148,26 +145,26 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     }).subscribe({
       next: res => {
         const apiAttendance = res?.attendance || [];
- 
+
         // 1️⃣ Create a map by date (YYYY-MM-DD)
         const attendanceMap = new Map<string, any>();
- 
+
         apiAttendance.forEach((item: any) => {
           const dateKey = this.formatDateOnly(item.attendance_date);
           attendanceMap.set(dateKey, item);
         });
- 
+
         // 2️⃣ Generate ALL dates in range
         const allDates = this.getAllDatesBetween(this.startDate, this.endDate);
- 
+
         // 3️⃣ Merge → ensure every date exists
         this.currentMonthreport = allDates.map(date => {
           const existing = attendanceMap.get(date);
- 
+
           if (existing) {
             return existing; // ✔️ has logs
           }
- 
+
           // ❌ No logs → create empty record
           return {
             attendance_date: date,
@@ -178,12 +175,12 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
             noLogs: true
           };
         });
- 
+
         // Optional: latest date on top
         this.currentMonthreport.reverse();
- 
+
         this.attendanceService.setMonthlyReport(this.currentMonthreport);
- 
+
         console.log('✅ Normalized monthly report:', this.currentMonthreport);
       },
       error: () => {
@@ -191,6 +188,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
   }
+
 
   loadTodayAttendance(): void {
     this.attendanceApi.getTodayAttendance().subscribe({
