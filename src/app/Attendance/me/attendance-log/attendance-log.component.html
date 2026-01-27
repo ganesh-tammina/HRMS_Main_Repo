@@ -43,27 +43,20 @@
         <span  class="pl-5" style="color:#999;font-size:12px">( No logs )</span>
       </ng-template>
     </ion-col>
-
-    <ion-col size="3">
+     <ion-col class="ion-justify-content-center no-log" size="10" *ngIf="log.noLogs" color="default">
+        <p>Not Yet</p>
+     </ion-col>
+    <ion-col size="3" *ngIf="!log.noLogs">
       <ion-progress-bar></ion-progress-bar>
     </ion-col>
 
-    <ion-col size="2">{{ log.effective_hours || '-' }}</ion-col>
-    <ion-col size="2">{{ log.gross_hours || '-' }}</ion-col>
-    <ion-col size="2">{{ getArrivalStatus(log.status) }}</ion-col>
+    <ion-col size="2" *ngIf="!log.noLogs">{{ log.effective_hours || '-' }}</ion-col>
+    <ion-col size="2" *ngIf="!log.noLogs">{{ log.gross_hours || '-' }}</ion-col>
+    <ion-col size="2" *ngIf="!log.noLogs">{{ getArrivalStatus(log.status) }}</ion-col>
 
-    <ion-col size="1">
+    <ion-col size="1" *ngIf="!log.noLogs">
       <ion-icon name="information-circle-outline" color="primary" style="cursor:pointer" (click)="openLogDetails(log)">
       </ion-icon>
-    </ion-col>
-    <ion-col size="2">
-      <span *ngIf="!log.noLogs; else noLogs">
-        {{ log.effective_hours || '-' }}
-      </span>
-
-      <ng-template #noLogs>
-        <span style="color:#999;font-size:12px">No logs</span>
-      </ng-template>
     </ion-col>
   </ion-row>
 
