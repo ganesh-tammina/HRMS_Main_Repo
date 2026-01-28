@@ -879,3 +879,65 @@ ion-spinner {
   }
 }
 
+.client-upload-block {
+  display: flex;
+  align-items: flex-end;
+  ion-item {
+    ion-select {
+      border: 1px solid #C4C4C4;
+      height: 45px;
+      border-radius: 4px;
+      padding: 0px 12px !important;
+      margin: 11px 0px;
+    }
+    ion-input, ion-textarea {
+      border: 1px solid #C4C4C4;
+      height: auto;
+      border-radius: 4px;
+      padding: 0px 12px !important;
+      margin: 11px 0px;
+    }
+    ion-label {
+      transform: none !important;
+    }
+  }
+  ion-select {
+    width: 250px;
+  }
+  .upload-file {
+    position: relative;
+    top: -12px;
+  }
+  .button-wrapper {
+    position: relative;
+    width: 150px;
+    text-align: center;    
+    margin-top: 12px;
+    span.label {
+      border-radius: 8px;
+      position: relative;
+      z-index: 0;
+      display: inline-block;
+      width: 100%;
+      border: 1px solid var(--ion-color-secondary-shade);
+      cursor: pointer;
+      color: var(--ion-color-secondary-shade);
+      padding: 12px 0;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+    
+  #upload {
+      display: inline-block;
+      position: absolute;
+      z-index: 1;
+      width: 100%;
+      height: 44px;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+  }
+}

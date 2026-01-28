@@ -81,7 +81,7 @@ export class AppComponent implements OnInit {
             if (!introSeen) {
               localStorage.setItem('introSeen', 'true');
             }
-          }, 6000);
+          }, 5000);
         } else {
           this.showIntro = false;
         }

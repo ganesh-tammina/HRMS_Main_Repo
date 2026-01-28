@@ -52,6 +52,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   employeeProfile: any = null;
   weeklyOffPolicy: WeeklyOffPolicy | null = null;
 
+
+  
   constructor(
     private attendanceService: AttendanceService,
     private routeGuard: RouteGuardService,

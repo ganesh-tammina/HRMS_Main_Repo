@@ -36,6 +36,13 @@
     [ngClass]="{'weekoff-row': log.status === 'weekend', 'leave-row': log.status === 'on-leave'}">
     <ion-col size="2">
       {{ log.attendance_date | date:'dd-MM-yyyy' }}
+      <span class="pl-5" *ngIf="!log.noLogs; else noLogs">
+        ({{ log.effective_hours || '-' }})
+      </span>
+ 
+      <ng-template #noLogs>
+        <span  class="pl-5" style="color:#999;font-size:12px">( No logs )</span>
+      </ng-template>
     </ion-col>
 
     <ion-col size="3">
