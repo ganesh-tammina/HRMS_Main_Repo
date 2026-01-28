@@ -882,6 +882,12 @@ ion-spinner {
 .client-upload-block {
   display: flex;
   align-items: flex-end;
+  flex-wrap: wrap;
+  ion-note {
+    color: #122e44;
+    font-weight: 600;
+    padding-left: 15px;
+  }
   ion-item {
     ion-select {
       border: 1px solid #C4C4C4;

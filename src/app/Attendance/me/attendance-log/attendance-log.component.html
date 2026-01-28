@@ -35,7 +35,7 @@
   <ion-row *ngFor="let log of currentMonthreport" class="table-row"
     [ngClass]="{'weekoff-row': log.status === 'weekend', 'leave-row': log.status === 'on-leave'}">
     <ion-col size="2">
-      {{ log.attendance_date | date:'dd-MM-yyyy' }}
+      {{ log.attendance_date | date:'EEE, dd MMM' }}
       <span class="pl-5" *ngIf="!log.noLogs; else noLogs">
         ({{ log.effective_hours || '-' }})
       </span>
