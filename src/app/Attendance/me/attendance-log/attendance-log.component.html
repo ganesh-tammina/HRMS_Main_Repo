@@ -36,19 +36,27 @@
     [ngClass]="{'weekoff-row': log.status === 'weekend', 'leave-row': log.status === 'on-leave'}">
     <ion-col size="2">
       {{ log.attendance_date | date:'EEE, dd MMM' }}
-      <span class="pl-5" *ngIf="!log.noLogs; else noLogs">
+      <ng-container *ngIf="log.status === 'on-leave'">
+        <span style="background:#b39ddb;color:#fff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;">LEAVE</span>
+      </ng-container>
+      <ng-container *ngIf="log.status === 'weekend'">
+        <span style="background:#d7ccc8;color:#795548;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;">W-OFF</span>
+      </ng-container>
+      <ng-container *ngIf="log.status === 'holiday'">
+        <span style="background:#e0f7fa;color:#00796b;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;">HLDY</span>
+      </ng-container>
+      <span class="pl-5" *ngIf="!log.noLogs && log.status !== 'on-leave' && log.status !== 'weekend' && log.status !== 'holiday'; else noLogs">
         ({{ log.effective_hours || '-' }})
       </span>
- 
       <ng-template #noLogs>
-        <span *ngIf="log.status !== 'weekend' && log.status !== 'on-leave'"  class="pl-5" style="color:#999;font-size:12px">( No logs )</span>
+        <span *ngIf="log.status !== 'weekend' && log.status !== 'on-leave' && log.status !== 'holiday'"  class="pl-5" style="color:#999;font-size:12px">( No logs )</span>
       </ng-template>
     </ion-col>
-    <ion-col size='10'  *ngIf="log.status == 'weekend' || log.status == 'on-leave'" class="no-log">
-        <p *ngIf="log.status === 'weekend'">Full day week off</p>
-        <p *ngIf="log.status === 'on-leave'" >{{ log.leaveType }}</p>
-        <!-- <p *ngIf="log.status !== 'weekend' && log.status !== 'on-leave'">No
-          logs</p> -->
+    <ion-col size='10' *ngIf="log.status == 'weekend' || log.status == 'on-leave'" class="no-log">
+        <p *ngIf="log.status === 'weekend'" style="color:#1F74BB;font-size:13px;font-weight:bold;margin:0;">Full day week off</p>
+        <p *ngIf="log.status === 'on-leave'" style="color:#ABABAB;font-size:13px;font-weight:bold;margin:0;">
+          On Leave: <span style="color:#1F74BB">{{ log.leaveType }}</span>
+        </p>
     </ion-col>
    
     <ion-col size="3"  *ngIf="log.status !== 'weekend' && log.status !== 'on-leave'">

@@ -104,18 +104,13 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
 
   private getAllDatesBetween(start: string, end: string): string[] {
     const dates: string[] = [];
-
     const startDate = new Date(start);
-
     const today = new Date();
     today.setHours(0, 0, 0, 0); // normalize
-
     const endDate = new Date(end);
     endDate.setHours(0, 0, 0, 0);
-
-    // 🔑 Use the earlier date: end OR today
+    // Only show up to today or endDate, whichever is earlier
     const finalEndDate = endDate > today ? today : endDate;
-
     for (
       let d = new Date(startDate);
       d <= finalEndDate;
@@ -123,7 +118,6 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     ) {
       dates.push(this.formatDateOnly(d));
     }
-
     return dates;
   }
 
@@ -210,15 +204,30 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   private loadLeaveDaysAndMonthlyReport(): void {
     this.leaveService.getMyLeaves(this.currentYear).subscribe({
       next: (leaves: MyLeave[]) => {
+        console.log('All leaves fetched from backend:', leaves);
         this.leaveDaysMap = new Map();
-        leaves.filter(l => l.status === 'APPROVED').forEach(leave => {
-          const from = new Date(leave.from_date);
-          const to = new Date(leave.to_date);
-          for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+        const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
+        const approvedLeaveDates: {date: string, type: string}[] = [];
+        approvedLeaves.forEach(leave => {
+          // Use type_name or type_code for badge, and start_date/end_date for date range
+          const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
+          const fromRaw = leave.start_date || leave.from_date;
+          const toRaw = leave.end_date || leave.to_date || fromRaw;
+          const fromDateString = fromRaw ? fromRaw : new Date().toISOString();
+          const toDateString = toRaw ? toRaw : fromDateString;
+          const from = new Date(fromDateString);
+          const to = new Date(toDateString);
+          let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+          const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+          while (d <= end) {
             const dateStr = this.formatDateOnly(d);
-            this.leaveDaysMap.set(dateStr, leave.leave_type);
+            this.leaveDaysMap.set(dateStr, leaveType);
+            approvedLeaveDates.push({date: dateStr, type: leaveType});
+            d.setDate(d.getDate() + 1);
           }
         });
+        console.log('Approved leave days for badge:', approvedLeaveDates);
+        console.log('leaveDaysMap for badge:', Array.from(this.leaveDaysMap.entries()));
         this.loadMonthlyReport();
       },
       error: () => {
