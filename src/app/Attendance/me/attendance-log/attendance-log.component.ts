@@ -53,7 +53,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   weeklyOffPolicy: WeeklyOffPolicy | null = null;
 
 
-  
+
   constructor(
     private attendanceService: AttendanceService,
     private routeGuard: RouteGuardService,
@@ -207,7 +207,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
         console.log('All leaves fetched from backend:', leaves);
         this.leaveDaysMap = new Map();
         const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
-        const approvedLeaveDates: {date: string, type: string}[] = [];
+        const approvedLeaveDates: { date: string, type: string }[] = [];
         approvedLeaves.forEach(leave => {
           // Use type_name or type_code for badge, and start_date/end_date for date range
           const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
@@ -222,7 +222,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
           while (d <= end) {
             const dateStr = this.formatDateOnly(d);
             this.leaveDaysMap.set(dateStr, leaveType);
-            approvedLeaveDates.push({date: dateStr, type: leaveType});
+            approvedLeaveDates.push({ date: dateStr, type: leaveType });
             d.setDate(d.getDate() + 1);
           }
         });
