@@ -11,6 +11,11 @@ export interface MyLeave {
   days: number;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   applied_on: string;
+  // Optional fields for backend compatibility
+  type_name?: string;
+  type_code?: string;
+  start_date?: string;
+  end_date?: string;
 }
 
 @Injectable({
