@@ -24,8 +24,8 @@
                 <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable':''">
                   <div class="row-left">
-                    <img src="../assets/icon/home.svg"  class="inactive-menu" />
-                    <img src="../assets/icon/home-active.svg"  class="active-menu" />
+                    <img src="../assets/icon/home.svg" class="inactive-menu" />
+                    <img src="../assets/icon/home-active.svg" class="active-menu" />
                     <ion-label>Home</ion-label>
                   </div>
                 </ion-item>
@@ -35,7 +35,7 @@
                 <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
                   <div class="row-left">
-                    <img src="../assets/icon/Me.svg"  class="inactive-menu" title="Leave" />
+                    <img src="../assets/icon/Me.svg" class="inactive-menu" title="Leave" />
                     <img src="../assets/icon/Me-active.svg" class="active-menu" title="Leave" />
                     <ion-label>Leave</ion-label>
                   </div>
@@ -48,10 +48,8 @@
                   <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                     [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
                     <div class="row-left">
-                      <img src="../assets/icon/onboarding.svg" class="inactive-menu"
-                        title="My Team" />
-                      <img src="../assets/icon/onboarding-active.svg" class="active-menu"
-                        title="My Team" />
+                      <img src="../assets/icon/onboarding.svg" class="inactive-menu" title="My Team" />
+                      <img src="../assets/icon/onboarding-active.svg" class="active-menu" title="My Team" />
                       <ion-label>Onboarding</ion-label>
                     </div>
                   </ion-item>
@@ -87,15 +85,14 @@
                   <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
                     routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">
                     <div class="row-left">
-                      <img src="../assets/icon/my-team.svg" class="inactive-menu"
-                        title="My Team" />
-                      <img src="../assets/icon/my-team-active.svg" class="active-menu"
-                        title="My Team" />
+                      <img src="../assets/icon/my-team.svg" class="inactive-menu" title="My Team" />
+                      <img src="../assets/icon/my-team-active.svg" class="active-menu" title="My Team" />
                       <ion-label>My Team</ion-label>
                     </div>
                   </ion-item>
                 </ion-menu-toggle>
               </ng-container>
+
               <!-- <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="['/organisation_info']" lines="none" detail="false"
                 routerLinkActive="selected">
@@ -179,17 +176,16 @@
             </ion-popover> -->
 
 
-              <!-- <ion-menu-toggle auto-hide="false" id="menu-buttons1">
-              <ion-item lines="none" detail="false" routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable':''">
-                <div class="row-left">
-                  <img src="../assets/icon/myfinance.svg" class="inactive-menu"
-                    title="This is a simple tooltip" />
-                  <img src="../assets/icon/myfinance-active.svg" class="active-menu" />
-                  <ion-label>My Finances</ion-label>
-                </div>
-              </ion-item>
-            </ion-menu-toggle> -->
+              <ion-menu-toggle auto-hide="false" id="menu-buttons1">
+                <ion-item lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable':''">
+                  <div class="row-left">
+                    <img src="../assets/icon/myfinance.svg" class="inactive-menu" title="This is a simple tooltip" />
+                    <img src="../assets/icon/myfinance-active.svg" class="active-menu" />
+                    <ion-label>My Finances</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
               <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" class="menu-dropdown menu-drop1"
                 side="right">
                 <ng-template>
@@ -198,6 +194,9 @@
                       <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
                       <ion-item routerLink="/payslip" lines="none" detail="false">
                         <ion-label>Pay Slips</ion-label>
+                      </ion-item>
+                      <ion-item routerLink="/finance-admin" lines="none" detail="false">
+                        <ion-label>Finance Admin</ion-label>
                       </ion-item>
                     </ion-menu-toggle>
                   </ion-content>

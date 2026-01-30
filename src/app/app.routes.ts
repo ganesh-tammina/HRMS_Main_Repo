@@ -48,6 +48,7 @@ import { PayslipsComponent } from './My_Finance/payslips/payslips.component';
 import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.component';
 import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import { EmployeeListComponent } from './Administration/admin/employee-list/employee-list.component';
+import { FinanceAdminComponent } from './My_Finance/finance-admin/finance-admin.component';
 export const routes: Routes = [
   {
     path: 'org-tree',
@@ -252,6 +253,12 @@ export const routes: Routes = [
     path: 'payslip',
     component: PayslipsComponent,
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'finance-admin',
+    component: FinanceAdminComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] },
   },
   {
     path: 'approve-reject-leave',
