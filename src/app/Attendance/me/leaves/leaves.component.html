@@ -77,11 +77,11 @@
 
     <ion-grid class="table-block" *ngIf="leaveRequestsDeatils && leaveRequestsDeatils.length > 0; else noPendingLeaves">
       <ion-row class="table-header">
-        <ion-col size="2">Start & End Date</ion-col>
+        <ion-col size="2">Leave Dates</ion-col>
         <ion-col size="2">Leave Type</ion-col>
         <ion-col size="1">Days</ion-col>
         <ion-col size="2">Applied Date</ion-col>
-        <ion-col size="2">Status</ion-col>        
+        <ion-col size="2" style="padding-left: 32px;">Status</ion-col>        
         <ion-col size="3">Reason</ion-col>
       </ion-row>
 
@@ -136,12 +136,12 @@
       <ion-col *ngIf="leaveRequestsDeatils && leaveRequestsDeatils.length > 0; else noApprovedRejectedLeaves">
         <ion-grid class="table-block">
           <ion-row class="table-header">
-            <ion-col size="3">Start & End Date</ion-col>
+            <ion-col size="3">Leave Dates</ion-col>
             <ion-col size="2">Leave Type</ion-col>
             <ion-col size="1">Days</ion-col>
             <ion-col size="2">Reason</ion-col>
             <ion-col size="2">Applied Date</ion-col>
-            <ion-col size="2">Status</ion-col>
+            <ion-col size="2" style="text-align:center; padding-right: 20px;">Status</ion-col>
           </ion-row>
   
           <ng-container *ngFor="let leave of leaveRequestsDeatils">
