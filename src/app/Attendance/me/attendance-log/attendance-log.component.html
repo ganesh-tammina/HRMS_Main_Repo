@@ -58,10 +58,10 @@
       </ng-template>
     </ion-col>
     <ion-col size='10' *ngIf="log.status == 'weekend' || log.status == 'on-leave'" class="no-log">
-      <p *ngIf="log.status === 'weekend'" style="color:#1F74BB;font-size:13px;font-weight:bold;margin:0;">Full day week
+      <p *ngIf="log.status === 'weekend'" style="color:#333333;font-size:11px;font-weight:550;margin:0;">Full day week
         off</p>
       <p *ngIf="log.status === 'on-leave'" style="color:#ABABAB;font-size:13px;font-weight:bold;margin:0;">
-        On Leave: <span style="color:#1F74BB">{{ log.leaveType }}</span>
+      <span style="color:#333333; font-size:11px; font-weight: 550;">{{ log.leaveType }}</span>
       </p>
     </ion-col>
 
