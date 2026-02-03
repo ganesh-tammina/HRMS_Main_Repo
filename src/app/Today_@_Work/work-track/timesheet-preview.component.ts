@@ -43,11 +43,6 @@ import { CommonModule } from '@angular/common';
         </ion-item>
       </ion-list>
 
-      <div class="note-block">
-        <label>Notes</label>
-        <p>{{ data.notes || '—' }}</p>
-       
-      </div>
     </ion-content>
   `,
 })
