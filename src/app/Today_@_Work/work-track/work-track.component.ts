@@ -485,7 +485,13 @@ export class WorkTrackComponent implements OnInit {
   }
 
   /* ================= DOWNLOAD EXCEL (UNCHANGED) ================= */
-
+  formatDateDDMMYYYY(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 0-based
+    const year = date.getFullYear();
+  
+    return `${day}-${month}-${year}`;
+  }
   downloadExcel(timesheet: any) {
     if (!timesheet || !timesheet.hours_breakdown?.length) {
       return;
@@ -503,7 +509,7 @@ export class WorkTrackComponent implements OnInit {
         </tr>
       `;
     });
-
+    timesheet.date = this.formatDateDDMMYYYY(timesheet.date);
     const html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office"
           xmlns:x="urn:schemas-microsoft-com:office:excel">
