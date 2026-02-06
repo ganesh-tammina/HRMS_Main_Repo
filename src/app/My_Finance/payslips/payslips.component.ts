@@ -54,7 +54,7 @@ export class PayslipsComponent implements OnInit {
         // Special Allowance = remainder
         this.specialAllowance = Math.round((this.monthlySalary - (this.basic + this.hra + this.medicalAllowance + this.transportAllowance)) * 100) / 100;
         // Total Earnings (A)
-        this.totalEarnings = Math.round((this.basic + this.hra + this.medicalAllowance + this.transportAllowance + this.specialAllowance) * 100) / 100;
+        this.totalEarnings = Math.round((this.basic + this.hra + this.pfEmployerContribution + this.medicalAllowance + this.transportAllowance + this.specialAllowance - this.pfEmployerContribution) * 100) / 100;
         // PF Contribution (B)
         if (this.monthlySalary >= 15000) {
           this.pfContribution = 1800;
