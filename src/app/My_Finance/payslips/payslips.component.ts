@@ -24,13 +24,20 @@ export class PayslipsComponent implements OnInit {
   imageUrls: any;
   payslip: any = {}
   completepayroll: any = {}
+  monthlySalary: number | null = null;
   constructor(private candidateService: CandidateService, private EmployeeService: EmployeeService) { }
 
   ngOnInit() {
     this.EmployeeService.getMyProfile().subscribe((data: any) => {
       this.currentEmployee = data;
+      console.log('Employee Data Retrieved:', data.lpa);
+      if (data.lpa) {
+        this.monthlySalary = Math.round((data.lpa / 12) * 100) / 100;
+        console.log('Calculated Monthly Salary:', this.monthlySalary);
+      } else {
+        this.monthlySalary = null;
+      }
       console.log('Current Employee Data:', this.currentEmployee);
     })
-
   }
 }
