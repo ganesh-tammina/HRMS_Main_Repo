@@ -12,6 +12,8 @@ import { EmployeeService } from 'src/app/services/employee.service';
   imports: [CommonModule, IonicModule]
 })
 export class PayslipsComponent implements OnInit {
+    pfEmployerContribution: number = 1800;
+    netSalaryInWords: string = '';
   // Salary breakdown fields
   basic: number | null = null;
   hra: number | null = null;
@@ -59,11 +61,12 @@ export class PayslipsComponent implements OnInit {
         } else {
           this.pfContribution = Math.round(this.basic * 0.12 * 100) / 100;
         }
-        this.totalContributions = this.pfContribution;
+        this.totalContributions = this.pfContribution + this.pfEmployerContribution;
         // Professional Tax (C)
         this.totalDeductions = this.professionalTax;
         // Net Salary (A - B - C)
         this.netSalary = Math.round((this.totalEarnings - this.totalContributions - this.totalDeductions) * 100) / 100;
+        this.netSalaryInWords = this.numberToWords(this.netSalary);
       } else {
         this.monthlySalary = null;
         this.basic = null;
@@ -73,7 +76,41 @@ export class PayslipsComponent implements OnInit {
         this.pfContribution = null;
         this.totalContributions = null;
         this.netSalary = null;
+        this.netSalaryInWords = '';
       }
     });
+
   }
-}
+
+  // Simple number to words (Indian style, for demonstration)
+  numberToWords(num: number | null): string {
+    if (num === null || isNaN(num)) return '';
+    const a = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+      'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
+    const b = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
+    const number = Math.floor(num);
+    if (number === 0) return 'zero';
+    if (number < 0) return 'minus ' + this.numberToWords(Math.abs(number));
+    let words = '';
+    if (Math.floor(number / 100000) > 0) {
+      words += this.numberToWords(Math.floor(number / 100000)) + ' lakh ';
+      num = num % 100000;
+    }
+    if (Math.floor(number / 1000) > 0) {
+      words += this.numberToWords(Math.floor(number / 1000)) + ' thousand ';
+      num = num % 1000;
+    }
+    if (Math.floor(number / 100) > 0) {
+      words += this.numberToWords(Math.floor(number / 100)) + ' hundred ';
+      num = num % 100;
+    }
+    if (number > 0) {
+      if (number < 20) words += a[number];
+      else {
+        words += b[Math.floor(number / 10)];
+        if ((number % 10) > 0) words += ' ' + a[number % 10];
+      }
+    }
+    return words.trim() + ' only';
+  }
+  }
