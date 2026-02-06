@@ -12,8 +12,8 @@ import { EmployeeService } from 'src/app/services/employee.service';
   imports: [CommonModule, IonicModule]
 })
 export class PayslipsComponent implements OnInit {
-    pfEmployerContribution: number = 1800;
-    netSalaryInWords: string = '';
+  pfEmployerContribution: number = 1800;
+  netSalaryInWords: string = '';
   // Salary breakdown fields
   basic: number | null = null;
   hra: number | null = null;
@@ -85,9 +85,9 @@ export class PayslipsComponent implements OnInit {
   // Simple number to words (Indian style, for demonstration)
   numberToWords(num: number | null): string {
     if (num === null || isNaN(num)) return '';
-    const a = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
-      'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
-    const b = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
+    const a = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+      'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
     const number = Math.floor(num);
     if (number === 0) return 'zero';
     if (number < 0) return 'minus ' + this.numberToWords(Math.abs(number));
@@ -113,4 +113,4 @@ export class PayslipsComponent implements OnInit {
     }
     return words.trim() + ' only';
   }
-  }
+}

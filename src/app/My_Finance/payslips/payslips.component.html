@@ -181,11 +181,13 @@
             </ion-row>
             <ion-row class="table-list label-total">
               <ion-col size="8" class="label">Total Contributions (B)</ion-col>
-              <ion-col size="4">{{totalContributions !== null ? ('₹ ' + (totalContributions | number:'1.0-2')) : '-'}}</ion-col>
+              <ion-col size="4">{{totalContributions !== null ? ('₹ ' + (totalContributions | number:'1.0-2')) :
+                '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="8" class="label">PF Employer</ion-col>
-              <ion-col size="4">{{pfEmployerContribution !== null ? ('₹ ' + (pfEmployerContribution | number:'1.0-2')) : '-'}}</ion-col>
+              <ion-col size="4">{{pfEmployerContribution !== null ? ('₹ ' + (pfEmployerContribution | number:'1.0-2')) :
+                '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-header">
               <ion-col size="8" class="label">TAXES & DEDUCTIONS</ion-col>
@@ -216,7 +218,7 @@
             Net Salary in words :
           </ion-col>
           <ion-col size="7" class="netpay-amount">
-              {{netSalaryInWords}}
+            {{netSalaryInWords}}
           </ion-col>
         </ion-row>
       </ion-grid>
