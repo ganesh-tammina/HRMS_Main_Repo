@@ -82,6 +82,11 @@
             <label>Monthly Salary</label>
             <p>{{completepayroll?.remuneration_amount}}</p>
           </ion-col>
+          <!-- <ion-col size="3">
+            <label>CTC (Annual LPA)</label>
+            <p *ngIf="lpa !== null">{{ lpa | number:'1.0-2' }}</p>
+            <p *ngIf="lpa === null">-</p>
+          </ion-col> -->
         </ion-row>
 
         <ion-row class="detail-item">

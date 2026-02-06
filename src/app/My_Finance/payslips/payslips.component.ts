@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 import { IonicModule } from '@ionic/angular';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-payslips',
@@ -23,10 +24,13 @@ export class PayslipsComponent implements OnInit {
   imageUrls: any;
   payslip: any = {}
   completepayroll: any = {}
-  constructor(private candidateService: CandidateService) { }
+  constructor(private candidateService: CandidateService, private EmployeeService: EmployeeService) { }
 
   ngOnInit() {
-   
-  }
+    this.EmployeeService.getMyProfile().subscribe((data: any) => {
+      this.currentEmployee = data;
+      console.log('Current Employee Data:', this.currentEmployee);
+    })
 
+  }
 }
