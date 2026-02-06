@@ -44,66 +44,57 @@
         <ion-row class="detail-item">
           <ion-col size="3">
             <label>EMPLOYEE NAME</label>
-            <p>{{completepayroll?.full_name}}</p>
+            <p>{{currentEmployee?.FullName}}</p>
           </ion-col>
           <ion-col size="3">
             <label>EMPLOYEE ID</label>
-            <p>{{completepayroll?.employee_number
-              }}</p>
+            <p>{{currentEmployee?.EmployeeNumber}}</p>
           </ion-col>
           <ion-col size="3">
             <label>DEPARTMENT</label>
-            <p>{{completepayroll?.department
-              }}</p>
+            <p>{{currentEmployee?.department}}</p>
           </ion-col>
           <ion-col size="3">
             <label>DESIGNATION</label>
-            <p>{{completepayroll?.job_title
-              }}</p>
+            <p>{{currentEmployee?.job_title}}</p>
           </ion-col>
         </ion-row>
 
         <ion-row class="detail-item">
           <ion-col size="3">
             <label>LOCATION</label>
-            <p>{{completepayroll?.location}}</p>
+            <p>{{currentEmployee?.location}}</p>
           </ion-col>
           <ion-col size="3">
             <label>PAN NUMBER</label>
-            <p>{{completepayroll?.pan_number
-              }}</p>
+            <p>{{currentEmployee?.PANNumber}}</p>
           </ion-col>
           <ion-col size="3">
-            <label>Aadhan NUMBER</label>
-            <p>{{completepayroll?.aadhaar_number
-              }}</p>
+            <label>Aadhaar NUMBER</label>
+            <p>{{currentEmployee?.AadhaarNumber}}</p>
           </ion-col>
           <ion-col size="3">
             <label>Monthly Salary</label>
-            <p>{{completepayroll?.remuneration_amount}}</p>
+            <p>{{currentEmployee?.remuneration_amount}}</p>
           </ion-col>
-          <!-- <ion-col size="3">
+          <ion-col size="3">
             <label>CTC (Annual LPA)</label>
-            <p *ngIf="lpa !== null">{{ lpa | number:'1.0-2' }}</p>
-            <p *ngIf="lpa === null">-</p>
-          </ion-col> -->
+            <p *ngIf="currentEmployee?.lpa !== null">{{ currentEmployee?.lpa | number:'1.0-2' }}</p>
+            <p *ngIf="currentEmployee?.lpa === null">-</p>
+          </ion-col>
         </ion-row>
 
         <ion-row class="detail-item">
           <ion-col size="3">
-            <label>UAN Numver</label>
-            <p>{{completepayroll?.uan_number}}</p>
+            <label>UAN Number</label>
+            <p>{{currentEmployee?.uan_number}}</p>
           </ion-col>
           <ion-col size="3">
             <label>PF Number</label>
-            <p>{{completepayroll?.pf_number}}</p>
+            <p>{{currentEmployee?.pf_number}}</p>
           </ion-col>
-          <ion-col size="3">
-
-          </ion-col>
-          <ion-col size="3">
-
-          </ion-col>
+          <ion-col size="3"></ion-col>
+          <ion-col size="3"></ion-col>
         </ion-row>
       </ion-grid>
 
