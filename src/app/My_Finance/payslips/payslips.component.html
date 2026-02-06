@@ -141,33 +141,33 @@
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="6" class="label">Basic</ion-col>
-              <ion-col size="3">{{completepayroll?.basic}}</ion-col>
-              <ion-col size="3">{{completepayroll?.basic}}</ion-col>
+              <ion-col size="3">{{basic !== null ? (basic | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="3">{{basic !== null ? (basic | number:'1.0-2') : '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="6" class="label">HRA</ion-col>
-              <ion-col size="3">{{completepayroll?.hra}}</ion-col>
-              <ion-col size="3">{{completepayroll?.hra}}</ion-col>
+              <ion-col size="3">{{hra !== null ? (hra | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="3">{{hra !== null ? (hra | number:'1.0-2') : '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="6" class="label">Transport Allowance</ion-col>
-              <ion-col size="3">{{completepayroll?.transport_allowance}}</ion-col>
-              <ion-col size="3">{{completepayroll?.transport_allowance}}</ion-col>
+              <ion-col size="3">{{transportAllowance | number:'1.0-2'}}</ion-col>
+              <ion-col size="3">{{transportAllowance | number:'1.0-2'}}</ion-col>
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="6" class="label">Medical Allowance</ion-col>
-              <ion-col size="3">{{completepayroll?.medical_allowance}}</ion-col>
-              <ion-col size="3">{{completepayroll?.medical_allowance}}</ion-col>
+              <ion-col size="3">{{medicalAllowance | number:'1.0-2'}}</ion-col>
+              <ion-col size="3">{{medicalAllowance | number:'1.0-2'}}</ion-col>
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="6" class="label">Special Allowance</ion-col>
-              <ion-col size="3">{{completepayroll?.special_allowance}}</ion-col>
-              <ion-col size="3">{{completepayroll?.special_allowance}}</ion-col>
+              <ion-col size="3">{{specialAllowance !== null ? (specialAllowance | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="3">{{specialAllowance !== null ? (specialAllowance | number:'1.0-2') : '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-list label-total">
               <ion-col size="6" class="label">Total Earnings (A)</ion-col>
-              <ion-col size="3">{{completepayroll?.total_earnings}}</ion-col>
-              <ion-col size="3">{{completepayroll?.total_earnings}}</ion-col>
+              <ion-col size="3">{{totalEarnings !== null ? (totalEarnings | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="3">{{totalEarnings !== null ? (totalEarnings | number:'1.0-2') : '-'}}</ion-col>
             </ion-row>
           </ion-col>
           <ion-col size="5">
@@ -177,11 +177,12 @@
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="8" class="label">PF Employee</ion-col>
-              <ion-col size="4">₹ 1,800</ion-col>
+              <ion-col size="4">{{pfContribution !== null ? ('₹ ' + (pfContribution | number:'1.0-2')) : '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-list label-total">
               <ion-col size="8" class="label">Total Contributions (B)</ion-col>
-              <ion-col size="4">₹ 1,800</ion-col>
+              <ion-col size="4">{{totalContributions !== null ? ('₹ ' + (totalContributions | number:'1.0-2')) :
+                '-'}}</ion-col>
             </ion-row>
             <ion-row class="table-header">
               <ion-col size="8" class="label">TAXES & DEDUCTIONS</ion-col>
@@ -189,11 +190,11 @@
             </ion-row>
             <ion-row class="table-list">
               <ion-col size="8" class="label">Professional Tax</ion-col>
-              <ion-col size="4">₹ 200</ion-col>
+              <ion-col size="4">{{professionalTax | number:'1.0-2'}}</ion-col>
             </ion-row>
             <ion-row class="table-list label-total">
               <ion-col size="8" class="label">Total Taxes & Deductions (C)</ion-col>
-              <ion-col size="4">₹ 200</ion-col>
+              <ion-col size="4">{{totalDeductions | number:'1.0-2'}}</ion-col>
             </ion-row>
           </ion-col>
         </ion-row>
@@ -204,7 +205,7 @@
             Net Salary Payable ( A - B - C ) :
           </ion-col>
           <ion-col size="7" class="netpay-amount">
-            ₹ 37,500
+            {{netSalary !== null ? ('₹ ' + (netSalary | number:'1.0-2')) : '-'}}
           </ion-col>
         </ion-row>
         <ion-row>
