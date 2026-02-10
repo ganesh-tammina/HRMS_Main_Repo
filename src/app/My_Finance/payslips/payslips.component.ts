@@ -11,6 +11,9 @@ import { EmployeeService } from 'src/app/services/employee.service';
   imports: [CommonModule, IonicModule],
 })
 export class PayslipsComponent implements OnInit {
+  // Attendance/Leave summary
+  payableDays: number = 0;
+  lopDays: number = 0;
   currentEmployee: any;
 
   // Salary values

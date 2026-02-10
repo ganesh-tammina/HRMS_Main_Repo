@@ -4,6 +4,7 @@
   <main class="content-area">
     <div class="payslip-card">
 
+
       <!-- HEADER -->
       <header class="payslip-header">
         <div>
@@ -86,7 +87,22 @@
 
       <!-- SALARY DETAILS -->
       <h2 class="section-title">Salary Details</h2>
-
+      <!-- ATTENDANCE/LEAVE SUMMARY -->
+      <h2 class="section-title">Attendance & Leave Summary</h2>
+      <ion-grid class="attendance-summary">
+        <ion-row>
+          <ion-col size="3"><strong>Total Working Days</strong></ion-col>
+          <ion-col size="3"><strong>Actual Payable Days</strong></ion-col>
+          <ion-col size="3"><strong>Loss of Pay (LOP) Days</strong></ion-col>
+          <ion-col size="3"><strong>Days Payable</strong></ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="3">31</ion-col>
+          <ion-col size="3">{{ payableDays }}</ion-col>
+          <ion-col size="3">{{ lopDays }}</ion-col>
+          <ion-col size="3">{{ payableDays }}</ion-col>
+        </ion-row>
+      </ion-grid>
       <ion-grid class="salary-table">
         <ion-row>
 
