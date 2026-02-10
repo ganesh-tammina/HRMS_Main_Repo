@@ -58,9 +58,14 @@ export class PayslipsComponent implements OnInit {
       this.medicalAllowance = 15000 / 12;   // yearly → monthly
       this.transportAllowance = 19200 / 12; // yearly → monthly
 
-      // Calculate pfEmployerContribution first
-      this.pfContribution = this.round(this.basic * 0.12);
-      this.pfEmployerContribution = this.pfContribution;
+      // Calculate pfEmployerContribution and pfContribution (fixed 1800 if basic >= 15000)
+      if (this.basic >= 15000) {
+        this.pfContribution = 1800;
+        this.pfEmployerContribution = 1800;
+      } else {
+        this.pfContribution = this.round(this.basic * 0.12);
+        this.pfEmployerContribution = this.pfContribution;
+      }
 
       // Add pfEmployerContribution and employer ESI (if applicable) to specialAllowance
       let employerESI = 0;
