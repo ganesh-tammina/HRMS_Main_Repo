@@ -1,238 +1,210 @@
-<div class="payslip-wrapper" *ngIf="completepayroll">
+<div class="payslip-wrapper" *ngIf="currentEmployee && monthlySalary">
 
-  <!-- LEFT SIDEBAR -->
-  <aside class="sidebar">
-    <h3 class="sidebar-title">PAYS LIPS</h3>
-
-    <ul class="month-list">
-      <li class="month-item active">
-        <p class="month-name">{{completepayroll?.payroll_month
-          }}</p>
-        <span class="company-name">Sree Tammina Software solutions Pvt. Ltd.</span>
-      </li>
-
-
-      <!-- Add months dynamically -->
-    </ul>
-  </aside>
-
-  <!-- MAIN CONTENT AREA -->
+  <!-- MAIN CONTENT -->
   <main class="content-area">
-
     <div class="payslip-card">
 
-      <!-- Header -->
+      <!-- HEADER -->
       <header class="payslip-header">
         <div>
-          <h2>PAYSLIP {{completepayroll?.payroll_month
-            }}</h2>
+          <h2>PAYSLIP</h2>
           <p>TECH TAMMINA SOFTWARE SOLUTIONS PVT LTD</p>
           <p>2nd Floor, Sri Sai Plaza, Madhapur</p>
-          <p>Hyderabad, Telangana, 500081</p>
+          <p>Hyderabad, Telangana - 500081</p>
         </div>
         <div class="logo">
-          <img src="../../../assets/tammina-blue-logo.svg" alt="Tech Tammina Logo">
+          <img src="../../../assets/tammina-blue-logo.svg" alt="Company Logo" />
         </div>
       </header>
 
-      <!-- EMPLOYEE DETAILS -->
+      <!-- EMPLOYEE NAME -->
       <h2 class="employee-name">
-        {{completepayroll?.full_name}}
+        {{ currentEmployee?.FullName }}
       </h2>
 
+      <!-- EMPLOYEE DETAILS -->
       <ion-grid class="details-grid">
+
         <ion-row class="detail-item">
-          <ion-col size="3">
-            <label>EMPLOYEE NAME</label>
-            <p>{{currentEmployee?.FullName}}</p>
-          </ion-col>
           <ion-col size="3">
             <label>EMPLOYEE ID</label>
-            <p>{{currentEmployee?.EmployeeNumber}}</p>
+            <p>{{ currentEmployee?.EmployeeNumber }}</p>
           </ion-col>
+
           <ion-col size="3">
             <label>DEPARTMENT</label>
-            <p>{{currentEmployee?.department_name}}</p>
+            <p>{{ currentEmployee?.department_name }}</p>
           </ion-col>
+
           <ion-col size="3">
             <label>DESIGNATION</label>
-            <p>{{currentEmployee?.designation_name}}</p>
+            <p>{{ currentEmployee?.designation_name }}</p>
           </ion-col>
-        </ion-row>
 
-        <ion-row class="detail-item">
           <ion-col size="3">
             <label>LOCATION</label>
-            <p>{{currentEmployee?.location_name}}</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>PAN NUMBER</label>
-            <p>{{currentEmployee?.PANNumber}}</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>Aadhaar NUMBER</label>
-            <p>{{currentEmployee?.AadhaarNumber}}</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>Monthly Salary</label>
-            <p *ngIf="monthlySalary !== null">{{ monthlySalary | number:'1.0-2' }}</p>
-            <p *ngIf="monthlySalary === null">-</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>CTC (Annual LPA)</label>
-            <p *ngIf="currentEmployee?.lpa !== null">{{ currentEmployee?.lpa | number:'1.0-2' }}</p>
-            <p *ngIf="currentEmployee?.lpa === null">-</p>
+            <p>{{ currentEmployee?.location_name }}</p>
           </ion-col>
         </ion-row>
 
         <ion-row class="detail-item">
           <ion-col size="3">
-            <label>UAN Number</label>
-            <p>{{currentEmployee?.uan_number}}</p>
+            <label>PAN NUMBER</label>
+            <p>{{ currentEmployee?.PANNumber }}</p>
           </ion-col>
+
           <ion-col size="3">
-            <label>PF Number</label>
-            <p>{{currentEmployee?.pf_number}}</p>
+            <label>AADHAAR NUMBER</label>
+            <p>{{ currentEmployee?.AadhaarNumber }}</p>
           </ion-col>
-          <ion-col size="3"></ion-col>
-          <ion-col size="3"></ion-col>
+
+          <ion-col size="3">
+            <label>UAN NUMBER</label>
+            <p>{{ currentEmployee?.uan_number }}</p>
+          </ion-col>
+
+          <ion-col size="3">
+            <label>PF NUMBER</label>
+            <p>{{ currentEmployee?.pf_number }}</p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="detail-item">
+          <ion-col size="3">
+            <label>MONTHLY SALARY</label>
+            <p>₹ {{ monthlySalary | number:'1.0-2' }}</p>
+          </ion-col>
+
+          <ion-col size="3">
+            <label>ANNUAL CTC (LPA)</label>
+            <p>₹ {{ currentEmployee?.lpa | number:'1.0-2' }}</p>
+          </ion-col>
         </ion-row>
       </ion-grid>
 
       <hr />
 
-      <!-- SALARY TABLE -->
-      <h2 class="employee-name">
-        Salary Details
-      </h2>
-
-      <ion-grid class="details-grid">
-        <ion-row class="detail-item">
-          <ion-col size="3">
-            <label>Actual Payable days</label>
-            <p>{{completepayroll?.actual_payable_days
-              }}</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>Total Working Days</label>
-            <p>{{completepayroll?.days_payable
-              }}</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>Days Payable</label>
-            <p>{{completepayroll?.days_payable
-              }}</p>
-          </ion-col>
-          <ion-col size="3">
-            <label>Loss of Pay Days</label>
-            <p>{{completepayroll?.loss_of_pay_days
-              }}</p>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <!-- SALARY DETAILS -->
+      <h2 class="section-title">Salary Details</h2>
 
       <ion-grid class="salary-table">
         <ion-row>
+
+          <!-- EARNINGS -->
           <ion-col size="7" class="border-right">
+
             <ion-row class="table-header">
-              <ion-col size="6" class="label">EARNINGS</ion-col>
-              <ion-col size="3">Paid Amount</ion-col>
-              <ion-col size="3">Actual Amount</ion-col>
+              <ion-col size="6">EARNINGS</ion-col>
+              <ion-col size="3">Paid</ion-col>
+              <ion-col size="3">Actual</ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="6" class="label">Basic</ion-col>
-              <ion-col size="3">{{basic !== null ? (basic | number:'1.0-2') : '-'}}</ion-col>
-              <ion-col size="3">{{basic !== null ? (basic | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="6">Basic</ion-col>
+              <ion-col size="3">{{ basic | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ basic | number:'1.0-2' }}</ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="6" class="label">HRA</ion-col>
-              <ion-col size="3">{{hra !== null ? (hra | number:'1.0-2') : '-'}}</ion-col>
-              <ion-col size="3">{{hra !== null ? (hra | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="6">HRA</ion-col>
+              <ion-col size="3">{{ hra | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ hra | number:'1.0-2' }}</ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="6" class="label">Transport Allowance</ion-col>
-              <ion-col size="3">{{transportAllowance | number:'1.0-2'}}</ion-col>
-              <ion-col size="3">{{transportAllowance | number:'1.0-2'}}</ion-col>
+              <ion-col size="6">Medical Allowance</ion-col>
+              <ion-col size="3">{{ medicalAllowance | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ medicalAllowance | number:'1.0-2' }}</ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="6" class="label">Medical Allowance</ion-col>
-              <ion-col size="3">{{medicalAllowance | number:'1.0-2'}}</ion-col>
-              <ion-col size="3">{{medicalAllowance | number:'1.0-2'}}</ion-col>
+              <ion-col size="6">Transport Allowance</ion-col>
+              <ion-col size="3">{{ transportAllowance | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ transportAllowance | number:'1.0-2' }}</ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="6" class="label">Special Allowance</ion-col>
-              <ion-col size="3">{{specialAllowance !== null ? (specialAllowance | number:'1.0-2') : '-'}}</ion-col>
-              <ion-col size="3">{{specialAllowance !== null ? (specialAllowance | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="6">Special Allowance</ion-col>
+              <ion-col size="3">{{ specialAllowance | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ specialAllowance | number:'1.0-2' }}</ion-col>
             </ion-row>
+
             <ion-row class="table-list label-total">
-              <ion-col size="6" class="label">Total Earnings (A)</ion-col>
-              <ion-col size="3">{{totalEarnings !== null ? (totalEarnings | number:'1.0-2') : '-'}}</ion-col>
-              <ion-col size="3">{{totalEarnings !== null ? (totalEarnings | number:'1.0-2') : '-'}}</ion-col>
+              <ion-col size="6">Total Earnings (A)</ion-col>
+              <ion-col size="3">{{ totalEarnings | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ totalEarnings | number:'1.0-2' }}</ion-col>
             </ion-row>
+
           </ion-col>
+
+          <!-- CONTRIBUTIONS & TAX -->
           <ion-col size="5">
+
             <ion-row class="table-header">
-              <ion-col size="8" class="label">CONTRIBUTIONS</ion-col>
+              <ion-col size="8">CONTRIBUTIONS</ion-col>
               <ion-col size="4"></ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="8" class="label">PF Employee</ion-col>
-              <ion-col size="4">{{pfContribution !== null ? ('₹ ' + (pfContribution | number:'1.0-2')) : '-'}}</ion-col>
+              <ion-col size="8">PF Employee</ion-col>
+              <ion-col size="4">₹ {{ pfContribution | number:'1.0-2' }}</ion-col>
             </ion-row>
+
+            <ion-row class="table-list">
+              <ion-col size="8">ESI Employee</ion-col>
+              <ion-col size="4">₹ {{ esiEmployee | number:'1.0-2' }}</ion-col>
+            </ion-row>
+
             <ion-row class="table-list label-total">
-              <ion-col size="8" class="label">Total Contributions (B)</ion-col>
-              <ion-col size="4">{{totalContributions !== null ? ('₹ ' + (totalContributions | number:'1.0-2')) :
-                '-'}}</ion-col>
+              <ion-col size="8">Total Contributions (B)</ion-col>
+              <ion-col size="4">₹ {{ totalContributions | number:'1.0-2' }}</ion-col>
             </ion-row>
-            <ion-row class="table-list">
-              <ion-col size="8" class="label">PF Employer</ion-col>
-              <ion-col size="4">{{pfEmployerContribution !== null ? ('₹ ' + (pfEmployerContribution | number:'1.0-2')) :
-                '-'}}</ion-col>
-            </ion-row>
+
+
             <ion-row class="table-header">
-              <ion-col size="8" class="label">TAXES & DEDUCTIONS</ion-col>
+              <ion-col size="8">TAXES & DEDUCTIONS</ion-col>
               <ion-col size="4"></ion-col>
             </ion-row>
+
             <ion-row class="table-list">
-              <ion-col size="8" class="label">Professional Tax</ion-col>
-              <ion-col size="4">{{professionalTax | number:'1.0-2'}}</ion-col>
+              <ion-col size="8">Professional Tax</ion-col>
+              <ion-col size="4">₹ {{ professionalTax | number:'1.0-2' }}</ion-col>
             </ion-row>
+
             <ion-row class="table-list label-total">
-              <ion-col size="8" class="label">Total Taxes & Deductions (C)</ion-col>
-              <ion-col size="4">{{totalDeductions | number:'1.0-2'}}</ion-col>
+              <ion-col size="8">Total Deductions (C)</ion-col>
+              <ion-col size="4">₹ {{ totalDeductions | number:'1.0-2' }}</ion-col>
             </ion-row>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-      <ion-grid class="netpay-section">
-        <ion-row>
-          <ion-col size="5" class="netpay-label">
-            Net Salary Payable ( A - B - C ) :
-          </ion-col>
-          <ion-col size="7" class="netpay-amount">
-            {{netSalary !== null ? ('₹ ' + (netSalary | number:'1.0-2')) : '-'}}
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="5" class="netpay-label">
-            Net Salary in words :
-          </ion-col>
-          <ion-col size="7" class="netpay-amount">
-            {{netSalaryInWords}}
+
           </ion-col>
         </ion-row>
       </ion-grid>
 
-      <ion-note class="note-section mt-15">
-        <p>**Note: </p>
+      <!-- NET PAY -->
+      <ion-grid class="netpay-section">
+        <ion-row>
+          <ion-col size="5"><strong>Net Salary Payable (A - B - C)</strong></ion-col>
+          <ion-col size="7"><strong>₹ {{ netSalary | number:'1.0-2' }}</strong></ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="5"><strong>Net Salary in Words</strong></ion-col>
+          <ion-col size="7">{{ netSalaryInWords }}</ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- NOTE -->
+      <ion-note class="note-section">
+        <p><strong>Note:</strong></p>
         <ul>
-          <li>All amounts displayed in this payslip are in INR</li>
-          <li>Paid Amount is the amount being paid after LOP adjustments</li>
-          <li>Actual Amount is the amount as per the salary structure</li>
+          <li>All amounts displayed are in INR</li>
+          <li>Paid Amount is after LOP adjustments</li>
+          <li>Actual Amount is as per salary structure</li>
         </ul>
       </ion-note>
+
       <footer class="disclaimer">
-        <p>* This is a computer-generated payslip.</p>
+        <p>* This is a system generated payslip.</p>
       </footer>
 
     </div>
