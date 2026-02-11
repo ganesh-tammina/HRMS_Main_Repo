@@ -42,7 +42,6 @@ export class EmployeeService {
       shift_policy_id?: number;
       attendance_policy_id?: number;
       PayGradeId?: number | null;
-      lpa?: number | null;
     }
   ): Observable<any> {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');

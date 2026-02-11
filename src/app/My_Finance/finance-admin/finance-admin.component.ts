@@ -29,7 +29,7 @@ export class FinanceAdminComponent implements OnInit {
     shift_policy_id: null,
     attendance_policy_id: null,
     PayGradeId: null,
-    lpa: null
+    CTC: null
   };
 
   shiftPolicies: ShiftPolicy[] = [];
@@ -212,7 +212,7 @@ export class FinanceAdminComponent implements OnInit {
       attendance_policy_id: emp.attendance_policy_id || null,
       weekly_off_policy_id: emp.weekly_off_policy_id || null,
       PayGradeId: emp.PayGradeId || null,
-      lpa: emp.lpa
+      CTC: emp.lpa
     };
   }
 
