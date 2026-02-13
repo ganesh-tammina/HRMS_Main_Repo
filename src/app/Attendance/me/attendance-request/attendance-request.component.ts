@@ -134,7 +134,7 @@ export class AttendanceRequestComponent implements OnInit {
     const group = this.attendanceRequestsHistory.find(g => g.type === type);
     if (group) {
       group.records = records;
-      group.dateRange = this.calculateDateRange(records);
+      // group.dateRange = this.calculateDateRange(records);
     }
   }
 
