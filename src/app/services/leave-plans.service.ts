@@ -22,7 +22,7 @@ export interface LeavePlan {
 export class LeavePlanService {
 
   private env = environment;
-  private readonly API_URL = `http://${this.env.apiURL}/api/leaves/plans`;
+  private readonly API_URL = `http://${this.env.apiURL}/api/leave-plans`;
 
   constructor(private http: HttpClient) { }
 
