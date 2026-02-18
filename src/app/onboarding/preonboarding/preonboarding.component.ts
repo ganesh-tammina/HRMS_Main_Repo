@@ -59,7 +59,8 @@ export class PreonboardingComponent implements OnInit {
     //   console.log('Candidates:', this.candidates);
     // });
     this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
-      this.candidates = [...data.candidates];
+      console.log('Candidates:', data);
+      this.candidates = data;
       this.filterCandidates = [...data.candidates];
       // job title list
       this.JobTitleList = this.candidates.map(c => c.JobTitle)
@@ -104,7 +105,7 @@ export class PreonboardingComponent implements OnInit {
   async openCandidateForm() {
     const modal = await this.modalCtrl.create({
       component: CandiateCreateComponent,
-       cssClass: 'side-custom-popup ',
+      cssClass: 'side-custom-popup ',
     });
 
     await modal.present();
@@ -287,7 +288,7 @@ export class PreonboardingComponent implements OnInit {
     this.router.navigate(['./onboarding_Tasks']);
     //});
   }
-    onboard() {
+  onboard() {
     this.router.navigate(['./preonboarding-setup']);
   }
   org() {

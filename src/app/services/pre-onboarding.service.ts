@@ -222,7 +222,7 @@ export class CandidateService {
   // }
 
   getEmployeeById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.getEmployees}/${id}`);
+    return this.http.get<any>(`${this.getEmployees}/${id}/details`);
   }
 
   // getAdminById(id: string): Observable<any> {

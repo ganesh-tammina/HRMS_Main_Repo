@@ -33,6 +33,10 @@ import { AttendanceApiService } from '../services/attendance-api.service';
   ],
 })
 export class HomePage implements OnInit {
+  // Birthday wishes UI state
+  activeWishEmployeeId: number | null = null;
+  wishMessages: { [employeeId: number]: string } = {};
+  birthdayWishes: { [employeeId: number]: string[] } = {};
 
   /* ================= CONSTANTS ================= */
   private static readonly REFRESH_DELAY_MS = 10;
@@ -56,8 +60,10 @@ export class HomePage implements OnInit {
   leaveCards: any[] = [];
   userDesignation: string | null = null;
   leaveCodeIdMap: any = {};
-  backgroundImageUrl: string =
-    '../../assets/holidays-pics/christmas_pic.svg';
+  backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
+
+  /* ================= BIRTHDAYS ================= */
+  birthdays: any[] = [];
 
   /* ================= DASHBOARD ================= */
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
@@ -109,6 +115,8 @@ export class HomePage implements OnInit {
       this.cdr.detectChanges();
     });
 
+    this.loadBirthdays();
+
     const showLoginSuccess = localStorage.getItem('showLoginSuccess');
     if (showLoginSuccess === 'true') {
       localStorage.removeItem('showLoginSuccess');
@@ -122,6 +130,52 @@ export class HomePage implements OnInit {
   ===================================================== */
   ionViewWillEnter() {
     this.loadEmployeeProfile();
+    this.loadBirthdays();
+  }
+
+  loadBirthdays() {
+    this.employeeService.getBirthdays().subscribe({
+      next: (data) => {
+        this.birthdays = data;
+        console.log('🎂 Birthdays:', data);
+        // Optionally load existing wishes if API supports
+        // this.loadBirthdayWishes();
+      },
+      error: (err) => {
+        this.birthdays = [];
+        console.error('Failed to fetch birthdays:', err);
+      }
+    });
+  }
+
+  showWishInput(employeeId: number) {
+    this.activeWishEmployeeId = employeeId;
+    if (!this.wishMessages[employeeId]) {
+      this.wishMessages[employeeId] = '';
+    }
+  }
+
+  hideWishInput() {
+    this.activeWishEmployeeId = null;
+  }
+
+  sendWish(employeeId: number) {
+    const message = this.wishMessages[employeeId]?.trim();
+    if (!message) return;
+    this.employeeService.sendBirthdayWish(employeeId, message).subscribe({
+      next: () => {
+        if (!this.birthdayWishes[employeeId]) {
+          this.birthdayWishes[employeeId] = [];
+        }
+        this.birthdayWishes[employeeId].push(message);
+        this.wishMessages[employeeId] = '';
+        this.hideWishInput();
+      },
+      error: (err) => {
+        alert('Failed to send wish');
+        console.error('Failed to send wish:', err);
+      }
+    });
   }
 
   /* ================= ENV ================= */
@@ -141,7 +195,7 @@ export class HomePage implements OnInit {
         this.currentEmployee = res;
         this.userDesignation = res.designation_name || res.designation || null;
 
-      console.log("Employee Designation 👉", this.userDesignation);
+        console.log("Employee Designation 👉", this.userDesignation);
         console.log('Logged-in Employee 👉', this.currentEmployee);
 
         // Force UI refresh
@@ -283,7 +337,7 @@ export class HomePage implements OnInit {
     return `../../../assets/leave-icons/${map[code] || 'CL.svg'}`;
   }
 
-isCEO(): boolean {
-  return this.currentEmployee?.designation_name?.toLowerCase() === 'ceo';
-}
+  isCEO(): boolean {
+    return this.currentEmployee?.designation_name?.toLowerCase() === 'ceo';
+  }
 }

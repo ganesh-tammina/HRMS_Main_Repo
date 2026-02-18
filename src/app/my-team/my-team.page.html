@@ -170,7 +170,7 @@
                      </div>
                      <div>
                         <h3 class="member-name">{{ member.FullName || member.full_name ||
-                           member.attendance?.employee_name || 'N/A' }}</h3>
+                           member.attendance?.employee_name || 'N/A' }}sss</h3>
                         <p class="member-role">{{ member.designation || member.designation_name ||
                            member.attendance?.designation || '—' }} .
                            {{ member.department || member.department_name || member.attendance?.department || '—' }}
@@ -203,11 +203,9 @@
                </div>
                <!-- Member Info -->
                <div class="contact-details">
-                  <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—'
-                     }}
-                  </p>
-                  <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email ||
-                     member.attendance?.email || '—' }}</p>
+               <p class="detail-text"><label>Location: </label>{{ member.location_name || member.location_name || '—' }}
+               </p>
+               <p class="detail-text"><label>Mail: </label>{{ member.WorkEmail || member.work_email || '—' }}</p>
                </div>
             </ion-card-content>
          </ion-card>

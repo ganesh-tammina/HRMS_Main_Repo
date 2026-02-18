@@ -1,4 +1,5 @@
 import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly-off-policy.service';
+import { PayrollUploadService } from 'src/app/services/payroll-upload.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { IonicModule, IonModal } from '@ionic/angular';
@@ -21,28 +22,42 @@ export class FinanceAdminComponent implements OnInit {
   isHR: boolean = false;
   searchTerm: string = '';
   selectedEmployee: any = null;
+
   updateData: any = {
     reporting_manager_id: null,
     leave_plan_id: null,
     shift_policy_id: null,
     attendance_policy_id: null,
     PayGradeId: null,
-    CTC: null
+    lpa: null
   };
+
   shiftPolicies: ShiftPolicy[] = [];
   attendancePolicies: AttendancePolicy[] = [];
   leavePlans: LeavePlan[] = [];
   weeklyOffPolicies: WeeklyOffPolicy[] = [];
+
   /* ================= EMPLOYEES ================= */
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
 
-  pageSize = 5;        // 5 records per page
+  pageSize = 5;
   currentPage = 1;
   totalPages = 1;
 
   EmployeeselectedFile: File | null = null;
-  isUploading = false; // Loading state for upload
+  payrollFile: File | null = null;
+
+  payrollMonth: number = new Date().getMonth() + 1;
+  payrollYear: number = new Date().getFullYear();
+  payrollUploading: boolean = false;
+
+  /* ================= PAYROLL GENERATE STATE ================= */
+  generatePayrollLoading: boolean = false;
+  generatePayrollMessage: string = '';
+
+  isUploading = false;
+
   @ViewChild(IonModal) modal!: IonModal;
 
   constructor(
@@ -51,19 +66,91 @@ export class FinanceAdminComponent implements OnInit {
     private attendancePolicyService: AttendancePolicyService,
     private leavePlanService: LeavePlanService,
     private weeklyOffPolicyService: WeeklyOffPolicyService,
+    private payrollUploadService: PayrollUploadService,
     private router: Router
   ) { }
 
   ngOnInit() {
     this.userRole = (localStorage.getItem('role') || '').toLowerCase();
     this.isHR = this.userRole === 'hr';
-    this.loadEmployees(); // ✅ initial load
+    this.loadEmployees();
     this.loadShiftPolicies();
     this.loadAttendancePolicies();
     this.loadLeavePlans();
     this.loadWeeklyOffPolicies();
   }
 
+  /* ================= GENERATE PAYROLL ================= */
+  generatePayroll() {
+    this.generatePayrollLoading = true;
+    this.generatePayrollMessage = '';
+
+    const token = localStorage.getItem('token') || '';
+
+    fetch('http://localhost:3000/api/payroll/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        month: this.payrollMonth,
+        year: this.payrollYear
+      })
+    })
+      .then(response =>
+        response.json().then(result => ({ ok: response.ok, result }))
+      )
+      .then(({ ok, result }) => {
+        if (ok) {
+          this.generatePayrollMessage = 'Payroll generated successfully!';
+        } else {
+          this.generatePayrollMessage =
+            result?.error || 'Payroll generation failed.';
+        }
+      })
+      .catch(() => {
+        this.generatePayrollMessage = 'Error generating payroll.';
+      })
+      .finally(() => {
+        this.generatePayrollLoading = false;
+      });
+  }
+
+  /* ================= PAYROLL FILE SELECT ================= */
+  payrollFileSelected(event: any) {
+    this.payrollFile = event.target.files[0];
+  }
+
+  /* ================= PAYROLL UPLOAD ================= */
+  uploadPayroll() {
+    if (!this.payrollFile) {
+      alert('Please select a payroll Excel file');
+      return;
+    }
+
+    this.payrollUploading = true;
+    const token = localStorage.getItem('token') || '';
+
+    this.payrollUploadService.uploadPayroll(
+      this.payrollFile,
+      this.payrollMonth,
+      this.payrollYear,
+      token
+    ).subscribe({
+      next: () => {
+        this.payrollUploading = false;
+        alert('Payroll uploaded successfully');
+        this.payrollFile = null;
+      },
+      error: () => {
+        this.payrollUploading = false;
+        alert('Payroll upload failed');
+      }
+    });
+  }
+
+  /* ================= LOAD POLICIES ================= */
   loadWeeklyOffPolicies() {
     this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe((policies: WeeklyOffPolicy[]) => {
       this.weeklyOffPolicies = policies || [];
@@ -87,23 +174,19 @@ export class FinanceAdminComponent implements OnInit {
       this.shiftPolicies = policies || [];
     });
   }
-  /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
+
+  /* ================= LOAD EMPLOYEES ================= */
   loadEmployees() {
     this.employeeService.getAllEmployees().subscribe((res: any[]) => {
-
-
       this.allCandidates = res.filter((emp: any) => emp.EmploymentStatus === 'Working');
-      this.sortEmployeesById(); // Sort employees by ID
+      this.sortEmployeesById();
       this.applySearch();
-      // reset pagination
       this.currentPage = 1;
       this.calculatePagination();
       this.updatePagedCandidates();
-      console.log('Employees loaded and sorted by ID:', this.allCandidates);
     });
   }
 
-  /* ================= SORT EMPLOYEES BY ID ================= */
   sortEmployeesById() {
     this.allCandidates.sort((a, b) => a.id - b.id);
     this.updatePagedCandidates();
@@ -129,13 +212,17 @@ export class FinanceAdminComponent implements OnInit {
       attendance_policy_id: emp.attendance_policy_id || null,
       weekly_off_policy_id: emp.weekly_off_policy_id || null,
       PayGradeId: emp.PayGradeId || null,
-      CTC: emp.lpa
+      lpa: emp.lpa
     };
   }
 
   updateEmployeeProfile() {
     if (!this.selectedEmployee) return;
-    this.employeeService.updateEmployeeProfile(this.selectedEmployee.id, this.updateData).subscribe({
+
+    this.employeeService.updateEmployeeProfile(
+      this.selectedEmployee.id,
+      this.updateData
+    ).subscribe({
       next: () => {
         alert('Employee profile updated successfully');
         this.selectedEmployee = null;
@@ -145,36 +232,6 @@ export class FinanceAdminComponent implements OnInit {
         alert('Failed to update employee profile');
       }
     });
-  }
-
-  /* ================= FILE SELECT ================= */
-  EmployeeSelected(event: any) {
-    this.EmployeeselectedFile = event.target.files[0];
-  }
-
-  /* ================= UPLOAD EMPLOYEES ================= */
-  EmployeesUpload() {
-    if (!this.EmployeeselectedFile) {
-      alert('Please select an Excel file');
-      return;
-    }
-
-    this.isUploading = true; // Show loading spinner
-    this.modal.dismiss(); // Immediately close modal
-
-    // this.uploadService.uploadEmployees(this.EmployeeselectedFile).subscribe({
-    //   next: () => {
-    //     this.isUploading = false; // Hide loading spinner
-    //     alert('Employees uploaded successfully');
-    //     this.EmployeeselectedFile = null;
-    //     // ✅ IMMEDIATE REFRESH (NO PAGE RELOAD)
-    //     this.loadEmployees();
-    //   },
-    //   error: () => {
-    //     this.isUploading = false; // Hide loading spinner
-    //     alert('Employee upload failed');
-    //   }
-    // });
   }
 
   /* ================= PAGINATION ================= */
@@ -204,7 +261,16 @@ export class FinanceAdminComponent implements OnInit {
       this.updatePagedCandidates();
     }
   }
+
   adminManagement() {
     this.router.navigate(['/admin']);
+  }
+
+  goToAdminDashboard() {
+    this.router.navigate(['/admin']);
+  }
+
+  masterpayroll() {
+    this.router.navigate(['/masterpayroll']);
   }
 }

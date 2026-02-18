@@ -174,6 +174,9 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
+          // Show success message (including lateness if applicable)
+          alert(res?.message || 'Clocked in successfully');
+
           // Always emit statusChanged after API success to trigger log refresh
           this.statusChanged.emit({ punch_type: 'in', work_mode });
           if (work_mode === 'Remote') {

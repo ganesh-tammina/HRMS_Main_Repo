@@ -314,18 +314,26 @@
             </div>
           </div>
           <div class="card-content">
-            <div class="birthday-card">
-              <div class="row-left">
+            <div class="birthday-card" *ngFor="let birthday of birthdays">
+              <div class="row-left" (click)="$event.stopPropagation()">
                 <div class="img-block">
                   <img src="../../../assets/icon/Default-user.svg" width="38">
                 </div>
                 <div>
-                  <p>Aswitha Anusha</p>
-                  <p>Birthday • Today </p>
+                  <p>{{ birthday.FirstName }}</p>
+                  <p>Birthday • {{ birthday.DateOfBirth | date:'MMM dd' }}</p>
                 </div>
               </div>
-              <ion-button class="primary-button">Send Wishes</ion-button>
-
+              <ion-button class="primary-button" (click)="showWishInput(birthday.employee_id)">Send Wishes</ion-button>
+              <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
+                <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
+                <ion-button (click)="sendWish(birthday.employee_id)">Send</ion-button>
+              </div>
+              <div *ngIf="birthdayWishes[birthday.employee_id]?.length">
+                <div class="wish-list">
+                  <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
+                </div>
+              </div>
             </div>
           </div>
         </ion-card>

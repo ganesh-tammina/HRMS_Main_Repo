@@ -49,6 +49,9 @@ import { WorkTrackComponent } from './Today_@_Work/work-track/work-track.compone
 import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import { EmployeeListComponent } from './Administration/admin/employee-list/employee-list.component';
 import { FinanceAdminComponent } from './My_Finance/finance-admin/finance-admin.component';
+import { PayrollSetupComponent } from './My_Finance/payroll-setup/payroll-setup.component';
+import { PayrollTemplatesComponent } from './My_Finance/payroll-setup/payroll-templates/payroll-templates.component';
+import { PayrollCompoentsComponent } from './My_Finance/payroll-setup/payroll-compoents/payroll-compoents.component';
 export const routes: Routes = [
   {
     path: 'org-tree',
@@ -325,6 +328,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./Administration/organisation-info/project-details/project-details.component')
         .then(m => m.ProjectDetailsComponent),
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] }
+  },
+  {
+    path: 'masterpayroll',
+    component: PayrollSetupComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] }
+  },
+  {
+    path: 'payroll-components',
+    component: PayrollCompoentsComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] }
+  },
+  {
+    path: 'payroll-templates',
+    component: PayrollTemplatesComponent,
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['admin', 'hr'] }
   }

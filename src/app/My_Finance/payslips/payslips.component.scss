@@ -79,7 +79,7 @@
   }
   .employee-name {
      @include card-header-title();
-     border-bottom: 2px solid $border-color;
+     border-bottom: 2px solid blue;
      padding-bottom: 12px;
   }
   /* DETAILS GRID */
@@ -133,7 +133,7 @@
 }
 }
 .border-right {
-  border-right: 1px solid $border-color;
+  border-right: 1px solid blue;
 }
 .netpay-section {
     margin-top: 30px;

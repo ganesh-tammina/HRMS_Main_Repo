@@ -67,28 +67,28 @@ export class salaryStaructureComponent implements OnInit {
 
   // ✅ Salary calculation logic
   calculateSalary(annualSalary: number) {
-  const basic = annualSalary * 0.4;
-  const hra = annualSalary * 0.16;
-  const medical = 15000;
-  const transport = 19200;
+    const basic = annualSalary * 0.4;
+    const hra = annualSalary * 0.16;
+    const medical = 15000;
+    const transport = 19200;
 
-  const special = Math.max( 0,annualSalary - (basic + hra + medical + transport));
+    const special = Math.max(0, annualSalary - (basic + hra + medical + transport));
 
-  const pfEmployer = basic * 0.12;
-  const pfEmployee = basic * 0.12;
+    const pfEmployer = basic * 0.12;
+    const pfEmployee = basic * 0.12;
 
-  this.salaryStructure = {
-    basic,
-    hra,
-    medical,
-    transport,
-    special,
-    subtotal: basic + hra + medical + transport + special,
-    pfEmployer,
-    pfEmployee,
-    total: basic + hra + medical + transport + special + pfEmployer,
-  };
-}
+    this.salaryStructure = {
+      basic,
+      hra,
+      medical,
+      transport,
+      special,
+      subtotal: basic + hra + medical + transport + special,
+      pfEmployer,
+      pfEmployee,
+      total: basic + hra + medical + transport + special + pfEmployer,
+    };
+  }
   // calculateSalary(annualSalary: number) {
   //   const basic = annualSalary * 0.4;
   //   const hra = annualSalary * 0.16;

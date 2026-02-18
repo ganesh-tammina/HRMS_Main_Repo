@@ -22,6 +22,7 @@ export class WorkFromHomeComponent implements OnInit {
 
   displayFromDate = '';
   displayToDate = '';
+  validationError = '';
 
   totalDays = 1;
 
@@ -152,10 +153,17 @@ export class WorkFromHomeComponent implements OnInit {
 
   calculateDays() {
     const oneDay = 1000 * 60 * 60 * 24;
-    let diff =
-      Math.floor(
-        (this.toDate.getTime() - this.fromDate.getTime()) / oneDay
-      ) + 1;
+    const toTime = this.toDate.getTime();
+    const fromTime = this.fromDate.getTime();
+
+    if (toTime < fromTime) {
+      this.totalDays = 0;
+      this.validationError = 'To date cannot be earlier than From date';
+      return;
+    }
+
+    this.validationError = '';
+    let diff = Math.floor((toTime - fromTime) / oneDay) + 1;
 
     if (diff <= 0) diff = 1;
 
@@ -174,7 +182,7 @@ export class WorkFromHomeComponent implements OnInit {
 
   /* ================= SUBMIT ================= */
   submit() {
-    if (!this.note) return;
+    if (!this.note || this.validationError) return;
 
     const payload: any = {
       date: this.formatDate(this.fromDate),

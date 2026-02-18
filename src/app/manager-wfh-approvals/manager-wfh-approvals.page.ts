@@ -64,6 +64,7 @@ export class ManagerWfhApprovalsPage implements OnInit {
 
     applyFilters() {
         this.filteredRequests = this.pendingWFHRequests.filter(request => {
+            console.log(request);
 
             const matchesSearch =
                 !this.searchTerm ||

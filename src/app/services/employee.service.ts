@@ -7,6 +7,47 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class EmployeeService {
+  /**
+   * Send a birthday wish to an employee
+   */
+  sendBirthdayWish(employeeId: number, message: string): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const url = `http://${this.env.apiURL}/api/birthdays/wishes`;
+    return this.http.post(url, {
+      employee_id: employeeId,
+      message
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        accept: 'application/json'
+      }
+    });
+  }
+  /**
+   * Get birthdays list from /api/birthdays
+   */
+  getBirthdays(): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const url = `http://${this.env.apiURL}/api/birthdays`;
+    return this.http.get(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+  /**
+   * Update logged-in employee profile via /profile/me endpoint
+   * @param updateData Fields to update
+   */
+  updateMyProfile(updateData: any): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    return this.http.put(
+      this.profileEndpoint,
+      updateData,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+  }
   private env = environment;
   private readonly API_URL = `http://${this.env.apiURL}/api/employees`;
   //  private readonly API_URL = 'http://localhost:3000/api/employees';

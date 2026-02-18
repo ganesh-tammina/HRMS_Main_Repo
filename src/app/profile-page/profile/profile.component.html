@@ -3,43 +3,48 @@
   <div class="ion-card">
     <p class="header-text row-space-between">Primary Details<img (click)="isEditDetails()"
         src="../../assets/Icons/pencil.svg" width="18"></p>
-    <form>
+    <form (ngSubmit)="onSubmitDetails()">
       <ion-grid *ngIf="currentEmployee">
         <ion-row>
           <ion-col>
             <div>
               <p>First Name</p>
               <h6 *ngIf="!IsDetails">{{currentEmployee.FullName}}</h6>
-              <ion-input [value]="currentEmployee?.FullName" *ngIf="IsDetails"></ion-input>
+              <ion-input [(ngModel)]="currentEmployee.FullName" *ngIf="IsDetails" name="FullName"></ion-input>
             </div>
             <div>
               <p>Gender</p>
               <h6 *ngIf="!IsDetails">{{currentEmployee?.Gender}}</h6>
-              <ion-input [value]="currentEmployee.Gender" *ngIf="IsDetails"></ion-input>
+              <ion-input [(ngModel)]="currentEmployee.Gender" *ngIf="IsDetails" name="Gender"></ion-input>
             </div>
             <div>
               <p>Marital Status</p>
               <h6 *ngIf="!IsDetails">{{currentEmployee?.MaritalStatus}}</h6>
-              <ion-input [value]="currentEmployee.MaritalStatus" *ngIf="IsDetails"></ion-input>
+              <ion-input [(ngModel)]="currentEmployee.MaritalStatus" *ngIf="IsDetails" name="MaritalStatus"></ion-input>
             </div>
-
+            <div>
+              <p>Date of Birth</p>
+              <h6 *ngIf="!IsDetails">{{currentEmployee?.DateOfBirth}}</h6>
+              <ion-input type="date" [(ngModel)]="currentEmployee.DateOfBirth" *ngIf="IsDetails" name="DateOfBirth"
+                required></ion-input>
+            </div>
           </ion-col>
           <ion-col>
             <div>
               <p>Last Name</p>
               <h6 *ngIf="!IsDetails">{{currentEmployee?.LastName}}</h6>
-              <ion-input [value]="currentEmployee.LastName" *ngIf="IsDetails"></ion-input>
+              <ion-input [(ngModel)]="currentEmployee.LastName" *ngIf="IsDetails" name="LastName"></ion-input>
             </div>
-
             <div>
               <p>Blood Group</p>
               <h6 *ngIf="!IsDetails">{{currentEmployee.BloodGroup}}</h6>
-              <ion-input [value]="currentEmployee.BloodGroup" *ngIf="IsDetails"></ion-input>
+              <ion-input [(ngModel)]="currentEmployee.BloodGroup" *ngIf="IsDetails" name="BloodGroup"></ion-input>
             </div>
             <div>
               <p>Physically Handicapped</p>
               <h6 *ngIf="!IsDetails">{{currentEmployee?.PhysicallyHandicapped}}</h6>
-              <ion-input [value]="currentEmployee?.PhysicallyHandicapped" *ngIf="IsDetails"></ion-input>
+              <ion-input [(ngModel)]="currentEmployee.PhysicallyHandicapped" *ngIf="IsDetails"
+                name="PhysicallyHandicapped"></ion-input>
             </div>
             <ion-button class="primary-btn row-right" type="submit" *ngIf="IsDetails">
               Submit

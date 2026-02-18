@@ -40,7 +40,7 @@ export interface SalaryStructure {
 })
 export class CandidateDetailsService {
   private env = environment;
-  private baseUrl = `https://${this.env.apiURL}/candidates`;
+  private baseUrl = `http://${this.env.apiURL}/api/candidates`;
   private offerUrl = `https://${this.env.apiURL}/offer-details`;
   private packageUrl = `https://${this.env.apiURL}/salary-structure`;
 
@@ -56,7 +56,7 @@ export class CandidateDetailsService {
 
   /** 📋 Get all candidates */
   getCandidates(): Observable<Candidate[]> {
-    return this.http.get<Candidate[]>(this.baseUrl).pipe(
+    return this.http.get<any>(this.baseUrl).pipe(
       catchError(this.handleError)
     );
   }
