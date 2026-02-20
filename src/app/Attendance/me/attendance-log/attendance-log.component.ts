@@ -11,6 +11,7 @@ import { AttendanceApiService } from '../../../services/attendance-api.service';
 import { LeaverequestService, MyLeave } from 'src/app/services/leaverequest.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly-off-policy.service';
+import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
 import { TimeFormatPipe } from '../time-format.pipe';
 
 @Component({
@@ -29,9 +30,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /* ================= UI ================= */
-  selectedPeriod = '30DAYS';
   monthButtons: string[] = [];
-  currentMonthreport: any[] = [];
 
   showSlider = false;
   selectedLog: any = null;
@@ -39,9 +38,12 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   /* ================= DATE ================= */
   currentYear = new Date().getFullYear();
   currentMonth = new Date().getMonth() + 1;
-  startDate = `${this.currentYear}-${this.currentMonth}-1`;
-  endDate = `${this.currentYear}-${this.currentMonth}-31`;
+  currentMonthreport: any[] = [];
+  startDate = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-01`;
+  endDate = this.formatDateOnly(new Date(this.currentYear, this.currentMonth, 0));
+  selectedPeriod: string = '30DAYS';
 
+  shiftPolicy: any = null;
   todayPunches: any[] = [];
 
   /* ================= INTERNAL ================= */
@@ -55,6 +57,12 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
 
 
 
+  private getLastDayOfMonth(year: number, month: number): string {
+    // new Date(year, month, 0) gives the last day of the given month
+    const d = new Date(year, month, 0);
+    return `${year}-${String(month).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   constructor(
     private attendanceService: AttendanceService,
     private routeGuard: RouteGuardService,
@@ -62,9 +70,27 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     private leaveService: LeaverequestService,
     private employeeService: EmployeeService,
     private weeklyOffPolicyService: WeeklyOffPolicyService,
+    private adminService: AdminService,
     private router: Router
   ) {
+    this.initializeMonthButtons();
     this.reloadAttendance();
+  }
+
+  private initializeMonthButtons(): void {
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const now = new Date();
+    const currentMonthIndex = now.getMonth(); // 0-11
+
+    this.monthButtons = [];
+    // Last 6 months starting from the previous month
+    for (let i = 1; i <= 6; i++) {
+      let mIdx = currentMonthIndex - i;
+      if (mIdx < 0) {
+        mIdx += 12;
+      }
+      this.monthButtons.push(months[mIdx]);
+    }
   }
 
   private resetState(): void {
@@ -105,11 +131,13 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
 
   private getAllDatesBetween(start: string, end: string): string[] {
     const dates: string[] = [];
-    const startDate = new Date(start);
+    // Parse as local time (not UTC) to avoid timezone mismatch with 'today'
+    const [sy, sm, sd] = start.split('-').map(Number);
+    const startDate = new Date(sy, sm - 1, sd);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // normalize
-    const endDate = new Date(end);
-    endDate.setHours(0, 0, 0, 0);
+    const [ey, em, ed] = end.split('-').map(Number);
+    const endDate = new Date(ey, em - 1, ed);
     // Only show up to today or endDate, whichever is earlier
     const finalEndDate = endDate > today ? today : endDate;
     for (
@@ -145,25 +173,43 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
           this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe({
             next: (policies) => {
               this.weeklyOffPolicy = policies.find(p => p.id === weeklyOffPolicyId) || null;
-              this.loadLeaveDaysAndMonthlyReport();
+              this.loadShiftPolicyAndProceed(profile?.shift_policy_id);
             },
             error: () => {
               this.weeklyOffPolicy = null;
-              this.loadLeaveDaysAndMonthlyReport();
+              this.loadShiftPolicyAndProceed(profile?.shift_policy_id);
             }
           });
         } else {
           this.weeklyOffPolicy = null;
-          this.loadLeaveDaysAndMonthlyReport();
+          this.loadShiftPolicyAndProceed(profile?.shift_policy_id);
         }
       },
       error: () => {
         this.employeeProfile = null;
         this.weeklyOffPolicy = null;
-        this.loadLeaveDaysAndMonthlyReport();
+        this.loadShiftPolicyAndProceed(null);
       }
     });
     this.loadTodayAttendance();
+  }
+
+  private loadShiftPolicyAndProceed(shiftPolicyId: number | null): void {
+    if (shiftPolicyId) {
+      this.adminService.getShiftPolicies().subscribe({
+        next: (policies) => {
+          this.shiftPolicy = policies.find(p => p.id === shiftPolicyId) || null;
+          this.loadLeaveDaysAndMonthlyReport();
+        },
+        error: () => {
+          this.shiftPolicy = null;
+          this.loadLeaveDaysAndMonthlyReport();
+        }
+      });
+    } else {
+      this.shiftPolicy = null;
+      this.loadLeaveDaysAndMonthlyReport();
+    }
   }
 
   /**
@@ -252,9 +298,12 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
         const attendanceMap = new Map<string, any>();
         apiAttendance.forEach((item: any) => {
           const dateKey = this.formatDateOnly(item.attendance_date);
+          console.log('📅 API date:', item.attendance_date, '→ key:', dateKey, 'status:', item.status);
           attendanceMap.set(dateKey, item);
         });
         const allDates = this.getAllDatesBetween(this.startDate, this.endDate);
+        console.log('📅 Generated date keys:', allDates);
+        console.log('📅 AttendanceMap keys:', Array.from(attendanceMap.keys()));
         // Determine week off days from policy
         const weekOffDays: number[] = [];
         if (this.weeklyOffPolicy) {
@@ -274,7 +323,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
           if (leaveType) {
             return {
               attendance_date: date,
-              effective_hours: null,
+              total_work_hours: null,
               gross_hours: null,
               status: 'on-leave',
               leaveType: leaveType,
@@ -284,7 +333,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
           } else if (isWeekOff) {
             return {
               attendance_date: date,
-              effective_hours: null,
+              total_work_hours: null,
               gross_hours: null,
               status: 'weekend',
               leaveType: 'Full day week off',
@@ -292,11 +341,11 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
               noLogs: true
             };
           } else if (existing) {
-            return existing;
+            return { ...existing, noLogs: false };
           } else {
             return {
               attendance_date: date,
-              effective_hours: null,
+              total_work_hours: null,
               gross_hours: null,
               status: 'absent',
               records: [],
@@ -329,6 +378,46 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
 
   filterByPeriod(period: string): void {
     this.selectedPeriod = period;
+    const now = new Date();
+
+    if (period === '30DAYS') {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      this.startDate = this.formatDateOnly(thirtyDaysAgo);
+      this.endDate = this.formatDateOnly(now);
+    } else {
+      // Month selection
+      const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      const monthIndex = months.indexOf(period);
+      if (monthIndex !== -1) {
+        let year = now.getFullYear();
+        // If the selected month is ahead of current month, assume last year
+        if (monthIndex > now.getUTCMonth()) {
+          // use local month for comparison
+        }
+        const localMonth = now.getMonth();
+        if (monthIndex > localMonth) {
+          year -= 1;
+        }
+        this.startDate = `${year}-${String(monthIndex + 1).padStart(2, '0')}-01`;
+        this.endDate = this.formatDateOnly(new Date(year, monthIndex + 1, 0));
+        this.currentMonth = monthIndex + 1;
+        this.currentYear = year;
+      }
+    }
+    this.loadMonthlyReport();
+  }
+
+  getSelectedPeriodLabel(): string {
+    if (this.selectedPeriod === '30DAYS') {
+      return 'Last 30 Days';
+    }
+    const months: { [key: string]: string } = {
+      JAN: 'January', FEB: 'February', MAR: 'March', APR: 'April',
+      MAY: 'May', JUN: 'June', JUL: 'July', AUG: 'August',
+      SEP: 'September', OCT: 'October', NOV: 'November', DEC: 'December'
+    };
+    return `${months[this.selectedPeriod] || this.selectedPeriod} ${this.currentYear}`;
   }
 
   /* ================= SLIDER ================= */
@@ -484,8 +573,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getArrivalStatus(log: any): string {
-    if (!log) return 'Unknown';
-    const status = log.status;
+    if (!log || !log.status) return 'Unknown';
+
     const statusMap: { [key: string]: string } = {
       present: 'On Time',
       absent: 'Absent',
@@ -494,28 +583,74 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       'on-leave': 'On Leave',
     };
 
-    if (status === 'late' && log.first_check_in && log.shift_start_time) {
+    // If status is 'present', check if it's actually 'late' based on shift
+    if (log.status === 'present' && log.first_check_in && this.shiftPolicy?.start_time) {
       try {
-        const checkIn = new Date(log.first_check_in);
-        const [sHour, sMin, sSec] = log.shift_start_time.split(':').map(Number);
-        const shiftStart = new Date(checkIn);
-        shiftStart.setHours(sHour, sMin, sSec || 0, 0);
+        const checkInTime = new Date(log.first_check_in);
+        const [shiftH, shiftM, shiftS] = this.shiftPolicy.start_time.split(':').map(Number);
 
-        const diffMs = checkIn.getTime() - shiftStart.getTime();
-        if (diffMs > 0) {
-          const diffMins = Math.floor(diffMs / (1000 * 60));
-          if (diffMins >= 60) {
-            const hours = Math.floor(diffMins / 60);
-            const mins = diffMins % 60;
-            return `Late by ${hours}h ${mins}m`;
-          }
-          return `Late by ${diffMins} mins`;
+        const graceThreshold = new Date(checkInTime);
+        graceThreshold.setHours(shiftH, shiftM + 15, shiftS || 0, 0); // 15 min grace
+
+        if (checkInTime > graceThreshold) {
+          return 'Late Arrival';
         }
       } catch (e) {
-        console.error('Error calculating lateness:', e);
+        console.error('Error calculating arrival status:', e);
       }
     }
 
-    return statusMap[status] || 'Unknown';
+    return statusMap[log.status] || 'Unknown';
+  }
+
+  formatHours(hDecimal: any, logDate?: string): string {
+    if (hDecimal === null || hDecimal === undefined || hDecimal === '-') return '-';
+    const totalHours = parseFloat(hDecimal);
+    if (isNaN(totalHours)) return '-';
+
+    const hours = Math.floor(totalHours);
+    const minutes = Math.round((totalHours - hours) * 60);
+
+    const suffix = logDate && this.islogToday(logDate) ? ' +' : '';
+    return `${hours}h ${minutes}m${suffix}`;
+  }
+
+  islogToday(date: string): boolean {
+    if (!date) return false;
+    const today = new Date().toISOString().split('T')[0];
+    const logDate = new Date(date).toISOString().split('T')[0];
+    return today === logDate;
+  }
+
+  getLateDuration(log: any): string {
+    if (!log || log.status !== 'present' || !log.first_check_in || !this.shiftPolicy?.start_time) return '';
+
+    try {
+      const checkInTime = new Date(log.first_check_in);
+      const [shiftH, shiftM, shiftS] = this.shiftPolicy.start_time.split(':').map(Number);
+
+      const shiftStart = new Date(checkInTime);
+      shiftStart.setHours(shiftH, shiftM, shiftS || 0, 0);
+
+      const diffMs = checkInTime.getTime() - shiftStart.getTime();
+      const graceMs = 15 * 60 * 1000; // 15 min grace (match the arrival status logic)
+
+      if (diffMs > graceMs) {
+        const diffSecs = Math.floor(diffMs / 1000);
+        const h = Math.floor(diffSecs / 3600);
+        const m = Math.floor((diffSecs % 3600) / 60);
+        const s = diffSecs % 60;
+
+        // Format as H:MM:SS or MM:SS
+        const hStr = h > 0 ? `${h}:` : '';
+        const mStr = String(m).padStart(h > 0 ? 2 : 1, '0');
+        const sStr = String(s).padStart(2, '0');
+
+        return `${hStr}${mStr}:${sStr} late`;
+      }
+    } catch (e) {
+      console.error('Error calculating late duration:', e);
+    }
+    return '';
   }
 }
