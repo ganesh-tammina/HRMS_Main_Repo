@@ -191,10 +191,10 @@ export class WorkFromHomeComponent implements OnInit {
       return;
     }
 
-    // Validate date
-    if (!this.fromDate || isNaN(this.fromDate.getTime())) {
+    // Validate both dates
+    if (!this.fromDate || isNaN(this.fromDate.getTime()) || !this.toDate || isNaN(this.toDate.getTime())) {
       const toast = this.toastCtrl.create({
-        message: 'Please select a valid date',
+        message: 'Please select valid dates',
         duration: 2000,
         color: 'danger',
         position: 'top',
@@ -203,11 +203,12 @@ export class WorkFromHomeComponent implements OnInit {
       return;
     }
 
-    // Format the date
-    const formattedDate = this.formatDate(this.fromDate);
+    // Format the dates
+    const startDateStr = this.formatDate(this.fromDate);
+    const endDateStr = this.formatDate(this.toDate);
 
-    // Validate formatted date
-    if (!formattedDate || formattedDate.length === 0) {
+    // Validate formatted dates
+    if (!startDateStr || !endDateStr || startDateStr.length === 0 || endDateStr.length === 0) {
       const toast = this.toastCtrl.create({
         message: 'Invalid date format',
         duration: 2000,
@@ -221,7 +222,9 @@ export class WorkFromHomeComponent implements OnInit {
     this.isSubmitting = true;
 
     const payload: any = {
-      date: formattedDate,
+      start_date: startDateStr,
+      end_date: endDateStr,
+      total_days: this.totalDays,
       work_mode: 'WFH',
       reason: this.note,
     };

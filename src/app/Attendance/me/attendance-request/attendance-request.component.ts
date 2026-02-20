@@ -109,6 +109,7 @@ export class AttendanceRequestComponent implements OnInit {
 
         this.assignGroup('Remote Clock In Requests', records);
       },
+
       error: () => {
         this.assignGroup('Remote Clock In Requests', []);
       }
