@@ -25,6 +25,7 @@ export class WorkFromHomeComponent implements OnInit {
   validationError = '';
 
   totalDays = 1;
+  isSubmitting = false;
 
   /* ================= REQUEST TYPE ================= */
   requestType: 'full' | 'custom' = 'full';
@@ -182,16 +183,54 @@ export class WorkFromHomeComponent implements OnInit {
 
   /* ================= SUBMIT ================= */
   submit() {
-    if (!this.note || this.validationError) return;
+    // Prevent multiple submissions
+    if (this.isSubmitting) return;
+
+    // Validate required fields
+    if (!this.note || this.validationError) {
+      return;
+    }
+
+    // Validate date
+    if (!this.fromDate || isNaN(this.fromDate.getTime())) {
+      const toast = this.toastCtrl.create({
+        message: 'Please select a valid date',
+        duration: 2000,
+        color: 'danger',
+        position: 'top',
+      });
+      toast.then(t => t.present());
+      return;
+    }
+
+    // Format the date
+    const formattedDate = this.formatDate(this.fromDate);
+
+    // Validate formatted date
+    if (!formattedDate || formattedDate.length === 0) {
+      const toast = this.toastCtrl.create({
+        message: 'Invalid date format',
+        duration: 2000,
+        color: 'danger',
+        position: 'top',
+      });
+      toast.then(t => t.present());
+      return;
+    }
+
+    this.isSubmitting = true;
 
     const payload: any = {
-      date: this.formatDate(this.fromDate),
+      date: formattedDate,
       work_mode: 'WFH',
       reason: this.note,
     };
 
+    console.log('Submitting WFH request with payload:', payload);
+
     this.wfhService.wfh(payload).subscribe({
       next: async (res: any) => {
+        this.isSubmitting = false;
         const toast = await this.toastCtrl.create({
           message: 'Work From Home request submitted successfully',
           duration: 2000,
@@ -203,9 +242,13 @@ export class WorkFromHomeComponent implements OnInit {
         this.modalCtrl.dismiss(res, 'success');
       },
       error: async (err: any) => {
+        this.isSubmitting = false;
+        console.error('WFH request error:', err);
+
+        const errorMessage = err?.error?.error || err?.error?.message || 'Failed to submit WFH request';
         const toast = await this.toastCtrl.create({
-          message: err?.error?.message || 'Failed to submit WFH request',
-          duration: 2000,
+          message: errorMessage,
+          duration: 3000,
           color: 'danger',
           position: 'top',
         });
@@ -216,9 +259,20 @@ export class WorkFromHomeComponent implements OnInit {
 
   /* ================= UTIL ================= */
   private formatDate(date: Date): string {
+    // Validate input
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      console.error('Invalid date object:', date);
+      return '';
+    }
+
     const d = new Date(date);
+    const year = d.getFullYear();
     const month = `${d.getMonth() + 1}`.padStart(2, '0');
     const day = `${d.getDate()}`.padStart(2, '0');
-    return `${d.getFullYear()}-${month}-${day}`;
+
+    const formatted = `${year}-${month}-${day}`;
+    console.log('Formatted date:', formatted, 'from:', date);
+
+    return formatted;
   }
 }
