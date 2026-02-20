@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { Candidate } from 'src/app/services/pre-onboarding.service';
 import { AttendanceService } from 'src/app/services/attendance.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-employee-profile-modal',
@@ -93,9 +94,20 @@ export class EmployeeProfileModalComponent implements OnInit {
     return colors[index];
   }
 
+  /* ================= PROFILE IMAGE ================= */
+  getProfileImage(employee: any): string {
+    if (!employee) {
+      return 'assets/icon/Default-user.svg';
+    }
 
+    if (employee?.profile_image) {
+      const env = environment;
+      const apiUrl = env.apiURL.startsWith('http') ? env.apiURL : `http://${env.apiURL}`;
+      return `${apiUrl}${employee.profile_image}?t=${Date.now()}`;
+    }
 
-
+    return 'assets/icon/Default-user.svg';
+  }
 
   close() {
     this.modalCtrl.dismiss();
