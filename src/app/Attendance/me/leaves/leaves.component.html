@@ -81,7 +81,7 @@
         <ion-col size="2">Leave Type</ion-col>
         <ion-col size="1">Days</ion-col>
         <ion-col size="2">Applied Date</ion-col>
-        <ion-col size="2">Status</ion-col>        
+        <ion-col size="2">Status</ion-col>
         <ion-col size="3">Reason</ion-col>
       </ion-row>
 
@@ -102,7 +102,7 @@
             </ion-col>
             <ion-col size="2">
               <ion-badge class="pending">
-                  {{ leave.status }}
+                {{ leave.status }}
               </ion-badge>
             </ion-col>
             <ion-col size="3" class="text-wrap">
@@ -122,144 +122,144 @@
       </ion-row>
     </ng-template>
   </div>
-<ion-grid class="side-by-side-grids">
-  <ion-row>
-    <ion-col size="7">
-<!-- Leave Requests History -->
-<ion-grid class="card-leaves-block">
-    <h4 class="card-header">Leave Requests History</h4>
+  <ion-grid class="side-by-side-grids">
     <ion-row>
-      <ion-col size="12">
-        <h4>Leave requests history for {{ currentMonthFirstDateText }}</h4>
-      </ion-col>
-  
-      <ion-col *ngIf="leaveRequestsDeatils && leaveRequestsDeatils.length > 0; else noApprovedRejectedLeaves">
-        <ion-grid class="table-block">
-          <ion-row class="table-header">
-            <ion-col size="3">Start & End Date</ion-col>
-            <ion-col size="2">Leave Type</ion-col>
-            <ion-col size="1">Days</ion-col>
-            <ion-col size="2">Reason</ion-col>
-            <ion-col size="2">Applied Date</ion-col>
-            <ion-col size="2">Status</ion-col>
-          </ion-row>
-  
-          <ng-container *ngFor="let leave of leaveRequestsDeatils">
-            <ng-container *ngIf="leave.status === 'APPROVED' || leave.status === 'REJECTED'">
-              <ion-row class="table-row-list">
-                <ion-col size="3">
-                  <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
-                </ion-col>
-                <ion-col size="2">
-                  <p>{{ leave.leave_type }}</p>
-                </ion-col>
-                <ion-col size="1">
-                  <p>{{ leave.days }}</p>
-                </ion-col>
-                <ion-col size="2" class="text-wrap">
-                  <p>{{ leave.reason }}</p>
-                </ion-col>
-                <ion-col size="2">
-                  <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
-                </ion-col>
-                <ion-col size="2">
-                    <ion-badge [ngClass]="{
+      <ion-col size="7">
+        <!-- Leave Requests History -->
+        <ion-grid class="card-leaves-block">
+          <h4 class="card-header">Leave Approvals History</h4>
+          <ion-row>
+            <ion-col size="12">
+              <h4>Leave Approvals history for {{ currentMonthFirstDateText }}</h4>
+            </ion-col>
+
+            <ion-col *ngIf="leaveRequestsDeatils && leaveRequestsDeatils.length > 0; else noApprovedRejectedLeaves">
+              <ion-grid class="table-block">
+                <ion-row class="table-header">
+                  <ion-col size="3">Start & End Date</ion-col>
+                  <ion-col size="2">Leave Type</ion-col>
+                  <ion-col size="1">Days</ion-col>
+                  <ion-col size="2">Reason</ion-col>
+                  <ion-col size="2">Applied Date</ion-col>
+                  <ion-col size="2">Status</ion-col>
+                </ion-row>
+
+                <ng-container *ngFor="let leave of leaveRequestsDeatils">
+                  <ng-container *ngIf="leave.status === 'APPROVED' || leave.status === 'REJECTED'">
+                    <ion-row class="table-row-list">
+                      <ion-col size="3">
+                        <p>{{ leave.from_date | date:'MMM d' }} - {{ leave.to_date | date:'MMM d' }}</p>
+                      </ion-col>
+                      <ion-col size="2">
+                        <p>{{ leave.leave_type }}</p>
+                      </ion-col>
+                      <ion-col size="1">
+                        <p>{{ leave.days }}</p>
+                      </ion-col>
+                      <ion-col size="2" class="text-wrap">
+                        <p>{{ leave.reason }}</p>
+                      </ion-col>
+                      <ion-col size="2">
+                        <p>{{ leave.applied_on | date:'dd MMM y' }}</p>
+                      </ion-col>
+                      <ion-col size="2">
+                        <ion-badge [ngClass]="{
                       'accept': leave.status === 'APPROVED',
                       'reject': leave.status === 'REJECTED'
                     }">
-                        {{ leave.status }}
-                    </ion-badge>                 
-                </ion-col>
-              </ion-row>
-            </ng-container>
-          </ng-container>
+                          {{ leave.status }}
+                        </ion-badge>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+                </ng-container>
+              </ion-grid>
+            </ion-col>
+          </ion-row>
         </ion-grid>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ng-template #noApprovedRejectedLeaves>
-    <ion-row class="no-leaves">
-      <ion-col size="12" class="ion-text-center">
-        <img src="../../../../assets/no_leavedata_img.svg">
-        <p class="no-data-text">No approved or rejected leave requests</p>
-      </ion-col>
-    </ion-row>
-  </ng-template>
-  
-  
-    <!-- Leave View/Cancel Popup -->
-    <ion-modal [isOpen]="isPopupOpen" (didDismiss)="closePopup()" class="custom-popup">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar color="primary">
-            <ion-title>
-              {{ selectedLeave?.status === 'PENDING' ? 'Cancel Leave' : 'Leave Details' }}
-            </ion-title>
-            <ion-buttons slot="end">
-              <ion-button (click)="closePopup()">
-                <ion-icon name="close-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-  
-        <ion-content class="ion-padding">
-          <!-- Cancel Leave -->
-          <!-- View Leave Details -->
-          <ng-template #viewContent>
-            <h3>Leave Details</h3>
-            <ion-list>
-              <ion-item>
-                <ion-label><strong>Type:</strong></ion-label>
-                <ion-text>{{ selectedLeave?.leave_type }}</ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label><strong>Period:</strong></ion-label>
-                <ion-text>{{ selectedLeave?.start_date | date:'MMM d' }} - {{ selectedLeave?.end_date | date:'MMM d'
-                  }}</ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label><strong>Reason:</strong></ion-label>
-                <ion-text>{{ selectedLeave?.remarks }}</ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label><strong>Status:</strong></ion-label>
-                <ion-text>{{ selectedLeave?.status }}</ion-text>
-              </ion-item>
-            </ion-list>
+        <ng-template #noApprovedRejectedLeaves>
+          <ion-row class="no-leaves">
+            <ion-col size="12" class="ion-text-center">
+              <img src="../../../../assets/no_leavedata_img.svg">
+              <p class="no-data-text">No approved or rejected leave requests</p>
+            </ion-col>
+          </ion-row>
+        </ng-template>
+
+
+        <!-- Leave View/Cancel Popup -->
+        <ion-modal [isOpen]="isPopupOpen" (didDismiss)="closePopup()" class="custom-popup">
+          <ng-template>
+            <ion-header>
+              <ion-toolbar color="primary">
+                <ion-title>
+                  {{ selectedLeave?.status === 'PENDING' ? 'Cancel Leave' : 'Leave Details' }}
+                </ion-title>
+                <ion-buttons slot="end">
+                  <ion-button (click)="closePopup()">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-toolbar>
+            </ion-header>
+
+            <ion-content class="ion-padding">
+              <!-- Cancel Leave -->
+              <!-- View Leave Details -->
+              <ng-template #viewContent>
+                <h3>Leave Details</h3>
+                <ion-list>
+                  <ion-item>
+                    <ion-label><strong>Type:</strong></ion-label>
+                    <ion-text>{{ selectedLeave?.leave_type }}</ion-text>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label><strong>Period:</strong></ion-label>
+                    <ion-text>{{ selectedLeave?.start_date | date:'MMM d' }} - {{ selectedLeave?.end_date | date:'MMM d'
+                      }}</ion-text>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label><strong>Reason:</strong></ion-label>
+                    <ion-text>{{ selectedLeave?.remarks }}</ion-text>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label><strong>Status:</strong></ion-label>
+                    <ion-text>{{ selectedLeave?.status }}</ion-text>
+                  </ion-item>
+                </ion-list>
+              </ng-template>
+            </ion-content>
           </ng-template>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-    </ion-col>
-    <ion-col size="5">
-        <div class="side-by-side-grids">
-            <ion-grid class="upcomingholidays-block">
-              <div class="card-header">
-                <h4>Upcoming Holidays</h4>
-                <p> Location : vizag</p>
-              </div>
-              <ion-row>
-                <ion-col size="9" class="holiday">
-                  <h6>Christmas</h6>
-                  <ion-text>21 October 2025</ion-text>
-                </ion-col>
-                <ion-col size="3">
-                  <p>15 days left</p>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col size="9" class="holiday">
-                  <h6>Sankranti</h6>
-                  <ion-text>14 October 2025</ion-text>
-                </ion-col>
-                <ion-col size="3">
-                  <p>33 days left</p>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </div>
+        </ion-modal>
       </ion-col>
-  </ion-row>
+      <ion-col size="5">
+        <div class="side-by-side-grids">
+          <ion-grid class="upcomingholidays-block">
+            <div class="card-header">
+              <h4>Upcoming Holidays</h4>
+              <p> Location : vizag</p>
+            </div>
+            <ion-row>
+              <ion-col size="9" class="holiday">
+                <h6>Christmas</h6>
+                <ion-text>21 October 2025</ion-text>
+              </ion-col>
+              <ion-col size="3">
+                <p>15 days left</p>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="9" class="holiday">
+                <h6>Sankranti</h6>
+                <ion-text>14 October 2025</ion-text>
+              </ion-col>
+              <ion-col size="3">
+                <p>33 days left</p>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>

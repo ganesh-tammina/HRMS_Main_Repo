@@ -16,6 +16,8 @@ import { AttendanceApiService } from 'src/app/services/attendance-api.service';
 export class RemoteClockinModalComponent {
     reason: string = '';
     loading = false;
+    existingWFHRequests: any[] = [];
+    isCheckingConflicts = false;
 
     constructor(
         private modalCtrl: ModalController,
@@ -23,14 +25,23 @@ export class RemoteClockinModalComponent {
         private toastCtrl: ToastController,
         private wfhService: WorkFromHomeService,
         private attendanceApi: AttendanceApiService
-    ) { }
+    ) {
+        this.loadExistingWFHRequests();
+    }
 
     async submit() {
         if (!this.reason.trim()) return;
+
+        // Check for existing WFH requests for today
+        const today = new Date().toISOString().split('T')[0];
+        if (this.hasWFHConflictForToday(today)) {
+            this.showToast('You already have a pending or approved WFH request for today. Cannot submit remote clock-in.', 'warning');
+            return;
+        }
+
         this.loading = true;
         try {
             // Use WFH endpoint but with work_mode: 'Remote'
-            const today = new Date().toISOString().split('T')[0];
             await this.wfhService.remote({
                 date: today,
                 reason: this.reason
@@ -54,6 +65,36 @@ export class RemoteClockinModalComponent {
             this.loading = false;
             this.showToast(err?.error?.error || 'Failed to submit request', 'danger');
         }
+    }
+
+    private loadExistingWFHRequests() {
+        this.isCheckingConflicts = true;
+        this.wfhService.getAllWFHRequests().subscribe({
+            next: (requests: any[]) => {
+                // Filter for WFH requests that are NOT rejected or cancelled
+                this.existingWFHRequests = (requests || []).filter((req: any) => {
+                    if (req.leave_type !== 'WFH') {
+                        return false;
+                    }
+                    const blockingStatuses = ['PENDING', 'APPROVED', 'pending', 'approved'];
+                    return blockingStatuses.includes(req.status);
+                });
+                this.isCheckingConflicts = false;
+                console.log('🔍 Existing WFH requests for remote modal:', this.existingWFHRequests);
+            },
+            error: (err: any) => {
+                this.isCheckingConflicts = false;
+                console.error('Failed to load WFH requests:', err);
+            }
+        });
+    }
+
+    private hasWFHConflictForToday(today: string): boolean {
+        return this.existingWFHRequests.some(req => {
+            const reqStart = req.start_date.split('T')[0];
+            const reqEnd = req.end_date.split('T')[0];
+            return today >= reqStart && today <= reqEnd;
+        });
     }
 
     async close() {
