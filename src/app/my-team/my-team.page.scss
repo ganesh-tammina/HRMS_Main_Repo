@@ -117,6 +117,7 @@ ion-content {
   }
   .member-role {
     @include body-text();
+    font-size: 1.926618705vh !important;
     color: #707070;
     margin-top: 8px;
   }

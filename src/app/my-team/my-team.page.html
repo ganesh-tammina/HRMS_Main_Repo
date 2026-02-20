@@ -171,9 +171,12 @@
                      <div>
                         <h3 class="member-name">{{ member.FullName || member.full_name ||
                            member.attendance?.employee_name || 'N/A' }}</h3>
-                        <p class="member-role">{{ member.designation || member.designation_name ||
+                           <!-- <p class="member-role">{{ member.designation || member.designation_name ||
                            member.attendance?.designation || '—' }} .
-                           {{ member.department || member.department_name || member.attendance?.department || '—' }}
+                           {{ member.department || member.department_name || member.attendance?.department || '—' }} abcd
+                        </p> -->
+                        <p class="member-role">{{ member.designation || member.designation_name ||
+                           member.attendance?.designation || '—' }}
                         </p>
                      </div>
                   </div>
@@ -270,8 +273,10 @@
                </div>
                <div>
                   <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
-                  <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{
-                     member.department || member.department_name || '—' }}</p>
+                  <p class="member-role">{{ member.designation || member.designation_name || '—' }}</p>
+
+                     <!-- <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{
+                     member.department || member.department_name || '—' }}</p> -->
 
                </div>
             </div>
