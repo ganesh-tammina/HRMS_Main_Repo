@@ -60,6 +60,7 @@ export class HomePage implements OnInit {
   leaveCards: any[] = [];
   userDesignation: string | null = null;
   leaveCodeIdMap: any = {};
+  todayAttendance: any = null;
   backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
 
   /* ================= BIRTHDAYS ================= */
@@ -102,6 +103,11 @@ export class HomePage implements OnInit {
     this.attendanceService.monthlyReport$.subscribe(report => {
       this.monthlyAttendanceReport = report;
       console.log('🏠 Home received monthly attendance:', this.monthlyAttendanceReport);
+
+      // Find today's specific record
+      const todayStr = moment().format('YYYY-MM-DD');
+      this.todayAttendance = report.find(r => moment(r.date).format('YYYY-MM-DD') === todayStr) || null;
+      console.log('📅 Today Attendance:', this.todayAttendance);
 
       // Example calculation
       if (report.length) {

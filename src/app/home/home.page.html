@@ -77,31 +77,31 @@
             </div>
           </div>
 
-          <div class="card-content" *ngFor="let item of monthlyAttendanceReport">
+          <div class="card-content" *ngIf="todayAttendance">
             <ion-row>
               <ion-col size="7">
                 <div class="row-space-between">
                   <p class="label-test">Clock In</p>
-                  <p class="time">{{item.first_check_in | date:'h:mm a'}}</p>
+                  <p class="time">{{todayAttendance.first_check_in | date:'h:mm a'}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Last Punch Out</p>
-                  <p class="time">{{item.last_check_out | date:'h:mm a'}}</p>
+                  <p class="time">{{todayAttendance.last_check_out | date:'h:mm a'}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Status</p>
-                  <p class="status">{{item.status}}</p>
+                  <p class="status">{{todayAttendance.status}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Gross Hours</p>
-                  <p class="time">{{item.gross_hours}}</p>
+                  <p class="time">{{todayAttendance.gross_hours}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Effective Hours</p>
                   <p class="time">68% of 8hrs</p>
                 </div>
                 <div class="label">
-                  <p class="w-auto">Mode: {{item.work_mode}}</p>
+                  <p class="w-auto">Mode: {{todayAttendance.work_mode}}</p>
                 </div>
               </ion-col>
               <ion-col size="5">
@@ -121,6 +121,11 @@
                 </div>
               </ion-col>
             </ion-row>
+          </div>
+
+          <!-- Empty state if no attendance for today -->
+          <div class="card-content" *ngIf="!todayAttendance">
+            <p class="ion-text-center ion-padding">No attendance record found for today.</p>
           </div>
         </ion-card>
 
