@@ -1,12 +1,14 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { Router, RouterLink } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 import moment from 'moment';
 
@@ -32,7 +34,9 @@ import { AttendanceApiService } from '../services/attendance-api.service';
     RouterLink
   ],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  private clockInterval: any;
   // Birthday wishes UI state
   activeWishEmployeeId: number | null = null;
   wishMessages: { [employeeId: number]: string } = {};
@@ -99,27 +103,30 @@ export class HomePage implements OnInit {
       month
     );
 
+
     // ✅ RECEIVE MONTHLY ATTENDANCE
-    this.attendanceService.monthlyReport$.subscribe(report => {
-      this.monthlyAttendanceReport = report;
-      console.log('🏠 Home received monthly attendance:', this.monthlyAttendanceReport);
+    this.attendanceService.monthlyReport$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(report => {
+        this.monthlyAttendanceReport = report;
+        console.log('🏠 Home received monthly attendance:', this.monthlyAttendanceReport);
 
-      // Find today's specific record
-      const todayStr = moment().format('YYYY-MM-DD');
-      this.todayAttendance = report.find(r => moment(r.date).format('YYYY-MM-DD') === todayStr) || null;
-      console.log('📅 Today Attendance:', this.todayAttendance);
+        // Find today's specific record
+        const todayStr = moment().format('YYYY-MM-DD');
+        this.todayAttendance = report.find(r => moment(r.date).format('YYYY-MM-DD') === todayStr) || null;
+        console.log('📅 Today Attendance:', this.todayAttendance);
 
-      // Example calculation
-      if (report.length) {
-        const presentDays = report.filter(r => r.status === 'present').length;
-        this.attendanceRate = Math.round(
-          (presentDays / report.length) * 100
-        );
-      }
+        // Example calculation
+        if (report.length) {
+          const presentDays = report.filter(r => r.status === 'present').length;
+          this.attendanceRate = Math.round(
+            (presentDays / report.length) * 100
+          );
+        }
 
-      // Force UI update if needed
-      this.cdr.detectChanges();
-    });
+        // Force UI update if needed
+        this.cdr.detectChanges();
+      });
 
     this.loadBirthdays();
 
@@ -140,18 +147,20 @@ export class HomePage implements OnInit {
   }
 
   loadBirthdays() {
-    this.employeeService.getBirthdays().subscribe({
-      next: (data) => {
-        this.birthdays = data;
-        console.log('🎂 Birthdays:', data);
-        // Optionally load existing wishes if API supports
-        // this.loadBirthdayWishes();
-      },
-      error: (err) => {
-        this.birthdays = [];
-        console.error('Failed to fetch birthdays:', err);
-      }
-    });
+    this.employeeService.getBirthdays()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.birthdays = data;
+          console.log('🎂 Birthdays:', data);
+          // Optionally load existing wishes if API supports
+          // this.loadBirthdayWishes();
+        },
+        error: (err) => {
+          this.birthdays = [];
+          console.error('Failed to fetch birthdays:', err);
+        }
+      });
   }
 
   /* ================= PROFILE IMAGE ================= */
@@ -176,20 +185,22 @@ export class HomePage implements OnInit {
   sendWish(employeeId: number) {
     const message = this.wishMessages[employeeId]?.trim();
     if (!message) return;
-    this.employeeService.sendBirthdayWish(employeeId, message).subscribe({
-      next: () => {
-        if (!this.birthdayWishes[employeeId]) {
-          this.birthdayWishes[employeeId] = [];
+    this.employeeService.sendBirthdayWish(employeeId, message)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          if (!this.birthdayWishes[employeeId]) {
+            this.birthdayWishes[employeeId] = [];
+          }
+          this.birthdayWishes[employeeId].push(message);
+          this.wishMessages[employeeId] = '';
+          this.hideWishInput();
+        },
+        error: (err) => {
+          alert('Failed to send wish');
+          console.error('Failed to send wish:', err);
         }
-        this.birthdayWishes[employeeId].push(message);
-        this.wishMessages[employeeId] = '';
-        this.hideWishInput();
-      },
-      error: (err) => {
-        alert('Failed to send wish');
-        console.error('Failed to send wish:', err);
-      }
-    });
+      });
   }
 
   /* ================= ENV ================= */
@@ -204,22 +215,24 @@ export class HomePage implements OnInit {
     // 🔴 Clear old user immediately
     this.currentEmployee = null;
 
-    this.employeeService.getMyProfile().subscribe({
-      next: (res: any) => {
-        this.currentEmployee = res;
-        this.userDesignation = res.designation_name || res.designation || null;
+    this.employeeService.getMyProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.currentEmployee = res;
+          this.userDesignation = res.designation_name || res.designation || null;
 
-        console.log("Employee Designation 👉", this.userDesignation);
-        console.log('Logged-in Employee 👉', this.currentEmployee);
+          console.log("Employee Designation 👉", this.userDesignation);
+          console.log('Logged-in Employee 👉', this.currentEmployee);
 
-        // Force UI refresh
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Profile load failed', err);
-        this.currentEmployee = null;
-      }
-    });
+          // Force UI refresh
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Profile load failed', err);
+          this.currentEmployee = null;
+        }
+      });
   }
 
   /* ================= PROFILE IMAGE ================= */
@@ -247,7 +260,8 @@ export class HomePage implements OnInit {
 
   /* ================= CLOCK ================= */
   private setupClock() {
-    setInterval(() => {
+    if (this.clockInterval) clearInterval(this.clockInterval);
+    this.clockInterval = setInterval(() => {
       this.currentTime = new Date().toLocaleTimeString('en-US', {
         hour12: true,
       });
@@ -315,29 +329,31 @@ export class HomePage implements OnInit {
   }
   /* ===================== LEAVE BALANCE ===================== */
   loadLeaveBalance() {
-    this.employeeLeaves.getLeaveBalance(this.currentYear).subscribe({
-      next: (res: any[]) => {
-        this.leaveCodeIdMap = {};
-        res.forEach(item => {
-          this.leaveCodeIdMap[item.type_code] = item.leave_type_id || item.id;
-        });
-        this.leaveCards = res.map(item => ({
-          title: item.type_name,
-          allocated_days: Number(item.allocated_days),
-          used: Number(item.used_days),
-          available: Number(item.available_days),
-          icon: this.getLeaveIcon(item.type_code),
-        }));
-        console.log(this.leaveCards, 'leaves')
+    this.employeeLeaves.getLeaveBalance(this.currentYear)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any[]) => {
+          this.leaveCodeIdMap = {};
+          res.forEach(item => {
+            this.leaveCodeIdMap[item.type_code] = item.leave_type_id || item.id;
+          });
+          this.leaveCards = res.map(item => ({
+            title: item.type_name,
+            allocated_days: Number(item.allocated_days),
+            used: Number(item.used_days),
+            available: Number(item.available_days),
+            icon: this.getLeaveIcon(item.type_code),
+          }));
+          console.log(this.leaveCards, 'leaves')
 
-        this.leaveTypes = res.map(item => ({
-          code: item.type_code,
-          name: item.type_name,
-          available: Number(item.available_days),
-        }));
-      },
-      error: err => console.error(err),
-    });
+          this.leaveTypes = res.map(item => ({
+            code: item.type_code,
+            name: item.type_name,
+            available: Number(item.available_days),
+          }));
+        },
+        error: err => console.error(err),
+      });
   }
   getLeaveIcon(code: string): string {
     const map: any = {
@@ -353,5 +369,13 @@ export class HomePage implements OnInit {
 
   isCEO(): boolean {
     return this.currentEmployee?.designation_name?.toLowerCase() === 'ceo';
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.clockInterval) {
+      clearInterval(this.clockInterval);
+    }
   }
 }
