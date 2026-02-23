@@ -185,7 +185,7 @@
               </ion-col>
             </ion-row> -->
             <ion-row lines="none">
-              <ion-col size="4" class="ion-text-center" *ngFor="let leave of leaveCards">
+              <ion-col size="3" class="ion-text-center" *ngFor="let leave of leaveCards">
                 <ion-img [src]="leave.icon" class="leave-img"></ion-img>
                 <p class="text">{{ leave.title }}</p>
                 <p class="number">{{ leave.used }}/ {{ leave.available}} <small>days left</small></p>
@@ -308,7 +308,7 @@
           </div>
         </ion-card>
         <!-- Birthdays & work anniversaries card -->
-        <ion-card class="overview-block">
+        <ion-card class="overview-block" style="height: 34%;">
           <div class="row-space-between border-bottom">
             <div>
               <h3 class="card-header">Birthdays & work anniversaries</h3>
@@ -328,9 +328,12 @@
                   <p>{{ birthday.FirstName }}</p>
                   <p>Birthday • {{ birthday.DateOfBirth | date:'MMM dd' }}</p>
                 </div>
+                 
               </div>
-              <ion-button class="primary-button" (click)="showWishInput(birthday.employee_id)">Send Wishes</ion-button>
-              <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
+              <div>
+                <ion-button class="primary-button pull-right" (click)="showWishInput(birthday.employee_id)">Send Wishes</ion-button>
+                </div>
+              <!-- <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
                 <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
                 <ion-button (click)="sendWish(birthday.employee_id)">Send</ion-button>
               </div>
@@ -338,8 +341,19 @@
                 <div class="wish-list">
                   <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
                 </div>
-              </div>
+              </div> -->
             </div>
+            <div class="sendwish" *ngFor="let birthday of birthdays">
+            <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
+                <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
+                <ion-button class="primary-button pull-right" (click)="sendWish(birthday.employee_id)">Send</ion-button>
+              </div>
+              <div *ngIf="birthdayWishes[birthday.employee_id]?.length">
+                <div class="wish-list">
+                  <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
+                </div>
+              </div>
+              </div>
           </div>
         </ion-card>
       </ion-col>
