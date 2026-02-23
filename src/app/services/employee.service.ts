@@ -126,9 +126,12 @@ export class EmployeeService {
       tap((res: any) => {
         // Broadcast the new profile image URL
         if (res.imagePath) {
-          const imageUrl = `http://${this.env.apiURL}${res.imagePath}?t=${Date.now()}`;
-          this.profileImageUpdateSubject.next(imageUrl);
-          console.log('📸 Profile image updated and broadcasted:', imageUrl);
+          const imagePathWithCache = `${res.imagePath}?t=${Date.now()}`;
+          if (this.currentEmployee) {
+            this.currentEmployee.profile_image = imagePathWithCache;
+          }
+          this.profileImageUpdateSubject.next(imagePathWithCache);
+          console.log('📸 Profile image updated and broadcasted:', imagePathWithCache);
         }
       })
     );

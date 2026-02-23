@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import {
   CandidateService,
   Candidate,
@@ -12,7 +12,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { EmployeeService } from '../../services/employee.service';
 @Component({
@@ -22,7 +22,7 @@ import { EmployeeService } from '../../services/employee.service';
   styleUrls: ['./header.component.scss'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentCandidate: Candidate | null = null;
   // Search functionality
   searchQuery: string = '';
@@ -42,9 +42,11 @@ export class HeaderComponent implements OnInit {
   currentEmployee$!: Observable<Employee | null>;
   imageUrls: any;
   searchKeyword: string = '';
-  env:any;
+  env: any;
   profileimg: string = environment.apiURL;
   employees: any;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private candidateService: CandidateService,
@@ -66,16 +68,18 @@ export class HeaderComponent implements OnInit {
     this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
 
     // Listen for profile image updates
-    this.candidateService.profileImage$.subscribe((imageUrl) => {
-      if (imageUrl) {
-        this.uploadedImageUrl = imageUrl;
-        console.log('🖼️ Header: Profile image updated to:', imageUrl);
-      } else if (imageUrl === '') {
-        // Handle logout case
-        this.uploadedImageUrl = null;
-        console.log('🖼️ Header: Profile image cleared on logout');
-      }
-    });
+    this.candidateService.profileImage$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imageUrl) => {
+        if (imageUrl) {
+          this.uploadedImageUrl = imageUrl;
+          console.log('🖼️ Header: Profile image updated to:', imageUrl);
+        } else if (imageUrl === '') {
+          // Handle logout case
+          this.uploadedImageUrl = null;
+          console.log('🖼️ Header: Profile image cleared on logout');
+        }
+      });
     console.log(
       '🖼️ Loaded image URL from localStorage:',
       this.uploadedImageUrl
@@ -137,6 +141,21 @@ export class HeaderComponent implements OnInit {
         console.log(res, 'hello');
       }
     });
+
+    // Listen for employee profile image updates
+    this.employeeService.profileImageUpdate$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imagePath) => {
+        if (imagePath && this.currentEmployee) {
+          this.currentEmployee.profile_image = imagePath;
+          console.log('🖼️ Header: Employee profile image updated:', imagePath);
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // onSearch() {
@@ -184,7 +203,7 @@ export class HeaderComponent implements OnInit {
     }
 
     this.employeeService.searchEmployees(this.searchQuery).subscribe({
-      next: (results:any) => {
+      next: (results: any) => {
         this.searchResults = results;
         this.employee = this.searchResults;
         this.openEmployeeListModal(results);
