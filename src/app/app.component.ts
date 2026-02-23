@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Candidate, CandidateService } from './services/pre-onboarding.service';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { HeaderComponent } from './shared/header/header.component';
 import { RouteGuardService } from './services/route-guard/route-service/route-guard.service';
 import { NavController } from '@ionic/angular';
@@ -24,7 +24,8 @@ import { AuthService } from './services/login-services.service';
     IonicModule,
   ],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   showIntro = true;
   public showCategories = false;
   showMenu = true;
@@ -56,7 +57,7 @@ export class AppComponent implements OnInit {
     private authService: AuthService
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.showMenu = !event.urlAfterRedirects.includes('/login');
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
@@ -85,11 +86,13 @@ export class AppComponent implements OnInit {
         } else {
           this.showIntro = false;
         }
-        // Fetch user department and designation from profile
-        this.employeeService.getMyProfile().subscribe(emp => {
-          this.userDesignation = (emp?.designation_name || emp?.designation || '').toLowerCase();
-          this.userDepartment = (emp?.department_name || emp?.department || '').toLowerCase();
-        });
+        // Fetch user department and designation from profile - Only if not already loaded
+        if (!this.userDesignation) {
+          this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe(emp => {
+            this.userDesignation = (emp?.designation_name || emp?.designation || '').toLowerCase();
+            this.userDepartment = (emp?.department_name || emp?.department || '').toLowerCase();
+          });
+        }
       }
     });
     this.currentUrl = this.router.url;
@@ -102,7 +105,7 @@ export class AppComponent implements OnInit {
     if (role === 'admin' || role === 'hr') {
       this.isAdmin = true;
     }
-    this.service.getAnnouncements().subscribe((r: any) => console.log(r));
+    this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log(r));
   }
 
   ionViewWillEnter(): void {
@@ -164,5 +167,10 @@ export class AppComponent implements OnInit {
     const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
     const isMainPage = mainPages.some((page) => url.includes(page));
     // ...existing logic if needed
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
