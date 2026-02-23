@@ -121,7 +121,7 @@ export class LoginPage implements OnInit {
       email = email.trim().toLowerCase();
       this.loginForm.get('email')?.setValue(email);
     }
-    this.loading = true;
+    // this.loading = true;
 
     /* 🔥 ADMIN LOGIN */
     if (this.isAdmin) {
