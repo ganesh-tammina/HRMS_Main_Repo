@@ -24,6 +24,7 @@ export class EmployeeListModalComponent implements OnInit {
   constructor(private modalCtrl: ModalController, private candidateService: CandidateService) { }
 
   ngOnInit() {
+
     this.employeeList = this.employees || [];
 
     this.apiBaseUrl = environment.apiURL.startsWith('http')
@@ -31,6 +32,7 @@ export class EmployeeListModalComponent implements OnInit {
       : `http://${environment.apiURL}`;
 
     console.log('✅ Employees received in modal:', this.employeeList);
+    console.log('✅ API Base URL:', this.apiBaseUrl);
   }
 
   /** ✅ PROFILE IMAGE HANDLER */
