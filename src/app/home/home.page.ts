@@ -151,9 +151,9 @@ export class HomePage implements OnInit {
   /* ================= PROFILE IMAGE ================= */
   getProfileImage(birthday: any): string {
     if (birthday?.profile_image) {
-      return `http://${this.env.apiURL}${birthday.profile_image}?t=${Date.now()}`;
+      return `${this.env}${birthday.profile_image}?t=${Date.now()}`;
     }
-    return '../../../assets/icon/Default-user.svg';
+    return 'assets/icon/Default-user.svg';
   }
 
   showWishInput(employeeId: number) {
