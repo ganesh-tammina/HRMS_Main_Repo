@@ -160,7 +160,11 @@ export class EmployeeService {
   }
 
   clearEmployee(): void {
+    this.currentEmployee = null;
     this.currentEmployeeSubject.next(null);
+    this.profileImageUpdateSubject.next(null);
+    this.employeeIdSubject.next(null);
+    console.log('🧹 EmployeeService: All employee state cleared');
   }
 
   /* ================= ✅ NEW METHOD ================= */
