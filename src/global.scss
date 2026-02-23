@@ -205,10 +205,13 @@ ion-list-header, ion-item{
 .mr-8 {
     margin-right: 8px !important;
   }
-  .mx-30 {
-    margin-left: 30px;
-    margin-right: 30px;
-  }
+.mx-30 {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+.m-0{
+  margin: 0px;
+}
 // Modal popup
 ion-modal {
     --width: 800px;

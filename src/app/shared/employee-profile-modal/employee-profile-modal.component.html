@@ -1,5 +1,5 @@
-<ion-content class="ion-padding">
-
+<ion-content class="ion-padding profile-container">
+  <div class="d-flex">
   <!-- Profile Avatar Section -->
   <div class="profile-avatar-container" style="text-align: center; margin-bottom: 20px;">
     <ion-avatar
@@ -11,14 +11,14 @@
 
   <!-- Avatar with status dot -->
   <div class="profile-info">
-    <h2 class="name">{{ selectedObeject.FullName || selectedObeject.full_name }}</h2>
-    <p class="job-title">{{ selectedObeject.designation_name || selectedObeject.job_title }}</p>
-    <div class="row-left">
+    <h3 class="name">{{ selectedObeject.FullName || selectedObeject.full_name }}</h3>
+    <p class="job-title m-0">{{ selectedObeject.designation_name || selectedObeject.job_title }}</p>
+    <div class="row-left loc" >
       <div class="row-left">
         <ion-icon name="location"></ion-icon>
         <p class="title">{{ selectedObeject.location_name || selectedObeject.location }}</p>
       </div>
-      <div class="row-left">
+      <div class="row-left" style="margin-left: 25px;">
         <ion-icon name="mail"></ion-icon>
         <p class="title">{{ selectedObeject.WorkEmail || selectedObeject.work_email }}</p>
       </div>
@@ -32,18 +32,21 @@
       </span>
     </div>
   </div>
+  </div>
 
-  <ion-row>
+
+
+  <!-- <ion-row>
     <ion-col size="10"></ion-col>
     <ion-col size="2">
       <ion-icon class="close-outline" name="close-outline" (click)="close()"></ion-icon>
     </ion-col>
-  </ion-row>
+  </ion-row> -->
 
 
 
   <!-- Attendance Log -->
-  <div class="attendance-log">
+  <!-- <div class="attendance-log">
     <h2>Attendance Log</h2>
     <ion-row style="font-weight:bold;">
       <ion-col>Date</ion-col>
@@ -66,22 +69,22 @@
     <ng-template #noAttendance>
       <ion-row><ion-col colspan="6">No attendance records found.</ion-col></ion-row>
     </ng-template>
-  </div>
+  </div> -->
 
   <!-- Contact & Job Details -->
   <div class="org-details">
-    <h2>Organizational Details</h2>
+    <h3>Organizational Details</h3>
     <ion-row>
-      <ion-col>
+      <ion-col size="7">
         <label>Business Unit</label>
         <p>{{ selectedObeject.business_unit_name }}</p>
       </ion-col>
-      <ion-col>
+      <ion-col size="4">
         <label>Department</label>
         <p>{{ selectedObeject.department_name }}</p>
       </ion-col>
     </ion-row>
-    <ion-row>
+    <!-- <ion-row>
       <ion-col>
         <label>Location</label>
         <p>{{ selectedObeject.location_name }}</p>
@@ -110,19 +113,19 @@
         <label>Cost Center</label>
         <p>{{ selectedObeject.cost_center_code }}</p>
       </ion-col>
-    </ion-row>
+    </ion-row> -->
     <ion-row>
       <ion-col>
         <label>Reporting Manager</label>
         <p>{{ selectedObeject.manager_first_name }} {{ selectedObeject.manager_last_name }} ({{
           selectedObeject.manager_employee_number }})</p>
       </ion-col>
-      <ion-col>
+      <!-- <ion-col>
         <label>Leave Plan</label>
         <p>{{ selectedObeject.leave_plan_name }}</p>
-      </ion-col>
+      </ion-col> -->
     </ion-row>
-    <ion-row>
+    <!-- <ion-row>
       <ion-col>
         <label>Shift Policy</label>
         <p>{{ selectedObeject.shift_policy_name }}</p>
@@ -151,7 +154,7 @@
         <label>Expense Policy</label>
         <p>{{ selectedObeject.expense_policy_name }}</p>
       </ion-col>
-    </ion-row>
+    </ion-row> -->
   </div>
 
 </ion-content>
