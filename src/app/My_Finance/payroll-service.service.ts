@@ -43,4 +43,11 @@ export class PayrollService {
       { headers: this.getHeaders() }
     );
   }
+
+  getPayrollTempletes() {
+    return this.http.get(
+      `${this.payrollUrl}templates`,
+      { headers: this.getHeaders() }
+    )
+  }
 }

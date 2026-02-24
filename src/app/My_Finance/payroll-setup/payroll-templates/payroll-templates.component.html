@@ -1,0 +1,44 @@
+<ion-content [fullscreen]="true">
+    <div class="payroll-container">
+        <div class="header">
+            <div>
+                <h2>Payroll Templates</h2>
+                <p>Manage and configure salary structure templates</p>
+            </div>
+            <button class="primary-btn">Create New Template</button>
+        </div>
+
+        <div class="components-card">
+            <div class="section-title">Configured Templates</div>
+
+            <div class="component-table-wrapper">
+                <div class="component-table">
+                    <div class="table-head">
+                        <span>ID</span>
+                        <span>Template Name</span>
+                        <span>Description</span>
+                        <span>Created By</span>
+                        <span>Created At</span>
+                        <span>Actions</span>
+                    </div>
+
+                    <div class="table-row" *ngFor="let temp of templates">
+                        <span>{{ temp.template_id }}</span>
+                        <span class="name">{{ temp.template_name }}</span>
+                        <span class="description">{{ temp.description || '-' }}</span>
+                        <span>User #{{ temp.created_by }}</span>
+                        <span>{{ temp.created_at | date:'mediumDate' }}</span>
+                        <span class="actions">
+                            <button class="icon-btn edit">
+                                <ion-icon name="create-outline"></ion-icon>
+                            </button>
+                            <button class="icon-btn delete">
+                                <ion-icon name="trash-outline"></ion-icon>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-content>
