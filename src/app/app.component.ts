@@ -82,7 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
             if (!introSeen) {
               localStorage.setItem('introSeen', 'true');
             }
-          }, 5000);
+          }, 1000);
         } else {
           this.showIntro = false;
         }

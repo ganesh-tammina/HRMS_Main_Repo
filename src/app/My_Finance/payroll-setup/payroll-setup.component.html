@@ -1,38 +1,53 @@
-<div class="dashboard">
-  <div class="card">
-    <div class="icon">
-      <i class="fa fa-users"></i>
-    </div>
-    <h3>Payroll Compoents</h3>
-    <p>Generate, upload, and manage payroll data.</p>
-    <button (click)="payrollCompoents()">Create Compoents →</button>
-  </div>
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-row>
+    <ion-col size="6">
+      <ion-button expand="block" color="success" (click)="setDefaults()">
+        Set Default Payroll
+      </ion-button>
+    </ion-col>
 
-  <div class="card">
-    <div class="icon">
-      <i class="fa fa-building"></i>
+    <ion-col size="6">
+      <ion-button expand="block" color="danger" (click)="clearSetup()">
+        Clear Payroll Setup
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <div class="dashboard">
+    <div class="card">
+      <div class="icon">
+        <i class="fa fa-users"></i>
+      </div>
+      <h3>Payroll Compoents</h3>
+      <p>Generate, upload, and manage payroll data.</p>
+      <button (click)="payrollCompoents()">Create Compoents →</button>
     </div>
-    <h3>Payroll templates</h3>
-    <p>generate Salary Structure compoents</p>
-    <button (click)="payrollTemplates()">Create templates →</button>
-  </div>
 
-  <div class="card">
-    <div class="icon">
-      <i class="fa fa-user-shield"></i>
+    <div class="card">
+      <div class="icon">
+        <i class="fa fa-building"></i>
+      </div>
+      <h3>Payroll templates</h3>
+      <p>generate Salary Structure compoents</p>
+      <button (click)="payrollTemplates()">Create templates →</button>
     </div>
-    <h3>Payroll Structure</h3>
-    <p>Generate, upload, and manage payroll data.</p>
-    <button>Create Salary Structure →</button>
-  </div>
 
-  <div class="card">
-    <div class="icon">
-      <i class="fa fa-calendar"></i>
+    <div class="card">
+      <div class="icon">
+        <i class="fa fa-user-shield"></i>
+      </div>
+      <h3>Payroll Structure</h3>
+      <p>Generate, upload, and manage payroll data.</p>
+      <button>Create Salary Structure →</button>
     </div>
-    <h3>Payroll reports</h3>
-    <p>Generate Payroll Reports</p>
-    <button>GENERATE REPORTS →</button>
-  </div>
 
-</div>
+    <div class="card">
+      <div class="icon">
+        <i class="fa fa-calendar"></i>
+      </div>
+      <h3>Payroll reports</h3>
+      <p>Generate Payroll Reports</p>
+      <button>GENERATE REPORTS →</button>
+    </div>
+
+  </div>
+</ion-content>

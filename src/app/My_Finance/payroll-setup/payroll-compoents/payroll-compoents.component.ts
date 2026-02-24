@@ -2,13 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PayrollTemplatesService } from '../payroll-templates/payroll-templates.service';
+import { PayrollService } from '../../payroll-service.service';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-payroll-compoents',
   templateUrl: './payroll-compoents.component.html',
   styleUrls: ['./payroll-compoents.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, IonicModule],
 })
 export class PayrollCompoentsComponent implements OnInit {
   components: any[] = [];
@@ -17,7 +19,8 @@ export class PayrollCompoentsComponent implements OnInit {
 
   constructor(
     private payrollTemplatesService: PayrollTemplatesService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private payrollService: PayrollService
   ) { }
 
   ngOnInit() {
@@ -32,6 +35,10 @@ export class PayrollCompoentsComponent implements OnInit {
       formula: [''] // Only used if calculation_type is Formula
     });
     this.fetchComponents();
+    this.payrollService.getPayrollComponents().subscribe((res: any) => {
+      this.components = Array.isArray(res) ? res : (res.data || []);
+      console.log(this.components);
+    });
   }
 
   fetchComponents() {
