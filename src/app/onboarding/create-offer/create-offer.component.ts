@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule, IonPopover } from '@ionic/angular';
+import { ActionSheetController, IonicModule, IonPopover } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { OnboardingMainheaderComponent } from '../onboarding-mainheader/onboarding-mainheader.component';
@@ -29,6 +29,7 @@ export class CreateOfferComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private fb: FormBuilder,
     private candidateService: CandidateDetailsService // ✅ Updated service injected
   ) {
@@ -38,6 +39,27 @@ export class CreateOfferComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Subscribe to query params to fill missing data (e.g. on refresh)
+    this.route.queryParams.subscribe(params => {
+      if (params['candidate_id']) {
+        // Merge or set candidate details from query params
+        this.candidate = {
+          ...this.candidate,
+          id: this.candidate.id || params['candidate_id'],
+          candidate_id: this.candidate.candidate_id || params['candidate_id'],
+          FirstName: this.candidate.FirstName || params['FirstName'] || this.candidate.full_name,
+          JobTitle: this.candidate.JobTitle || params['JobTitle'] || this.candidate.designation_name,
+          Department: this.candidate.Department || params['Department'] || this.candidate.department_name,
+          BusinessUnit: this.candidate.BusinessUnit || params['BusinessUnit'] || this.candidate.BusinessUnit,
+          JobLocation: this.candidate.JobLocation || params['JobLocation'] || this.candidate.location_name,
+          Email: this.candidate.Email || params['Email'],
+          PhoneNumber: this.candidate.PhoneNumber || params['PhoneNumber'],
+          WorkType: this.candidate.WorkType || params['WorkType']
+        };
+        console.log('📋 Normalized Candidate:', this.candidate);
+      }
+    });
+
     if (!this.candidate.offerDetails) {
       this.candidate.offerDetails = { DOJ: '', offerValidity: '' };
     }

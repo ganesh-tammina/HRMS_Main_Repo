@@ -131,22 +131,22 @@
           <ion-col size="2" class="row-left">
             <div class="cell">
               <div class="name-stack">
-                <p class="name-link"> {{candidate.full_name}}</p>
+                <p class="name-link" (click)="goToCreateOffer(candidate)"> {{candidate.full_name}}</p>
               </div>
             </div>
           </ion-col>
           <ion-col size="2">
-            <p>{{candidate.designation_name}}</p>
+            <p class="clickable-item" (click)="goToCreateOffer(candidate)">{{candidate.designation_name}}</p>
           </ion-col>
           <ion-col size="2">
-            <p>{{candidate.department_name}}</p>
+            <p class="clickable-item" (click)="goToCreateOffer(candidate)">{{candidate.department_name}}</p>
           </ion-col>
           <ion-col size="2">
             <h5 [ngClass]="candidate.status === 'pending'? 'status-title pending' : 'status-title accepted'">
               {{candidate.status}}</h5>
           </ion-col>
           <ion-col size="2">
-            <p>{{candidate.location_name}}</p>
+            <p class="clickable-item" (click)="goToCreateOffer(candidate)">{{candidate.location_name}}</p>
           </ion-col>
           <ion-col size="2">
             <div class="cell cell-actions">

@@ -294,4 +294,23 @@ export class PreonboardingComponent implements OnInit {
   org() {
     this.router.navigate(['./pre-onboarding-cards']);
   }
+
+  // 👇 Navigate to Create Offer with candidate details
+  goToCreateOffer(candidate: any) {
+    const id = candidate.candidate_id || candidate.id || candidate.PersonalDetailsID;
+    this.router.navigate(['/CreateOffer', id], {
+      queryParams: {
+        candidate_id: id,
+        FirstName: candidate.FirstName || candidate.full_name || (candidate.personalDetails ? candidate.personalDetails.FirstName : ''),
+        JobTitle: candidate.JobTitle || candidate.designation_name || (candidate.jobDetailsForm ? candidate.jobDetailsForm.JobTitle : ''),
+        Department: candidate.Department || candidate.department_name || (candidate.jobDetailsForm ? candidate.jobDetailsForm.Department : ''),
+        BusinessUnit: candidate.BusinessUnit || (candidate.jobDetailsForm ? candidate.jobDetailsForm.BussinessUnit : ''),
+        JobLocation: candidate.JobLocation || candidate.location_name || (candidate.jobDetailsForm ? candidate.jobDetailsForm.JobLocation : ''),
+        Email: candidate.Email || candidate.email || (candidate.personalDetails ? candidate.personalDetails.email : ''),
+        PhoneNumber: candidate.PhoneNumber || (candidate.personalDetails ? candidate.personalDetails.PhoneNumber : ''),
+        WorkType: candidate.WorkType || (candidate.jobDetailsForm ? candidate.jobDetailsForm.WorkType : '')
+      },
+      state: { candidate: candidate }
+    });
+  }
 }
