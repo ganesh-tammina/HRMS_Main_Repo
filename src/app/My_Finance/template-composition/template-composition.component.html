@@ -63,44 +63,44 @@
       <div class="component-table-wrapper" *ngIf="!loading && compositionData.length > 0">
         <div class="component-table">
           <div class="table-head">
-            <span>ID</span>
-            <span>Name & Code</span>
+            <span>#</span>
+            <span>Component Name & Code</span>
             <span>Type</span>
             <span>Calculation</span>
-            <span>Value</span>
+            <span>Formula / Value</span>
             <span>Taxable</span>
             <span>Prorated</span>
             <span>Actions</span>
           </div>
 
           <div class="table-row" *ngFor="let comp of compositionData; trackBy: trackById">
-            <span class="comp-id">#{{ comp.id || comp.component_id }}</span>
+            <span class="comp-id">{{ comp.component_id }}</span>
             <span class="name-block">
-              <span class="comp-name">{{ comp.name || comp.component_name }}</span>
-              <span class="comp-code">{{ comp.code || comp.component_code }}</span>
+              <span class="comp-name">{{ comp.component_name }}</span>
+              <span class="comp-code">{{ comp.component_code }}</span>
             </span>
             <span>
-              <span class="badge" [ngClass]="(comp.component_type || comp.type)?.toLowerCase()">
-                {{ comp.component_type || comp.type }}
+              <span class="badge" [ngClass]="comp.component_type?.toLowerCase()">
+                {{ comp.component_type }}
               </span>
             </span>
             <span>
               <span class="calc-type">{{ comp.calculation_type }}</span>
-              <span class="base-code" *ngIf="comp.percentage_of_code || comp.base_code">
-                of {{ comp.percentage_of_code || comp.base_code }}
+              <span class="base-code" *ngIf="comp.percentage_of_code">
+                of {{ comp.percentage_of_code }}
               </span>
             </span>
             <span class="value-cell">
               <span class="amt">{{ comp.value }}</span>
-              <span class="unit">{{ comp.calculation_type === 'PERCENTAGE' ? '%' : '' }}</span>
+              <span class="unit" *ngIf="comp.calculation_type === 'PERCENTAGE'">%</span>
             </span>
             <span class="icon-cell">
-              <ion-icon [name]="(comp.taxable || comp.is_taxable) ? 'shield-checkmark' : 'shield-outline'"
-                [color]="(comp.taxable || comp.is_taxable) ? 'success' : 'medium'"></ion-icon>
+              <ion-icon [name]="comp.is_taxable ? 'shield-checkmark' : 'shield-outline'"
+                [color]="comp.is_taxable ? 'success' : 'medium'"></ion-icon>
             </span>
             <span class="icon-cell">
-              <ion-icon [name]="(comp.prorated || comp.is_prorated) ? 'calendar-check' : 'calendar-outline'"
-                [color]="(comp.prorated || comp.is_prorated) ? 'primary' : 'medium'"></ion-icon>
+              <ion-icon [name]="comp.is_prorated ? 'checkmark-circle' : 'close-circle-outline'"
+                [color]="comp.is_prorated ? 'primary' : 'medium'"></ion-icon>
             </span>
             <span class="actions">
               <button class="action-btn delete">

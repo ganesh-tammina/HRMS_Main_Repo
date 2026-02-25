@@ -30,5 +30,7 @@ export class PayrollTemplatesComponent implements OnInit {
   viewComposition(templateId: number) {
     this.router.navigate(['/template-composition', templateId]);
   }
-
+  goBack() {
+    this.router.navigate(['/masterpayroll']);
+  }
 }

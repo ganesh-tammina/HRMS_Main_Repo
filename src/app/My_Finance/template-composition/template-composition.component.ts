@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PayrollService } from '../payroll-service.service';
 import { IonicModule } from '@ionic/angular';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-template-composition',
@@ -25,7 +26,7 @@ export class TemplateCompositionComponent implements OnInit {
   ) { }
 
   trackById(index: number, item: any) {
-    return item.id || item.component_id || index;
+    return item.composition_id || item.component_id || index;
   }
 
   ngOnInit() {
@@ -52,12 +53,57 @@ export class TemplateCompositionComponent implements OnInit {
   fetchComposition() {
     if (!this.templateId) return;
     this.loading = true;
+
     this.payrollService.getTemplateComposition(this.templateId).subscribe({
       next: (res: any) => {
-        this.compositionData = Array.isArray(res) ? res : (res.data || []);
-        this.calculateTotals();
-        this.loading = false;
-        console.log('Composition Data:', this.compositionData);
+        const rawComposition = Array.isArray(res) ? res : (res.data || []);
+        console.log('Raw Composition Data:', rawComposition);
+
+        if (rawComposition.length === 0) {
+          this.compositionData = [];
+          this.loading = false;
+          return;
+        }
+
+        // Fetch component details for each composition item
+        const componentRequests = rawComposition.map((item: any) =>
+          this.payrollService.getComponentById(item.component_id)
+        );
+
+        (forkJoin(componentRequests) as any).subscribe({
+          next: (componentResults: any[]) => {
+            // Merge composition data with component details
+            this.compositionData = rawComposition.map((item: any, index: number) => {
+              const component = componentResults[index];
+              // Handle both array and object responses
+              const compData = Array.isArray(component) ? component[0] : (component?.data || component);
+              return {
+                ...item,
+                // Component details
+                component_name: compData?.name || compData?.component_name || `Component #${item.component_id}`,
+                component_code: compData?.code || compData?.component_code || '-',
+                component_type: compData?.type || compData?.component_type || '-',
+                calculation_type: compData?.calculation_type || '-',
+                percentage_of_code: compData?.percentage_of_code || compData?.base_code || null,
+                value: item.formula_or_value || compData?.value || 0,
+                is_taxable: compData?.taxable ?? compData?.is_taxable ?? false,
+                is_prorated: compData?.prorated ?? compData?.is_prorated ?? false,
+                sequence: compData?.sequence || 0,
+                notes: compData?.notes || ''
+              };
+            });
+
+            this.calculateTotals();
+            this.loading = false;
+            console.log('Enriched Composition Data:', this.compositionData);
+          },
+          error: (err: any) => {
+            console.error('Error fetching component details:', err);
+            // Fallback: show raw data without enrichment
+            this.compositionData = rawComposition;
+            this.loading = false;
+          }
+        });
       },
       error: (err) => {
         console.error('Error fetching composition:', err);
@@ -68,11 +114,17 @@ export class TemplateCompositionComponent implements OnInit {
 
   calculateTotals() {
     this.totalEarnings = this.compositionData
-      .filter(c => (c.component_type || c.type)?.toLowerCase() === 'earning')
-      .reduce((sum, c) => sum + Number(c.value || 0), 0);
+      .filter(c => (c.component_type)?.toLowerCase() === 'earning')
+      .reduce((sum, c) => {
+        const val = parseFloat(c.value);
+        return sum + (isNaN(val) ? 0 : val);
+      }, 0);
 
     this.totalDeductions = this.compositionData
-      .filter(c => (c.component_type || c.type)?.toLowerCase() === 'deduction')
-      .reduce((sum, c) => sum + Number(c.value || 0), 0);
+      .filter(c => (c.component_type)?.toLowerCase() === 'deduction')
+      .reduce((sum, c) => {
+        const val = parseFloat(c.value);
+        return sum + (isNaN(val) ? 0 : val);
+      }, 0);
   }
 }

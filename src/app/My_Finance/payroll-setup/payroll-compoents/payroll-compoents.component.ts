@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { PayrollTemplatesService } from '../payroll-templates/payroll-templates.service';
 import { PayrollService } from '../../payroll-service.service';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-payroll-compoents',
@@ -20,6 +21,7 @@ export class PayrollCompoentsComponent implements OnInit {
   constructor(
     private payrollTemplatesService: PayrollTemplatesService,
     private fb: FormBuilder,
+    private router: Router,
     private payrollService: PayrollService
   ) { }
 
@@ -71,5 +73,8 @@ export class PayrollCompoentsComponent implements OnInit {
 
   getTotal() {
     return this.components.reduce((sum, c) => sum + Number(c.value), 0);
+  }
+  goBack() {
+    this.router.navigate(['/masterpayroll']);
   }
 }

@@ -149,3 +149,24 @@
     cursor: pointer;
   }
 }
+
+.back-nav {
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #3880ff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}

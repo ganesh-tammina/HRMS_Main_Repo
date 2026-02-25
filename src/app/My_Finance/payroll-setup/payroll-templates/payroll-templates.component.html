@@ -1,6 +1,13 @@
 <ion-content [fullscreen]="true">
     <div class="payroll-container">
+        <div class="back-nav">
+            <a (click)="goBack()" class="back-link">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+                Back to Payroll Setup
+            </a>
+        </div>
         <div class="header">
+
             <div>
                 <h2>Payroll Templates</h2>
                 <p>Manage and configure salary structure templates</p>

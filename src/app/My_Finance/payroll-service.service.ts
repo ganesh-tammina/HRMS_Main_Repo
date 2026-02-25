@@ -74,4 +74,18 @@ export class PayrollService {
       { headers: this.getHeaders() }
     );
   }
+  getPayrollStructureById(structureId: number): Observable<any> {
+    return this.http.get(
+      `${this.payrollUrl}structures/${structureId}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // 📄 Get Single Component by ID
+  getComponentById(componentId: number): Observable<any> {
+    return this.http.get(
+      `${this.payrollUrl}components/${componentId}`,
+      { headers: this.getHeaders() }
+    );
+  }
 }

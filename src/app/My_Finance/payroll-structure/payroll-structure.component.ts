@@ -55,7 +55,7 @@ export class PayrollStructureComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/finance-admin']);
+    this.router.navigate(['/masterpayroll']);
   }
 
   trackById(index: number, item: any) {
