@@ -22,9 +22,9 @@
                         <span>Actions</span>
                     </div>
 
-                    <div class="table-row" *ngFor="let temp of templates">
+                    <div class="table-row" (click)="viewComposition(temp.template_id)" *ngFor="let temp of templates">
                         <span>{{ temp.template_id }}</span>
-                        <span class="name">{{ temp.template_name }}</span>
+                        <span class="name" style="cursor: pointer; color: #3880ff;">{{ temp.template_name }}</span>
                         <span class="description">{{ temp.description || '-' }}</span>
                         <span>User #{{ temp.created_by }}</span>
                         <span>{{ temp.created_at | date:'mediumDate' }}</span>

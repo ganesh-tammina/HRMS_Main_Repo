@@ -142,19 +142,25 @@ export class HomePage implements OnInit, OnDestroy {
      🔥 THIS FIXES YOUR ISSUE
   ===================================================== */
   ionViewWillEnter() {
-    this.loadEmployeeProfile();
-    this.loadBirthdays();
+    const role = localStorage.getItem('role')?.toLowerCase();
+    if (role !== 'admin' && role !== 'hr') {
+      this.loadEmployeeProfile();
+      this.loadBirthdays();
+    }
   }
 
   loadBirthdays() {
     this.employeeService.getBirthdays()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (data) => {
-          this.birthdays = data;
-          console.log('🎂 Birthdays:', data);
-          // Optionally load existing wishes if API supports
-          // this.loadBirthdayWishes();
+        next: (data: any[]) => {
+          this.birthdays = data.map(b => ({
+            ...b,
+            fullImageUrl: b.profile_image
+              ? `${this.env}${b.profile_image}`
+              : 'assets/icon/Default-user.svg'
+          }));
+          console.log('🎂 Birthdays:', this.birthdays);
         },
         error: (err) => {
           this.birthdays = [];
@@ -165,10 +171,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   /* ================= PROFILE IMAGE ================= */
   getProfileImage(birthday: any): string {
-    if (birthday?.profile_image) {
-      return `${this.env}${birthday.profile_image}?t=${Date.now()}`;
-    }
-    return 'assets/icon/Default-user.svg';
+    return birthday?.fullImageUrl || 'assets/icon/Default-user.svg';
   }
 
   showWishInput(employeeId: number) {
@@ -369,6 +372,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   isCEO(): boolean {
     return this.currentEmployee?.designation_name?.toLowerCase() === 'ceo';
+  }
+
+  trackById(index: number, item: any) {
+    return item.id || item.employee_id || index;
   }
 
   ngOnDestroy() {

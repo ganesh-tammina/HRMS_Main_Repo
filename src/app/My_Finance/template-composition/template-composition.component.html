@@ -1,0 +1,126 @@
+<ion-content [fullscreen]="true">
+  <div class="payroll-container">
+    <div class="header">
+      <div class="header-info">
+        <div class="back-nav">
+          <a routerLink="/payroll-templates" class="back-link">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            Back to Templates
+          </a>
+        </div>
+        <div style="margin-top: 15px;">
+          <h2>{{ templateInfo?.template_name || 'Template Composition' }}</h2>
+          <p class="subtitle">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            {{ templateInfo?.description || 'Viewing components for template ID ' + templateId }}
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="primary-btn">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Add Component
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards" *ngIf="!loading && compositionData.length > 0">
+      <div class="card earnings">
+        <div class="card-icon"><ion-icon name="wallet-outline"></ion-icon></div>
+        <div class="card-content">
+          <span class="label">Total Earnings</span>
+          <span class="value">{{ totalEarnings | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      <div class="card deductions">
+        <div class="card-icon"><ion-icon name="trending-down-outline"></ion-icon></div>
+        <div class="card-content">
+          <span class="label">Total Deductions</span>
+          <span class="value">{{ totalDeductions | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      <div class="card net">
+        <div class="card-icon"><ion-icon name="calculator-outline"></ion-icon></div>
+        <div class="card-content">
+          <span class="label">Net Composition</span>
+          <span class="value">{{ (totalEarnings - totalDeductions) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="components-card main-card">
+      <div class="section-title">
+        <div class="title-with-count">
+          <span>Component Breakdown</span>
+          <span class="count-badge" *ngIf="compositionData.length">{{ compositionData.length }}</span>
+        </div>
+        <div class="loading-spinner" *ngIf="loading">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      </div>
+
+      <div class="component-table-wrapper" *ngIf="!loading && compositionData.length > 0">
+        <div class="component-table">
+          <div class="table-head">
+            <span>ID</span>
+            <span>Name & Code</span>
+            <span>Type</span>
+            <span>Calculation</span>
+            <span>Value</span>
+            <span>Taxable</span>
+            <span>Prorated</span>
+            <span>Actions</span>
+          </div>
+
+          <div class="table-row" *ngFor="let comp of compositionData; trackBy: trackById">
+            <span class="comp-id">#{{ comp.id || comp.component_id }}</span>
+            <span class="name-block">
+              <span class="comp-name">{{ comp.name || comp.component_name }}</span>
+              <span class="comp-code">{{ comp.code || comp.component_code }}</span>
+            </span>
+            <span>
+              <span class="badge" [ngClass]="(comp.component_type || comp.type)?.toLowerCase()">
+                {{ comp.component_type || comp.type }}
+              </span>
+            </span>
+            <span>
+              <span class="calc-type">{{ comp.calculation_type }}</span>
+              <span class="base-code" *ngIf="comp.percentage_of_code || comp.base_code">
+                of {{ comp.percentage_of_code || comp.base_code }}
+              </span>
+            </span>
+            <span class="value-cell">
+              <span class="amt">{{ comp.value }}</span>
+              <span class="unit">{{ comp.calculation_type === 'PERCENTAGE' ? '%' : '' }}</span>
+            </span>
+            <span class="icon-cell">
+              <ion-icon [name]="(comp.taxable || comp.is_taxable) ? 'shield-checkmark' : 'shield-outline'"
+                [color]="(comp.taxable || comp.is_taxable) ? 'success' : 'medium'"></ion-icon>
+            </span>
+            <span class="icon-cell">
+              <ion-icon [name]="(comp.prorated || comp.is_prorated) ? 'calendar-check' : 'calendar-outline'"
+                [color]="(comp.prorated || comp.is_prorated) ? 'primary' : 'medium'"></ion-icon>
+            </span>
+            <span class="actions">
+              <button class="action-btn delete">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && compositionData.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <ion-icon name="layers-outline"></ion-icon>
+        </div>
+        <h3>No Components Linked</h3>
+        <p>This template currently has no components configured in its composition.</p>
+        <button class="primary-btn outline" style="margin-top: 15px;">
+          Attach Components
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

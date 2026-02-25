@@ -47,5 +47,8 @@ export class PayrollSetupComponent implements OnInit {
       }
     });
   }
+  payrollStructure() {
+    this.router.navigate(['/payroll-structure']);
+  }
 
 }

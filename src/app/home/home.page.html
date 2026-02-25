@@ -185,7 +185,7 @@
               </ion-col>
             </ion-row> -->
             <ion-row lines="none">
-              <ion-col size="3" class="ion-text-center" *ngFor="let leave of leaveCards">
+              <ion-col size="3" class="ion-text-center" *ngFor="let leave of leaveCards; trackBy: trackById">
                 <ion-img [src]="leave.icon" class="leave-img"></ion-img>
                 <p class="text">{{ leave.title }}</p>
                 <p class="number">{{ leave.used }}/ {{ leave.available}} <small>days left</small></p>
@@ -319,7 +319,7 @@
             </div>
           </div>
           <div class="card-content">
-            <div class="birthday-card" *ngFor="let birthday of birthdays">
+            <div class="birthday-card" *ngFor="let birthday of birthdays; trackBy: trackById">
               <div class="row-left" (click)="$event.stopPropagation()">
                 <div class="img-block">
                   <img [src]="getProfileImage(birthday)" width="38" [alt]="birthday.FirstName">
@@ -328,11 +328,12 @@
                   <p>{{ birthday.FirstName }}</p>
                   <p>Birthday • {{ birthday.DateOfBirth | date:'MMM dd' }}</p>
                 </div>
-                 
+
               </div>
               <div>
-                <ion-button class="primary-button pull-right" (click)="showWishInput(birthday.employee_id)">Send Wishes</ion-button>
-                </div>
+                <ion-button class="primary-button pull-right" (click)="showWishInput(birthday.employee_id)">Send
+                  Wishes</ion-button>
+              </div>
               <!-- <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
                 <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
                 <ion-button (click)="sendWish(birthday.employee_id)">Send</ion-button>
@@ -343,8 +344,8 @@
                 </div>
               </div> -->
             </div>
-            <div class="sendwish" *ngFor="let birthday of birthdays">
-            <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
+            <div class="sendwish" *ngFor="let birthday of birthdays; trackBy: trackById">
+              <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
                 <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
                 <ion-button class="primary-button pull-right" (click)="sendWish(birthday.employee_id)">Send</ion-button>
               </div>
@@ -353,7 +354,7 @@
                   <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
                 </div>
               </div>
-              </div>
+            </div>
           </div>
         </ion-card>
       </ion-col>

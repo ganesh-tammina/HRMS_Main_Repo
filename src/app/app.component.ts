@@ -86,11 +86,17 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
           this.showIntro = false;
         }
-        // Fetch user department and designation from profile - Only if not already loaded
-        if (!this.userDesignation) {
-          this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe(emp => {
-            this.userDesignation = (emp?.designation_name || emp?.designation || '').toLowerCase();
-            this.userDepartment = (emp?.department_name || emp?.department || '').toLowerCase();
+        // Fetch user department and designation from profile - Skip for Admin/HR as per request
+        if (!this.isAdmin && !this.userDesignation && this.userRole) {
+          this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (emp) => {
+              this.userDesignation = (emp?.designation_name || emp?.designation || 'N/A').toLowerCase();
+              this.userDepartment = (emp?.department_name || emp?.department || 'N/A').toLowerCase();
+            },
+            error: (err) => {
+              console.error('Failed to load profile in AppComponent', err);
+              this.userDesignation = 'N/A'; // Prevent retry
+            }
           });
         }
       }
@@ -99,17 +105,14 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
-    this.isAdmin = false;
-    const role = this.routeGaurdService.userRole?.trim().toLowerCase() || '';
-    if (role === 'admin' || role === 'hr') {
-      this.isAdmin = true;
-    }
-    this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log(r));
+    this.updateRoleInfo();
+    this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));
   }
 
-  ionViewWillEnter(): void {
-    this.ngOnInit();
+  private updateRoleInfo(): void {
+    this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+    const role = this.userRole?.trim() || '';
+    this.isAdmin = (role === 'admin' || role === 'hr');
   }
 
   dismissIntro() {

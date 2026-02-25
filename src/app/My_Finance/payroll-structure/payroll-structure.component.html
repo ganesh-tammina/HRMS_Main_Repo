@@ -1,0 +1,120 @@
+<ion-content [fullscreen]="true">
+  <div class="payroll-container">
+    <div class="header">
+      <div class="header-info">
+        <div class="back-nav">
+          <a (click)="goBack()" class="back-link">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            Back to Payroll Setup
+          </a>
+        </div>
+        <div style="margin-top: 12px;">
+          <h2>Payroll Structures</h2>
+          <p class="subtitle">
+            <ion-icon name="briefcase-outline"></ion-icon>
+            Employee salary structures with CTC breakdown
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="primary-btn">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Create New Structure
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards" *ngIf="!loading && structures.length > 0">
+      <div class="card total">
+        <div class="card-icon"><ion-icon name="layers-outline"></ion-icon></div>
+        <div class="card-content">
+          <span class="label">Total Structures</span>
+          <span class="value">{{ structures.length }}</span>
+        </div>
+      </div>
+      <div class="card active">
+        <div class="card-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+        <div class="card-content">
+          <span class="label">Active</span>
+          <span class="value">{{ activeCount }}</span>
+        </div>
+      </div>
+      <div class="card inactive">
+        <div class="card-icon"><ion-icon name="close-circle-outline"></ion-icon></div>
+        <div class="card-content">
+          <span class="label">Inactive</span>
+          <span class="value">{{ inactiveCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="components-card main-card">
+      <div class="section-title">
+        <div class="title-with-count">
+          <span>Configured Structures</span>
+          <span class="count-badge" *ngIf="structures.length">{{ structures.length }}</span>
+        </div>
+        <div class="loading-spinner" *ngIf="loading">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      </div>
+
+      <div class="component-table-wrapper" *ngIf="!loading && structures.length > 0">
+        <div class="component-table">
+          <div class="table-head">
+            <span>ID</span>
+            <span>Structure Name</span>
+            <span>Employee</span>
+            <span>CTC Amount</span>
+            <span>Version</span>
+            <span>Effective From</span>
+            <span>Status</span>
+            <span>Actions</span>
+          </div>
+
+          <div class="table-row" *ngFor="let struct of structures; trackBy: trackById" (click)="viewDetails(struct.id)">
+            <span class="struct-id">#{{ struct.id }}</span>
+            <span class="name-block">
+              <span class="struct-name">{{ struct.structure_name }}</span>
+              <span class="struct-notes" *ngIf="struct.notes">{{ struct.notes }}</span>
+            </span>
+            <span class="employee-info">
+              <span class="emp-name">{{ struct.FullName || '-' }}</span>
+              <span class="emp-number">{{ struct.EmployeeNumber || '' }}</span>
+            </span>
+            <span class="ctc-amount">{{ formatCurrency(struct.ctc_amount) }}</span>
+            <span class="version-badge">v{{ struct.version }}</span>
+            <span>{{ struct.effective_from | date:'mediumDate' }}</span>
+            <span>
+              <span class="status-badge" [ngClass]="struct.is_active ? 'active' : 'inactive'">
+                {{ getStatusLabel(struct.is_active) }}
+              </span>
+            </span>
+            <span class="actions">
+              <button class="icon-btn edit">
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+              <button class="icon-btn delete">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && structures.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+        <h3>No Structures Found</h3>
+        <p>No payroll structures have been configured yet.</p>
+        <button class="primary-btn outline" style="margin-top: 15px;">
+          Create First Structure
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

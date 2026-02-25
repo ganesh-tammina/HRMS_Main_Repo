@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, shareReplay } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -97,18 +97,50 @@ export class EmployeeService {
 
   /* ================= EXISTING CODE (UNCHANGED) ================= */
 
+  private profile$?: Observable<any>;
+  private profileInitialized = false;
+
   getMyProfile(force = false): Observable<any> {
-    if (this.currentEmployee && !force) {
-      return of(this.currentEmployee);
+    const role = localStorage.getItem('role')?.toLowerCase();
+    const isSpecialRole = role === 'admin' || role === 'hr';
+
+    // If admin/hr and not forced, return a dummy object to avoid API hits
+    if (isSpecialRole && !force) {
+      return of({
+        id: Number(localStorage.getItem('employee_id')),
+        FirstName: role?.toUpperCase(),
+        FullName: `${role?.toUpperCase()} User`,
+        role: role
+      });
     }
 
-    const token = localStorage.getItem('token');
-    return this.http
-      .get<any>(this.profileEndpoint, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .pipe(tap((emp) => (this.currentEmployee = emp)));
+    // If not forced and already initialized, return cached observable
+    if (!force && this.profileInitialized && this.profile$) {
+      return this.profile$;
+    }
+
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    if (!token) {
+      return of(null);
+    }
+
+    // Refresh the profile observable
+    this.profile$ = this.http.get<any>(this.profileEndpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).pipe(
+      tap((emp) => {
+        this.currentEmployee = emp;
+        this.profileInitialized = true;
+      }),
+      shareReplay(1) // Cache the result for subsequent subscribers
+    );
+
+    return this.profile$;
   }
+
+  // Add shareReplay to imports if needed, but it should be available via rxjs
+  // Actually I need to make sure shareReplay is imported if not already.
+
 
   /* ================= UPLOAD PROFILE IMAGE ================= */
   uploadProfileImage(file: File): Observable<any> {
@@ -161,6 +193,8 @@ export class EmployeeService {
 
   clearEmployee(): void {
     this.currentEmployee = null;
+    this.profileInitialized = false;
+    this.profile$ = undefined;
     this.currentEmployeeSubject.next(null);
     this.profileImageUpdateSubject.next(null);
     this.employeeIdSubject.next(null);

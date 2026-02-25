@@ -44,10 +44,34 @@ export class PayrollService {
     );
   }
 
-  getPayrollTempletes() {
+  getPayrollTempletes(): Observable<any> {
     return this.http.get(
       `${this.payrollUrl}templates`,
       { headers: this.getHeaders() }
     )
+  }
+
+  // 📄 Get Single Template Details
+  // Endpoint: /api/payroll-master/templates/{templateId}
+  getTemplateById(templateId: number): Observable<any> {
+    return this.http.get(
+      `${this.payrollUrl}templates/${templateId}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // 📄 Get Template Composition (All components belonging to a specific template)
+  // Endpoint: /api/payroll-master/components/{templateId}
+  getTemplateComposition(templateId: number): Observable<any> {
+    return this.http.get(
+      `${this.payrollUrl}templates/${templateId}/composition`,
+      { headers: this.getHeaders() }
+    );
+  }
+  getPayrollstructures(): Observable<any> {
+    return this.http.get(
+      `${this.payrollUrl}structures`,
+      { headers: this.getHeaders() }
+    );
   }
 }

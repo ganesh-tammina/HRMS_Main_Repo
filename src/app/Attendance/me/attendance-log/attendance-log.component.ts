@@ -74,7 +74,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     private router: Router
   ) {
     this.initializeMonthButtons();
-    this.reloadAttendance();
+    // 🔴 REMOVED: reloadAttendance() from constructor. 
+    // It will be triggered by NavigationEnd or ionViewWillEnter.
   }
 
   private initializeMonthButtons(): void {
@@ -109,15 +110,19 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
    * Reload data every time route becomes active
    * ================================================= */
   ngOnInit(): void {
-    this.routeSub = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.reloadAttendance();
-      });
+    // Only subscribe ONCE
+    if (!this.routeSub) {
+      this.routeSub = this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe(() => {
+          this.reloadAttendance();
+        });
+    }
   }
 
   ionViewWillEnter(): void {
-    this.ngOnInit();
+    // 🟢 Call reload once when entering, don't re-subscribe
+    this.reloadAttendance();
   }
 
   ngOnDestroy(): void {

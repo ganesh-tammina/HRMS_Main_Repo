@@ -65,7 +65,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
     private attendanceApi: AttendanceApiService,
     private modalCtrl: ModalController
   ) {
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateRole();
       }
@@ -163,7 +163,7 @@ export class MyTeamPage implements OnInit, OnDestroy {
         // Handle different response formats
         if (res?.team) {
           this.teamMembers = res.team;
-        console.log('✅ My Team API Response:', this.teamMembers);
+          console.log('✅ My Team API Response:', this.teamMembers);
 
         } else if (Array.isArray(res)) {
           this.teamMembers = res;
