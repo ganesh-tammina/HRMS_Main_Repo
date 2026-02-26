@@ -104,6 +104,14 @@ export class PayrollService {
     );
   }
 
+  createPayrollStructure(payload: any): Observable<any> {
+    return this.http.post(
+      `${this.payrollUrl}structures`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
   // 📄 Get Single Component by ID
   getComponentById(componentId: number): Observable<any> {
     return this.http.get(

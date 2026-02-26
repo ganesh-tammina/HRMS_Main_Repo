@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="primary-btn">
+        <button class="primary-btn" (click)="openCreateModal()">
           <ion-icon name="add-circle-outline"></ion-icon>
           Create New Structure
         </button>
@@ -111,10 +111,97 @@
         </div>
         <h3>No Structures Found</h3>
         <p>No payroll structures have been configured yet.</p>
-        <button class="primary-btn outline" style="margin-top: 15px;">
+        <button class="primary-btn outline" style="margin-top: 15px;" (click)="openCreateModal()">
           Create First Structure
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Right Side Modal for Create Structure -->
+  <div class="side-modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false"></div>
+  <div class="side-modal" [class.open]="isModalOpen">
+    <div class="modal-header">
+      <h3>Create New Structure</h3>
+      <ion-icon name="close" class="close-icon" (click)="isModalOpen = false"></ion-icon>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="structureForm" (ngSubmit)="saveStructure()" class="form-vertical">
+
+        <div class="form-group">
+          <label>Employee</label>
+          <select formControlName="employee_id">
+            <option [ngValue]="null">Select Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.id">
+              {{ emp.FullName }} ({{ emp.EmployeeNumber }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Structure Name</label>
+          <input type="text" formControlName="structure_name" placeholder="e.g. 2026 Annual Package" />
+        </div>
+
+        <div class="form-group">
+          <label>CTC Amount</label>
+          <input type="number" formControlName="ctc_amount" placeholder="e.g. 800000" />
+        </div>
+
+        <div class="row-group">
+          <div class="form-group">
+            <label>Effective From</label>
+            <input type="date" formControlName="effective_from" />
+          </div>
+          <div class="form-group">
+            <label>Effective To</label>
+            <input type="date" formControlName="effective_to" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="check">
+            <input type="checkbox" formControlName="is_active" /> Is Active
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea formControlName="notes" rows="2" placeholder="Structure notes..."></textarea>
+        </div>
+
+        <!-- Component Selection -->
+        <div class="section-divider">
+          <span>Linked Components</span>
+        </div>
+
+        <div class="selected-components-list">
+          <div class="selected-item" *ngFor="let comp of selectedComponents; let i = index">
+            <div class="comp-info">
+              <span class="name">{{ comp.name }}</span>
+              <span class="type">{{ comp.component_type }} | {{ comp.calculation_type }}</span>
+            </div>
+            <ion-icon name="trash-outline" class="remove-btn"
+              (click)="$event.stopPropagation(); removeComponent(i)"></ion-icon>
+          </div>
+          <p *ngIf="selectedComponents.length === 0" style="font-size: 13px; color: #94a3b8; text-align: center;">
+            No components added yet.
+          </p>
+        </div>
+
+        <div class="section-divider">
+          <span>Add Components</span>
+        </div>
+        <div class="component-selector">
+          <div class="comp-item" *ngFor="let comp of availableComponents" (click)="addComponent(comp)">
+            <strong>{{ comp.name }}</strong> ({{ comp.code }}) - {{ comp.component_type }}
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="structureForm.invalid || selectedComponents.length === 0">
+          Save Structure
+        </button>
+      </form>
     </div>
   </div>
 </ion-content>
