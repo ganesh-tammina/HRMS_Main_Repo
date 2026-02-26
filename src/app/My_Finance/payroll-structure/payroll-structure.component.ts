@@ -135,30 +135,51 @@ export class PayrollStructureComponent implements OnInit {
   }
 
   editStructure(struct: any) {
+    if (!struct) return;
     this.isModalOpen = true;
     this.isEditMode = true;
-    this.selectedStructureId = struct.id;
-    this.selectedComponents = [];
+    this.selectedStructureId = struct.id || struct.structure_id;
 
-    this.payrollService.getPayrollStructureById(struct.id).subscribe({
+    // 1. Populate immediately with available data from the list
+    const emp = this.employees.find(e => e.id === struct.employee_id);
+    this.employeeSearchTerm = emp ? emp.FullName : '';
+    this.structureForm.patchValue({
+      employee_id: struct.employee_id,
+      structure_name: struct.structure_name,
+      ctc_amount: struct.ctc_amount,
+      effective_from: struct.effective_from ? (typeof struct.effective_from === 'string' && struct.effective_from.includes('T') ? struct.effective_from.split('T')[0] : struct.effective_from) : '',
+      effective_to: struct.effective_to ? (typeof struct.effective_to === 'string' && struct.effective_to.includes('T') ? struct.effective_to.split('T')[0] : struct.effective_to) : null,
+      is_active: !!struct.is_active,
+      notes: struct.notes,
+    });
+    this.selectedComponents = struct.components || [];
+
+    // 2. Fetch full details (which returns { structure, components })
+    this.payrollService.getPayrollStructureById(this.selectedStructureId!).subscribe({
       next: (res: any) => {
-        const fullStruct = res.data || res;
-        const emp = this.employees.find(e => e.id === fullStruct.employee_id);
-        this.employeeSearchTerm = emp ? emp.FullName : '';
+        const fullData = res.data || res;
+        // The API returns { structure: {...}, components: [...] }
+        const mainInfo = fullData.structure || fullData;
+        const comps = fullData.components || [];
 
-        this.structureForm.patchValue({
-          employee_id: fullStruct.employee_id,
-          structure_name: fullStruct.structure_name,
-          ctc_amount: fullStruct.ctc_amount,
-          effective_from: fullStruct.effective_from ? fullStruct.effective_from.split('T')[0] : '',
-          effective_to: fullStruct.effective_to ? fullStruct.effective_to.split('T')[0] : null,
-          is_active: !!fullStruct.is_active,
-          notes: fullStruct.notes,
-        });
-        this.selectedComponents = fullStruct.components || [];
+        if (mainInfo) {
+          const empFull = this.employees.find(e => e.id === mainInfo.employee_id);
+          this.employeeSearchTerm = empFull ? empFull.FullName : this.employeeSearchTerm;
+
+          this.structureForm.patchValue({
+            employee_id: mainInfo.employee_id,
+            structure_name: mainInfo.structure_name,
+            ctc_amount: mainInfo.ctc_amount,
+            effective_from: mainInfo.effective_from ? (typeof mainInfo.effective_from === 'string' && mainInfo.effective_from.includes('T') ? mainInfo.effective_from.split('T')[0] : mainInfo.effective_from) : '',
+            effective_to: mainInfo.effective_to ? (typeof mainInfo.effective_to === 'string' && mainInfo.effective_to.includes('T') ? mainInfo.effective_to.split('T')[0] : mainInfo.effective_to) : null,
+            is_active: !!mainInfo.is_active,
+            notes: mainInfo.notes,
+          });
+          this.selectedComponents = comps;
+        }
       },
       error: (err) => {
-        console.error('Error fetching structure details:', err);
+        console.error('Error fetching full structure details:', err);
       }
     });
   }
