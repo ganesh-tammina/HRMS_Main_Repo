@@ -24,8 +24,10 @@ export class PayrollStructureComponent implements OnInit {
   isModalOpen = false;
   structureForm!: FormGroup;
   employees: any[] = [];
+  filteredEmployees: any[] = [];
   availableComponents: any[] = [];
   selectedComponents: any[] = [];
+  employeeSearchTerm: string = '';
 
   constructor(
     private payrollService: PayrollService,
@@ -73,7 +75,27 @@ export class PayrollStructureComponent implements OnInit {
   fetchEmployees() {
     this.employeeService.getAllEmployees().subscribe(res => {
       this.employees = res;
+      this.filteredEmployees = res;
     });
+  }
+
+  filterEmployees(event: any) {
+    const term = event.target.value.toLowerCase();
+    this.employeeSearchTerm = term;
+    if (!term) {
+      this.filteredEmployees = this.employees;
+      return;
+    }
+    this.filteredEmployees = this.employees.filter(emp =>
+      emp.FullName.toLowerCase().includes(term) ||
+      emp.EmployeeNumber?.toLowerCase().includes(term)
+    );
+  }
+
+  selectEmployee(emp: any) {
+    this.structureForm.patchValue({ employee_id: emp.id });
+    this.employeeSearchTerm = emp.FullName;
+    this.filteredEmployees = []; // Hide list after selection
   }
 
   fetchComponents() {
@@ -95,6 +117,8 @@ export class PayrollStructureComponent implements OnInit {
   openCreateModal() {
     this.isModalOpen = true;
     this.selectedComponents = [];
+    this.employeeSearchTerm = '';
+    this.filteredEmployees = this.employees;
     this.structureForm.reset({
       employee_id: null,
       structure_name: '',

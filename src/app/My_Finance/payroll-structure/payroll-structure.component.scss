@@ -452,6 +452,88 @@
             flex-direction: column;
             gap: 15px;
 
+            .dropdown-container {
+                position: relative;
+
+                .search-box {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+
+                    ion-icon {
+                        position: absolute;
+                        left: 12px;
+                        color: #94a3b8;
+                        font-size: 18px;
+                    }
+
+                    input {
+                        padding-left: 40px !important;
+                    }
+                }
+
+                .search-results {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    background: #fff;
+                    border: 1px solid #e2e8f0;
+                    border-top: none;
+                    max-height: 250px;
+                    overflow-y: auto;
+                    z-index: 10;
+                    border-radius: 0 0 10px 10px;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+                    .result-item {
+                        padding: 10px 15px;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        cursor: pointer;
+                        border-bottom: 1px solid #f1f5f9;
+
+                        &:last-child {
+                            border-bottom: none;
+                        }
+
+                        &:hover {
+                            background: #f8fafc;
+                        }
+
+                        .emp-avatar {
+                            width: 32px;
+                            height: 32px;
+                            background: #3880ff;
+                            color: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 700;
+                            font-size: 13px;
+                        }
+
+                        .emp-details {
+                            display: flex;
+                            flex-direction: column;
+
+                            .name {
+                                font-size: 14px;
+                                font-weight: 600;
+                                color: #1e293b;
+                            }
+
+                            .id {
+                                font-size: 11px;
+                                color: #64748b;
+                            }
+                        }
+                    }
+                }
+            }
+
             .form-group {
                 display: flex;
                 flex-direction: column;
