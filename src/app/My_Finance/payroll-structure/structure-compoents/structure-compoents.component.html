@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="primary-btn" (click)="openCreateModal()">
+        <button class="primary-btn" (click)="openAddModal()">
           <ion-icon name="add-circle-outline"></ion-icon>
           Add Component
         </button>
@@ -25,26 +25,26 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="summary-cards" *ngIf="!loading && components.length > 0">
+    <div class="summary-cards" *ngIf="!loading && compositionData.length > 0">
       <div class="card earnings">
         <div class="card-icon"><ion-icon name="wallet-outline"></ion-icon></div>
         <div class="card-content">
           <span class="label">Total Earnings</span>
-          <span class="value">{{ totalEarnings | number:'1.2-2' }}</span>
+          <span class="value">{{ totalEarnings | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
       <div class="card deductions">
         <div class="card-icon"><ion-icon name="trending-down-outline"></ion-icon></div>
         <div class="card-content">
           <span class="label">Total Deductions</span>
-          <span class="value">{{ totalDeductions | number:'1.2-2' }}</span>
+          <span class="value">{{ totalDeductions | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
       <div class="card net">
         <div class="card-icon"><ion-icon name="calculator-outline"></ion-icon></div>
         <div class="card-content">
-          <span class="label">Net Composition</span>
-          <span class="value">{{ (totalEarnings - totalDeductions) | number:'1.2-2' }}</span>
+          <span class="label">Net Amount</span>
+          <span class="value">{{ (totalEarnings - totalDeductions) | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
       <div class="section-title">
         <div class="title-with-count">
           <span>Structure Breakdown</span>
-          <span class="count-badge" *ngIf="components.length">{{ components.length }}</span>
+          <span class="count-badge" *ngIf="compositionData.length">{{ compositionData.length }}</span>
         </div>
         <div class="loading-spinner" *ngIf="loading">
           <ion-spinner name="crescent"></ion-spinner>
@@ -82,7 +82,7 @@
       </div>
 
       <!-- If we have components -->
-      <div class="component-table-wrapper" *ngIf="!loading && components.length > 0">
+      <div class="component-table-wrapper" *ngIf="!loading && compositionData.length > 0">
         <div class="component-table">
           <div class="table-head">
             <span>#</span>
@@ -95,7 +95,7 @@
             <span style="text-align: right;">Actions</span>
           </div>
 
-          <div class="table-row" *ngFor="let comp of components; let i = index">
+          <div class="table-row" *ngFor="let comp of compositionData; let i = index">
             <span class="comp-id">{{ i + 1 }}</span>
             <span class="name-block">
               <span class="comp-name">{{ comp.name }}</span>
@@ -136,13 +136,13 @@
         </div>
       </div>
 
-      <div *ngIf="!loading && components.length === 0" class="empty-state">
+      <div *ngIf="!loading && compositionData.length === 0" class="empty-state">
         <div class="empty-icon">
           <ion-icon name="layers-outline"></ion-icon>
         </div>
         <h3>No Components Linked</h3>
         <p>This structure currently has no components configured.</p>
-        <button class="primary-btn outline" style="margin: 20px auto;" (click)="openCreateModal()">
+        <button class="primary-btn outline" style="margin: 20px auto;" (click)="openAddModal()">
           Add First Component
         </button>
       </div>
@@ -154,62 +154,27 @@
   <div class="side-modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false"></div>
   <div class="side-modal" [class.open]="isModalOpen">
     <div class="modal-header">
-      <h3>{{ isEditMode ? 'Edit Component' : 'Add New Component' }}</h3>
+      <h3>{{ isEditMode ? 'Edit Component Mapping' : 'Add Component to Structure' }}</h3>
       <ion-icon name="close" class="close-icon" (click)="isModalOpen = false"></ion-icon>
     </div>
     <div class="modal-body">
-      <form [formGroup]="componentForm" (ngSubmit)="saveComponent()" class="form-vertical">
-
+      <form [formGroup]="compositionForm" (ngSubmit)="saveComponent()" class="form-vertical">
         <div class="form-group">
           <label>Select Master Component</label>
-          <select formControlName="component_id" (change)="onComponentSelect($event)">
-            <option [value]="null">-- Pick a component --</option>
+          <select formControlName="component_id">
+            <option [ngValue]="null">Select Component</option>
             <option *ngFor="let comp of availableComponents" [value]="comp.id">
               {{ comp.name }} ({{ comp.code }})
             </option>
           </select>
-          <small style="color: #64748b; margin-top: 4px;">Picking a component will auto-fill the details below.</small>
-        </div>
-
-        <div class="row-group">
-          <div class="form-group">
-            <label>Component Code</label>
-            <input type="text" formControlName="code" placeholder="e.g. BASIC" />
-          </div>
-          <div class="form-group">
-            <label>Component Name</label>
-            <input type="text" formControlName="name" placeholder="e.g. Basic Salary" />
-          </div>
-        </div>
-
-        <div class="row-group">
-          <div class="form-group">
-            <label>Component Type</label>
-            <select formControlName="component_type">
-              <option value="EARNING">EARNING</option>
-              <option value="DEDUCTION">DEDUCTION</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Calculation Type</label>
-            <select formControlName="calculation_type">
-              <option value="FIXED">FIXED</option>
-              <option value="PERCENTAGE">PERCENTAGE</option>
-            </select>
-          </div>
         </div>
 
         <div class="form-group">
-          <label>Value / Percent</label>
-          <input type="number" formControlName="value" placeholder="e.g. 40" />
+          <label>Formula or Value</label>
+          <input type="text" formControlName="formula_or_value" placeholder="e.g. 40% or 5000" />
+          <small style="color: #64748b;">Specify a percentage (e.g., 40%) or a fixed amount.</small>
         </div>
 
-        <div class="form-group" *ngIf="componentForm.get('calculation_type')?.value === 'PERCENTAGE'">
-          <label>Percentage of Code (Base)</label>
-          <input type="text" formControlName="percentage_of_code" placeholder="e.g. BASIC" />
-        </div>
-
-        <!-- Searchable Employee Dropdown -->
         <div class="form-group dropdown-container">
           <label>Created By (Employee)</label>
           <div class="search-box">
@@ -231,31 +196,8 @@
           <input type="hidden" formControlName="created_by" />
         </div>
 
-        <div class="row-group">
-          <div class="form-group">
-            <label class="check">
-              <input type="checkbox" formControlName="taxable" /> Taxable
-            </label>
-          </div>
-          <div class="form-group">
-            <label class="check">
-              <input type="checkbox" formControlName="prorated" /> Prorated
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Sequence</label>
-          <input type="number" formControlName="sequence" />
-        </div>
-
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea formControlName="notes" rows="2" placeholder="Internal notes..."></textarea>
-        </div>
-
-        <button type="submit" class="submit-btn" [disabled]="componentForm.invalid">
-          {{ isEditMode ? 'Update Component' : 'Save Component' }}
+        <button type="submit" class="submit-btn" [disabled]="compositionForm.invalid">
+          {{ isEditMode ? 'Update Mapping' : 'Save Composition' }}
         </button>
       </form>
     </div>

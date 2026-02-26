@@ -5,6 +5,7 @@ import { PayrollService } from '../../payroll-service.service';
 import { IonicModule } from '@ionic/angular';
 
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
@@ -17,19 +18,19 @@ import { EmployeeService } from 'src/app/services/employee.service';
 export class StructureCompoentsComponent implements OnInit {
   structureId: number | null = null;
   structureInfo: any = null;
+  compositionData: any[] = [];
   loading: boolean = false;
+  totalEarnings: number = 0;
+  totalDeductions: number = 0;
 
   isModalOpen = false;
   isEditMode = false;
   selectedComponentId: number | null = null;
-  componentForm!: FormGroup;
-  components: any[] = [];
+  compositionForm!: FormGroup;
   availableComponents: any[] = [];
   employees: any[] = [];
   filteredEmployees: any[] = [];
   employeeSearchTerm: string = '';
-  totalEarnings: number = 0;
-  totalDeductions: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,6 +43,7 @@ export class StructureCompoentsComponent implements OnInit {
     this.initForm();
     this.fetchEmployees();
     this.fetchAvailableComponents();
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -52,24 +54,15 @@ export class StructureCompoentsComponent implements OnInit {
   }
 
   initForm() {
-    this.componentForm = this.fb.group({
-      component_id: [null], // For adding existing components
-      code: ['', Validators.required],
-      name: ['', Validators.required],
-      component_type: ['EARNING', Validators.required],
-      calculation_type: ['FIXED', Validators.required],
-      value: [0, [Validators.required, Validators.min(0)]],
-      percentage_of_code: [''],
-      taxable: [true],
-      prorated: [false],
-      sequence: [10],
-      notes: [''],
+    this.compositionForm = this.fb.group({
+      component_id: [null, Validators.required],
+      formula_or_value: ['', Validators.required],
       created_by: [Number(localStorage.getItem('employee_id')) || 1, Validators.required]
     });
   }
 
   fetchEmployees() {
-    this.employeeService.getAllEmployees().subscribe(res => {
+    this.employeeService.getAllEmployees().subscribe((res: any) => {
       this.employees = res;
       this.filteredEmployees = res;
     });
@@ -89,7 +82,7 @@ export class StructureCompoentsComponent implements OnInit {
   }
 
   selectEmployee(emp: any) {
-    this.componentForm.patchValue({ created_by: emp.id });
+    this.compositionForm.patchValue({ created_by: emp.id });
     this.employeeSearchTerm = emp.FullName;
     this.filteredEmployees = [];
   }
@@ -100,25 +93,6 @@ export class StructureCompoentsComponent implements OnInit {
     });
   }
 
-  onComponentSelect(event: any) {
-    const compId = Number(event.target.value);
-    const selected = this.availableComponents.find(c => c.id === compId);
-    if (selected) {
-      this.componentForm.patchValue({
-        code: selected.code,
-        name: selected.name,
-        component_type: selected.component_type,
-        calculation_type: selected.calculation_type,
-        value: selected.value,
-        percentage_of_code: selected.percentage_of_code,
-        taxable: !!selected.taxable,
-        prorated: !!selected.prorated,
-        sequence: selected.sequence,
-        notes: selected.notes
-      });
-    }
-  }
-
   fetchStructureDetails() {
     if (!this.structureId) return;
     this.loading = true;
@@ -126,7 +100,7 @@ export class StructureCompoentsComponent implements OnInit {
       next: (res: any) => {
         const fullData = res.data || res;
         this.structureInfo = fullData.structure || fullData;
-        this.components = fullData.components || fullData.salary_components || [];
+        this.compositionData = fullData.components || fullData.salary_components || [];
         this.calculateTotals();
         this.loading = false;
         console.log('📦 Structure Details:', this.structureInfo);
@@ -138,20 +112,25 @@ export class StructureCompoentsComponent implements OnInit {
     });
   }
 
-  openCreateModal() {
+  calculateTotals() {
+    this.totalEarnings = this.compositionData
+      .filter(c => (c.component_type)?.toLowerCase() === 'earning')
+      .reduce((sum, c) => sum + (Number(c.value) || 0), 0);
+
+    this.totalDeductions = this.compositionData
+      .filter(c => (c.component_type)?.toLowerCase() === 'deduction')
+      .reduce((sum, c) => sum + (Number(c.value) || 0), 0);
+  }
+
+  openAddModal() {
     this.isEditMode = false;
     this.selectedComponentId = null;
     this.isModalOpen = true;
     this.employeeSearchTerm = '';
     this.filteredEmployees = this.employees;
-    this.componentForm.reset({
+    this.compositionForm.reset({
       component_id: null,
-      component_type: 'EARNING',
-      calculation_type: 'FIXED',
-      value: 0,
-      taxable: true,
-      prorated: false,
-      sequence: 10,
+      formula_or_value: '',
       created_by: Number(localStorage.getItem('employee_id')) || 1
     });
   }
@@ -161,37 +140,57 @@ export class StructureCompoentsComponent implements OnInit {
     this.selectedComponentId = comp.id;
     this.isModalOpen = true;
 
-    // Set employee search term
-    const creator = this.employees.find(e => e.id === comp.created_by);
+    // Set search term for employee (we use structureInfo.created_by or default)
+    const creator = this.employees.find(e => e.id === (comp.created_by || this.structureInfo?.created_by));
     this.employeeSearchTerm = creator ? creator.FullName : '';
     this.filteredEmployees = [];
 
-    this.componentForm.patchValue({
-      component_id: comp.id,
-      code: comp.code,
-      name: comp.name,
-      component_type: comp.component_type,
-      calculation_type: comp.calculation_type,
-      value: comp.value,
-      percentage_of_code: comp.percentage_of_code,
-      taxable: !!comp.taxable,
-      prorated: !!comp.prorated,
-      sequence: comp.sequence,
-      notes: comp.notes,
-      created_by: comp.created_by
+    // Format value for display (e.g., 40 -> 40%)
+    const displayValue = comp.calculation_type === 'PERCENTAGE' ? `${comp.value}%` : `${comp.value}`;
+
+    this.compositionForm.patchValue({
+      component_id: comp.master_component_id || comp.id, // Fallback
+      formula_or_value: displayValue,
+      created_by: comp.created_by || this.structureInfo?.created_by || 1
     });
   }
 
   saveComponent() {
-    if (this.componentForm.invalid || !this.structureId) return;
+    if (this.compositionForm.invalid || !this.structureId) return;
+
+    const formValue = this.compositionForm.value;
+    const masterComp = this.availableComponents.find(c => c.id == formValue.component_id);
+
+    if (!masterComp) {
+      alert('Invalid component selected');
+      return;
+    }
+
+    // Parse formula or value
+    let value = formValue.formula_or_value.toString();
+    let calculationType = 'FIXED';
+    let numericValue = 0;
+
+    if (value.includes('%')) {
+      calculationType = 'PERCENTAGE';
+      numericValue = parseFloat(value.replace('%', '').trim());
+    } else {
+      numericValue = parseFloat(value.trim());
+    }
 
     const payload = {
-      ...this.componentForm.value,
       structure_id: this.structureId,
-      value: Number(this.componentForm.value.value),
-      sequence: Number(this.componentForm.value.sequence),
-      taxable: !!this.componentForm.value.taxable,
-      prorated: !!this.componentForm.value.prorated
+      code: masterComp.code,
+      name: masterComp.name,
+      component_type: masterComp.component_type,
+      calculation_type: calculationType,
+      value: numericValue,
+      percentage_of_code: masterComp.percentage_of_code || (calculationType === 'PERCENTAGE' ? 'BASIC' : null),
+      taxable: !!masterComp.taxable,
+      prorated: !!masterComp.prorated,
+      sequence: masterComp.sequence || 10,
+      notes: masterComp.notes || '',
+      created_by: Number(formValue.created_by)
     };
 
     if (this.isEditMode && this.selectedComponentId) {
@@ -213,14 +212,14 @@ export class StructureCompoentsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error creating component:', err);
-          alert('Failed to create component');
+          alert('Failed to add component to structure');
         }
       });
     }
   }
 
   deleteComponent(id: number) {
-    if (confirm('Are you sure you want to delete this component?')) {
+    if (confirm('Are you sure you want to remove this component from the structure?')) {
       this.payrollService.deletePayrollComponent(id).subscribe({
         next: () => {
           this.fetchStructureDetails();
@@ -231,22 +230,6 @@ export class StructureCompoentsComponent implements OnInit {
         }
       });
     }
-  }
-
-  calculateTotals() {
-    this.totalEarnings = this.components
-      .filter(c => (c.component_type)?.toLowerCase() === 'earning')
-      .reduce((sum, c) => {
-        const val = parseFloat(c.value);
-        return sum + (isNaN(val) ? 0 : val);
-      }, 0);
-
-    this.totalDeductions = this.components
-      .filter(c => (c.component_type)?.toLowerCase() === 'deduction')
-      .reduce((sum, c) => {
-        const val = parseFloat(c.value);
-        return sum + (isNaN(val) ? 0 : val);
-      }, 0);
   }
 
   goBack() {
