@@ -11,52 +11,10 @@
         <h2>Payroll Components</h2>
         <p>Configure salary structure percentages</p>
       </div>
-      <button class="primary-btn">Save Configuration</button>
+      <button class="primary-btn" (click)="isModalOpen = true">Create Component</button>
     </div>
 
     <div class="components-card">
-
-      <!-- Add Component Section -->
-      <div class="section-title">Add New Component</div>
-
-      <form [formGroup]="componentForm" (ngSubmit)="createComponent()" class="component-form">
-
-        <input type="text" placeholder="Component Name" formControlName="name" />
-
-        <select formControlName="type">
-          <option value="Earning">Earning</option>
-          <option value="Deduction">Deduction</option>
-          <option value="Reimbursement">Reimbursement</option>
-        </select>
-
-        <select formControlName="calculation_type">
-          <option value="Flat">Flat</option>
-          <option value="Percentage">Percentage</option>
-          <option value="Formula">Formula</option>
-        </select>
-
-        <input type="number" formControlName="value" placeholder="Value"
-          *ngIf="componentForm.value.calculation_type !== 'Formula'" />
-
-        <input type="text" formControlName="formula" placeholder="Formula"
-          *ngIf="componentForm.value.calculation_type === 'Formula'" />
-
-        <label class="check">
-          <input type="checkbox" formControlName="is_statutory" />
-          Statutory
-        </label>
-
-        <label class="check">
-          <input type="checkbox" formControlName="is_taxable" />
-          Taxable
-        </label>
-
-        <button type="submit" class="primary-btn">Add</button>
-      </form>
-
-      <!-- Component List -->
-      <div class="section-title">Configured Components</div>
-
       <div class="component-table-wrapper">
         <div class="component-table">
           <div class="table-head">
@@ -110,4 +68,73 @@
 
     </div>
   </div>
+
+  <!-- Right Side Modal -->
+  <div class="side-modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false"></div>
+  <div class="side-modal" [class.open]="isModalOpen">
+    <div class="modal-header">
+      <h3>Create Component</h3>
+      <ion-icon name="close" class="close-icon" (click)="isModalOpen = false"></ion-icon>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="componentForm" (ngSubmit)="createComponent()" class="component-form-vertical">
+        <div class="form-group">
+          <label>Structure Name</label>
+          <select formControlName="structure_id">
+            <option *ngFor="let structure of structures" [value]="structure.id">
+              {{ structure.name }} ({{ structure.code }})
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Code</label>
+          <input type="text" formControlName="code" placeholder="e.g. HRMS" />
+        </div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" formControlName="name" placeholder="e.g. Basic Salary" />
+        </div>
+        <div class="form-group">
+          <label>Component Type</label>
+          <select formControlName="component_type">
+            <option value="EARNING">EARNING</option>
+            <option value="DEDUCTION">DEDUCTION</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Calculation Type</label>
+          <select formControlName="calculation_type">
+            <option value="FIXED">FIXED</option>
+            <option value="PERCENTAGE">PERCENTAGE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Value</label>
+          <input type="number" formControlName="value" />
+        </div>
+        <div class="form-group" *ngIf="componentForm.get('calculation_type')?.value === 'PERCENTAGE'">
+          <label>Percentage of Code</label>
+          <input type="text" formControlName="percentage_of_code" placeholder="e.g. BASIC" />
+        </div>
+        <div class="form-group row-group">
+          <label class="check">
+            <input type="checkbox" formControlName="taxable" /> Taxable
+          </label>
+          <label class="check">
+            <input type="checkbox" formControlName="prorated" /> Prorated
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Sequence</label>
+          <input type="number" formControlName="sequence" />
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <input type="text" formControlName="notes" />
+        </div>
+        <button type="submit" class="submit-btn" [disabled]="componentForm.invalid">Save Component</button>
+      </form>
+    </div>
+  </div>
+
 </ion-content>

@@ -44,6 +44,14 @@ export class PayrollService {
     );
   }
 
+  createPayrollComponent(payload: any): Observable<any> {
+    return this.http.post(
+      `${this.payrollUrl}components`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
   getPayrollTempletes(): Observable<any> {
     return this.http.get(
       `${this.payrollUrl}templates`,

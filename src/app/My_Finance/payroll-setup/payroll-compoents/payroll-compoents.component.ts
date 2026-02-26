@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PayrollTemplatesService } from '../payroll-templates/payroll-templates.service';
 import { PayrollService } from '../../payroll-service.service';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -17,9 +16,10 @@ export class PayrollCompoentsComponent implements OnInit {
   components: any[] = [];
   componentForm!: FormGroup;
   token = '';
+  isModalOpen = false;
+  structures: any[] = [];
 
   constructor(
-    private payrollTemplatesService: PayrollTemplatesService,
     private fb: FormBuilder,
     private router: Router,
     private payrollService: PayrollService
@@ -28,24 +28,33 @@ export class PayrollCompoentsComponent implements OnInit {
   ngOnInit() {
     this.token = localStorage.getItem('token') || '';
     this.componentForm = this.fb.group({
+      structure_id: [1, Validators.required],
+      code: ['', Validators.required],
       name: ['', Validators.required],
-      type: ['Earning', Validators.required],
-      is_statutory: [false],
-      is_taxable: [true],
-      calculation_type: ['Flat', Validators.required],
+      component_type: ['EARNING', Validators.required],
+      calculation_type: ['FIXED', Validators.required],
       value: [0, [Validators.required, Validators.min(0)]],
-      formula: [''] // Only used if calculation_type is Formula
+      percentage_of_code: ['BASIC'],
+      taxable: [true],
+      prorated: [false],
+      sequence: [10, Validators.required],
+      notes: ['']
     });
     this.fetchComponents();
-    this.payrollService.getPayrollComponents().subscribe((res: any) => {
-      this.components = Array.isArray(res) ? res : (res.data || []);
-      console.log(this.components);
+    this.fetchStructures();
+  }
+
+  fetchStructures() {
+    this.payrollService.getPayrollstructures().subscribe((res: any) => {
+      this.structures = Array.isArray(res) ? res : (res.data || []);
+      if (this.structures.length > 0) {
+        this.componentForm.patchValue({ structure_id: this.structures[0].id });
+      }
     });
   }
 
   fetchComponents() {
-    if (!this.token) return;
-    this.payrollTemplatesService.getComponentList(this.token).subscribe((res: any) => {
+    this.payrollService.getPayrollComponents().subscribe((res: any) => {
       this.components = Array.isArray(res) ? res : (res.data || []);
     });
   }
@@ -56,17 +65,27 @@ export class PayrollCompoentsComponent implements OnInit {
     const payload = {
       ...formValue,
       value: Number(formValue.value),
-      formula: formValue.calculation_type === 'Formula' ? formValue.formula : undefined
+      sequence: Number(formValue.sequence),
+      structure_id: Number(formValue.structure_id)
     };
-    this.payrollTemplatesService.createComponent(payload, this.token).subscribe(() => {
+
+    // remove percentage_of_code if calculation_type is FIXED
+    if (payload.calculation_type === 'FIXED') {
+      delete payload.percentage_of_code;
+    }
+
+    this.payrollService.createPayrollComponent(payload).subscribe(() => {
       this.componentForm.reset({
-        type: 'Earning',
-        is_statutory: false,
-        is_taxable: true,
-        calculation_type: 'Flat',
-        value: 0,
-        formula: ''
+        structure_id: 1,
+        component_type: 'EARNING',
+        calculation_type: 'FIXED',
+        percentage_of_code: 'BASIC',
+        taxable: true,
+        prorated: false,
+        sequence: 10,
+        value: 0
       });
+      this.isModalOpen = false;
       this.fetchComponents();
     });
   }
