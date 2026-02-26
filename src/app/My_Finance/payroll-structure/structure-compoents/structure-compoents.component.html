@@ -1,0 +1,109 @@
+<ion-content [fullscreen]="true">
+  <div class="payroll-container">
+    <div class="header">
+      <div class="header-info">
+        <div class="back-nav">
+          <a (click)="goBack()" class="back-link">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            Back to Structures
+          </a>
+        </div>
+        <div style="margin-top: 15px;">
+          <h2>{{ structureInfo?.structure_name || 'Structure Details' }}</h2>
+          <p class="subtitle">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            {{ structureInfo?.description || 'Viewing details for structure ' + structureInfo?.code }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="components-card main-card">
+      <div class="section-title">
+        <div class="title-with-count">
+          <span>Structure Breakdown</span>
+        </div>
+        <div class="loading-spinner" *ngIf="loading">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      </div>
+
+      <div class="info-grid" *ngIf="structureInfo">
+        <div class="info-item">
+          <span class="label">Structure Code</span>
+          <span class="value">{{ structureInfo.code }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Minimum Salary</span>
+          <span class="value">{{ structureInfo.min_salary | currency:'INR':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Maximum Salary</span>
+          <span class="value">{{ structureInfo.max_salary | currency:'INR':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Status</span>
+          <span class="badge" [ngClass]="structureInfo.is_active ? 'active' : 'inactive'">
+            {{ structureInfo.is_active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- If structureInfo has components listed inside it -->
+      <div class="component-table-wrapper" *ngIf="!loading && structureInfo?.components?.length > 0">
+        <div class="component-table">
+          <div class="table-head">
+            <span>#</span>
+            <span>Component Name & Code</span>
+            <span>Type</span>
+            <span>Calculation</span>
+            <span>Formula / Value</span>
+            <span>Taxable</span>
+            <span>Prorated</span>
+          </div>
+
+          <div class="table-row" *ngFor="let comp of structureInfo.components; let i = index">
+            <span class="comp-id">{{ i + 1 }}</span>
+            <span class="name-block">
+              <span class="comp-name">{{ comp.name }}</span>
+              <span class="comp-code">{{ comp.code }}</span>
+            </span>
+            <span>
+              <span class="badge" [ngClass]="comp.component_type?.toLowerCase()">
+                {{ comp.component_type }}
+              </span>
+            </span>
+            <span>
+              <span class="calc-type">{{ comp.calculation_type }}</span>
+              <span class="base-code" *ngIf="comp.percentage_of_code">
+                of {{ comp.percentage_of_code }}
+              </span>
+            </span>
+            <span class="value-cell">
+              <span class="amt">{{ comp.value }}</span>
+              <span class="unit" *ngIf="comp.calculation_type === 'PERCENTAGE'">%</span>
+            </span>
+            <span class="icon-cell">
+              <ion-icon [name]="comp.taxable ? 'shield-checkmark' : 'shield-outline'"
+                [color]="comp.taxable ? 'success' : 'medium'"></ion-icon>
+            </span>
+            <span class="icon-cell">
+              <ion-icon [name]="comp.prorated ? 'checkmark-circle' : 'close-circle-outline'"
+                [color]="comp.prorated ? 'primary' : 'medium'"></ion-icon>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && (!structureInfo?.components || structureInfo?.components?.length === 0)"
+        class="empty-state">
+        <div class="empty-icon">
+          <ion-icon name="layers-outline"></ion-icon>
+        </div>
+        <h3>No Components Linked</h3>
+        <p>This structure currently has no components configured.</p>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

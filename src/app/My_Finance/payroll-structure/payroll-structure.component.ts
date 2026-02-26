@@ -50,8 +50,7 @@ export class PayrollStructureComponent implements OnInit {
   }
 
   viewDetails(structureId: number) {
-    // Navigate to structure details (can be implemented later)
-    console.log('View structure:', structureId);
+    this.router.navigate(['/structure-composition', structureId]);
   }
 
   goBack() {

@@ -54,6 +54,7 @@ import { PayrollTemplatesComponent } from './My_Finance/payroll-setup/payroll-te
 import { PayrollCompoentsComponent } from './My_Finance/payroll-setup/payroll-compoents/payroll-compoents.component';
 import { TemplateCompositionComponent } from './My_Finance/template-composition/template-composition.component';
 import { PayrollStructureComponent } from './My_Finance/payroll-structure/payroll-structure.component';
+import { StructureCompoentsComponent } from './My_Finance/payroll-structure/structure-compoents/structure-compoents.component';
 export const routes: Routes = [
   {
     path: 'org-tree',
@@ -360,6 +361,12 @@ export const routes: Routes = [
   {
     path: 'payroll-structure',
     component: PayrollStructureComponent,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['admin', 'hr'] }
+  },
+  {
+    path: 'structure-composition/:id',
+    component: StructureCompoentsComponent,
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['admin', 'hr'] }
   },
