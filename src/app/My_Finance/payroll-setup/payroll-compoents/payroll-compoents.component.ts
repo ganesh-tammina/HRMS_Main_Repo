@@ -47,6 +47,7 @@ export class PayrollCompoentsComponent implements OnInit {
   fetchStructures() {
     this.payrollService.getPayrollstructures().subscribe((res: any) => {
       this.structures = Array.isArray(res) ? res : (res.data || []);
+      console.log(this.structures);
       if (this.structures.length > 0) {
         this.componentForm.patchValue({ structure_id: this.structures[0].id });
       }

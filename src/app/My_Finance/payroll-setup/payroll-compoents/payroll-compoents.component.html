@@ -82,7 +82,7 @@
           <label>Structure Name</label>
           <select formControlName="structure_id">
             <option *ngFor="let structure of structures" [value]="structure.id">
-              {{ structure.name }} ({{ structure.code }})
+              {{ structure.structure_name }} ({{ structure.code }})
             </option>
           </select>
         </div>
