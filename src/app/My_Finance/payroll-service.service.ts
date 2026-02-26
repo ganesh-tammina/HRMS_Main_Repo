@@ -52,6 +52,21 @@ export class PayrollService {
     );
   }
 
+  updatePayrollComponent(id: number, payload: any): Observable<any> {
+    return this.http.put(
+      `${this.payrollUrl}components/${id}`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  deletePayrollComponent(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.payrollUrl}components/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   getPayrollTempletes(): Observable<any> {
     return this.http.get(
       `${this.payrollUrl}templates`,

@@ -11,7 +11,7 @@
         <h2>Payroll Components</h2>
         <p>Configure salary structure percentages</p>
       </div>
-      <button class="primary-btn" (click)="isModalOpen = true">Create Component</button>
+      <button class="primary-btn" (click)="openCreateModal()">Create Component</button>
     </div>
 
     <div class="components-card">
@@ -29,6 +29,7 @@
             <span>Prorated</span>
             <span>Seq</span>
             <span>Notes</span>
+            <span>Action</span>
           </div>
 
           <div class="table-row" *ngFor="let comp of components">
@@ -55,6 +56,10 @@
             </span>
             <span>{{ comp.sequence }}</span>
             <span>{{ comp.notes || '-' }}</span>
+            <span>
+              <ion-icon name="create" class="edit-icon" (click)="editComponent(comp)"></ion-icon>
+              <ion-icon name="trash" class="delete-icon" (click)="deleteComponent(comp.id)"></ion-icon>
+            </span>
           </div>
         </div>
       </div>
@@ -70,14 +75,14 @@
   </div>
 
   <!-- Right Side Modal -->
-  <div class="side-modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false"></div>
+  <div class="side-modal-overlay" *ngIf="isModalOpen" (click)="closeModal()"></div>
   <div class="side-modal" [class.open]="isModalOpen">
     <div class="modal-header">
-      <h3>Create Component</h3>
-      <ion-icon name="close" class="close-icon" (click)="isModalOpen = false"></ion-icon>
+      <h3>{{ isEditMode ? 'Edit Component' : 'Create Component' }}</h3>
+      <ion-icon name="close" class="close-icon" (click)="closeModal()"></ion-icon>
     </div>
     <div class="modal-body">
-      <form [formGroup]="componentForm" (ngSubmit)="createComponent()" class="component-form-vertical">
+      <form [formGroup]="componentForm" (ngSubmit)="saveComponent()" class="component-form-vertical">
         <div class="form-group">
           <label>Structure Name</label>
           <select formControlName="structure_id">
@@ -132,7 +137,9 @@
           <label>Notes</label>
           <input type="text" formControlName="notes" />
         </div>
-        <button type="submit" class="submit-btn" [disabled]="componentForm.invalid">Save Component</button>
+        <button type="submit" class="submit-btn" [disabled]="componentForm.invalid">
+          {{ isEditMode ? 'Update Component' : 'Save Component' }}
+        </button>
       </form>
     </div>
   </div>
