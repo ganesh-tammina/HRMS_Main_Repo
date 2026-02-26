@@ -28,6 +28,8 @@ export class PayrollStructureComponent implements OnInit {
   availableComponents: any[] = [];
   selectedComponents: any[] = [];
   employeeSearchTerm: string = '';
+  isEditMode = false;
+  selectedStructureId: number | null = null;
 
   constructor(
     private payrollService: PayrollService,
@@ -116,6 +118,8 @@ export class PayrollStructureComponent implements OnInit {
 
   openCreateModal() {
     this.isModalOpen = true;
+    this.isEditMode = false;
+    this.selectedStructureId = null;
     this.selectedComponents = [];
     this.employeeSearchTerm = '';
     this.filteredEmployees = this.employees;
@@ -128,6 +132,44 @@ export class PayrollStructureComponent implements OnInit {
       is_active: true,
       notes: '',
     });
+  }
+
+  editStructure(struct: any) {
+    this.isModalOpen = true;
+    this.isEditMode = true;
+    this.selectedStructureId = struct.id;
+
+    // Auto-select employee in search box
+    const emp = this.employees.find(e => e.id === struct.employee_id);
+    this.employeeSearchTerm = emp ? emp.FullName : '';
+
+    this.structureForm.patchValue({
+      employee_id: struct.employee_id,
+      structure_name: struct.structure_name,
+      ctc_amount: struct.ctc_amount,
+      effective_from: struct.effective_from ? struct.effective_from.split('T')[0] : '',
+      effective_to: struct.effective_to ? struct.effective_to.split('T')[0] : null,
+      is_active: !!struct.is_active,
+      notes: struct.notes,
+    });
+
+    // If components are already in the struct (from getPayrollstructures)
+    // they might need to be fetched separately if not present
+    this.selectedComponents = struct.components || [];
+  }
+
+  deleteStructure(id: number) {
+    if (confirm('Are you sure you want to delete this payroll structure?')) {
+      this.payrollService.deletePayrollStructure(id).subscribe({
+        next: () => {
+          this.fetchStructures();
+        },
+        error: (err) => {
+          console.error('Error deleting structure:', err);
+          alert('Failed to delete structure');
+        }
+      });
+    }
   }
 
   saveStructure() {
@@ -153,14 +195,18 @@ export class PayrollStructureComponent implements OnInit {
       }))
     };
 
-    this.payrollService.createPayrollStructure(payload).subscribe({
+    const request = this.isEditMode && this.selectedStructureId
+      ? this.payrollService.updatePayrollStructure(this.selectedStructureId, payload)
+      : this.payrollService.createPayrollStructure(payload);
+
+    request.subscribe({
       next: () => {
         this.isModalOpen = false;
         this.fetchStructures();
       },
       error: (err) => {
-        console.error('Error creating structure:', err);
-        alert('Failed to create structure: ' + (err.error?.message || err.message));
+        console.error('Error saving structure:', err);
+        alert('Failed to save structure: ' + (err.error?.message || err.message));
       }
     });
   }

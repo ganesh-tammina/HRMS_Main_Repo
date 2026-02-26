@@ -112,6 +112,21 @@ export class PayrollService {
     );
   }
 
+  updatePayrollStructure(id: number, payload: any): Observable<any> {
+    return this.http.put(
+      `${this.payrollUrl}structures/${id}`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  deletePayrollStructure(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.payrollUrl}structures/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   // 📄 Get Single Component by ID
   getComponentById(componentId: number): Observable<any> {
     return this.http.get(

@@ -93,10 +93,10 @@
               </span>
             </span>
             <span class="actions">
-              <button class="icon-btn edit">
+              <button class="icon-btn edit" (click)="$event.stopPropagation(); editStructure(struct)">
                 <ion-icon name="create-outline"></ion-icon>
               </button>
-              <button class="icon-btn delete">
+              <button class="icon-btn delete" (click)="$event.stopPropagation(); deleteStructure(struct.id)">
                 <ion-icon name="trash-outline"></ion-icon>
               </button>
             </span>
@@ -122,7 +122,7 @@
   <div class="side-modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false"></div>
   <div class="side-modal" [class.open]="isModalOpen">
     <div class="modal-header">
-      <h3>Create New Structure</h3>
+      <h3>{{ isEditMode ? 'Edit Structure' : 'Create New Structure' }}</h3>
       <ion-icon name="close" class="close-icon" (click)="isModalOpen = false"></ion-icon>
     </div>
     <div class="modal-body">
@@ -210,7 +210,7 @@
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="structureForm.invalid || selectedComponents.length === 0">
-          Save Structure
+          {{ isEditMode ? 'Update Structure' : 'Save Structure' }}
         </button>
       </form>
     </div>
