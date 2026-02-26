@@ -138,24 +138,29 @@ export class PayrollStructureComponent implements OnInit {
     this.isModalOpen = true;
     this.isEditMode = true;
     this.selectedStructureId = struct.id;
+    this.selectedComponents = [];
 
-    // Auto-select employee in search box
-    const emp = this.employees.find(e => e.id === struct.employee_id);
-    this.employeeSearchTerm = emp ? emp.FullName : '';
+    this.payrollService.getPayrollStructureById(struct.id).subscribe({
+      next: (res: any) => {
+        const fullStruct = res.data || res;
+        const emp = this.employees.find(e => e.id === fullStruct.employee_id);
+        this.employeeSearchTerm = emp ? emp.FullName : '';
 
-    this.structureForm.patchValue({
-      employee_id: struct.employee_id,
-      structure_name: struct.structure_name,
-      ctc_amount: struct.ctc_amount,
-      effective_from: struct.effective_from ? struct.effective_from.split('T')[0] : '',
-      effective_to: struct.effective_to ? struct.effective_to.split('T')[0] : null,
-      is_active: !!struct.is_active,
-      notes: struct.notes,
+        this.structureForm.patchValue({
+          employee_id: fullStruct.employee_id,
+          structure_name: fullStruct.structure_name,
+          ctc_amount: fullStruct.ctc_amount,
+          effective_from: fullStruct.effective_from ? fullStruct.effective_from.split('T')[0] : '',
+          effective_to: fullStruct.effective_to ? fullStruct.effective_to.split('T')[0] : null,
+          is_active: !!fullStruct.is_active,
+          notes: fullStruct.notes,
+        });
+        this.selectedComponents = fullStruct.components || [];
+      },
+      error: (err) => {
+        console.error('Error fetching structure details:', err);
+      }
     });
-
-    // If components are already in the struct (from getPayrollstructures)
-    // they might need to be fetched separately if not present
-    this.selectedComponents = struct.components || [];
   }
 
   deleteStructure(id: number) {

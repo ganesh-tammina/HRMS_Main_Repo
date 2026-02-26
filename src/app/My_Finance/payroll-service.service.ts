@@ -120,6 +120,8 @@ export class PayrollService {
     );
   }
 
+
+
   deletePayrollStructure(id: number): Observable<any> {
     return this.http.delete(
       `${this.payrollUrl}structures/${id}`,
@@ -131,6 +133,52 @@ export class PayrollService {
   getComponentById(componentId: number): Observable<any> {
     return this.http.get(
       `${this.payrollUrl}components/${componentId}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  deleteTemplate(id: number) {
+    return this.http.delete(
+      `${this.payrollUrl}templates/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  createTemplate(payload: any): Observable<any> {
+    return this.http.post(
+      `${this.payrollUrl}templates`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  updateTemplate(id: number, payload: any): Observable<any> {
+    return this.http.put(
+      `${this.payrollUrl}templates/${id}`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  addComponentToTemplate(templateId: number, payload: any): Observable<any> {
+    return this.http.post(
+      `${this.payrollUrl}templates/${templateId}/composition`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  updateTemplateComposition(templateId: number, compositionId: number, payload: any): Observable<any> {
+    return this.http.put(
+      `${this.payrollUrl}templates/${templateId}/composition/${compositionId}`,
+      payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  deleteTemplateComposition(templateId: number, compositionId: number): Observable<any> {
+    return this.http.delete(
+      `${this.payrollUrl}templates/${templateId}/composition/${compositionId}`,
       { headers: this.getHeaders() }
     );
   }
