@@ -55,10 +55,26 @@ export class StructureCompoentsComponent implements OnInit {
 
   initForm() {
     this.compositionForm = this.fb.group({
-      component_id: [null, Validators.required],
-      formula_or_value: ['', Validators.required],
+      // Mapping fields (for Add mode)
+      component_id: [null],
+      formula_or_value: [''],
+
+      // Full fields (for Edit mode / Syncing)
+      code: ['', Validators.required],
+      name: ['', Validators.required],
+      component_type: ['EARNING', Validators.required],
+      calculation_type: ['FIXED', Validators.required],
+      value: [0, [Validators.required, Validators.min(0)]],
+      percentage_of_code: ['BASIC'],
+      taxable: [true],
+      prorated: [false],
+      sequence: [10, Validators.required],
+      notes: [''],
       created_by: [Number(localStorage.getItem('employee_id')) || 1, Validators.required]
     });
+
+    // Add mode requires formula_or_value and component_id
+    // But Edit mode doesn't need component_id (it uses selectedComponentId)
   }
 
   fetchEmployees() {
@@ -113,13 +129,41 @@ export class StructureCompoentsComponent implements OnInit {
   }
 
   calculateTotals() {
-    this.totalEarnings = this.compositionData
-      .filter(c => (c.component_type)?.toLowerCase() === 'earning')
-      .reduce((sum, c) => sum + (Number(c.value) || 0), 0);
+    const ctc = Number(this.structureInfo?.ctc_amount) || 0;
+    const calculatedAmts: { [code: string]: number } = { 'CTC': ctc };
 
-    this.totalDeductions = this.compositionData
-      .filter(c => (c.component_type)?.toLowerCase() === 'deduction')
-      .reduce((sum, c) => sum + (Number(c.value) || 0), 0);
+    // Pass 1: Handle FIXED values and PERCENTAGE OF CTC
+    this.compositionData.forEach(c => {
+      if (c.calculation_type === 'FIXED') {
+        calculatedAmts[c.code] = Number(c.value) || 0;
+      } else if (c.calculation_type === 'PERCENTAGE' && (c.percentage_of_code === 'CTC' || !c.percentage_of_code)) {
+        calculatedAmts[c.code] = (ctc * (Number(c.value) || 0)) / 100;
+      }
+    });
+
+    // Pass 2: Handle PERCENTAGE OF other components (e.g., HRA as % of BASIC)
+    // We do one pass which assumes BASIC is calculated in Pass 1
+    this.compositionData.forEach(c => {
+      if (c.calculation_type === 'PERCENTAGE' && c.percentage_of_code && c.percentage_of_code !== 'CTC') {
+        const baseAmt = calculatedAmts[c.percentage_of_code] || 0;
+        calculatedAmts[c.code] = (baseAmt * (Number(c.value) || 0)) / 100;
+      }
+    });
+
+    // Final Pass: Sum them up and attach calculated_amount to the object for UI
+    this.totalEarnings = 0;
+    this.totalDeductions = 0;
+
+    this.compositionData.forEach(c => {
+      const realAmt = calculatedAmts[c.code] || 0;
+      c.calculated_amount = realAmt;
+
+      if ((c.component_type)?.toUpperCase() === 'EARNING') {
+        this.totalEarnings += realAmt;
+      } else if ((c.component_type)?.toUpperCase() === 'DEDUCTION') {
+        this.totalDeductions += realAmt;
+      }
+    });
   }
 
   openAddModal() {
@@ -128,11 +172,24 @@ export class StructureCompoentsComponent implements OnInit {
     this.isModalOpen = true;
     this.employeeSearchTerm = '';
     this.filteredEmployees = this.employees;
+
     this.compositionForm.reset({
       component_id: null,
       formula_or_value: '',
+      component_type: 'EARNING',
+      calculation_type: 'FIXED',
+      percentage_of_code: 'BASIC',
+      taxable: true,
+      prorated: false,
+      sequence: 10,
+      value: 0,
       created_by: Number(localStorage.getItem('employee_id')) || 1
     });
+
+    // Toggle validators for Add mode
+    this.compositionForm.get('component_id')?.setValidators([Validators.required]);
+    this.compositionForm.get('formula_or_value')?.setValidators([Validators.required]);
+    this.compositionForm.updateValueAndValidity();
   }
 
   editComponent(comp: any) {
@@ -140,17 +197,27 @@ export class StructureCompoentsComponent implements OnInit {
     this.selectedComponentId = comp.id;
     this.isModalOpen = true;
 
-    // Set search term for employee (we use structureInfo.created_by or default)
+    // Clear "Add" mode validators
+    this.compositionForm.get('component_id')?.clearValidators();
+    this.compositionForm.get('formula_or_value')?.clearValidators();
+    this.compositionForm.updateValueAndValidity();
+
+    // Set search term for employee
     const creator = this.employees.find(e => e.id === (comp.created_by || this.structureInfo?.created_by));
     this.employeeSearchTerm = creator ? creator.FullName : '';
     this.filteredEmployees = [];
 
-    // Format value for display (e.g., 40 -> 40%)
-    const displayValue = comp.calculation_type === 'PERCENTAGE' ? `${comp.value}%` : `${comp.value}`;
-
     this.compositionForm.patchValue({
-      component_id: comp.master_component_id || comp.id, // Fallback
-      formula_or_value: displayValue,
+      code: comp.code,
+      name: comp.name,
+      component_type: comp.component_type,
+      calculation_type: comp.calculation_type,
+      value: comp.value,
+      percentage_of_code: comp.percentage_of_code,
+      taxable: comp.taxable,
+      prorated: comp.prorated,
+      sequence: comp.sequence,
+      notes: comp.notes,
       created_by: comp.created_by || this.structureInfo?.created_by || 1
     });
   }
@@ -159,39 +226,63 @@ export class StructureCompoentsComponent implements OnInit {
     if (this.compositionForm.invalid || !this.structureId) return;
 
     const formValue = this.compositionForm.value;
-    const masterComp = this.availableComponents.find(c => c.id == formValue.component_id);
+    let payload: any;
 
-    if (!masterComp) {
-      alert('Invalid component selected');
-      return;
-    }
+    if (this.isEditMode) {
+      // Full edit mode (like PayrollCompoentsComponent)
+      payload = {
+        structure_id: this.structureId,
+        code: formValue.code,
+        name: formValue.name,
+        component_type: formValue.component_type,
+        calculation_type: formValue.calculation_type,
+        value: Number(formValue.value),
+        percentage_of_code: formValue.percentage_of_code,
+        taxable: !!formValue.taxable,
+        prorated: !!formValue.prorated,
+        sequence: Number(formValue.sequence),
+        notes: formValue.notes,
+        created_by: Number(formValue.created_by)
+      };
 
-    // Parse formula or value
-    let value = formValue.formula_or_value.toString();
-    let calculationType = 'FIXED';
-    let numericValue = 0;
-
-    if (value.includes('%')) {
-      calculationType = 'PERCENTAGE';
-      numericValue = parseFloat(value.replace('%', '').trim());
+      if (payload.calculation_type === 'FIXED') {
+        delete payload.percentage_of_code;
+      }
     } else {
-      numericValue = parseFloat(value.trim());
-    }
+      // Mapping mode (Add)
+      const masterComp = this.availableComponents.find(c => c.id == formValue.component_id);
+      if (!masterComp) {
+        alert('Invalid component selected');
+        return;
+      }
 
-    const payload = {
-      structure_id: this.structureId,
-      code: masterComp.code,
-      name: masterComp.name,
-      component_type: masterComp.component_type,
-      calculation_type: calculationType,
-      value: numericValue,
-      percentage_of_code: masterComp.percentage_of_code || (calculationType === 'PERCENTAGE' ? 'BASIC' : null),
-      taxable: !!masterComp.taxable,
-      prorated: !!masterComp.prorated,
-      sequence: masterComp.sequence || 10,
-      notes: masterComp.notes || '',
-      created_by: Number(formValue.created_by)
-    };
+      // Parse formula or value
+      let fValue = formValue.formula_or_value.toString();
+      let calculationType = 'FIXED';
+      let numericValue = 0;
+
+      if (fValue.includes('%')) {
+        calculationType = 'PERCENTAGE';
+        numericValue = parseFloat(fValue.replace('%', '').trim());
+      } else {
+        numericValue = parseFloat(fValue.trim());
+      }
+
+      payload = {
+        structure_id: this.structureId,
+        code: masterComp.code,
+        name: masterComp.name,
+        component_type: masterComp.component_type,
+        calculation_type: calculationType,
+        value: numericValue,
+        percentage_of_code: masterComp.percentage_of_code || (calculationType === 'PERCENTAGE' ? 'BASIC' : null),
+        taxable: !!masterComp.taxable,
+        prorated: !!masterComp.prorated,
+        sequence: masterComp.sequence || 10,
+        notes: masterComp.notes || '',
+        created_by: Number(formValue.created_by)
+      };
+    }
 
     if (this.isEditMode && this.selectedComponentId) {
       this.payrollService.updatePayrollComponent(this.selectedComponentId, payload).subscribe({
