@@ -87,7 +87,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.showIntro = false;
         }
         // Fetch user department and designation from profile - Skip for Admin/HR as per request
-        if (!this.isAdmin && !this.userDesignation && this.userRole) {
+        if (!this.userDesignation && this.userRole) {
           this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
             next: (emp) => {
               this.userDesignation = (emp?.designation_name || emp?.designation || 'N/A').toLowerCase();

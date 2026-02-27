@@ -135,6 +135,17 @@ export class HomePage implements OnInit, OnDestroy {
       localStorage.removeItem('showLoginSuccess');
       this.showLoginSuccessAlert();
     }
+
+    // Subscribe to employee updates for reactive UI (name, image, etc.)
+    this.employeeService.currentEmployee$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(emp => {
+        if (emp) {
+          this.currentEmployee = emp;
+          this.userDesignation = emp.designation_name || emp.designation || null;
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   /* =====================================================
@@ -142,11 +153,8 @@ export class HomePage implements OnInit, OnDestroy {
      🔥 THIS FIXES YOUR ISSUE
   ===================================================== */
   ionViewWillEnter() {
-    const role = localStorage.getItem('role')?.toLowerCase();
-    if (role !== 'admin' && role !== 'hr') {
-      this.loadEmployeeProfile();
-      this.loadBirthdays();
-    }
+    this.loadEmployeeProfile();
+    this.loadBirthdays();
   }
 
   loadBirthdays() {

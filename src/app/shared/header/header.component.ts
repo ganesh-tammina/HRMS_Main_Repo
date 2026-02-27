@@ -72,25 +72,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
       });
 
-    // Only fetch profile if NOT admin or HR
-    const role = this.routeGuardService.userRole?.toLowerCase();
-    if (role !== 'admin' && role !== 'hr') {
-      this.employeeService.getMyProfile()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res: any) => {
-            this.currentEmployee = res;
-            if (res) {
-              this.updateProfileImageUrl();
-              if (res.id) {
-                // Set reporting manager and shift policy IDs if needed
-                this.employeeService.setEmployeeId(res.reporting_manager_id);
-                this.employeeService.setCurrentEmployeeId(res.shift_policy_id);
-              }
+    // Fetch profile data regardless of role to ensure "who is login" is displayed correctly
+    this.employeeService.getMyProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.currentEmployee = res;
+          if (res) {
+            this.updateProfileImageUrl();
+            if (res.id) {
+              // Set reporting manager if appropriate for the view
+              this.employeeService.setEmployeeId(res.reporting_manager_id);
             }
           }
-        });
-    }
+        }
+      });
+
+    // Listen to real-time updates from currentEmployee$ stream
+    this.employeeService.currentEmployee$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(emp => {
+        if (emp) {
+          this.currentEmployee = emp;
+          this.updateProfileImageUrl();
+        }
+      });
 
     // Listen for specific employee profile image updates
     this.employeeService.profileImageUpdate$

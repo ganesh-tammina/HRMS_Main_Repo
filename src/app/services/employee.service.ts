@@ -101,27 +101,14 @@ export class EmployeeService {
   private profileInitialized = false;
 
   getMyProfile(force = false): Observable<any> {
-    const role = localStorage.getItem('role')?.toLowerCase();
-    const isSpecialRole = role === 'admin' || role === 'hr';
-
-    // If admin/hr and not forced, return a dummy object to avoid API hits
-    if (isSpecialRole && !force) {
-      return of({
-        id: Number(localStorage.getItem('employee_id')),
-        FirstName: role?.toUpperCase(),
-        FullName: `${role?.toUpperCase()} User`,
-        role: role
-      });
-    }
-
-    // If not forced and already initialized, return cached observable
-    if (!force && this.profileInitialized && this.profile$) {
-      return this.profile$;
-    }
-
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
     if (!token) {
       return of(null);
+    }
+
+    // Return cached observable if already initialized and not forced
+    if (!force && this.profileInitialized && this.profile$) {
+      return this.profile$;
     }
 
     // Refresh the profile observable
@@ -131,6 +118,8 @@ export class EmployeeService {
       tap((emp) => {
         this.currentEmployee = emp;
         this.profileInitialized = true;
+        // Broadcast profile data via subject for reactive updates
+        this.currentEmployeeSubject.next(emp);
       }),
       shareReplay(1) // Cache the result for subsequent subscribers
     );
