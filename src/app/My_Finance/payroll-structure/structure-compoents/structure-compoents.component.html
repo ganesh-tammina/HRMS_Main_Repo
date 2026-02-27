@@ -29,128 +29,133 @@
       <div class="card earnings">
         <div class="card-icon"><ion-icon name="wallet-outline"></ion-icon></div>
         <div class="card-content">
-          <span class="label">Total Earnings</span>
+          <span class="label">Total Earnings ({{ viewMode | titlecase }})</span>
           <span class="value">{{ totalEarnings | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
       <div class="card deductions">
         <div class="card-icon"><ion-icon name="trending-down-outline"></ion-icon></div>
         <div class="card-content">
-          <span class="label">Total Deductions</span>
+          <span class="label">Total Deductions ({{ viewMode | titlecase }})</span>
           <span class="value">{{ totalDeductions | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
       <div class="card net">
         <div class="card-icon"><ion-icon name="calculator-outline"></ion-icon></div>
         <div class="card-content">
-          <span class="label">Net Amount</span>
+          <span class="label">Net Amount ({{ viewMode | titlecase }})</span>
           <span class="value">{{ (totalEarnings - totalDeductions) | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
     </div>
 
-    <div class="components-card main-card">
-      <div class="section-title">
-        <div class="title-with-count">
-          <span>Structure Breakdown</span>
-          <span class="count-badge" *ngIf="compositionData.length">{{ compositionData.length }}</span>
-        </div>
-        <div class="loading-spinner" *ngIf="loading">
-          <ion-spinner name="crescent"></ion-spinner>
-        </div>
+    <div class="view-toggle-container">
+      <div class="view-toggle">
+        <button [class.active]="viewMode === 'annual'" (click)="toggleView('annual')">Annual</button>
+        <button [class.active]="viewMode === 'monthly'" (click)="toggleView('monthly')">Monthly</button>
       </div>
+    </div>
 
-      <div class="info-grid" *ngIf="structureInfo">
-        <div class="info-item">
-          <span class="label">Structure Name</span>
-          <span class="value">{{ structureInfo.structure_name }}</span>
+    <div class="section-title">
+      <div class="title-with-count">
+        <span>Structure Breakdown ({{ viewMode | titlecase }})</span>
+        <span class="count-badge" *ngIf="compositionData.length">{{ compositionData.length }}</span>
+      </div>
+      <div class="loading-spinner" *ngIf="loading">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    </div>
+
+    <div class="info-grid" *ngIf="structureInfo">
+      <div class="info-item">
+        <span class="label">Structure Name</span>
+        <span class="value">{{ structureInfo.structure_name }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">CTC Amount</span>
+        <span class="value">{{ structureInfo.ctc_amount | currency:'INR':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Employee</span>
+        <span class="value">{{ structureInfo.FullName || '-' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Status</span>
+        <span class="badge" [ngClass]="structureInfo.is_active ? 'active' : 'inactive'">
+          {{ structureInfo.is_active ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- If we have components -->
+    <div class="component-table-wrapper" *ngIf="!loading && compositionData.length > 0">
+      <div class="component-table">
+        <div class="table-head">
+          <span>#</span>
+          <span>Component Name & Code</span>
+          <span>Type</span>
+          <span>Calculation</span>
+          <span>Value</span>
+          <span>Taxable</span>
+          <span>Prorated</span>
+          <span style="text-align: right;">Actions</span>
         </div>
-        <div class="info-item">
-          <span class="label">CTC Amount</span>
-          <span class="value">{{ structureInfo.ctc_amount | currency:'INR':'symbol':'1.0-0' }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">Employee</span>
-          <span class="value">{{ structureInfo.FullName || '-' }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">Status</span>
-          <span class="badge" [ngClass]="structureInfo.is_active ? 'active' : 'inactive'">
-            {{ structureInfo.is_active ? 'Active' : 'Inactive' }}
+
+        <div class="table-row" *ngFor="let comp of compositionData; let i = index">
+          <span class="comp-id">{{ i + 1 }}</span>
+          <span class="name-block">
+            <span class="comp-name">{{ comp.name }}</span>
+            <span class="comp-code">{{ comp.code }}</span>
+          </span>
+          <span>
+            <span class="badge" [ngClass]="comp.component_type?.toLowerCase()">
+              {{ comp.component_type }}
+            </span>
+          </span>
+          <span>
+            <span class="calc-type">{{ comp.calculation_type }}</span>
+            <span class="base-code" *ngIf="comp.percentage_of_code">
+              of {{ comp.percentage_of_code }}
+            </span>
+          </span>
+          <span class="value-cell">
+            <span class="amt">{{ comp.calculated_amount | currency:'INR':'symbol':'1.0-0' }}</span>
+            <span class="sub-val" *ngIf="comp.calculation_type === 'PERCENTAGE'"
+              style="font-size: 11px; color: #64748b; display: block;">
+              ({{ comp.value }}%)
+            </span>
+          </span>
+          <span class="icon-cell">
+            <ion-icon [name]="comp.taxable ? 'shield-checkmark' : 'shield-outline'"
+              [color]="comp.taxable ? 'success' : 'medium'"></ion-icon>
+          </span>
+          <span class="icon-cell">
+            <ion-icon [name]="comp.prorated ? 'checkmark-circle' : 'close-circle-outline'"
+              [color]="comp.prorated ? 'primary' : 'medium'"></ion-icon>
+          </span>
+          <span class="actions">
+            <button class="icon-btn edit" (click)="editComponent(comp)">
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+            <button class="icon-btn delete" (click)="deleteComponent(comp.id)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
           </span>
         </div>
       </div>
-
-      <!-- If we have components -->
-      <div class="component-table-wrapper" *ngIf="!loading && compositionData.length > 0">
-        <div class="component-table">
-          <div class="table-head">
-            <span>#</span>
-            <span>Component Name & Code</span>
-            <span>Type</span>
-            <span>Calculation</span>
-            <span>Value</span>
-            <span>Taxable</span>
-            <span>Prorated</span>
-            <span style="text-align: right;">Actions</span>
-          </div>
-
-          <div class="table-row" *ngFor="let comp of compositionData; let i = index">
-            <span class="comp-id">{{ i + 1 }}</span>
-            <span class="name-block">
-              <span class="comp-name">{{ comp.name }}</span>
-              <span class="comp-code">{{ comp.code }}</span>
-            </span>
-            <span>
-              <span class="badge" [ngClass]="comp.component_type?.toLowerCase()">
-                {{ comp.component_type }}
-              </span>
-            </span>
-            <span>
-              <span class="calc-type">{{ comp.calculation_type }}</span>
-              <span class="base-code" *ngIf="comp.percentage_of_code">
-                of {{ comp.percentage_of_code }}
-              </span>
-            </span>
-            <span class="value-cell">
-              <span class="amt">{{ comp.calculated_amount | currency:'INR':'symbol':'1.0-0' }}</span>
-              <span class="sub-val" *ngIf="comp.calculation_type === 'PERCENTAGE'"
-                style="font-size: 11px; color: #64748b; display: block;">
-                ({{ comp.value }}%)
-              </span>
-            </span>
-            <span class="icon-cell">
-              <ion-icon [name]="comp.taxable ? 'shield-checkmark' : 'shield-outline'"
-                [color]="comp.taxable ? 'success' : 'medium'"></ion-icon>
-            </span>
-            <span class="icon-cell">
-              <ion-icon [name]="comp.prorated ? 'checkmark-circle' : 'close-circle-outline'"
-                [color]="comp.prorated ? 'primary' : 'medium'"></ion-icon>
-            </span>
-            <span class="actions">
-              <button class="icon-btn edit" (click)="editComponent(comp)">
-                <ion-icon name="create-outline"></ion-icon>
-              </button>
-              <button class="icon-btn delete" (click)="deleteComponent(comp.id)">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="!loading && compositionData.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <ion-icon name="layers-outline"></ion-icon>
-        </div>
-        <h3>No Components Linked</h3>
-        <p>This structure currently has no components configured.</p>
-        <button class="primary-btn outline" style="margin: 20px auto;" (click)="openAddModal()">
-          Add First Component
-        </button>
-      </div>
-
     </div>
+
+    <div *ngIf="!loading && compositionData.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="layers-outline"></ion-icon>
+      </div>
+      <h3>No Components Linked</h3>
+      <p>This structure currently has no components configured.</p>
+      <button class="primary-btn outline" style="margin: 20px auto;" (click)="openAddModal()">
+        Add First Component
+      </button>
+    </div>
+
   </div>
 
   <!-- Right Side Modal -->

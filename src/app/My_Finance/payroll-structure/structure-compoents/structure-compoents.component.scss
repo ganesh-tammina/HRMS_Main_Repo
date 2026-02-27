@@ -383,6 +383,44 @@
             }
         }
     }
+
+    .view-toggle-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+        padding: 0 25px;
+
+        .view-toggle {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            gap: 4px;
+
+            button {
+                padding: 8px 16px;
+                border-radius: 8px;
+                border: none;
+                font-size: 14px;
+                font-weight: 600;
+                color: #64748b;
+                background: transparent;
+                cursor: pointer;
+                transition: all 0.2s;
+                min-width: 100px;
+
+                &.active {
+                    background: #fff;
+                    color: #1e293b;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                &:hover:not(.active) {
+                    color: #1e293b;
+                }
+            }
+        }
+    }
 }
 
 /* Right Side Modal Styles */

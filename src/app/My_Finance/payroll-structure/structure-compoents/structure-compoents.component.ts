@@ -22,6 +22,7 @@ export class StructureCompoentsComponent implements OnInit {
   loading: boolean = false;
   totalEarnings: number = 0;
   totalDeductions: number = 0;
+  viewMode: 'annual' | 'monthly' = 'annual';
 
   isModalOpen = false;
   isEditMode = false;
@@ -155,15 +156,24 @@ export class StructureCompoentsComponent implements OnInit {
     this.totalDeductions = 0;
 
     this.compositionData.forEach(c => {
-      const realAmt = calculatedAmts[c.code] || 0;
-      c.calculated_amount = realAmt;
+      const annualAmt = calculatedAmts[c.code] || 0;
+      c.annual_amount = annualAmt;
+      c.monthly_amount = annualAmt / 12;
+
+      const currentAmt = this.viewMode === 'annual' ? c.annual_amount : c.monthly_amount;
+      c.calculated_amount = currentAmt;
 
       if ((c.component_type)?.toUpperCase() === 'EARNING') {
-        this.totalEarnings += realAmt;
+        this.totalEarnings += currentAmt;
       } else if ((c.component_type)?.toUpperCase() === 'DEDUCTION') {
-        this.totalDeductions += realAmt;
+        this.totalDeductions += currentAmt;
       }
     });
+  }
+
+  toggleView(mode: 'annual' | 'monthly') {
+    this.viewMode = mode;
+    this.calculateTotals();
   }
 
   openAddModal() {
