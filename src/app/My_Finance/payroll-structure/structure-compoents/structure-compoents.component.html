@@ -113,8 +113,11 @@
               </span>
             </span>
             <span class="value-cell">
-              <span class="amt">{{ comp.value }}</span>
-              <span class="unit" *ngIf="comp.calculation_type === 'PERCENTAGE'">%</span>
+              <span class="amt">{{ comp.calculated_amount | currency:'INR':'symbol':'1.0-0' }}</span>
+              <span class="sub-val" *ngIf="comp.calculation_type === 'PERCENTAGE'"
+                style="font-size: 11px; color: #64748b; display: block;">
+                ({{ comp.value }}%)
+              </span>
             </span>
             <span class="icon-cell">
               <ion-icon [name]="comp.taxable ? 'shield-checkmark' : 'shield-outline'"
@@ -159,22 +162,80 @@
     </div>
     <div class="modal-body">
       <form [formGroup]="compositionForm" (ngSubmit)="saveComponent()" class="form-vertical">
-        <div class="form-group">
-          <label>Select Master Component</label>
-          <select formControlName="component_id">
-            <option [ngValue]="null">Select Component</option>
-            <option *ngFor="let comp of availableComponents" [value]="comp.id">
-              {{ comp.name }} ({{ comp.code }})
-            </option>
-          </select>
-        </div>
+        <!-- ADD MODE: Mapping Fields -->
+        <ng-container *ngIf="!isEditMode">
+          <div class="form-group">
+            <label>Select Master Component</label>
+            <select formControlName="component_id">
+              <option [ngValue]="null">Select Component</option>
+              <option *ngFor="let comp of availableComponents" [value]="comp.id">
+                {{ comp.name }} ({{ comp.code }})
+              </option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label>Formula or Value</label>
-          <input type="text" formControlName="formula_or_value" placeholder="e.g. 40% or 5000" />
-          <small style="color: #64748b;">Specify a percentage (e.g., 40%) or a fixed amount.</small>
-        </div>
+          <div class="form-group">
+            <label>Formula or Value</label>
+            <input type="text" formControlName="formula_or_value" placeholder="e.g. 40% or 5000" />
+            <small style="color: #64748b;">Specify a percentage (e.g., 40%) or a fixed amount.</small>
+          </div>
+        </ng-container>
 
+        <!-- EDIT MODE: Full Fields (Direct Edit like PayrollCompoents) -->
+        <ng-container *ngIf="isEditMode">
+          <div class="form-group">
+            <label>Component Code</label>
+            <input type="text" formControlName="code" placeholder="e.g. BASIC" />
+          </div>
+          <div class="form-group">
+            <label>Component Name</label>
+            <input type="text" formControlName="name" placeholder="e.g. Basic Salary" />
+          </div>
+          <div class="row-group" style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+              <label>Component Type</label>
+              <select formControlName="component_type">
+                <option value="EARNING">EARNING</option>
+                <option value="DEDUCTION">DEDUCTION</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Calculation Type</label>
+              <select formControlName="calculation_type">
+                <option value="FIXED">FIXED</option>
+                <option value="PERCENTAGE">PERCENTAGE</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Value</label>
+            <input type="number" formControlName="value" placeholder="e.g. 40" />
+          </div>
+          <div class="form-group" *ngIf="compositionForm.get('calculation_type')?.value === 'PERCENTAGE'">
+            <label>Percentage of Code (Base)</label>
+            <input type="text" formControlName="percentage_of_code" placeholder="e.g. BASIC" />
+          </div>
+          <div class="row-group" style="display: flex; gap: 20px; align-items: center; margin: 10px 0;">
+            <div class="form-group" style="flex-direction: row; gap: 8px; align-items: center;">
+              <input type="checkbox" formControlName="taxable" id="taxableCheck" />
+              <label for="taxableCheck" style="margin: 0;">Taxable</label>
+            </div>
+            <div class="form-group" style="flex-direction: row; gap: 8px; align-items: center;">
+              <input type="checkbox" formControlName="prorated" id="proratedCheck" />
+              <label for="proratedCheck" style="margin: 0;">Prorated</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Sequence</label>
+            <input type="number" formControlName="sequence" />
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea formControlName="notes" rows="2" placeholder="Internal notes..."></textarea>
+          </div>
+        </ng-container>
+
+        <!-- Common Employee Search -->
         <div class="form-group dropdown-container">
           <label>Created By (Employee)</label>
           <div class="search-box">
@@ -197,7 +258,7 @@
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="compositionForm.invalid">
-          {{ isEditMode ? 'Update Mapping' : 'Save Composition' }}
+          {{ isEditMode ? 'Update Component' : 'Save Mapping' }}
         </button>
       </form>
     </div>
