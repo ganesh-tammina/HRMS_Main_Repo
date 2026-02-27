@@ -61,21 +61,18 @@ export class StructureCompoentsComponent implements OnInit {
       formula_or_value: [''],
 
       // Full fields (for Edit mode / Syncing)
-      code: ['', Validators.required],
-      name: ['', Validators.required],
-      component_type: ['EARNING', Validators.required],
-      calculation_type: ['FIXED', Validators.required],
-      value: [0, [Validators.required, Validators.min(0)]],
+      code: [''],
+      name: [''],
+      component_type: ['EARNING'],
+      calculation_type: ['FIXED'],
+      value: [0],
       percentage_of_code: ['BASIC'],
       taxable: [true],
       prorated: [false],
-      sequence: [10, Validators.required],
+      sequence: [10],
       notes: [''],
-      created_by: [Number(localStorage.getItem('employee_id')) || 1, Validators.required]
+      created_by: [Number(localStorage.getItem('employee_id')) || 1]
     });
-
-    // Add mode requires formula_or_value and component_id
-    // But Edit mode doesn't need component_id (it uses selectedComponentId)
   }
 
   fetchEmployees() {
@@ -106,7 +103,22 @@ export class StructureCompoentsComponent implements OnInit {
 
   fetchAvailableComponents() {
     this.payrollService.getPayrollComponents().subscribe((res: any) => {
-      this.availableComponents = Array.isArray(res) ? res : (res.data || []);
+      const allComps = Array.isArray(res) ? res : (res.data || []);
+
+      // Filter unique components by code to avoid duplicate entries from multiple employee structures
+      const uniqueComps: any[] = [];
+      const codes = new Set();
+
+      // Priority: Master components (usually those in structures with no employee_id or MASTER_ name)
+      // For now, we take the first unique instance of each code we find
+      allComps.forEach((c: any) => {
+        if (!codes.has(c.code)) {
+          codes.add(c.code);
+          uniqueComps.push(c);
+        }
+      });
+
+      this.availableComponents = uniqueComps;
     });
   }
 
@@ -117,7 +129,10 @@ export class StructureCompoentsComponent implements OnInit {
       next: (res: any) => {
         const fullData = res.data || res;
         this.structureInfo = fullData.structure || fullData;
-        this.compositionData = fullData.components || fullData.salary_components || [];
+
+        // Load components into local array for editing
+        this.compositionData = JSON.parse(JSON.stringify(fullData.components || fullData.salary_components || []));
+
         this.calculateTotals();
         this.loading = false;
         console.log('📦 Structure Details:', this.structureInfo);
@@ -151,10 +166,35 @@ export class StructureCompoentsComponent implements OnInit {
       }
     });
 
-    // Final Pass: Sum them up and attach calculated_amount to the object for UI
+    // Final Pass: Sum them up, handle balancing (Special Allowance), and attach amounts for UI
     this.totalEarnings = 0;
     this.totalDeductions = 0;
 
+    // 1. First, identify the Special Allowance component
+    const specialAllowanceComp = this.compositionData.find(c =>
+      c.code?.toUpperCase() === 'SPECIAL_ALLOWANCE' ||
+      c.code?.toUpperCase() === 'SPECIAL ALLOWANCE' ||
+      c.name?.toUpperCase() === 'SPECIAL ALLOWANCE'
+    );
+
+    // 2. Calculate everything EXCEPT Special Allowance first
+    let sumOfOthers = 0;
+    this.compositionData.forEach(c => {
+      if (c === specialAllowanceComp) return;
+      sumOfOthers += calculatedAmts[c.code] || 0;
+    });
+
+    // 3. Assign the balance to Special Allowance if it exists
+    if (specialAllowanceComp) {
+      const balance = Math.max(0, ctc - sumOfOthers);
+      calculatedAmts[specialAllowanceComp.code] = balance;
+      // Also update the 'value' for display if it's FIXED
+      if (specialAllowanceComp.calculation_type === 'FIXED') {
+        specialAllowanceComp.value = balance;
+      }
+    }
+
+    // 4. Final total calculation for UI
     this.compositionData.forEach(c => {
       const annualAmt = calculatedAmts[c.code] || 0;
       c.annual_amount = annualAmt;
@@ -183,6 +223,11 @@ export class StructureCompoentsComponent implements OnInit {
     this.employeeSearchTerm = '';
     this.filteredEmployees = this.employees;
 
+    // Reset all validators first
+    Object.keys(this.compositionForm.controls).forEach(key => {
+      this.compositionForm.get(key)?.clearValidators();
+    });
+
     this.compositionForm.reset({
       component_id: null,
       formula_or_value: '',
@@ -196,9 +241,11 @@ export class StructureCompoentsComponent implements OnInit {
       created_by: Number(localStorage.getItem('employee_id')) || 1
     });
 
-    // Toggle validators for Add mode
+    // Set Add-specific validators
     this.compositionForm.get('component_id')?.setValidators([Validators.required]);
     this.compositionForm.get('formula_or_value')?.setValidators([Validators.required]);
+    this.compositionForm.get('created_by')?.setValidators([Validators.required]);
+
     this.compositionForm.updateValueAndValidity();
   }
 
@@ -207,10 +254,19 @@ export class StructureCompoentsComponent implements OnInit {
     this.selectedComponentId = comp.id;
     this.isModalOpen = true;
 
-    // Clear "Add" mode validators
-    this.compositionForm.get('component_id')?.clearValidators();
-    this.compositionForm.get('formula_or_value')?.clearValidators();
-    this.compositionForm.updateValueAndValidity();
+    // Clear all validators first
+    Object.keys(this.compositionForm.controls).forEach(key => {
+      this.compositionForm.get(key)?.clearValidators();
+    });
+
+    // Set Edit-specific validators
+    this.compositionForm.get('code')?.setValidators([Validators.required]);
+    this.compositionForm.get('name')?.setValidators([Validators.required]);
+    this.compositionForm.get('component_type')?.setValidators([Validators.required]);
+    this.compositionForm.get('calculation_type')?.setValidators([Validators.required]);
+    this.compositionForm.get('value')?.setValidators([Validators.required, Validators.min(0)]);
+    this.compositionForm.get('sequence')?.setValidators([Validators.required]);
+    this.compositionForm.get('created_by')?.setValidators([Validators.required]);
 
     // Set search term for employee
     const creator = this.employees.find(e => e.id === (comp.created_by || this.structureInfo?.created_by));
@@ -224,12 +280,14 @@ export class StructureCompoentsComponent implements OnInit {
       calculation_type: comp.calculation_type,
       value: comp.value,
       percentage_of_code: comp.percentage_of_code,
-      taxable: comp.taxable,
-      prorated: comp.prorated,
+      taxable: !!comp.taxable,
+      prorated: !!comp.prorated,
       sequence: comp.sequence,
       notes: comp.notes,
       created_by: comp.created_by || this.structureInfo?.created_by || 1
     });
+
+    this.compositionForm.updateValueAndValidity();
   }
 
   saveComponent() {
@@ -239,7 +297,6 @@ export class StructureCompoentsComponent implements OnInit {
     let payload: any;
 
     if (this.isEditMode) {
-      // Full edit mode (like PayrollCompoentsComponent)
       payload = {
         structure_id: this.structureId,
         code: formValue.code,
@@ -255,18 +312,23 @@ export class StructureCompoentsComponent implements OnInit {
         created_by: Number(formValue.created_by)
       };
 
-      if (payload.calculation_type === 'FIXED') {
-        delete payload.percentage_of_code;
-      }
+      this.payrollService.updatePayrollComponent(this.selectedComponentId!, payload).subscribe({
+        next: () => {
+          this.isModalOpen = false;
+          this.fetchStructureDetails();
+        },
+        error: (err) => {
+          console.error('Error updating component:', err);
+          alert('Failed to update component');
+        }
+      });
     } else {
-      // Mapping mode (Add)
       const masterComp = this.availableComponents.find(c => c.id == formValue.component_id);
       if (!masterComp) {
         alert('Invalid component selected');
         return;
       }
 
-      // Parse formula or value
       let fValue = formValue.formula_or_value.toString();
       let calculationType = 'FIXED';
       let numericValue = 0;
@@ -292,28 +354,15 @@ export class StructureCompoentsComponent implements OnInit {
         notes: masterComp.notes || '',
         created_by: Number(formValue.created_by)
       };
-    }
 
-    if (this.isEditMode && this.selectedComponentId) {
-      this.payrollService.updatePayrollComponent(this.selectedComponentId, payload).subscribe({
-        next: () => {
-          this.isModalOpen = false;
-          this.fetchStructureDetails();
-        },
-        error: (err) => {
-          console.error('Error updating component:', err);
-          alert('Failed to update component');
-        }
-      });
-    } else {
       this.payrollService.createPayrollComponent(payload).subscribe({
         next: () => {
           this.isModalOpen = false;
           this.fetchStructureDetails();
         },
         error: (err) => {
-          console.error('Error creating component:', err);
-          alert('Failed to add component to structure');
+          console.error('Error adding component:', err);
+          alert('Failed to add component');
         }
       });
     }
