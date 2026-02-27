@@ -15,6 +15,12 @@
     </div>
 
     <div class="components-card">
+          <!-- Footer -->
+          <div class="footer">
+              <div class="total">
+                Total: <strong>{{ getTotal() }}%</strong>
+              </div>
+            </div>
       <div class="component-table-wrapper">
         <div class="component-table">
           <div class="table-head">
@@ -64,12 +70,7 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div class="footer">
-        <div class="total">
-          Total: <strong>{{ getTotal() }}%</strong>
-        </div>
-      </div>
+  
 
     </div>
   </div>
@@ -83,63 +84,68 @@
     </div>
     <div class="modal-body">
       <form [formGroup]="componentForm" (ngSubmit)="saveComponent()" class="component-form-vertical">
-        <div class="form-group">
-          <label>Structure Name</label>
-          <select formControlName="structure_id">
-            <option *ngFor="let structure of structures" [value]="structure.id">
-              {{ structure.structure_name }} ({{ structure.code }})
-            </option>
-          </select>
+        <div class="form-continer">
+            <div class="form-group">
+            <label>Structure Name</label>
+            <select formControlName="structure_id">
+              <option *ngFor="let structure of structures" [value]="structure.id">
+                {{ structure.structure_name }} ({{ structure.code }})
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Code</label>
+            <input type="text" formControlName="code" placeholder="e.g. HRMS" />
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" formControlName="name" placeholder="e.g. Basic Salary" />
+          </div>
+          <div class="form-group">
+            <label>Component Type</label>
+            <select formControlName="component_type">
+              <option value="EARNING">EARNING</option>
+              <option value="DEDUCTION">DEDUCTION</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Calculation Type</label>
+            <select formControlName="calculation_type">
+              <option value="FIXED">FIXED</option>
+              <option value="PERCENTAGE">PERCENTAGE</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Value</label>
+            <input type="number" formControlName="value" />
+          </div>
+          <div class="form-group" *ngIf="componentForm.get('calculation_type')?.value === 'PERCENTAGE'">
+            <label>Percentage of Code</label>
+            <input type="text" formControlName="percentage_of_code" placeholder="e.g. BASIC" />
+          </div>
+          <div class="form-group row-group">
+            <label class="check">
+              <input type="checkbox" formControlName="taxable" /> Taxable
+            </label>
+            <label class="check">
+              <input type="checkbox" formControlName="prorated" /> Prorated
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Sequence</label>
+            <input type="number" formControlName="sequence" />
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <input type="text" formControlName="notes" />
+          </div>
         </div>
-        <div class="form-group">
-          <label>Code</label>
-          <input type="text" formControlName="code" placeholder="e.g. HRMS" />
-        </div>
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" formControlName="name" placeholder="e.g. Basic Salary" />
-        </div>
-        <div class="form-group">
-          <label>Component Type</label>
-          <select formControlName="component_type">
-            <option value="EARNING">EARNING</option>
-            <option value="DEDUCTION">DEDUCTION</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Calculation Type</label>
-          <select formControlName="calculation_type">
-            <option value="FIXED">FIXED</option>
-            <option value="PERCENTAGE">PERCENTAGE</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Value</label>
-          <input type="number" formControlName="value" />
-        </div>
-        <div class="form-group" *ngIf="componentForm.get('calculation_type')?.value === 'PERCENTAGE'">
-          <label>Percentage of Code</label>
-          <input type="text" formControlName="percentage_of_code" placeholder="e.g. BASIC" />
-        </div>
-        <div class="form-group row-group">
-          <label class="check">
-            <input type="checkbox" formControlName="taxable" /> Taxable
-          </label>
-          <label class="check">
-            <input type="checkbox" formControlName="prorated" /> Prorated
-          </label>
-        </div>
-        <div class="form-group">
-          <label>Sequence</label>
-          <input type="number" formControlName="sequence" />
-        </div>
-        <div class="form-group">
-          <label>Notes</label>
-          <input type="text" formControlName="notes" />
-        </div>
+        
+      <div class="form-footer">
         <button type="submit" class="submit-btn" [disabled]="componentForm.invalid">
           {{ isEditMode ? 'Update Component' : 'Save Component' }}
         </button>
+      </div>
       </form>
     </div>
   </div>

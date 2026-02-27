@@ -83,8 +83,8 @@
 
             <div class="modal-body">
                 <form [formGroup]="templateForm" (ngSubmit)="saveTemplate()" class="form-vertical">
-
-                    <div class="form-group">
+                  <div class="form-continer">
+                      <div class="form-group">
                         <label>Template Name</label>
                         <input type="text" formControlName="template_name"
                             placeholder="e.g. Standard Executive Package" />
@@ -102,10 +102,13 @@
                             Is Active
                         </label>
                     </div>
-
-                    <button type="submit" class="submit-btn" [disabled]="templateForm.invalid">
-                        {{ isEditMode ? 'Update Template' : 'Save Template' }}
-                    </button>
+                </div>
+                <div class="form-footer">
+                        <button type="submit" class="submit-btn" [disabled]="templateForm.invalid">
+                                {{ isEditMode ? 'Update Template' : 'Save Template' }}
+                            </button>
+                </div>
+                    
 
                 </form>
             </div>
