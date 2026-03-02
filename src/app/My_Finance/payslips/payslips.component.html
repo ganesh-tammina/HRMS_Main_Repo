@@ -106,45 +106,62 @@
       <ion-grid class="salary-table">
         <ion-row>
 
-          <!-- EARNINGS -->
+          <!-- EARNINGS (Left Column) -->
           <ion-col size="7" class="border-right">
-
             <ion-row class="table-header">
               <ion-col size="6">EARNINGS</ion-col>
-              <ion-col size="3">Paid</ion-col>
-              <ion-col size="3">Actual</ion-col>
+              <ion-col size="3">Paid Amount</ion-col>
+              <ion-col size="3">Actual Amount</ion-col>
             </ion-row>
 
             <ion-row class="table-list" *ngFor="let item of earnings">
               <ion-col size="6">{{ item.name }}</ion-col>
-              <ion-col size="3">{{ item.paid | number:'1.0-2' }}</ion-col>
-              <ion-col size="3">{{ item.actual | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ item.paid | number:'1.2-2' }}</ion-col>
+              <ion-col size="3">{{ item.actual | number:'1.2-2' }}</ion-col>
             </ion-row>
 
             <ion-row class="table-list label-total">
               <ion-col size="6">Total Earnings (A)</ion-col>
-              <ion-col size="3">{{ totalEarnings | number:'1.0-2' }}</ion-col>
-              <ion-col size="3">{{ totalEarnings | number:'1.0-2' }}</ion-col>
+              <ion-col size="3">{{ totalEarnings | number:'1.2-2' }}</ion-col>
+              <ion-col size="3">{{ totalEarnings | number:'1.2-2' }}</ion-col>
             </ion-row>
-
           </ion-col>
 
-          <!-- CONTRIBUTIONS & TAX -->
+          <!-- CONTRIBUTIONS & TAXES (Right Column) -->
           <ion-col size="5">
 
+            <!-- CONTRIBUTIONS -->
             <ion-row class="table-header">
-              <ion-col size="8">DEDUCTIONS & CONTRIBUTIONS</ion-col>
+              <ion-col size="8">CONTRIBUTIONS</ion-col>
               <ion-col size="4"></ion-col>
             </ion-row>
 
-            <ion-row class="table-list" *ngFor="let item of deductions">
+            <ion-row class="table-list" *ngFor="let item of contributions">
               <ion-col size="8">{{ item.name }}</ion-col>
-              <ion-col size="4">₹ {{ item.paid | number:'1.0-2' }}</ion-col>
+              <ion-col size="4">{{ item.paid | number:'1.2-2' }}</ion-col>
             </ion-row>
 
             <ion-row class="table-list label-total">
-              <ion-col size="8">Total Deductions (B)</ion-col>
-              <ion-col size="4">₹ {{ totalDeductions | number:'1.0-2' }}</ion-col>
+              <ion-col size="8">Total Contributions (B)</ion-col>
+              <ion-col size="4">{{ totalContributions | number:'1.2-2' }}</ion-col>
+            </ion-row>
+
+            <div style="margin-top: 20px;"></div>
+
+            <!-- TAXES & DEDUCTIONS -->
+            <ion-row class="table-header">
+              <ion-col size="8">TAXES & DEDUCTIONS</ion-col>
+              <ion-col size="4"></ion-col>
+            </ion-row>
+
+            <ion-row class="table-list" *ngFor="let item of taxes">
+              <ion-col size="8">{{ item.name }}</ion-col>
+              <ion-col size="4">{{ item.paid | number:'1.2-2' }}</ion-col>
+            </ion-row>
+
+            <ion-row class="table-list label-total">
+              <ion-col size="8">Total Taxes & Deductions (C)</ion-col>
+              <ion-col size="4">{{ totalTaxes | number:'1.2-2' }}</ion-col>
             </ion-row>
 
           </ion-col>
@@ -154,12 +171,12 @@
       <!-- NET PAY -->
       <ion-grid class="netpay-section">
         <ion-row>
-          <ion-col size="5"><strong>Net Salary Payable (A - B)</strong></ion-col>
-          <ion-col size="7"><strong>₹ {{ netSalary | number:'1.0-2' }}</strong></ion-col>
+          <ion-col size="5"><strong>Net Salary Payable ( A - B - C )</strong></ion-col>
+          <ion-col size="7"><strong>{{ netSalary | number:'1.2-2' }}</strong></ion-col>
         </ion-row>
 
         <ion-row>
-          <ion-col size="5"><strong>Net Salary in Words</strong></ion-col>
+          <ion-col size="5"><strong>Net Salary in words</strong></ion-col>
           <ion-col size="7">{{ netSalaryInWords }}</ion-col>
         </ion-row>
       </ion-grid>

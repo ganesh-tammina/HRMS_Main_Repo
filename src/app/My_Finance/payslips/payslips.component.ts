@@ -40,9 +40,11 @@ export class PayslipsComponent implements OnInit {
   netSalary!: number;
   netSalaryInWords: string = '';
 
-  earnings: any[] = [];
-  deductions: any[] = [];
   salaryStructure: any = null;
+  earnings: any[] = [];
+  contributions: any[] = [];
+  taxes: any[] = [];
+  totalTaxes: number = 0;
 
   constructor(
     private employeeService: EmployeeService,
@@ -127,10 +129,11 @@ export class PayslipsComponent implements OnInit {
         let esier = 0;
         Object.keys(calculatedAmts).forEach(k => {
           const keyUpper = k.toUpperCase();
-          if (keyUpper.includes('PF') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('ER'))) {
+          const isER = keyUpper.includes('EMPLOYER') || keyUpper.includes('EMPLOYOR') || keyUpper.includes('ER');
+          if (keyUpper.includes('PF') && isER) {
             pfm = calculatedAmts[k];
           }
-          if (keyUpper.includes('ESI') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('ER'))) {
+          if (keyUpper.includes('ESI') && isER) {
             esier = calculatedAmts[k];
           }
         });
@@ -140,39 +143,87 @@ export class PayslipsComponent implements OnInit {
 
     // Pass 5: Special Allowance (Balancing)
     const specialAllowanceComp = sortedComps.find(c =>
-      c.code?.toUpperCase().includes('SPECIAL') && c.code?.toUpperCase().includes('ALLOWANCE') ||
-      c.name?.toUpperCase().includes('SPECIAL') && c.name?.toUpperCase().includes('ALLOWANCE')
+      (c.code || '').toUpperCase().includes('SPECIAL') && (c.code || '').toUpperCase().includes('ALLOWANCE') ||
+      (c.name || '').toUpperCase().includes('SPECIAL') && (c.name || '').toUpperCase().includes('ALLOWANCE')
     );
 
     if (specialAllowanceComp) {
-      let sumOfOthers = 0;
+      let sumOfOtherEarnings = 0;
       sortedComps.forEach(c => {
         if (c === specialAllowanceComp) return;
-        sumOfOthers += calculatedAmts[c.code] || 0;
+        // Total sum of all EARNINGS except Special Allowance
+        if (c.component_type?.toUpperCase() === 'EARNING') {
+          sumOfOtherEarnings += calculatedAmts[c.code] || 0;
+        }
       });
-      calculatedAmts[specialAllowanceComp.code] = Math.max(0, ctc - sumOfOthers);
+      // Special Allowance absorbs the remainder of CTC 
+      // This technically 'adds' ER PF, ER ESI and PT into the balance because 
+      // we only subtracted the core earnings (Basic, HRA, etc.)
+      calculatedAmts[specialAllowanceComp.code] = Math.max(0, ctc - sumOfOtherEarnings);
     }
 
-    // Populate Earnings and Deductions for UI
+    // Populate Earnings, Contributions, and Taxes for UI
     this.earnings = [];
-    this.deductions = [];
+    this.contributions = [];
+    this.taxes = [];
     this.totalEarnings = 0;
-    this.totalDeductions = 0;
+    this.totalContributions = 0;
+    this.totalTaxes = 0;
 
+    // 1. Calculate Employer portions total first
+    let erPortionsAnnual = 0;
     sortedComps.forEach(c => {
-      const monthlyAmt = (calculatedAmts[c.code] || 0) / 12;
+      const code = (c.code || '').toUpperCase();
+      const name = (c.name || '').toUpperCase();
+      const isER = code.includes('EMPLOYER') || code.includes('EMPLOYOR') || code.includes('ER') ||
+        name.includes('EMPLOYER') || name.includes('EMPLOYOR') || name.includes('ER');
+      if (isER) {
+        erPortionsAnnual += calculatedAmts[c.code] || 0;
+      }
+    });
+
+    const erPortionsMonthly = Math.round(erPortionsAnnual / 12);
+
+    // 2. Populate display lists
+    sortedComps.forEach(c => {
+      const code = (c.code || '').toUpperCase();
+      const name = (c.name || '').toUpperCase();
+      const isER = code.includes('EMPLOYER') || code.includes('EMPLOYOR') || code.includes('ER') ||
+        name.includes('EMPLOYER') || name.includes('EMPLOYOR') || name.includes('ER');
+
+      // Skip Employer components from displaying on the Payslip
+      if (isER) return;
+
+      const annualAmt = calculatedAmts[c.code] || 0;
+      let monthlyAmt = Math.round(annualAmt / 12);
+
+      // As per user request: Special allowance absorbs ER PF, ER ESI and PT.
+      // However, to make Total Earnings (A) = (CTC - ER portions), we subtract ER portions from the SA display value.
+      if (specialAllowanceComp && c.code === specialAllowanceComp.code) {
+        monthlyAmt -= erPortionsMonthly;
+      }
+
       const compObj = { name: c.name, actual: monthlyAmt, paid: monthlyAmt };
 
       if (c.component_type?.toUpperCase() === 'EARNING') {
         this.earnings.push(compObj);
         this.totalEarnings += monthlyAmt;
       } else {
-        this.deductions.push(compObj);
-        this.totalDeductions += monthlyAmt;
+        const isContribution = code.includes('PF') || code.includes('ESI') ||
+          name.includes('PF') || name.includes('ESI');
+
+        if (isContribution) {
+          this.contributions.push(compObj);
+          this.totalContributions += monthlyAmt;
+        } else {
+          this.taxes.push(compObj);
+          this.totalTaxes += monthlyAmt;
+        }
       }
     });
 
-    this.netSalary = this.totalEarnings - this.totalDeductions;
+    this.totalDeductions = this.totalContributions + this.totalTaxes;
+    this.netSalary = this.totalEarnings - this.totalContributions - this.totalTaxes;
     this.netSalaryInWords = this.numberToWords(this.netSalary);
   }
 
