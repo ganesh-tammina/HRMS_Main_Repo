@@ -224,40 +224,17 @@ export class StructureCompoentsComponent implements OnInit {
       c.name?.toUpperCase() === 'SPECIAL ALLOWANCE'
     );
 
-    // 2. Calculate everything EXCEPT Special Allowance first
-    let sumOfCoreEarnings = 0;
+    // 2. Calculate sum of ALL other components first
+    let sumOfOthers = 0;
     this.compositionData.forEach(c => {
       if (c === specialAllowanceComp) return;
-
-      const code = (c.code || '').toUpperCase();
-      const name = (c.name || '').toUpperCase();
-
-      // Identify if it's an Employer or Tax/Deduction component
-      const isEmployerComp = code.includes('EMPLOYER') || code.includes('EMPLOYOR') || code.includes('ER') ||
-        name.includes('EMPLOYER') || name.includes('EMPLOYOR') || name.includes('ER');
-      const isTaxDeduction = code.includes('TAX') || name.includes('TAX') ||
-        c.component_type?.toUpperCase() === 'DEDUCTION' ||
-        c.component_type?.toUpperCase() === 'CONTRIBUTION';
-
-      // Only subtract core earnings (Basic, HRA, etc.) from CTC to balance Special Allowance
-      if (c.component_type?.toUpperCase() === 'EARNING' && !isEmployerComp && !isTaxDeduction) {
-        sumOfCoreEarnings += calculatedAmts[c.code] || 0;
-      }
+      sumOfOthers += calculatedAmts[c.code] || 0;
     });
 
-    // 3. Assign the balance to Special Allowance
+    // 3. Assign the balance to Special Allowance (Special Allowance = CTC - Sum of all other components)
     if (specialAllowanceComp) {
-      let ptTotal = 0;
-      Object.keys(calculatedAmts).forEach(k => {
-        const keyUpper = k.toUpperCase();
-        if (keyUpper.includes('TAX')) {
-          ptTotal += calculatedAmts[k] || 0;
-        }
-      });
-      // Special Allowance = (CTC - Core Earnings) + Professional Tax
-      const balance = Math.max(0, ctc - sumOfCoreEarnings) + ptTotal;
+      const balance = Math.max(0, ctc - sumOfOthers);
       calculatedAmts[specialAllowanceComp.code] = balance;
-
       if (specialAllowanceComp.calculation_type === 'FIXED') {
         specialAllowanceComp.value = balance;
       }
@@ -266,15 +243,6 @@ export class StructureCompoentsComponent implements OnInit {
     // 4. Final total calculation for UI
     this.totalEarnings = 0;
     this.totalDeductions = 0;
-
-    // Find Employer PF for subtraction if needed
-    let pfm = 0;
-    Object.keys(calculatedAmts).forEach(k => {
-      const keyUpper = k.toUpperCase();
-      if (keyUpper.includes('PF') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('EMPLOYOR') || keyUpper.includes('ER'))) {
-        pfm = calculatedAmts[k] || 0;
-      }
-    });
 
     this.compositionData.forEach(c => {
       const annualAmt = calculatedAmts[c.code] || 0;
@@ -290,10 +258,6 @@ export class StructureCompoentsComponent implements OnInit {
         this.totalDeductions += currentAmt;
       }
     });
-
-    // As per user request: minus PF_Employer from totalEarnings
-    const pfmToMinus = this.viewMode === 'annual' ? pfm : pfm / 12;
-    this.totalEarnings -= Math.round(pfmToMinus);
   }
 
   toggleView(mode: 'annual' | 'monthly') {
