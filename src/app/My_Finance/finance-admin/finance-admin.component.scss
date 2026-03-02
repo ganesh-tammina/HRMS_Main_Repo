@@ -91,3 +91,53 @@ ion-card-subtitle {
   font-size: 1rem;
   color: #3a7afe;
 }
+.admin-dashboard-card {
+  // @extend .page-containerOn;
+  ion-card {
+    margin-left: 0;
+    margin-right: 0;
+    ion-card-header {
+      ion-card-title {
+        // @include card-sub-title();
+        small {
+          background: #1F74BB;
+          color: #fff;
+          border-radius: 20px;
+          padding: 2px 5px;
+        }
+      }
+      ion-searchbar {
+        --background: var(--ion-background-color, #fff);
+        border-radius: 20px;
+        --box-shadow: none;
+        border: 1px solid #ABABAB;
+        --min-height: 36px;
+        height: 42px;
+        width: 50%;
+      }
+    }
+  }
+  .manage-block {
+    display: flex;
+    flex-wrap: wrap;
+    ion-card {
+      background: linear-gradient(105.32deg, #1F74BB -0.07%, #0E3555 62.91%);
+      width: 56.553957vh;
+      margin-right: 20px;   
+      border-radius: 12px;
+      .blue-img {
+        background: #fff;
+        border-radius: 50%;
+        padding: 10px;
+      }
+      ion-card-title, p {
+        color: #fff;
+        margin-top: 15px;
+      }   
+    }
+    ion-button {
+      width: fit-content;
+      margin: 10px;
+    }
+  }
+}
