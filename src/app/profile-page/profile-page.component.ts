@@ -73,66 +73,15 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
     console.log(this.env);
 
-    // Load existing image from localStorage
-    // this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
-
-    // // Initial fetch if employeeID exists
-    // if (this.routeGuardService.employeeID) {
-    //   this.currentEmployeeId = this.routeGuardService.employeeID;
-    //   this.refreshEmployee();
-    // } else {
-    //   console.warn(
-    //     '⚠️ No employeeID found in routeGuardService on init — will retry for a short period'
-    //   );
-
-    //   // Retry loop up to 8 seconds to see if employeeID becomes available
-    //   interval(1000)
-    //     .pipe(take(8), takeUntil(this.destroy$))
-    //     .subscribe({
-    //       /*************  ✨ Windsurf Command ⭐  *************/
-    //       /**
-    //        * Called when the retry loop completes. If the employeeID has become available,
-    //        * sets the currentEmployeeId and calls refreshEmployee() to fetch the employee data.
-    //        */
-    //       /*******  56e40ed0-fb04-42da-bc49-20abb100f482  *******/
-    //       next: () => {
-    //         if (this.routeGuardService.employeeID) {
-    //           console.log(
-    //             'ℹ️ employeeID became available during retry loop:',
-    //             this.routeGuardService.employeeID
-    //           );
-    //           this.currentEmployeeId = this.routeGuardService.employeeID;
-    //           this.refreshEmployee();
-    //         }
-    //       },
-    //       complete: () => {
-    //         if (!this.routeGuardService.employeeID) {
-    //           console.warn(
-    //             '⚠️ employeeID still not available after retries. Call refreshEmployee() when it is set.'
-    //           );
-    //         }
-    //       },
-    //     });
-    // }
-
-    // // Check for employee changes every second
-    // interval(1000)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe(() => {
-    //     const currentId = this.routeGuardService.employeeID;
-    //     if (currentId && currentId !== this.currentEmployeeId) {
-    //       console.log(
-    //         '🔄 Employee changed from',
-    //         this.currentEmployeeId,
-    //         'to',
-    //         currentId
-    //       );
-    //       this.currentEmployeeId = currentId;
-    //       this.clearCachedData();
-    //       this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
-    //       this.refreshEmployee();
-    //     }
-    //   });
+    // Listen for employee profile image updates
+    this.employeeService.profileImageUpdate$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imagePath) => {
+        if (imagePath && this.currentEmployee) {
+          this.currentEmployee.profile_image = imagePath;
+          console.log('🖼️ Profile Page: Profile image updated:', imagePath);
+        }
+      });
   }
 
   /**

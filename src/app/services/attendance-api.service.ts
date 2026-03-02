@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, shareReplay } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -65,6 +65,7 @@ export class AttendanceApiService {
     ).pipe(
       tap((res: any) => {
         if (res?.success) {
+          this.clearCaches();
           this.setClockState(true); // Broadcast clock in state
         }
       })
@@ -82,6 +83,7 @@ export class AttendanceApiService {
     ).pipe(
       tap((res: any) => {
         if (res?.success) {
+          this.clearCaches();
           this.setClockState(false); // Broadcast clock out state
         }
       })
@@ -112,14 +114,19 @@ export class AttendanceApiService {
       }
     );
   }
-  /** 📅 TODAY ATTENDANCE (NEW – AS PER CURL) */
-  getTodayAttendance(): Observable<any> {
-    return this.http.get(
+  private todayAttendance$: Observable<any> | null = null;
+
+  /** 📅 TODAY ATTENDANCE */
+  getTodayAttendance(force = false): Observable<any> {
+    if (!force && this.todayAttendance$) {
+      return this.todayAttendance$;
+    }
+
+    this.todayAttendance$ = this.http.get(
       `${this.BASE_URL}/today`,
       { headers: this.getHeaders() }
     ).pipe(
       tap((res: any) => {
-        // Update initial clock state based on last punch
         const punches = res?.punches || [];
         if (punches.length > 0) {
           const lastPunch = punches[punches.length - 1];
@@ -127,8 +134,16 @@ export class AttendanceApiService {
         } else {
           this.setClockState(false);
         }
-      })
+      }),
+      shareReplay(1)
     );
+
+    return this.todayAttendance$;
+  }
+
+  // Clear cache after punch
+  private clearCaches() {
+    this.todayAttendance$ = null;
   }
 
   getAttendanceDetailsByDate(date: string): Observable<any> {

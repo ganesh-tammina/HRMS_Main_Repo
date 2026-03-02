@@ -15,7 +15,7 @@
     <ion-item *ngFor="let emp of employeeList" (click)="openEmployeeProfile(emp)" button detail>
       <!-- PROFILE IMAGE -->
       <ion-avatar slot="start">
-        <img [src]="getEmployeeImage(emp)" alt="Profile" onerror="this.src='assets/icon/Default-user.svg'" />
+        <img [src]="apiBaseUrl + emp.profile_image" alt="Profile" onerror="this.src='assets/icon/Default-user.svg'" />
       </ion-avatar>
 
       <!-- EMPLOYEE DETAILS -->

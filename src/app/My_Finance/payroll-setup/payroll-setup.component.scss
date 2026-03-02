@@ -1,0 +1,193 @@
+.payroll-setup-content {
+  --background: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  .header-section {
+    background: #fff;
+    padding: 2.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    .title-block {
+      h1 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: -0.025em;
+      }
+
+      p {
+        margin: 0.5rem 0 0;
+        color: #64748b;
+        font-size: 0.95rem;
+        max-width: 600px;
+      }
+    }
+
+    .action-bar {
+      display: flex;
+      gap: 1rem;
+
+      .btn-setup {
+        --border-radius: 10px;
+        font-weight: 600;
+        height: 44px;
+        margin: 0;
+        --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+        &.success {
+          --background: #10b981;
+          --background-hover: #059669;
+        }
+
+        &.danger {
+          --color: #ef4444;
+          --border-color: #ef4444;
+          --background-hover: #fef2f2;
+        }
+      }
+    }
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    padding: 0 2rem 3rem;
+  }
+
+  .setup-card {
+    position: relative;
+    background: #fff;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      border-color: #e2e8f0;
+
+      .card-glow {
+        opacity: 0.1;
+      }
+
+      .icon-wrapper {
+        transform: scale(1.1);
+      }
+
+      .arrow-btn {
+        color: #1e4d73;
+        gap: 0.75rem;
+      }
+    }
+
+    .card-glow {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.4s ease;
+
+      &.comp {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+
+      &.temp {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+
+      &.struct {
+        background: #faf5ff;
+        color: #9333ea;
+      }
+
+      &.report {
+        background: #fff7ed;
+        color: #ea580c;
+      }
+    }
+
+    .card-content {
+      h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      p {
+        margin: 0.75rem 0 1.5rem;
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .arrow-btn {
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+
+        ion-icon {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .payroll-setup-content {
+    .header-section {
+      padding: 1.5rem;
+      text-align: center;
+      justify-content: center;
+
+      .action-bar {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .dashboard-grid {
+      padding: 0 1.5rem 2rem;
+    }
+  }
+}

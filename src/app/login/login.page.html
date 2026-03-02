@@ -1,81 +1,133 @@
 <!-- TOAST MESSAGE -->
-<div *ngIf="toastMessage" [ngClass]="{'toast': true, 'toast-error': toastError}">{{ toastMessage }}</div>
-<div class="login-wrapper">
-  <div class="img">
-    <img src="assets/login-image-background.svg" />
+<div *ngIf="toastMessage" [ngClass]="{'toast': true, 'toast-error': toastError}" class="fade-in-down">
+  {{ toastMessage }}
+</div>
+
+<div class="login-page-container">
+  <!-- Background Hero Section -->
+  <div class="hero-background">
+    <img src="assets/login-hero-bg.png" alt="Hero Background" class="bg-pulse">
   </div>
-  <div class="login-right">
-    <div class="login-card login-main-card fade-in-up">
-      <p>
-        <img src="../../assets/TT_blue_logo.svg" class="mobile-logo">
-      </p>
 
-      <h2 class="login-title">Log into your account</h2>
+  <div class="login-content-wrapper">
+    <!-- Left Section: Optional Brand/Welcome Text -->
+    <div class="brand-section fade-in-left">
+      <div class="brand-content">
+        <img src="../../assets/TT_blue_logo.svg" alt="Company Logo" class="brand-logo">
+        <h1 class="brand-title">Welcome Back</h1>
+        <p class="brand-subtitle">Experience the future of HR Management with MasterHRMS.</p>
+      </div>
+    </div>
 
-      <form *ngIf="!showForgotPassword" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <!-- EMAIL -->
-        <div *ngIf="!showForgotPassword" class="form-group">
-          <label>Username</label>
-          <input type="email" formControlName="email" placeholder="Enter your Username" [disabled]="emailChecked"
-            autofocus (keydown)="onKeyPress($event)" />
-          <small class="error" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
-            Username is required
-          </small>
+    <!-- Right Section: Login Card -->
+    <div class="login-form-section fade-in-right">
+      <div class="login-glass-card">
+        <div class="card-header">
+          <img src="../../assets/TT_blue_logo.svg" class="mobile-logo" alt="Logo">
+          <h2 class="form-title">Log into your account</h2>
+          <p class="form-subtitle">Enter your credentials to continue</p>
         </div>
 
-        <!-- PASSWORD -->
-        <div class="form-group" *ngIf="showPassword">
-          <label>Password</label>
-          <input type="password" formControlName="password" placeholder="Enter password" />
-        </div>
+        <!-- MAIN LOGIN FORM -->
+        <form *ngIf="!showForgotPassword" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-body">
 
-        <!-- CREATE PASSWORD -->
-        <div class="form-group" *ngIf="showCreatePassword">
-          <label>Create Password</label>
-          <input type="password" formControlName="password" placeholder="Create password" />
-        </div>
+          <!-- USERNAME / EMAIL -->
+          <div class="form-field">
+            <label for="email">Username</label>
+            <div class="input-wrapper">
+              <input id="email" type="email" formControlName="email" placeholder="Enter your username"
+                [disabled]="emailChecked" autofocus (keydown)="onKeyPress($event)" />
+              <span class="focus-border"></span>
+            </div>
+            <small class="field-error" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+              Username is required
+            </small>
+          </div>
 
-        <!-- NEXT -->
-        <button type="button" class="btn-primary" *ngIf="!emailChecked && !showForgotPassword" (click)="onNext()"
-          [disabled]="loginForm.get('email')?.invalid">
-          Next
-        </button>
+          <!-- PASSWORD -->
+          <div class="form-field staggered-fade-in" *ngIf="showPassword">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <input id="password" type="password" formControlName="password" placeholder="Enter password" />
+              <span class="focus-border"></span>
+            </div>
+          </div>
 
-        <!-- LOGIN -->
-        <button type="submit" class="btn-primary" *ngIf="showPassword">
-          Login
-        </button>
+          <!-- CREATE PASSWORD -->
+          <div class="form-field staggered-fade-in" *ngIf="showCreatePassword">
+            <label for="createPassword">Create Password</label>
+            <div class="input-wrapper">
+              <input id="createPassword" type="password" formControlName="password" placeholder="Create password" />
+              <span class="focus-border"></span>
+            </div>
+          </div>
 
-        <!-- CREATE ACCOUNT -->
-        <button type="submit" class="btn-primary" *ngIf="showCreatePassword">
-          Create Password & Login
-        </button>
+          <!-- ACTION BUTTONS -->
+          <div class="form-actions">
+            <!-- NEXT -->
+            <button type="button" class="primary-button" *ngIf="!emailChecked && !showForgotPassword" (click)="onNext()"
+              [disabled]="loginForm.get('email')?.invalid">
+              <span>Next</span>
+              <i class="icon-arrow-right"></i>
+            </button>
 
-        <!-- FORGOT PASSWORD LINK -->
-        <div class="form-group forgot" *ngIf="!showForgotPassword">
-          <a href="javascript:void(0)" (click)="showForgotPasswordForm()">Forgot Password?</a>
-        </div>
-      </form>
+            <!-- LOGIN -->
+            <button type="submit" class="primary-button" *ngIf="showPassword" [disabled]="loading">
+              <span *ngIf="!loading">Login</span>
+              <span *ngIf="loading" class="loader"></span>
+            </button>
 
-      <!-- FORGOT PASSWORD FORM INSIDE LOGIN CARD -->
-      <form *ngIf="showForgotPassword" [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()"
-        class="forgot-card fade-in-scale">
-        <h3 class="modal-title">Reset Password</h3>
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" formControlName="employee_id" placeholder="Enter your Username" />
-        </div>
-        <div class="form-group">
-          <label>New Password</label>
-          <input type="password" formControlName="password" placeholder="Enter new password" />
-        </div>
-        <div class="modal-actions">
-          <button type="submit" class="btn-primary" [disabled]="forgotPasswordForm.invalid || loading">Reset
-            Password</button>
-          <button type="button" class="btn-secondary" (click)="hideForgotPasswordForm()">Cancel</button>
-        </div>
-      </form>
+            <!-- CREATE ACCOUNT -->
+            <button type="submit" class="primary-button outline" *ngIf="showCreatePassword" [disabled]="loading">
+              <span *ngIf="!loading">Create & Login</span>
+              <span *ngIf="loading" class="loader"></span>
+            </button>
+          </div>
 
+          <!-- HELP LINK -->
+          <div class="form-footer" *ngIf="!showForgotPassword">
+            <button type="button" class="text-link" (click)="showForgotPasswordForm()">
+              Forgot Password?
+            </button>
+          </div>
+        </form>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <form *ngIf="showForgotPassword" [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()"
+          class="form-body fade-in">
+          <div class="reset-header">
+            <h3>Reset Password</h3>
+            <p>Enter your details to create a new password</p>
+          </div>
+
+          <div class="form-field">
+            <label>Username</label>
+            <div class="input-wrapper">
+              <input type="text" formControlName="employee_id" placeholder="Enter your username" />
+              <span class="focus-border"></span>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>New Password</label>
+            <div class="input-wrapper">
+              <input type="password" formControlName="password" placeholder="Enter new password" />
+              <span class="focus-border"></span>
+            </div>
+          </div>
+
+          <div class="form-actions vertical">
+            <button type="submit" class="primary-button" [disabled]="forgotPasswordForm.invalid || loading">
+              <span *ngIf="!loading">Reset Password</span>
+              <span *ngIf="loading" class="loader"></span>
+            </button>
+            <button type="button" class="secondary-button" (click)="hideForgotPasswordForm()">
+              Cancel
+            </button>
+          </div>
+        </form>
+
+      </div>
     </div>
   </div>
 </div>

@@ -60,7 +60,11 @@ export class LoginPage implements OnInit {
 
   /** STEP 1 */
   onNext(): void {
-    const value = this.loginForm.value.email;
+    let value = this.loginForm.value.email;
+    if (value) {
+      value = value.trim().toLowerCase();
+      this.loginForm.get('email')?.setValue(value);
+    }
     this.isAdmin = this.isAdminLogin(value);
 
     /* 🔥 ADMIN FLOW */
@@ -112,8 +116,12 @@ export class LoginPage implements OnInit {
 
   /** STEP 2 */
   onSubmit(): void {
-    const { email, password } = this.loginForm.value;
-    this.loading = true;
+    let { email, password } = this.loginForm.value;
+    if (email) {
+      email = email.trim().toLowerCase();
+      this.loginForm.get('email')?.setValue(email);
+    }
+    // this.loading = true;
 
     /* 🔥 ADMIN LOGIN */
     if (this.isAdmin) {

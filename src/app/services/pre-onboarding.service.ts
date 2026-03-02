@@ -6,6 +6,7 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { RouteGuardService } from './route-guard/route-service/route-guard.service';
 import { refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
+import { EmployeeService } from './employee.service';
 
 export interface Candidate {
   id: number;
@@ -187,7 +188,8 @@ export class CandidateService {
 
   constructor(
     private http: HttpClient,
-    private routeGuardService: RouteGuardService
+    private routeGuardService: RouteGuardService,
+    private employeeService: EmployeeService
   ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
@@ -222,7 +224,7 @@ export class CandidateService {
   // }
 
   getEmployeeById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.getEmployees}/${id}`);
+    return this.http.get<any>(`${this.getEmployees}/${id}/details`);
   }
 
   // getAdminById(id: string): Observable<any> {
@@ -540,6 +542,7 @@ export class CandidateService {
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
     this.profileImageSubject.next(null);
+    this.employeeService.clearEmployee();
     this.routeGuardService.logout();
   }
 

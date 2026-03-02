@@ -40,8 +40,11 @@ export class WorkFromHomeService {
      POST /api/leaves/wfh-request
      ================================================== */
   wfh(payload: {
-    date: string;
-    work_mode: 'WFH' | 'WFO';
+    start_date?: string;
+    end_date?: string;
+    date?: string;
+    total_days?: number;
+    work_mode: 'WFH' | 'WFO' | 'Remote';
     reason: string;
   }): Observable<any> {
     return this.http.post<any>(

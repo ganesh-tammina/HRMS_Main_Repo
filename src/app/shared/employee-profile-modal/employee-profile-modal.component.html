@@ -1,67 +1,160 @@
-
-<ion-content class="ion-padding">
+<ion-content class="ion-padding profile-container">
+  <div class="d-flex">
+  <!-- Profile Avatar Section -->
+  <div class="profile-avatar-container" style="text-align: center; margin-bottom: 20px;">
+    <ion-avatar
+      style="margin: 0 auto; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+      <img [src]="getProfileImage(selectedObeject)" [alt]="selectedObeject.FullName || selectedObeject.full_name"
+        style="object-fit: cover;">
+    </ion-avatar>
+  </div>
 
   <!-- Avatar with status dot -->
-  <div class="profile-container">
-    <ion-row class="row-space-between">
-      <ion-col size="10" class="row-left">
-          <ion-avatar class="profile-avatar mr-15">
-              <!-- <img [src]="employee.personalDetails?.profileImage || 'assets/default-avatar.png'" />
-             <span class="status-dot" [ngClass]="employee.isAvailable ? 'available' : 'unavailable'"></span> -->
-             <!-- <ion-icon name="person-circle-outline" class="user-icon"></ion-icon> -->
-             <ion-avatar 
-      class="initials-avatar" 
-      [style.--background]="getAvatarColor(selectedObeject.full_name || '')"
-    >
-      <span>{{ getInitials(selectedObeject.full_name || '') }}</span>
-    </ion-avatar>
-            </ion-avatar>     
-            <!-- Name + Job Title -->
-            <div class="profile-info">
-                <h2 class="name">{{ selectedObeject.full_name }}</h2>
-                <p class="job-title">{{ selectedObeject.job_title}}</p>
-                <div class="row-left">
-                    <div class="row-left">
-                        <ion-icon name="location"></ion-icon>
-                        <p class="title">{{ selectedObeject.location}}</p>
-                    </div>
-                    <div class="row-left">
-                        <ion-icon name="mail"></ion-icon>
-                        <p class="title">{{ selectedObeject.work_email}}</p>
-                    </div>
-                </div>
-                
-              </div>
-      </ion-col>
-      <ion-col size="2">
-          <ion-icon class="close-outline" name="close-outline" (click)="close()"></ion-icon>
-          <!-- <ion-button (click)="close()">Close</ion-button> -->
-      </ion-col>
-    </ion-row>
-  
+  <div class="profile-info">
+    <h3 class="name">{{ selectedObeject.FullName || selectedObeject.full_name }}</h3>
+    <p class="job-title m-0">{{ selectedObeject.designation_name || selectedObeject.job_title }}</p>
+    <div class="row-left loc" >
+      <div class="row-left">
+        <ion-icon name="location"></ion-icon>
+        <p class="title">{{ selectedObeject.location_name || selectedObeject.location }}</p>
+      </div>
+      <div class="row-left" style="margin-left: 25px;">
+        <ion-icon name="mail"></ion-icon>
+        <p class="title">{{ selectedObeject.WorkEmail || selectedObeject.work_email }}</p>
+      </div>
+    </div>
+    <!-- Active Status -->
+    <div class="employee-status" style="margin-top: 8px; display: flex; align-items: center;">
+      <span class="status-dot" [ngStyle]="{ 'background': attendanceStatus === 'in' ? '#4caf50' : '#f44336' }"
+        style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;"></span>
+      <span style="font-weight: 500;">
+        {{ attendanceStatus === 'in' ? 'In' : 'Out' }}
+      </span>
+    </div>
+  </div>
   </div>
 
 
 
+  <!-- <ion-row>
+    <ion-col size="10"></ion-col>
+    <ion-col size="2">
+      <ion-icon class="close-outline" name="close-outline" (click)="close()"></ion-icon>
+    </ion-col>
+  </ion-row> -->
+
+
+
+  <!-- Attendance Log -->
+  <!-- <div class="attendance-log">
+    <h2>Attendance Log</h2>
+    <ion-row style="font-weight:bold;">
+      <ion-col>Date</ion-col>
+      <ion-col>Check In</ion-col>
+      <ion-col>Check Out</ion-col>
+      <ion-col>Hours</ion-col>
+      <ion-col>Work Mode</ion-col>
+      <ion-col>Status</ion-col>
+    </ion-row>
+    <ng-container *ngIf="selectedEmployee?.attendance_summary?.recent_records?.length; else noAttendance">
+      <ion-row *ngFor="let record of selectedEmployee.attendance_summary.recent_records">
+        <ion-col>{{ record.attendance_date | date:'shortDate' }}</ion-col>
+        <ion-col>{{ record.first_check_in ? (record.first_check_in | date:'shortTime') : '-' }}</ion-col>
+        <ion-col>{{ record.last_check_out ? (record.last_check_out | date:'shortTime') : '-' }}</ion-col>
+        <ion-col>{{ record.total_hours }}</ion-col>
+        <ion-col>{{ record.work_mode }}</ion-col>
+        <ion-col>{{ record.status }}</ion-col>
+      </ion-row>
+    </ng-container>
+    <ng-template #noAttendance>
+      <ion-row><ion-col colspan="6">No attendance records found.</ion-col></ion-row>
+    </ng-template>
+  </div> -->
+
   <!-- Contact & Job Details -->
- <div class="org-details">
-     <h2>Organizational Details </h2>
-     <ion-row>
-       <ion-col>
-          <label>Business Unit</label>
-          <p>{{ selectedObeject.business_unit }}</p>
-       </ion-col>
-       <ion-col>
-          <label>Department</label>
-          <p>{{ selectedObeject.department }}</p>
-        </ion-col>
-     </ion-row>
-     <div>
-       <label>Reporting Manager</label>
-       <div>
-         <p>{{ selectedObeject.reporting_to }}</p> 
-       </div>
-     </div>
- </div>
+  <div class="org-details">
+    <h3>Organizational Details</h3>
+    <ion-row>
+      <ion-col size="7">
+        <label>Business Unit</label>
+        <p>{{ selectedObeject.business_unit_name }}</p>
+      </ion-col>
+      <ion-col size="4">
+        <label>Department</label>
+        <p>{{ selectedObeject.department_name }}</p>
+      </ion-col>
+    </ion-row>
+    <!-- <ion-row>
+      <ion-col>
+        <label>Location</label>
+        <p>{{ selectedObeject.location_name }}</p>
+      </ion-col>
+      <ion-col>
+        <label>Legal Entity</label>
+        <p>{{ selectedObeject.legal_entity_name }}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <label>Designation</label>
+        <p>{{ selectedObeject.designation_name }}</p>
+      </ion-col>
+      <ion-col>
+        <label>Band</label>
+        <p>{{ selectedObeject.band_name }}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <label>Pay Grade</label>
+        <p>{{ selectedObeject.pay_grade_name }}</p>
+      </ion-col>
+      <ion-col>
+        <label>Cost Center</label>
+        <p>{{ selectedObeject.cost_center_code }}</p>
+      </ion-col>
+    </ion-row> -->
+    <ion-row>
+      <ion-col>
+        <label>Reporting Manager</label>
+        <p>{{ selectedObeject.manager_first_name }} {{ selectedObeject.manager_last_name }} ({{
+          selectedObeject.manager_employee_number }})</p>
+      </ion-col>
+      <!-- <ion-col>
+        <label>Leave Plan</label>
+        <p>{{ selectedObeject.leave_plan_name }}</p>
+      </ion-col> -->
+    </ion-row>
+    <!-- <ion-row>
+      <ion-col>
+        <label>Shift Policy</label>
+        <p>{{ selectedObeject.shift_policy_name }}</p>
+      </ion-col>
+      <ion-col>
+        <label>Weekly Off Policy</label>
+        <p>{{ selectedObeject.weekly_off_policy_name }}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <label>Attendance Policy</label>
+        <p>{{ selectedObeject.attendance_policy_name }}</p>
+      </ion-col>
+      <ion-col>
+        <label>Attendance Capture Scheme</label>
+        <p>{{ selectedObeject.attendance_capture_scheme_name }}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <label>Holiday List</label>
+        <p>{{ selectedObeject.holiday_list_name }}</p>
+      </ion-col>
+      <ion-col>
+        <label>Expense Policy</label>
+        <p>{{ selectedObeject.expense_policy_name }}</p>
+      </ion-col>
+    </ion-row> -->
+  </div>
 
 </ion-content>

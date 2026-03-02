@@ -10,8 +10,7 @@
     </div>
   </div>
   <div [class.hrms-blur]="showIntro">
-    <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage"
-      [employee]="one"></app-header>
+    <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage"></app-header>
 
     <ion-split-pane contentId="main-content"
       [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''">

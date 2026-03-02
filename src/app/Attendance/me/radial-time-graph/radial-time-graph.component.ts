@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-radial-time-graph',
@@ -6,14 +6,21 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './radial-time-graph.component.html',
   styleUrls: ['./radial-time-graph.component.scss']
 })
-export class RadialTimeGraphComponent implements OnInit {
+export class RadialTimeGraphComponent implements OnInit, OnDestroy {
   hourAngle: number = 0;
   minuteAngle: number = 0;
   secondAngle: number = 0;
+  private timer: any;
 
   ngOnInit() {
     this.updateTime();
-    setInterval(() => this.updateTime(), 1000); // update every second
+    this.timer = setInterval(() => this.updateTime(), 1000); // update every second
+  }
+
+  ngOnDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 
   updateTime() {

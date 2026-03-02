@@ -1,12 +1,53 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, shareReplay } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
+  /**
+   * Send a birthday wish to an employee
+   */
+  sendBirthdayWish(employeeId: number, message: string): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const url = `http://${this.env.apiURL}/api/birthdays/wishes`;
+    return this.http.post(url, {
+      employee_id: employeeId,
+      message
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        accept: 'application/json'
+      }
+    });
+  }
+  /**
+   * Get birthdays list from /api/birthdays
+   */
+  getBirthdays(): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const url = `http://${this.env.apiURL}/api/birthdays`;
+    return this.http.get(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+  /**
+   * Update logged-in employee profile via /profile/me endpoint
+   * @param updateData Fields to update
+   */
+  updateMyProfile(updateData: any): Observable<any> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    return this.http.put(
+      this.profileEndpoint,
+      updateData,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+  }
   private env = environment;
   private readonly API_URL = `http://${this.env.apiURL}/api/employees`;
   //  private readonly API_URL = 'http://localhost:3000/api/employees';
@@ -56,18 +97,39 @@ export class EmployeeService {
 
   /* ================= EXISTING CODE (UNCHANGED) ================= */
 
+  private profile$?: Observable<any>;
+  private profileInitialized = false;
+
   getMyProfile(force = false): Observable<any> {
-    if (this.currentEmployee && !force) {
-      return of(this.currentEmployee);
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    if (!token) {
+      return of(null);
     }
 
-    const token = localStorage.getItem('token');
-    return this.http
-      .get<any>(this.profileEndpoint, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .pipe(tap((emp) => (this.currentEmployee = emp)));
+    // Return cached observable if already initialized and not forced
+    if (!force && this.profileInitialized && this.profile$) {
+      return this.profile$;
+    }
+
+    // Refresh the profile observable
+    this.profile$ = this.http.get<any>(this.profileEndpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).pipe(
+      tap((emp) => {
+        this.currentEmployee = emp;
+        this.profileInitialized = true;
+        // Broadcast profile data via subject for reactive updates
+        this.currentEmployeeSubject.next(emp);
+      }),
+      shareReplay(1) // Cache the result for subsequent subscribers
+    );
+
+    return this.profile$;
   }
+
+  // Add shareReplay to imports if needed, but it should be available via rxjs
+  // Actually I need to make sure shareReplay is imported if not already.
+
 
   /* ================= UPLOAD PROFILE IMAGE ================= */
   uploadProfileImage(file: File): Observable<any> {
@@ -85,9 +147,12 @@ export class EmployeeService {
       tap((res: any) => {
         // Broadcast the new profile image URL
         if (res.imagePath) {
-          const imageUrl = `http://${this.env.apiURL}${res.imagePath}?t=${Date.now()}`;
-          this.profileImageUpdateSubject.next(imageUrl);
-          console.log('📸 Profile image updated and broadcasted:', imageUrl);
+          const imagePathWithCache = `${res.imagePath}?t=${Date.now()}`;
+          if (this.currentEmployee) {
+            this.currentEmployee.profile_image = imagePathWithCache;
+          }
+          this.profileImageUpdateSubject.next(imagePathWithCache);
+          console.log('📸 Profile image updated and broadcasted:', imagePathWithCache);
         }
       })
     );
@@ -116,7 +181,13 @@ export class EmployeeService {
   }
 
   clearEmployee(): void {
+    this.currentEmployee = null;
+    this.profileInitialized = false;
+    this.profile$ = undefined;
     this.currentEmployeeSubject.next(null);
+    this.profileImageUpdateSubject.next(null);
+    this.employeeIdSubject.next(null);
+    console.log('🧹 EmployeeService: All employee state cleared');
   }
 
   /* ================= ✅ NEW METHOD ================= */

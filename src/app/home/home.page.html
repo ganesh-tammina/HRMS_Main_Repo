@@ -77,31 +77,31 @@
             </div>
           </div>
 
-          <div class="card-content" *ngFor="let item of monthlyAttendanceReport">
+          <div class="card-content" *ngIf="todayAttendance">
             <ion-row>
               <ion-col size="7">
                 <div class="row-space-between">
                   <p class="label-test">Clock In</p>
-                  <p class="time">{{item.first_check_in | date:'h:mm a'}}</p>
+                  <p class="time">{{todayAttendance.first_check_in | date:'h:mm a'}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Last Punch Out</p>
-                  <p class="time">{{item.last_check_out | date:'h:mm a'}}</p>
+                  <p class="time">{{todayAttendance.last_check_out | date:'h:mm a'}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Status</p>
-                  <p class="status">{{item.status}}</p>
+                  <p class="status">{{todayAttendance.status}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Gross Hours</p>
-                  <p class="time">{{item.gross_hours}}</p>
+                  <p class="time">{{todayAttendance.gross_hours}}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Effective Hours</p>
                   <p class="time">68% of 8hrs</p>
                 </div>
                 <div class="label">
-                  <p class="w-auto">Mode: {{item.work_mode}}</p>
+                  <p class="w-auto">Mode: {{todayAttendance.work_mode}}</p>
                 </div>
               </ion-col>
               <ion-col size="5">
@@ -121,6 +121,11 @@
                 </div>
               </ion-col>
             </ion-row>
+          </div>
+
+          <!-- Empty state if no attendance for today -->
+          <div class="card-content" *ngIf="!todayAttendance">
+            <p class="ion-text-center ion-padding">No attendance record found for today.</p>
           </div>
         </ion-card>
 
@@ -180,7 +185,7 @@
               </ion-col>
             </ion-row> -->
             <ion-row lines="none">
-              <ion-col size="4" class="ion-text-center" *ngFor="let leave of leaveCards">
+              <ion-col size="3" class="ion-text-center" *ngFor="let leave of leaveCards; trackBy: trackById">
                 <ion-img [src]="leave.icon" class="leave-img"></ion-img>
                 <p class="text">{{ leave.title }}</p>
                 <p class="number">{{ leave.used }}/ {{ leave.available}} <small>days left</small></p>
@@ -303,7 +308,7 @@
           </div>
         </ion-card>
         <!-- Birthdays & work anniversaries card -->
-        <ion-card class="overview-block">
+        <ion-card class="overview-block" style="height: 34%;">
           <div class="row-space-between border-bottom">
             <div>
               <h3 class="card-header">Birthdays & work anniversaries</h3>
@@ -314,18 +319,41 @@
             </div>
           </div>
           <div class="card-content">
-            <div class="birthday-card">
-              <div class="row-left">
+            <div class="birthday-card" *ngFor="let birthday of birthdays; trackBy: trackById">
+              <div class="row-left" (click)="$event.stopPropagation()">
                 <div class="img-block">
-                  <img src="../../../assets/icon/Default-user.svg" width="38">
+                  <img [src]="getProfileImage(birthday)" width="38" [alt]="birthday.FirstName">
                 </div>
                 <div>
-                  <p>Aswitha Anusha</p>
-                  <p>Birthday • Today </p>
+                  <p>{{ birthday.FirstName }}</p>
+                  <p>Birthday • {{ birthday.DateOfBirth | date:'MMM dd' }}</p>
+                </div>
+
+              </div>
+              <div>
+                <ion-button class="primary-button pull-right" (click)="showWishInput(birthday.employee_id)">Send
+                  Wishes</ion-button>
+              </div>
+              <!-- <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
+                <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
+                <ion-button (click)="sendWish(birthday.employee_id)">Send</ion-button>
+              </div>
+              <div *ngIf="birthdayWishes[birthday.employee_id]?.length">
+                <div class="wish-list">
+                  <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
+                </div>
+              </div> -->
+            </div>
+            <div class="sendwish" *ngFor="let birthday of birthdays; trackBy: trackById">
+              <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
+                <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
+                <ion-button class="primary-button pull-right" (click)="sendWish(birthday.employee_id)">Send</ion-button>
+              </div>
+              <div *ngIf="birthdayWishes[birthday.employee_id]?.length">
+                <div class="wish-list">
+                  <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
                 </div>
               </div>
-              <ion-button class="primary-button">Send Wishes</ion-button>
-
             </div>
           </div>
         </ion-card>

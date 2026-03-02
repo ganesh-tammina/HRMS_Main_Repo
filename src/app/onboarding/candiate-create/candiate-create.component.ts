@@ -65,7 +65,7 @@ export class CandiateCreateComponent implements OnInit, OnDestroy {
       recruiter_name: '',
 
       offered_ctc: null,
-      joining_date: '',
+      // joining_date: '',
 
       recruitment_source: ['LinkedIn']
     });

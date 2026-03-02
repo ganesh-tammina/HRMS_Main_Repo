@@ -45,17 +45,32 @@ export class ManagerWfhApprovalsPage implements OnInit {
         this.wfhService.getPendingWFHRequests().subscribe({
             next: (requests: any[]) => {
 
+                // 🔥 DEBUG: Log raw API response
+                console.log('[WFH-APPROVALS] Raw API response:', requests);
+
+                if (requests && requests.length > 0) {
+                    console.log('[WFH-APPROVALS] First request data:', {
+                        id: requests[0].id,
+                        start_date: requests[0].start_date,
+                        end_date: requests[0].end_date,
+                        total_days: requests[0].total_days,
+                        leave_type: requests[0].leave_type
+                    });
+                }
+
                 // 🔥 NORMALIZE RESPONSE HERE
                 this.pendingWFHRequests = requests.map(req => ({
                     ...req,
                     work_mode: req.leave_type === 'WFH' ? 'WFH' : 'WFO'
                 }));
 
+                console.log('[WFH-APPROVALS] Normalized requests:', this.pendingWFHRequests);
+
                 this.applyFilters();
                 this.isLoading = false;
             },
             error: (error) => {
-                console.error(error);
+                console.error('[WFH-APPROVALS] Error:', error);
                 this.showToast('Failed to load pending WFH requests', 'danger');
                 this.isLoading = false;
             }
@@ -64,6 +79,7 @@ export class ManagerWfhApprovalsPage implements OnInit {
 
     applyFilters() {
         this.filteredRequests = this.pendingWFHRequests.filter(request => {
+            console.log(request);
 
             const matchesSearch =
                 !this.searchTerm ||

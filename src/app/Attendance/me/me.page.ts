@@ -25,6 +25,7 @@ import { RemoteClockinModalComponent } from './remote-clockin-modal.component';
 import { AttendanceApiService } from '../../services/attendance-api.service';
 import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
 import { EmployeeService } from 'src/app/services/employee.service';
+import { TimeFormatPipe } from './time-format.pipe';
 
 @Component({
   selector: 'app-me',
@@ -90,8 +91,8 @@ export class MePage implements OnInit {
   // ================= UI =================
   shiftDuration = '9h 0m';
   breakMinutes = 60;
-  effectiveHours = '0h 0m';
-  grossHours = '0h 0m';
+  effectiveHours = '00:00';
+  grossHours = '00:00';
   status = 'Absent';
 
   history: AttendanceEvent[] = [];
@@ -150,8 +151,20 @@ export class MePage implements OnInit {
     this.attendanceApi.getTodayAttendance().subscribe({
       next: (res: any) => {
         this.status = res?.attendance?.status || 'Absent';
+        if (res?.attendance) {
+          const pipe = new TimeFormatPipe();
+          this.grossHours = pipe.transform(res.attendance.gross_hours);
+          this.effectiveHours = pipe.transform(res.attendance.total_work_hours);
+        } else {
+          this.grossHours = '00:00';
+          this.effectiveHours = '00:00';
+        }
       },
-      error: () => (this.status = 'Absent'),
+      error: () => {
+        this.status = 'Absent';
+        this.grossHours = '00:00';
+        this.effectiveHours = '00:00';
+      },
     });
   }
 
