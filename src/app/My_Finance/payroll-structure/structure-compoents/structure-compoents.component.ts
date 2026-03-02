@@ -166,6 +166,28 @@ export class StructureCompoentsComponent implements OnInit {
       }
     });
 
+    // Pass 3: Handle ESI Employer Formula: (CTC - Employer PF) * 3.25 / 103.25
+    this.compositionData.forEach(c => {
+      const code = (c.code || '').toUpperCase();
+      console.log('Code:', code);
+      const name = (c.name || '').toUpperCase();
+      const isESIEmployer = code.includes('ESI') &&
+        (code.includes('EMPLOYER') || code.includes('EMPLOYOR') || code.includes('ER') ||
+          name.includes('EMPLOYER') || name.includes('EMPLOYOR') || name.includes('ER'));
+
+      if (isESIEmployer) {
+        let pfm = 0;
+        Object.keys(calculatedAmts).forEach(k => {
+          const keyUpper = k.toUpperCase();
+          if (keyUpper.includes('PF') &&
+            (keyUpper.includes('EMPLOYER') || keyUpper.includes('EMPLOYOR') || keyUpper.includes('ER'))) {
+            pfm = calculatedAmts[k];
+          }
+        });
+        calculatedAmts[c.code] = (ctc - pfm) * (3.25 / 103.25);
+      }
+    });
+
     // Final Pass: Sum them up, handle balancing (Special Allowance), and attach amounts for UI
     this.totalEarnings = 0;
     this.totalDeductions = 0;
