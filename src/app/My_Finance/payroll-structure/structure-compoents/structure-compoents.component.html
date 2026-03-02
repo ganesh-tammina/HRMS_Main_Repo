@@ -29,9 +29,11 @@
       <div class="card earnings">
         <div class="card-icon"><ion-icon name="wallet-outline"></ion-icon></div>
         <div class="card-content">
-          <span class="label">Total Earnings ({{ viewMode | titlecase }})</span>
-          <span class="value">{{ totalEarnings | currency:'INR':'symbol':'1.0-0' }}</span>
+          <span class="label">Gross Amount ({{ viewMode | titlecase }})</span>
+          <span class="value">{{ (totalEarnings + totalDeductions) | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
+
+
       </div>
       <div class="card deductions">
         <div class="card-icon"><ion-icon name="trending-down-outline"></ion-icon></div>
@@ -43,8 +45,8 @@
       <div class="card net">
         <div class="card-icon"><ion-icon name="calculator-outline"></ion-icon></div>
         <div class="card-content">
-          <span class="label">Net Amount ({{ viewMode | titlecase }})</span>
-          <span class="value">{{ (totalEarnings - totalDeductions) | currency:'INR':'symbol':'1.0-0' }}</span>
+          <span class="label">Net Salary ({{ viewMode | titlecase }})</span>
+          <span class="value">{{ totalEarnings | currency:'INR':'symbol':'1.0-0' }}</span>
         </div>
       </div>
     </div>
@@ -72,8 +74,11 @@
         <span class="value">{{ structureInfo.structure_name }}</span>
       </div>
       <div class="info-item">
-        <span class="label">CTC Amount</span>
-        <span class="value">{{ structureInfo.ctc_amount | currency:'INR':'symbol':'1.0-0' }}</span>
+        <span class="label">CTC Amount ({{ viewMode | titlecase }})</span>
+        <span class="value">
+          {{ (viewMode === 'annual' ? structureInfo.ctc_amount : (structureInfo.ctc_amount / 12)) |
+          currency:'INR':'symbol':'1.0-0' }}
+        </span>
       </div>
       <div class="info-item">
         <span class="label">Employee</span>
