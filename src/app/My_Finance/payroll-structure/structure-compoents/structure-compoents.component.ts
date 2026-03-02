@@ -167,9 +167,9 @@ export class StructureCompoentsComponent implements OnInit {
     });
 
     // Pass 3: Handle ESI Employer Formula: (CTC - Employer PF) * 3.25 / 103.25
+    // Pass 3: Handle ESI Employer Formula: (CTC - Employer PF) * 3.25 / 103.25
     this.compositionData.forEach(c => {
       const code = (c.code || '').toUpperCase();
-      console.log('Code:', code);
       const name = (c.name || '').toUpperCase();
       const isESIEmployer = code.includes('ESI') &&
         (code.includes('EMPLOYER') || code.includes('EMPLOYOR') || code.includes('ER') ||
@@ -185,6 +185,31 @@ export class StructureCompoentsComponent implements OnInit {
           }
         });
         calculatedAmts[c.code] = (ctc - pfm) * (3.25 / 103.25);
+      }
+    });
+
+    // Pass 4: Handle ESI Employee Formula: (Gross - Employer PF - ESI Employer) * 0.75 / 100
+    this.compositionData.forEach(c => {
+      const code = (c.code || '').toUpperCase();
+      const name = (c.name || '').toUpperCase();
+      const isESIEmployee = code.includes('ESI') &&
+        (code.includes('EMPLOYEE') || code.includes('EE') || name.includes('EMPLOYEE') || name.includes('EE')) &&
+        !code.includes('EMPLOYER') && !code.includes('ER');
+
+      if (isESIEmployee) {
+        let pfm = 0;
+        let esier = 0;
+        Object.keys(calculatedAmts).forEach(k => {
+          const keyUpper = k.toUpperCase();
+          if (keyUpper.includes('PF') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('EMPLOYOR') || keyUpper.includes('ER'))) {
+            pfm = calculatedAmts[k];
+          }
+          if (keyUpper.includes('ESI') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('EMPLOYOR') || keyUpper.includes('ER'))) {
+            esier = calculatedAmts[k];
+          }
+        });
+        // Base is effectively Gross (CTC - ER PF - ER ESI)
+        calculatedAmts[c.code] = (ctc - pfm - esier) * (0.75 / 100);
       }
     });
 

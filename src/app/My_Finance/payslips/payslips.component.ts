@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { EmployeeService } from 'src/app/services/employee.service';
+import { PayrollService } from '../payroll-service.service';
 
 @Component({
   selector: 'app-payslips',
@@ -39,99 +40,140 @@ export class PayslipsComponent implements OnInit {
   netSalary!: number;
   netSalaryInWords: string = '';
 
-  constructor(private employeeService: EmployeeService) { }
+  earnings: any[] = [];
+  deductions: any[] = [];
+  salaryStructure: any = null;
+
+  constructor(
+    private employeeService: EmployeeService,
+    private payrollService: PayrollService
+  ) { }
 
   ngOnInit() {
     this.employeeService.getMyProfile().subscribe((emp: any) => {
       this.currentEmployee = emp;
+      if (!emp?.id) return;
 
-      if (!emp?.lpa) return;
+      this.payrollService.getPayrollstructures().subscribe((res: any) => {
+        const allStructures = Array.isArray(res) ? res : (res.data || []);
+        const activeStructure = allStructures.find((s: any) => s.employee_id === emp.id && s.is_active);
 
-      // =============================
-      // Monthly Salary (Dynamic)
-      // =============================
-      this.monthlySalary = Math.round((emp.lpa / 12) * 100) / 100;
-
-      // =============================
-      // Earnings
-      // =============================
-      this.basic = this.round(this.monthlySalary * 0.4);
-      this.hra = this.round(this.basic * 0.4);
-
-      this.medicalAllowance = 15000 / 12;   // yearly → monthly
-      this.transportAllowance = 19200 / 12; // yearly → monthly
-
-      // Calculate pfEmployerContribution and pfContribution (fixed 1800 if basic >= 15000)
-      if (this.basic >= 15000) {
-        this.pfContribution = 1800;
-        this.pfEmployerContribution = 1800;
-      } else {
-        this.pfContribution = this.round(this.basic * 0.12);
-        this.pfEmployerContribution = this.pfContribution;
-      }
-
-      // Add pfEmployerContribution and employer ESI (if applicable) to specialAllowance
-      let employerESI = 0;
-      if (this.monthlySalary < 25000) {
-        employerESI = this.round(this.monthlySalary * 3.0 / 100);
-      }
-      this.specialAllowance = this.round(
-        this.monthlySalary -
-        (this.basic +
-          this.hra +
-          this.medicalAllowance +
-          this.transportAllowance +
-          this.pfEmployerContribution +
-          employerESI
-        )
-      );
-
-      this.totalEarnings = this.round(
-        this.basic +
-        this.hra +
-        this.medicalAllowance +
-        this.transportAllowance +
-        this.specialAllowance
-      );
-
-      // =============================
-      // Contributions (only employee side, employer side is now in special allowance)
-      // =============================
-      // pfContribution already calculated above
-
-      this.esiEmployeeAmount =
-        this.monthlySalary < 25000
-          ? this.round(this.monthlySalary * 0.0070)
-          : 0;
-
-      this.totalContributions = this.round(
-        this.pfContribution + this.esiEmployeeAmount
-      );
-
-      // =============================
-      // Professional Tax
-      // =============================
-      if (this.monthlySalary < 15000) {
-        this.professionalTax = 0;
-      } else if (this.monthlySalary <= 20000) {
-        this.professionalTax = 150;
-      } else {
-        this.professionalTax = 200;
-      }
-
-      this.totalDeductions = this.professionalTax;
-
-      // =============================
-      // Net Salary
-      // =============================
-      this.netSalary = this.round(
-        this.totalEarnings -
-        this.totalContributions -
-        this.totalDeductions
-      );
-
-      this.netSalaryInWords = this.numberToWords(this.netSalary);
+        if (activeStructure) {
+          this.payrollService.getPayrollStructureById(activeStructure.id).subscribe((details: any) => {
+            const structure = details.structure || details;
+            const components = details.components || details.salary_components || [];
+            this.calculateStructureSalary(structure, components);
+          });
+        }
+      });
     });
+  }
+
+  calculateStructureSalary(structure: any, components: any[]) {
+    this.salaryStructure = structure;
+    const ctc = Number(structure.ctc_amount);
+    this.monthlySalary = ctc / 12;
+
+    const calculatedAmts: any = { 'CTC': ctc };
+    const sortedComps = [...components].sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
+
+    // Pass 1: Handle FIXED values and PERCENTAGE OF CTC
+    sortedComps.forEach(c => {
+      if (c.calculation_type === 'FIXED') {
+        calculatedAmts[c.code] = Number(c.value) || 0;
+      } else if (c.calculation_type === 'PERCENTAGE' && (c.percentage_of_code === 'CTC' || !c.percentage_of_code)) {
+        calculatedAmts[c.code] = (ctc * (Number(c.value) || 0)) / 100;
+      }
+    });
+
+    // Pass 2: Handle PERCENTAGE OF other components
+    sortedComps.forEach(c => {
+      if (c.calculation_type === 'PERCENTAGE' && c.percentage_of_code && c.percentage_of_code !== 'CTC') {
+        const baseAmt = calculatedAmts[c.percentage_of_code] || 0;
+        calculatedAmts[c.code] = (baseAmt * (Number(c.value) || 0)) / 100;
+      }
+    });
+
+    // Pass 3: Handle ESI Employer Formula: (CTC - Employer PF) * 3.25 / 103.25
+    sortedComps.forEach(c => {
+      const code = (c.code || '').toUpperCase();
+      const name = (c.name || '').toUpperCase();
+      const isESIEmployer = code.includes('ESI') &&
+        (code.includes('EMPLOYER') || code.includes('EMPLOYOR') || code.includes('ER') ||
+          name.includes('EMPLOYER') || name.includes('EMPLOYOR') || name.includes('ER'));
+
+      if (isESIEmployer) {
+        let pfm = 0;
+        Object.keys(calculatedAmts).forEach(k => {
+          const keyUpper = k.toUpperCase();
+          if (keyUpper.includes('PF') &&
+            (keyUpper.includes('EMPLOYER') || keyUpper.includes('EMPLOYOR') || keyUpper.includes('ER'))) {
+            pfm = calculatedAmts[k];
+          }
+        });
+        calculatedAmts[c.code] = (ctc - pfm) * (3.25 / 103.25);
+      }
+    });
+
+    // Pass 4: Handle ESI Employee Formula: (Gross - Employer PF - ESI Employer) * 0.75 / 100
+    sortedComps.forEach(c => {
+      const code = (c.code || '').toUpperCase();
+      const name = (c.name || '').toUpperCase();
+      const isESIEmployee = code.includes('ESI') &&
+        (code.includes('EMPLOYEE') || code.includes('EE') || name.includes('EMPLOYEE') || name.includes('EE')) &&
+        !code.includes('EMPLOYER') && !code.includes('ER');
+      if (isESIEmployee) {
+        let pfm = 0;
+        let esier = 0;
+        Object.keys(calculatedAmts).forEach(k => {
+          const keyUpper = k.toUpperCase();
+          if (keyUpper.includes('PF') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('ER'))) {
+            pfm = calculatedAmts[k];
+          }
+          if (keyUpper.includes('ESI') && (keyUpper.includes('EMPLOYER') || keyUpper.includes('ER'))) {
+            esier = calculatedAmts[k];
+          }
+        });
+        calculatedAmts[c.code] = (ctc - pfm - esier) * (0.75 / 100);
+      }
+    });
+
+    // Pass 5: Special Allowance (Balancing)
+    const specialAllowanceComp = sortedComps.find(c =>
+      c.code?.toUpperCase().includes('SPECIAL') && c.code?.toUpperCase().includes('ALLOWANCE') ||
+      c.name?.toUpperCase().includes('SPECIAL') && c.name?.toUpperCase().includes('ALLOWANCE')
+    );
+
+    if (specialAllowanceComp) {
+      let sumOfOthers = 0;
+      sortedComps.forEach(c => {
+        if (c === specialAllowanceComp) return;
+        sumOfOthers += calculatedAmts[c.code] || 0;
+      });
+      calculatedAmts[specialAllowanceComp.code] = Math.max(0, ctc - sumOfOthers);
+    }
+
+    // Populate Earnings and Deductions for UI
+    this.earnings = [];
+    this.deductions = [];
+    this.totalEarnings = 0;
+    this.totalDeductions = 0;
+
+    sortedComps.forEach(c => {
+      const monthlyAmt = (calculatedAmts[c.code] || 0) / 12;
+      const compObj = { name: c.name, actual: monthlyAmt, paid: monthlyAmt };
+
+      if (c.component_type?.toUpperCase() === 'EARNING') {
+        this.earnings.push(compObj);
+        this.totalEarnings += monthlyAmt;
+      } else {
+        this.deductions.push(compObj);
+        this.totalDeductions += monthlyAmt;
+      }
+    });
+
+    this.netSalary = this.totalEarnings - this.totalDeductions;
+    this.netSalaryInWords = this.numberToWords(this.netSalary);
   }
 
   // =============================
