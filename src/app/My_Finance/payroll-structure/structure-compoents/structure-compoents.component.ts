@@ -216,6 +216,29 @@ export class StructureCompoentsComponent implements OnInit {
     this.calculateTotals();
   }
 
+  updateEmployeeCTC() {
+    if (!this.structureInfo?.employee_id || !this.structureInfo?.ctc_amount) {
+      alert('Employee or CTC information missing');
+      return;
+    }
+
+    const payload = {
+      lpa: Number(this.structureInfo.ctc_amount)
+    };
+
+    if (confirm(`Do you want to update the employee's Annual CTC to ${this.structureInfo.ctc_amount} in their profile?`)) {
+      this.employeeService.updateEmployeeProfile(this.structureInfo.employee_id, payload).subscribe({
+        next: () => {
+          alert('Employee CTC updated successfully in profile');
+        },
+        error: (err: any) => {
+          console.error('Error updating employee CTC:', err);
+          alert('Failed to update employee CTC');
+        }
+      });
+    }
+  }
+
   openAddModal() {
     this.isEditMode = false;
     this.selectedComponentId = null;
