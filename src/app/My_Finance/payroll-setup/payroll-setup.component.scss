@@ -195,8 +195,9 @@
   .card{
     display: block;
     position: relative;
-    width: 396px;
-    height: 153px;
+    width: 95%;
+    min-height: 160px;
+    max-height: 180px;
     background: #eeeeee;
     border-radius: 16px;
     overflow: hidden;
