@@ -1,97 +1,103 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from '../shared/header/header.component';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { CandidateService } from '../services/pre-onboarding.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-candidate-status',
   templateUrl: './candidate-status.component.html',
   styleUrls: ['./candidate-status.component.scss'],
   standalone: true,
-  imports: [HeaderComponent, CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [CommonModule, IonicModule, ReactiveFormsModule]
 })
 export class CandidateStatusComponent implements OnInit {
-  currentCandidate: any;
-  activePage: string = 'openPage';
-  hideOffer: boolean = false;
-  candidate: any = {};
+  candidate: any = null;
+  loading = true;
+  error = '';
+  hideOffer = false;
   onboardingForms!: FormGroup;
- 
+
+  private apiBase = `http://${environment.apiURL}/api/candidates`;
 
   constructor(
-    private candidateService: CandidateService,
+    private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
     private alertController: AlertController,
-    private route: ActivatedRoute,
     private fb: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit() {
-    // ✅ Initialize form
     this.onboardingForms = this.fb.group({
-      PhoneNumber: ['', Validators.required]
+      PhoneNumber: ['', [Validators.required, Validators.minLength(10)]]
     });
 
-    // ✅ Get candidate data from navigation (if sent via state)
-    const nav = this.router.getCurrentNavigation();
-    if (nav?.extras.state?.['candidate']) {
-      this.candidate = nav.extras.state['candidate'];
-      console.log('📦 Candidate from navigation:', this.candidate);
+    // Read candidate_id from URL e.g. /candidate_status/CAN1772533410481
+    const candidateId = this.route.snapshot.paramMap.get('id');
+    console.log('📌 Candidate ID from URL:', candidateId);
+
+    if (!candidateId) {
+      this.loading = false;
+      this.error = 'Invalid offer link. No candidate ID found.';
+      return;
     }
 
-    // ✅ Get candidate ID from route if available
-    // this.route.paramMap.subscribe(params => {
-    //   const id = params.get('id');
-    //   if (id) {
-    //     this.candidateService.getCandidateById(id).subscribe({
-    //       next: (res: any) => {
-    //         this.candidate = res.candidate;
-    //         console.log('✅ Candidate fetched from backend:', this.candidate);
-    //       },
-    //       error: (err) => {
-    //         console.error('❌ Error fetching candidate:', err);
-    //       }
-    //     });
-    //   }
-    // });
-
-
-     
- 
-  }
-
-  // ✅ Verify phone number and navigate
- submitOnboarding() {
-  const enteredPhone = this.onboardingForms.value.PhoneNumber;
-  const actualPhone = this.candidate?.PhoneNumber;
-
-  if (enteredPhone === actualPhone) {
-    console.log('✅ Phone verified. Navigating to offer details...');
-
-    // Pass ID in URL + full object in query params
-    this.router.navigate(
-      ['/candidate-offer-letter', this.candidate.Candidate_ID],
-      {
-        queryParams: {
-          data: JSON.stringify(this.candidate)
-        }
+    // Fetch candidate from backend using the candidate_id string (no auth required)
+    this.http.get<any>(`${this.apiBase}/${candidateId}`).subscribe({
+      next: (res) => {
+        // Backend returns { candidate: {...}, documents: [...], tasks: [...] }
+        const c = res?.candidate || res;
+        // Normalize field names for consistent template use
+        this.candidate = {
+          ...c,
+          FirstName: c.first_name || c.FirstName,
+          LastName: c.last_name || c.LastName,
+          Email: c.email || c.Email,
+          PhoneNumber: c.phone || c.PhoneNumber,
+          JobTitle: c.position || c.designation_name || c.JobTitle,
+          Department: c.department_name || c.Department,
+          joining_date: c.joining_date,
+          offered_ctc: c.offered_ctc,
+          candidate_id: c.candidate_id,
+          id: c.id
+        };
+        console.log('✅ Candidate loaded:', this.candidate);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('❌ Failed to load candidate:', err);
+        this.loading = false;
+        this.error = 'Could not find your offer. The link may be invalid or expired.';
       }
-    );
-
-  } else {
-    this.showAlert('Please enter a valid Phone Number');
+    });
   }
-}
-  // ✅ Ionic Alert
+
+  /** Verify phone number and navigate to offer letter */
+  submitOnboarding() {
+    if (this.onboardingForms.invalid) return;
+
+    const enteredPhone = this.onboardingForms.value.PhoneNumber?.toString().trim();
+    const actualPhone = (this.candidate?.PhoneNumber || this.candidate?.phone || '')?.toString().trim();
+
+    console.log('🔍 Phone verify — entered:', enteredPhone, 'actual:', actualPhone);
+
+    if (enteredPhone === actualPhone) {
+      console.log('✅ Phone verified. Navigating to offer letter...');
+      this.router.navigate(
+        ['/candidate-offer-letter', this.candidate.candidate_id],
+        { state: { candidate: this.candidate } }
+      );
+    } else {
+      this.showAlert('Phone number does not match our records.\nPlease enter the mobile number you registered with.');
+    }
+  }
+
   async showAlert(message: string) {
     const alert = await this.alertController.create({
-      header: 'Validation Error',
+      header: 'Verification Failed',
       message,
       buttons: ['OK']
     });

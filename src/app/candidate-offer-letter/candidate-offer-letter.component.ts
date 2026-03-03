@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from '../shared/header/header.component';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { CandidateService } from '../services/pre-onboarding.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
@@ -13,108 +10,151 @@ import { environment } from 'src/environments/environment';
   templateUrl: './candidate-offer-letter.component.html',
   styleUrls: ['./candidate-offer-letter.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule],
 })
 export class CandidateOfferLetterComponent implements OnInit {
-  candidate: any = {};
+  candidate: any = null;
+  loading = true;
+  error = '';
   acceptDisabled = false;
   rejectDisabled = false;
-  onboardingForms!: FormGroup;
-     one: any;
-  full_name: string = '';
-  currentTime: string = '';
-  allEmployees: any[] = [];
-  fullName:any
+  offerStatus: 'pending' | 'accepted' | 'rejected' = 'pending';
+
+  private apiBase = `http://${environment.apiURL}/api/candidates`;
 
   constructor(
-    private candidateService: CandidateService,
+    private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private alertController: AlertController,
-    private route: ActivatedRoute,
-    private fb: FormBuilder
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
-    // Initialize form
-    this.onboardingForms = this.fb.group({
-      PhoneNumber: ['', Validators.required],
-    });
-
-    // Get candidate from navigation state (if available)
+    // Try navigation state first (passed from CandidateStatusComponent)
     const nav = this.router.getCurrentNavigation();
-    const stateCandidate = nav?.extras.state?.['candidate'];
+    const stateCandidate = nav?.extras?.state?.['candidate'];
 
     if (stateCandidate) {
       this.candidate = stateCandidate;
-      console.log('✅ Candidate from navigation:', this.candidate);
+      this.loading = false;
+      console.log('✅ Candidate from nav state:', this.candidate);
+      return;
     }
 
-    // Fetch candidate by route param (if not passed through navigation)
-
-  }
-
-  // 🔹 Load candidate details by ID from backend
-  // loadCandidateById(id: string) {
-  //   this.candidateService.getCandidateById(id).subscribe({
-  //     next: (res: any) => {
-  //       this.candidate = res?.candidate || res;
-  //       console.log('✅ Candidate fetched from backend:', this.candidate.candidate_id);
-  //     },
-  //     error: (err) => {
-  //       console.error('❌ Error fetching candidate:', err);
-  //     },
-  //   });
-  // }
-
-  // 🔹 Accept candidate offer and navigate to OfferDetails
-  async acceptCandidate(candidateId: number) {
-    this.rejectDisabled = true;
-    this.acceptDisabled = true;
-
-    try {
-      const url = `https://${environment.apiURL}/candidates/${this.candidate.Candidate_ID}/status`;
-      const response = await this.http.put(url, { status: 'accepted' }).toPromise();
-      console.log('✅ Accept response:', response);
-
-      const alert = await this.alertController.create({
-        header: 'Offer Accepted 🎉',
-        message: `Welcome aboard, ${this.candidate.FirstName}!`,
-        buttons: ['OK'],
-      });
-      await alert.present();
-
-      // Navigate to Offer Details after acceptance
-      this.router.navigate(['/offer-details'], {
-        state: { candidate: this.candidate },
-      });
-    } catch (error) {
-      console.error('❌ Error accepting candidate:', error);
-      this.acceptDisabled = false;
-      this.rejectDisabled = false;
+    // Fallback: fetch from backend using route param (when user refreshes)
+    const candidateId = this.route.snapshot.paramMap.get('id');
+    if (!candidateId) {
+      this.loading = false;
+      this.error = 'Invalid offer link.';
+      return;
     }
+
+    this.http.get<any>(`${this.apiBase}/${candidateId}`).subscribe({
+      next: (res) => {
+        const c = res?.candidate || res;
+        this.candidate = {
+          ...c,
+          FirstName: c.first_name || c.FirstName,
+          LastName: c.last_name || c.LastName,
+          Email: c.email || c.Email,
+          PhoneNumber: c.phone || c.PhoneNumber,
+          JobTitle: c.position || c.designation_name || c.JobTitle,
+          Department: c.department_name || c.Department,
+          joining_date: c.joining_date,
+          offered_ctc: c.offered_ctc,
+          candidate_id: c.candidate_id,
+          id: c.id
+        };
+        this.loading = false;
+        console.log('✅ Candidate fetched from backend:', this.candidate);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = 'Could not load offer details. Please try again.';
+        console.error('❌ Error loading candidate:', err);
+      }
+    });
   }
 
-  // 🔹 Reject candidate offer
-  async rejectCandidate(candidate: number) {
+  // ──────────────────────────────
+  // Accept Offer
+  // ──────────────────────────────
+  async acceptOffer() {
     this.acceptDisabled = true;
     this.rejectDisabled = true;
 
-    try {
-      const url = `https://${environment.apiURL}/candidates/${this.candidate.Candidate_ID}/status`;
-      const response = await this.http.put(url, { status: 'rejected' }).toPromise();
-      console.log('✅ Reject response:', response);
+    const candidateId = this.candidate?.candidate_id || this.candidate?.id;
 
-      const alert = await this.alertController.create({
-        header: 'Offer Rejected',
-        message: `You have declined the offer. Thank you for your time.`,
-        buttons: ['OK'],
-      });
-      await alert.present();
-    } catch (error) {
-      console.error('❌ Error rejecting candidate:', error);
-      this.acceptDisabled = false;
-      this.rejectDisabled = false;
-    }
+    this.http.post<any>(`${this.apiBase}/${candidateId}/accept-offer`, {}).subscribe({
+      next: async () => {
+        this.offerStatus = 'accepted';
+        const alert = await this.alertController.create({
+          header: '🎉 Offer Accepted!',
+          message: `Welcome aboard, ${this.candidate.FirstName}! We're excited to have you join us. Our HR team will be in touch with the next steps.`,
+          buttons: ['OK']
+        });
+        await alert.present();
+      },
+      error: async (err) => {
+        console.error('❌ Accept error:', err);
+        this.acceptDisabled = false;
+        this.rejectDisabled = false;
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'Could not accept offer. Please try again or contact HR.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
+    });
+  }
+
+  // ──────────────────────────────
+  // Reject Offer
+  // ──────────────────────────────
+  async rejectOffer() {
+    const confirmAlert = await this.alertController.create({
+      header: 'Decline Offer',
+      message: 'Are you sure you want to decline this offer? This action cannot be undone.',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Yes, Decline',
+          role: 'destructive',
+          handler: () => this.doReject()
+        }
+      ]
+    });
+    await confirmAlert.present();
+  }
+
+  private async doReject() {
+    this.acceptDisabled = true;
+    this.rejectDisabled = true;
+
+    const candidateId = this.candidate?.candidate_id || this.candidate?.id;
+
+    this.http.post<any>(`${this.apiBase}/${candidateId}/decline-offer`, { reason: 'Candidate declined via portal' }).subscribe({
+      next: async () => {
+        this.offerStatus = 'rejected';
+        const alert = await this.alertController.create({
+          header: 'Offer Declined',
+          message: 'You have declined the offer. Thank you for your time and interest in Tech Tammina.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      },
+      error: async (err) => {
+        console.error('❌ Reject error:', err);
+        this.acceptDisabled = false;
+        this.rejectDisabled = false;
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'Could not process your response. Please try again or contact HR.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
+    });
   }
 }
