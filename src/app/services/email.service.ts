@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
 export class EmailService {
 
 	private beURL = `http://${environment.apiURL}/send-email`;
+	// ✅ The candidate-facing app URL (used in email links)
+	private candidateAppURL = `http://${environment.candidateURL}`;
 
 	constructor(private http: HttpClient) { }
 
@@ -21,7 +23,7 @@ export class EmailService {
         <p>Hello ${candidate.FirstName},</p>
         <p>We’re thrilled to welcome you as <b>${candidate.JobTitle}</b> at Tech Tammina!</p>
         <p>Please review your offer letter and confirm by <b>${candidate.JoiningDate}</b>.</p>
-        <a href="https://*/candidate_status/${candidate.id}" 
+        <a href="http://${this.candidateAppURL}/candidate_status/${candidate.candidate_id || candidate.id}" 
            style="background-color:#3498db;color:white;padding:10px 16px;text-decoration:none;border-radius:5px">
            View Offer
         </a>
