@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class EmailService {
 
-	private beURL = `https://${environment.apiURL}/send-email`;
+	private beURL = `http://${environment.apiURL}/send-email`;
 
 	constructor(private http: HttpClient) { }
 
@@ -31,8 +31,8 @@ export class EmailService {
     `;
 
 		const data = {
-			to: candidate.Email,
-			subject: `Welcome to Tech Tammina, ${candidate.FirstName}!`,
+			to: candidate.Email || candidate.email,
+			subject: `Welcome to Tech Tammina, ${candidate.FirstName || candidate.first_name}!`,
 			text: `
       
 <!DOCTYPE html>
@@ -190,7 +190,7 @@ export class EmailService {
 														<tr>
 															<td class="pad">
 																<div style="color:#222222;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:14px;font-weight:400;letter-spacing:0.2px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
-																	<p style="margin: 0;">We are just a few formalities away from getting down to work. Please have a look at the offer letter attached to this mail and indicate your agreement with these terms and accept the offer letter by signing/acknowledging on or before&nbsp; ${candidate.offerDetails.DOJ}</p>
+																	<p style="margin: 0;">We are just a few formalities away from getting down to work. Please have a look at the offer letter attached to this mail and indicate your agreement with these terms and accept the offer letter by signing/acknowledging on or before&nbsp; ${candidate.offerDetails?.DOJ || candidate.joining_date || candidate.JoiningDate || 'your joining date'}</p>
 																</div>
 															</td>
 														</tr>

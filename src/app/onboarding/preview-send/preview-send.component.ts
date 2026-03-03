@@ -6,6 +6,7 @@ import { CreateOfferHeaderComponent } from '../create-offer-header/create-offer-
 import { HeaderComponent } from 'src/app/shared/header/header.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CandidateDetailsService, OfferPayload } from 'src/app/services/candidate-details-service.service';
+import { EmailService } from 'src/app/services/email.service';
 
 @Component({
   selector: 'app-preview-send',
@@ -30,7 +31,8 @@ export class PreviewSendComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private candidateService: CandidateDetailsService
+    private candidateService: CandidateDetailsService,
+    private emailService: EmailService
   ) { }
 
   ngOnInit() {
@@ -89,20 +91,22 @@ export class PreviewSendComponent implements OnInit {
   createOffer() {
     console.log('🚀 Final Offer Creation for:', this.candidate);
 
-    const candidateId = this.candidate.candidate_id || this.candidate.id;
+    // ✅ FIX: Prefer numeric `id` first; fall back to string `candidate_id` (e.g. 'CAN...')
+    // Backend now handles both formats correctly.
+    const candidateId = this.candidate.id || this.candidate.candidate_id;
     if (!candidateId) {
       alert('❌ Candidate ID not found!');
       return;
     }
 
     // Calculate offer_validity_date (Today + offerValidity days)
-    const validityDays = parseInt(this.candidate.offer_validity_date || '7', 10);
+    const validityDays = parseInt(this.candidate.offerDetails?.offerValidity || this.candidate.offer_validity_date || '7', 10);
     const validityDate = new Date();
     validityDate.setDate(validityDate.getDate() + validityDays);
     const formattedValidityDate = validityDate.toISOString().split('T')[0];
 
     const offerPayload: OfferPayload = {
-      position: this.candidate.JobTitle || 'Software Engineer',
+      position: this.candidate.JobTitle || this.candidate.position || 'Software Engineer',
       designation_id: this.candidate.designation_id || 1,
       department_id: this.candidate.department_id || 2,
       location_id: this.candidate.location_id || 1,
@@ -119,21 +123,29 @@ export class PreviewSendComponent implements OnInit {
       probation_period: parseInt(this.candidate.probation_period || '3', 10),
       notice_period: parseInt(this.candidate.notice_period || '2', 10),
       work_mode: this.candidate.work_mode || 'Hybrid',
-      special_terms: this.candidate.special_terms || 'Relocation assistance provided',
-      benefits: this.candidate.benefits || 'Health insurance, meal coupons'
+      special_terms: this.candidate.special_terms || '',
+      benefits: this.candidate.benefits || ''
     };
 
-    console.log('📤 Sending Final Offer Payload:', offerPayload);
+    console.log('📤 Using candidateId:', candidateId, '| Offer Payload:', offerPayload);
 
     this.candidateService.createOffer(candidateId, offerPayload).subscribe({
       next: (res: any) => {
         console.log('✅ Offer created successfully:', res);
-        alert('🎉 Offer letter created and sent successfully!');
-        this.router.navigate(['/preonboarding-setup']); // Or any success page
+
+        // ✅ Send welcome email to candidate
+        this.emailService.sendEmail(this.candidate).subscribe({
+          next: () => console.log('📧 Welcome email sent successfully'),
+          error: (err) => console.error('📧 Email failed:', err)
+        });
+
+        alert('🎉 Offer letter created and email sent to candidate!');
+        this.router.navigate(['/preonboarding-setup']);
       },
       error: (err: any) => {
         console.error('❌ Error creating offer:', err);
-        alert('Failed to create offer letter. Please check the logs.');
+        const msg = err?.error?.error || err?.message || 'Unknown error';
+        alert(`❌ Failed to create offer letter.\n\nDetails: ${msg}`);
       }
     });
   }
