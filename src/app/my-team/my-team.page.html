@@ -1,7 +1,7 @@
 <ion-content class="ion-padding page-containerOn">
    <div class="row-space-between">
       <div>
-         <h1 class="header-title">My Team</h1>
+         <h1 class="header-title">{{ showAttendance ? 'Team Details': 'My Team' }}</h1>
          <p>View and manage your direct and extended team</p>
       </div>
 
@@ -27,7 +27,7 @@
          </ion-button>
          <ion-button (click)="toggleAttendanceView()" *ngIf="teamMembers.length" class="primary-outline-btn">
             <ion-icon [name]="showAttendance ? 'people-outline' : 'calendar-outline'"></ion-icon>
-            Team Details
+            {{ showAttendance ? 'My Team': 'Team Details' }}
          </ion-button>
       </ion-buttons>
    </div>
@@ -173,7 +173,10 @@
                            member.attendance?.employee_name || 'N/A' }}sss</h3>
                         <p class="member-role">{{ member.designation || member.designation_name ||
                            member.attendance?.designation || '—' }} .
-                           {{ member.department || member.department_name || member.attendance?.department || '—' }}
+                           {{ member.department || member.department_name || member.attendance?.department || '—' }} abcd
+                        </p> -->
+                        <p class="member-role">{{ member.designation || member.designation_name ||
+                           member.attendance?.designation || '—' }}
                         </p>
                      </div>
                   </div>
@@ -268,8 +271,10 @@
                </div>
                <div>
                   <h3 class="member-name">{{ member.FullName || member.full_name || 'N/A' }}</h3>
-                  <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{
-                     member.department || member.department_name || '—' }}</p>
+                  <p class="member-role">{{ member.designation || member.designation_name || '—' }}</p>
+
+                     <!-- <p class="member-role">{{ member.designation || member.designation_name || '—' }} . {{
+                     member.department || member.department_name || '—' }}</p> -->
 
                </div>
             </div>

@@ -434,23 +434,7 @@
     z-index: 1000;
 }
 
-.side-modal {
-    position: fixed;
-    top: 0;
-    right: -550px;
-    width: 500px;
-    max-width: 90vw;
-    height: 100vh;
-    background: #fff;
-    z-index: 1001;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    transition: right 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-
-    &.open {
-        right: 0;
-    }
+.side-modal { 
 
     .modal-header {
         padding: 20px;

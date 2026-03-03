@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="payroll-setup-content">
+<ion-content [fullscreen]="true" class="payroll-setup-content container">
   <div class="header-section">
     <div class="title-block">
       <h1>Payroll Master Setup</h1>
@@ -17,9 +17,80 @@
     </div>
   </div>
 
-  <div class="dashboard-grid">
+  <!-- <div class="dashboard-grid"> -->
+    <ion-row class="row-left">
+      <!-- Payroll Components -->
+      <ion-col size="4">
+        <ion-card class="card clickable" (click)="payrollCompoents()">
+          <ion-card-header class="icon-wrapper comp">
+             <ion-icon name="layers-outline"></ion-icon>
+          </ion-card-header>
+          <ion-card-content class="contentBx">
+            <h2>Payroll Components</h2>
+            <p>Define earnings, deductions, and statutory components for your organization.</p>
+            <!-- <ion-icon name="chevron-forward-outline" class="arrow-icon" style="margin-top: 15px;"></ion-icon> -->
+            <button class="arrow-btn">
+          Create <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+          </ion-card-content>
+
+        </ion-card>
+      </ion-col>
+
+       <!-- Payroll Templates -->
+      <ion-col size="4">
+        <ion-card class="card clickable" (click)="payrollTemplates()">
+          <ion-card-header class="icon-wrapper comp">
+            <ion-icon name="copy-outline" class="arrow-icon"></ion-icon>
+          </ion-card-header>
+          <ion-card-content class="contentBx">
+            <h2>Payroll Templates</h2>
+        <p>Create and manage reusable salary structure templates for different roles.</p>
+        <button class="arrow-btn">
+          Manage <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+          </ion-card-content>
+
+        </ion-card>
+      </ion-col>
+
+      <!-- Payroll Structure -->
+      <ion-col size="4">
+        <ion-card class="card clickable" (click)="payrollStructure()">
+          <ion-card-header class="icon-wrapper comp">
+            <ion-icon name="git-branch-outline"></ion-icon>
+          </ion-card-header>
+          <ion-card-content class="contentBx">
+          <h2>Payroll Structure</h2>
+        <p>Map your components to templates and define hierarchy and dependencies.</p>
+        <button class="arrow-btn">
+          Configure <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+          </ion-card-content>
+
+        </ion-card>
+      </ion-col>
+
+      <!-- Payroll Reports -->
+      <ion-col size="4">
+        <ion-card class="card clickable">
+          <ion-card-header class="icon-wrapper comp">
+            <ion-icon name="bar-chart-outline"></ion-icon>
+          </ion-card-header>
+          <ion-card-content class="contentBx">
+         <h2>Payroll Reports</h2>
+        <p>Generate detailed audit logs and compliance reports for your payroll setup.</p>
+        <button class="arrow-btn">
+          Analytics <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+          </ion-card-content>
+
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
     <!-- Payroll Components -->
-    <div class="setup-card" (click)="payrollCompoents()">
+    <!-- <div class="setup-card" (click)="payrollCompoents()">
       <div class="card-glow"></div>
       <div class="icon-wrapper comp">
         <ion-icon name="layers-outline"></ion-icon>
@@ -31,10 +102,10 @@
           Explore <ion-icon name="arrow-forward-outline"></ion-icon>
         </button>
       </div>
-    </div>
+    </div> -->
 
     <!-- Payroll Templates -->
-    <div class="setup-card" (click)="payrollTemplates()">
+    <!-- <div class="setup-card" (click)="payrollTemplates()">
       <div class="card-glow"></div>
       <div class="icon-wrapper temp">
         <ion-icon name="copy-outline"></ion-icon>
@@ -46,10 +117,10 @@
           Manage <ion-icon name="arrow-forward-outline"></ion-icon>
         </button>
       </div>
-    </div>
+    </div> -->
 
     <!-- Payroll Structure -->
-    <div class="setup-card" (click)="payrollStructure()">
+    <!-- <div class="setup-card" (click)="payrollStructure()">
       <div class="card-glow"></div>
       <div class="icon-wrapper struct">
         <ion-icon name="git-branch-outline"></ion-icon>
@@ -61,10 +132,10 @@
           Configure <ion-icon name="arrow-forward-outline"></ion-icon>
         </button>
       </div>
-    </div>
+    </div> -->
 
     <!-- Payroll Reports -->
-    <div class="setup-card">
+    <!-- <div class="setup-card">
       <div class="card-glow"></div>
       <div class="icon-wrapper report">
         <ion-icon name="bar-chart-outline"></ion-icon>
@@ -76,6 +147,6 @@
           Analytics <ion-icon name="arrow-forward-outline"></ion-icon>
         </button>
       </div>
-    </div>
-  </div>
+    </div> -->
+  <!-- </div> -->
 </ion-content>

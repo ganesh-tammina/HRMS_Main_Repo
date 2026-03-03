@@ -127,7 +127,7 @@
     </div>
     <div class="modal-body">
       <form [formGroup]="structureForm" (ngSubmit)="saveStructure()" class="form-vertical">
-
+       <div class="form-continer">
         <div class="form-group dropdown-container">
           <label>Employee</label>
           <div class="search-box">
@@ -205,13 +205,18 @@
         </div>
         <div class="component-selector">
           <div class="comp-item" *ngFor="let comp of availableComponents" (click)="addComponent(comp)">
-            <strong>{{ comp.name }}</strong> ({{ comp.code }}) - {{ comp.component_type }}
+            <p><strong>{{ comp.name }}</strong> </p>
+            <span>({{ comp.code }}) - {{ comp.component_type }}</span>
           </div>
         </div>
-
-        <button type="submit" class="submit-btn" [disabled]="structureForm.invalid || selectedComponents.length === 0">
+       </div>
+       
+       <div class="form-footer"> 
+        <button type="submit" class="primary-btn" [disabled]="structureForm.invalid || selectedComponents.length === 0">
           {{ isEditMode ? 'Update Structure' : 'Save Structure' }}
         </button>
+       </div>
+       
       </form>
     </div>
   </div>

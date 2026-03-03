@@ -14,10 +14,13 @@
   </div>
 </div>
 
-<ion-content [fullscreen]="true" class="admin-dashboard ion-padding">
+
+
+
+<ion-content [fullscreen]="true" class="admin-dashboard-card ion-padding">
 
   <!-- ================= PAYROLL UPLOAD ================= -->
-  <ion-card class="payroll-upload-card">
+  <ion-card class="payroll-upload-card d-none">
     <ion-card-header style="display: flex; flex-direction: column; align-items: center; text-align: center;">
       <ion-icon name="document-attach-outline" class="payroll-upload-icon"></ion-icon>
       <ion-card-title>Payroll Excel Upload</ion-card-title>
@@ -103,11 +106,11 @@
   <!-- ================= EMPLOYEE LIST ================= -->
   <p class="page-header mb-8">
     <a routerLink="/admin" (click)="adminManagement()">Admin Management /</a>
-    All Employees
+    Finance Admin
   </p>
 
   <div class="top-bar">
-    <h1>Employees List</h1>
+    <h3>Employees List</h3  >
     <p>Monitor and maintain employee records</p>
   </div>
 
@@ -271,14 +274,20 @@
   </ion-grid>
 
   <!-- ================= ADMIN DASHBOARD ================= -->
-  <ion-card (click)="masterpayroll()" class="admin-dashboard-card" style="margin-bottom: 24px; cursor: pointer;">
-    <ion-card-header style="display: flex; align-items: center;">
-      <ion-icon name="grid-outline" style="font-size: 2rem; margin-right: 12px;"></ion-icon>
+   <!-- admin-dashboard-card -->
+    <ion-col size="12" class="manage-block">
+
+  <ion-card class="admin-dashboard" style="margin-bottom: 24px; cursor: pointer;">
+    <ion-card-header style="display: flex;">
+      <ion-icon name="grid-outline" style="font-size: 2rem; margin-right: 12px; color: #fff;"></ion-icon>
       <ion-card-title>Financial Master Dashboard</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p>Go to the main Admin Dashboard for advanced HRMS management.</p>
     </ion-card-content>
+    <ion-button class="primary-outline-btn" (click)="masterpayroll()">Financial Details<ion-icon
+                name="arrow-forward-outline"></ion-icon></ion-button>
   </ion-card>
+  </ion-col>
 
 </ion-content>

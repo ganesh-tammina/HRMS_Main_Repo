@@ -176,6 +176,7 @@
     </div>
     <div class="modal-body">
       <form [formGroup]="compositionForm" (ngSubmit)="saveComponent()" class="form-vertical">
+        <div class="form-continer">
         <!-- ADD MODE: Mapping Fields -->
         <ng-container *ngIf="!isEditMode">
           <div class="form-group">
@@ -270,10 +271,12 @@
           </div>
           <input type="hidden" formControlName="created_by" />
         </div>
-
+      </div>
+      <div class="form-footer"> 
         <button type="submit" class="submit-btn" [disabled]="compositionForm.invalid">
           {{ isEditMode ? 'Update Component' : 'Add to Structure' }}
         </button>
+      </div>
       </form>
     </div>
   </div>

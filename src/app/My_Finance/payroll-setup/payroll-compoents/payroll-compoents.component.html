@@ -24,9 +24,9 @@
       <div class="component-table-wrapper">
         <div class="component-table">
           <div class="table-head">
-            <span>ID</span>
-            <span>Code</span>
-            <span>Name</span>
+            <span class="sticky-col col-id">ID</span>
+            <span class="sticky-col col-code">Code</span>
+            <span class="sticky-col col-name">Name</span>
             <span>Type</span>
             <span>Calc Type</span>
             <span>Value</span>
@@ -35,14 +35,14 @@
             <span>Prorated</span>
             <span>Seq</span>
             <span>Notes</span>
-            <span>Action</span>
+            <span class="sticky-action">Action</span>
           </div>
 
           <div class="table-row" *ngFor="let comp of components">
-            <span>{{ comp.id }}</span>
-            <span>{{ comp.code }}</span>
-            <span>{{ comp.name }}</span>
-            <span>
+              <span class="sticky-col col-id">{{ comp.id }}</span>
+              <span class="sticky-col col-code">{{ comp.code }}</span>
+              <span class="sticky-col col-name">{{ comp.name }}</span>
+            <span class="justify-center">
               <span class="badge" [ngClass]="comp.component_type?.toLowerCase()">
                 {{ comp.component_type }}
               </span>
@@ -52,17 +52,17 @@
               {{ comp.value }}{{ comp.calculation_type === 'PERCENTAGE' ? '%' : '' }}
             </span>
             <span>{{ comp.percentage_of_code || '-' }}</span>
-            <span>
+            <span class="justify-center">
               <ion-icon [name]="comp.taxable ? 'checkmark-circle' : 'close-circle'"
                 [color]="comp.taxable ? 'success' : 'danger'"></ion-icon>
             </span>
-            <span>
+            <span class="justify-center">
               <ion-icon [name]="comp.prorated ? 'checkmark-circle' : 'close-circle'"
                 [color]="comp.prorated ? 'success' : 'danger'"></ion-icon>
             </span>
             <span>{{ comp.sequence }}</span>
             <span>{{ comp.notes || '-' }}</span>
-            <span>
+            <span class="sticky-action justify-center">
               <ion-icon name="create" class="edit-icon" (click)="editComponent(comp)"></ion-icon>
               <ion-icon name="trash" class="delete-icon" (click)="deleteComponent(comp.id)"></ion-icon>
             </span>
