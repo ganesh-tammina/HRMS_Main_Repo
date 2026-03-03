@@ -87,6 +87,49 @@
             </ion-col>
           </ion-row>
 
+          <ion-row>
+            <ion-col size="4">
+              <ion-item>
+                <ion-label position="stacked">Probation Period (months)</ion-label>
+                <ion-input type="number" formControlName="probationPeriod"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="4">
+              <ion-item>
+                <ion-label position="stacked">Notice Period (months)</ion-label>
+                <ion-input type="number" formControlName="noticePeriod"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="4">
+              <ion-item>
+                <ion-label position="stacked">Work Mode</ion-label>
+                <ion-select formControlName="workMode" interface="popover">
+                  <ion-select-option value="Hybrid">Hybrid</ion-select-option>
+                  <ion-select-option value="Remote">Remote</ion-select-option>
+                  <ion-select-option value="On-site">On-site</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12">
+              <ion-item>
+                <ion-label position="stacked">Special Terms</ion-label>
+                <ion-input formControlName="specialTerms" placeholder="e.g. Relocation assistance"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12">
+              <ion-item>
+                <ion-label position="stacked">Benefits</ion-label>
+                <ion-input formControlName="benefits" placeholder="e.g. Health insurance, meal coupons"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
           <!-- <ion-row>
                       <ion-col>
                         <ion-button expand="block" type="submit">Save DOJ</ion-button>

@@ -154,17 +154,16 @@ export class salaryStaructureComponent implements OnInit {
       total_annual: annualSalary,
     };
 
-    console.log('📤 Sending salary structure payload:', salaryData);
+    // Update candidate object with salary data for the final API call
+    this.candidate.offered_ctc = annualSalary;
+    this.candidate.annual_salary = annualSalary;
+    this.candidate.salary_breakup = {
+      basic: this.salaryStructure.basic,
+      hra: this.salaryStructure.hra,
+      special: this.salaryStructure.special
+    };
 
-    // ✅ Trigger API call (asynchronous)
-    this.candidateService.createSalaryStructure(salaryData).subscribe({
-      next: (res: any) => {
-        console.log('✅ Salary structure saved successfully:', res);
-      },
-      error: (err: any) => {
-        console.error('❌ Error saving salary structure:', err);
-      },
-    });
+    console.log('✅ Candidate updated with salary data:', this.candidate);
 
     // ✅ Immediately navigate to OfferDetailsComponent
     this.router.navigate(

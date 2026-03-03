@@ -65,11 +65,16 @@ export class CreateOfferComponent implements OnInit {
     }
 
     this.offerForm = this.fb.group({
-      DOJ: [this.candidate.offerDetails.DOJ || '', Validators.required],
-      offerValidity: [this.candidate.offerDetails.offerValidity || '', [Validators.required, Validators.min(1)]]
+      DOJ: [this.candidate.offerDetails?.DOJ || '', Validators.required],
+      offerValidity: [this.candidate.offerDetails?.offerValidity || '', [Validators.required, Validators.min(1)]],
+      workMode: [this.candidate.work_mode || 'Hybrid', Validators.required],
+      probationPeriod: [this.candidate.probation_period || 3, Validators.required],
+      noticePeriod: [this.candidate.notice_period || 2, Validators.required],
+      specialTerms: [this.candidate.special_terms || ''],
+      benefits: [this.candidate.benefits || '']
     });
 
-    this.selectedDate = this.candidate.offerDetails.DOJ || '';
+    this.selectedDate = this.candidate.offerDetails?.DOJ || '';
   }
 
   /** 📅 Date picker handler */
@@ -79,6 +84,7 @@ export class CreateOfferComponent implements OnInit {
       const date = new Date(value);
       const formatted = date.toLocaleDateString('en-GB'); // DD/MM/YYYY
       this.selectedDate = formatted;
+      if (!this.candidate.offerDetails) this.candidate.offerDetails = {};
       this.candidate.offerDetails.DOJ = formatted;
       this.offerForm.patchValue({ DOJ: formatted });
     }
@@ -98,41 +104,36 @@ export class CreateOfferComponent implements OnInit {
   /** ✅ Submit Offer Form */
   submitOfferForm() {
     if (this.offerForm.valid) {
-      const formattedJoiningDate = this.formatDate(this.offerForm.value.DOJ) || '';
+      const formValues = this.offerForm.value;
+      const formattedJoiningDate = this.formatDate(formValues.DOJ) || '';
 
-      const offerPayload = {
-        Email: this.candidate?.personalDetails?.Email || this.candidate?.Email,
-        JoiningDate: formattedJoiningDate,
-        OfferValidity: this.offerForm.value.offerValidity
+      // Update candidate object with all collected data
+      this.candidate = {
+        ...this.candidate,
+        joining_date: formattedJoiningDate,
+        offer_validity_date: formValues.offerValidity, // Or you might need to calculate a date
+        work_mode: formValues.workMode,
+        probation_period: formValues.probationPeriod,
+        notice_period: formValues.noticePeriod,
+        special_terms: formValues.specialTerms,
+        benefits: formValues.benefits,
+        offerDetails: {
+          ...this.candidate.offerDetails,
+          DOJ: formValues.DOJ,
+          offerValidity: formValues.offerValidity
+        }
       };
 
-      if (!offerPayload.Email) {
-        alert('❌ Candidate Email not found!');
-        return;
-      }
+      console.log('✅ Local candidate updated:', this.candidate);
 
-      console.log('📤 Sending Offer Details:', offerPayload);
+      const candidateId = this.candidate?.candidate_id || this.candidate?.id;
+      const firstName = this.candidate?.personalDetails?.FirstName || this.candidate?.FirstName || 'User';
 
-      this.candidateService.createOfferDetails(offerPayload).subscribe({
-        next: (res: any) => {
-          console.log('✅ Offer details saved successfully:', res);
-          alert('Offer details saved successfully!');
-
-          // ✅ Navigate using ID and Name (handles different property locations)
-          this.router.navigate(
-            [
-              '/salaryStaructure',
-              this.candidate?.candidate_id || this.candidate?.id || res?.data?.candidate_id,
-              encodeURIComponent(this.candidate?.personalDetails?.FirstName || this.candidate?.FirstName || 'User')
-            ],
-            { state: { candidate: this.candidate } }
-          );
-        },
-        error: (err: any) => {
-          console.error('❌ Error saving offer details:', err);
-          alert('Failed to save offer details.');
-        }
-      });
+      // Navigate to salary structure
+      this.router.navigate(
+        ['/salaryStaructure', candidateId, encodeURIComponent(firstName)],
+        { state: { candidate: this.candidate } }
+      );
     } else {
       alert('Please fill all required fields!');
     }

@@ -5,7 +5,8 @@ import { IonicModule } from '@ionic/angular';
 import { CreateOfferHeaderComponent } from '../create-offer-header/create-offer-header.component';
 import { HeaderComponent } from 'src/app/shared/header/header.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { CandidateDetailsService, OfferPayload } from 'src/app/services/candidate-details-service.service';
+
 @Component({
   selector: 'app-preview-send',
   templateUrl: './preview-send.component.html',
@@ -29,13 +30,13 @@ export class PreviewSendComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private candidateService: CandidateService
+    private candidateService: CandidateDetailsService
   ) { }
 
   ngOnInit() {
     const nav = this.router.getCurrentNavigation();
     this.candidate = nav?.extras?.state?.['candidate'] || {};
-    console.log(this.candidate)
+    console.log('Final Candidate Data:', this.candidate);
 
     this.route.queryParams.subscribe(params => {
       if (!this.candidate && params['candidate']) {
@@ -86,7 +87,54 @@ export class PreviewSendComponent implements OnInit {
   }
 
   createOffer() {
-    console.log('Final Offer created for:', this.candidate);
-    // Call API here to generate/send offer letter
+    console.log('🚀 Final Offer Creation for:', this.candidate);
+
+    const candidateId = this.candidate.candidate_id || this.candidate.id;
+    if (!candidateId) {
+      alert('❌ Candidate ID not found!');
+      return;
+    }
+
+    // Calculate offer_validity_date (Today + offerValidity days)
+    const validityDays = parseInt(this.candidate.offer_validity_date || '7', 10);
+    const validityDate = new Date();
+    validityDate.setDate(validityDate.getDate() + validityDays);
+    const formattedValidityDate = validityDate.toISOString().split('T')[0];
+
+    const offerPayload: OfferPayload = {
+      position: this.candidate.JobTitle || 'Software Engineer',
+      designation_id: this.candidate.designation_id || 1,
+      department_id: this.candidate.department_id || 2,
+      location_id: this.candidate.location_id || 1,
+      reporting_manager_id: this.candidate.reporting_manager_id || 5,
+      joining_date: this.candidate.joining_date || new Date().toISOString().split('T')[0],
+      offered_ctc: this.candidate.offered_ctc || 800000,
+      annual_salary: this.candidate.annual_salary || 800000,
+      salary_breakup: this.candidate.salary_breakup || {
+        basic: 400000,
+        hra: 200000,
+        special: 200000
+      },
+      offer_validity_date: formattedValidityDate,
+      probation_period: parseInt(this.candidate.probation_period || '3', 10),
+      notice_period: parseInt(this.candidate.notice_period || '2', 10),
+      work_mode: this.candidate.work_mode || 'Hybrid',
+      special_terms: this.candidate.special_terms || 'Relocation assistance provided',
+      benefits: this.candidate.benefits || 'Health insurance, meal coupons'
+    };
+
+    console.log('📤 Sending Final Offer Payload:', offerPayload);
+
+    this.candidateService.createOffer(candidateId, offerPayload).subscribe({
+      next: (res: any) => {
+        console.log('✅ Offer created successfully:', res);
+        alert('🎉 Offer letter created and sent successfully!');
+        this.router.navigate(['/preonboarding-setup']); // Or any success page
+      },
+      error: (err: any) => {
+        console.error('❌ Error creating offer:', err);
+        alert('Failed to create offer letter. Please check the logs.');
+      }
+    });
   }
 }
