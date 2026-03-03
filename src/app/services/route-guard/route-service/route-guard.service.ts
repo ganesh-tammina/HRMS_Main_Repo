@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { EmployeeService } from '../../employee.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,11 @@ export class RouteGuardService {
   private readonly ROLE_KEY = 'role';
   private readonly EMPLOYEE_ID_KEY = 'employee_id';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private employeeService: EmployeeService
+  ) { }
 
   /* ===============================
      STORE LOGIN DATA
@@ -41,20 +46,28 @@ export class RouteGuardService {
      LOGOUT
   =============================== */
   logout(): void {
-    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.ROLE_KEY);
-    localStorage.removeItem(this.EMPLOYEE_ID_KEY);
-    localStorage.removeItem('login_time');
-    localStorage.removeItem('uploadedImageUrl');
+    // 1. Clear Employee Service State
+    this.employeeService.clearEmployee();
 
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('attendance_')) {
-        localStorage.removeItem(key);
+    // 2. Clear Storage (while preserving attendance)
+    const attendanceData: { [key: string]: string } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('attendance_')) {
+        attendanceData[key] = localStorage.getItem(key) || '';
       }
+    }
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Restore attendance data
+    Object.keys(attendanceData).forEach(key => {
+      localStorage.setItem(key, attendanceData[key]);
     });
 
-    this.router.navigate(['/login']);
+    // 3. Force full refresh for clean state re-initialization
+    window.location.href = '/login';
   }
 
   /* ===============================
