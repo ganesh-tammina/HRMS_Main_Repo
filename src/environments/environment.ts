@@ -7,5 +7,5 @@ export const environment = {
 
   apiURL: local ? 'localhost:3000' : 'tamminademoapps.com:9295',
   // apiURL: local ? '30.0.0.128:4201' : 'tamminademoapps.com:9295',
-  candidateURL: local ? '30.0.0.78:4200' : 'tamminademoapps.com:9292',
+  candidateURL: local ? 'localhost:4200' : 'tamminademoapps.com:9292',
 };

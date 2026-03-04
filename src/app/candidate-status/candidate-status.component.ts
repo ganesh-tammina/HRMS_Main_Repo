@@ -55,6 +55,7 @@ export class CandidateStatusComponent implements OnInit {
           ...c,
           FirstName: c.first_name || c.FirstName,
           LastName: c.last_name || c.LastName,
+          FullName: c.full_name || c.FullName || `${c.first_name} ${c.last_name}`.trim(),
           Email: c.email || c.Email,
           PhoneNumber: c.phone || c.PhoneNumber,
           JobTitle: c.position || c.designation_name || c.JobTitle,
@@ -64,6 +65,13 @@ export class CandidateStatusComponent implements OnInit {
           candidate_id: c.candidate_id,
           id: c.id
         };
+
+        // Fallback for name if it's in query parameters (optional UX improvement)
+        const nameFromQuery = this.route.snapshot.queryParamMap.get('name');
+        if (nameFromQuery && !this.candidate.FirstName) {
+          this.candidate.FirstName = nameFromQuery;
+        }
+
         console.log('✅ Candidate loaded:', this.candidate);
         this.loading = false;
       },
