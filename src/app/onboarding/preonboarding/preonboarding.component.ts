@@ -53,34 +53,41 @@ export class PreonboardingComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // Subscribe to candidates from service
-    // this.candidateService.candidates$.subscribe(data => {
-    //   this.candidates = data;
-    //   console.log('Candidates:', this.candidates);
-    // });
-    this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
-      console.log('Candidates:', data);
-      this.candidates = data;
-      this.filterCandidates = [...data.candidates];
-      // job title list
-      this.JobTitleList = this.candidates.map(c => c.JobTitle)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      // Business unit List
-      this.BusinessunitList = this.candidates.map(c => c.BusinessUnit)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      //Department List
-      this.DeptList = this.candidates.map(c => c.Department)
-        .filter((value, index, self) => self.indexOf(value) === index);
-      // Location List
-      this.LocationList = this.candidates.map(c => c.JobLocation)
-        .filter((value, index, self) => self.indexOf(value) === index);
-
-      console.log('Candidates:', this.candidates);
-      console.log('Jobtitle:', this.BusinessunitList);
-    });
+    this.loadCandidates();
     this.hiddenCandidates = JSON.parse(
       sessionStorage.getItem('hiddenCandidates') || '[]'
     );
+  }
+
+  loadCandidates() {
+    this.CandidatedetailsService.getCandidates().subscribe((data: any) => {
+      console.log('Candidates:', data);
+
+      // Handle both array and object formats
+      const projects = Array.isArray(data) ? data : (data.candidates || []);
+
+      this.candidates = projects;
+      this.filterCandidates = [...projects];
+
+      // job title list
+      this.JobTitleList = this.candidates.map(c => c.designation_name || c.JobTitle)
+        .filter((value, index, self) => value && self.indexOf(value) === index);
+
+      // Business unit List
+      this.BusinessunitList = this.candidates.map(c => c.BusinessUnit)
+        .filter((value, index, self) => value && self.indexOf(value) === index);
+
+      //Department List
+      this.DeptList = this.candidates.map(c => c.department_name || c.Department)
+        .filter((value, index, self) => value && self.indexOf(value) === index);
+
+      // Location List
+      this.LocationList = this.candidates.map(c => c.location_name || c.JobLocation)
+        .filter((value, index, self) => value && self.indexOf(value) === index);
+
+      console.log('Candidates Loaded:', this.candidates.length);
+      this.applyFilters();
+    });
   }
 
   // Navigate to candidate create (non-modal)
@@ -112,10 +119,9 @@ export class PreonboardingComponent implements OnInit {
 
     const { data } = await modal.onDidDismiss();
 
-    if (data) {
-      console.log('Form Submitted Data:', data);
-      // ✅ add candidate to array if needed
-      // this.candidates.push(data);
+    if (data && data.created) {
+      console.log('Candidate Created, refreshing list...');
+      this.loadCandidates();
     }
   }
 
@@ -241,30 +247,37 @@ export class PreonboardingComponent implements OnInit {
 
     // Job Title
     if (this.selectedJobTitle) {
-      filtered = filtered.filter(c => c.JobTitle === this.selectedJobTitle);
+      filtered = filtered.filter(c => (c.designation_name || c.JobTitle) === this.selectedJobTitle);
     }
 
     // Department
     if (this.selectedDept) {
-      filtered = filtered.filter(c => c.Department === this.selectedDept);
+      filtered = filtered.filter(c => (c.department_name || c.Department) === this.selectedDept);
     }
 
     // Location
     if (this.selectedLocation) {
-      filtered = filtered.filter(c => c.JobLocation === this.selectedLocation);
+      filtered = filtered.filter(c => (c.location_name || c.JobLocation) === this.selectedLocation);
     }
 
     // Search
     if (this.searchText) {
       const txt = this.searchText.toLowerCase();
-      filtered = filtered.filter(c =>
-        c.JobTitle.toLowerCase().includes(txt) ||
-        c.Department.toLowerCase().includes(txt) ||
-        c.JobLocation.toLowerCase().includes(txt) ||
-        c.BusinessUnit.toLowerCase().includes(txt) ||
-        c.status.toLowerCase().includes(txt) ||
-        c.FirstName.toLowerCase().includes(txt)
-      );
+      filtered = filtered.filter(c => {
+        const jobTitle = (c.designation_name || c.JobTitle || '').toLowerCase();
+        const dept = (c.department_name || c.Department || '').toLowerCase();
+        const loc = (c.location_name || c.JobLocation || '').toLowerCase();
+        const bUnit = (c.BusinessUnit || '').toLowerCase();
+        const status = (c.status || '').toLowerCase();
+        const fullName = (c.full_name || c.FirstName || '').toLowerCase();
+
+        return jobTitle.includes(txt) ||
+          dept.includes(txt) ||
+          loc.includes(txt) ||
+          bUnit.includes(txt) ||
+          status.includes(txt) ||
+          fullName.includes(txt);
+      });
     }
 
     // FINAL result
