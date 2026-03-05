@@ -68,6 +68,10 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                span {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
             }
         }
     }
@@ -235,7 +239,7 @@
         margin-bottom: 30px;
 
         .card {
-            background: #fff;
+            background: rgb(1 87 150 / 72%);
             padding: 24px;
             border-radius: 20px;
             display: flex;
@@ -265,7 +269,7 @@
 
                 .label {
                     font-size: 13px;
-                    color: #64748b;
+                    color: #fff;
                     font-weight: 500;
                     margin-bottom: 4px;
                 }
@@ -273,7 +277,7 @@
                 .value {
                     font-size: 24px;
                     font-weight: 700;
-                    color: #0f172a;
+                    color: #fff;
                 }
             }
 
