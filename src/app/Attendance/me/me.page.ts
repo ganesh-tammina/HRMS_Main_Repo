@@ -42,6 +42,7 @@ import { TimeFormatPipe } from './time-format.pipe';
     AttendanceRequestComponent,
     RadialTimeGraphComponent,
     RemoteClockinModalComponent,
+    TimeFormatPipe,
   ],
   // ...existing code...
 })
@@ -101,6 +102,17 @@ export class MePage implements OnInit {
 
   days: Date[] = [];
   today: Date = new Date();
+  currentMonthName: string = '';
+
+  monthlySummary: any = {
+    total_days: 0,
+    present_days: 0,
+    absent_days: 0,
+    half_days: 0,
+    avg_work_hours: 0,
+    total_effective_hours: 0,
+    total_gross_hours: 0
+  };
 
   constructor(
     private candidateService: CandidateService,
@@ -120,6 +132,7 @@ export class MePage implements OnInit {
     this.loadWeekendPolicies();
     this.loadEmployeeProfile();
     this.loadTodayAttendance();
+    this.loadMonthlySummary();
   }
 
   // ================= DATA LOADERS =================
@@ -151,10 +164,31 @@ export class MePage implements OnInit {
     this.attendanceApi.getTodayAttendance().subscribe({
       next: (res: any) => {
         this.status = res?.attendance?.status || 'Absent';
+
+        const pipe = new TimeFormatPipe();
+
         if (res?.attendance) {
-          const pipe = new TimeFormatPipe();
-          this.grossHours = pipe.transform(res.attendance.gross_hours);
-          this.effectiveHours = pipe.transform(res.attendance.total_work_hours);
+          let gross = parseFloat(res.attendance.gross_hours || 0);
+          let effective = parseFloat(res.attendance.total_work_hours || 0);
+
+          // If currently clocked in, calculate live hours
+          if (res.last_punch_type === 'in' && res.punches?.length > 0) {
+            const lastPunch = res.punches[res.punches.length - 1];
+            const startTime = new Date(lastPunch.punch_time).getTime();
+            const now = new Date().getTime();
+            const diffHours = (now - startTime) / (1000 * 60 * 60);
+
+            // Add live session to effective & gross
+            effective += diffHours;
+
+            // For gross, if it was null, calculate from first punch to now
+            const firstPunch = res.punches[0];
+            const firstTime = new Date(firstPunch.punch_time).getTime();
+            gross = (now - firstTime) / (1000 * 60 * 60);
+          }
+
+          this.grossHours = pipe.transform(gross);
+          this.effectiveHours = pipe.transform(effective);
         } else {
           this.grossHours = '00:00';
           this.effectiveHours = '00:00';
@@ -165,6 +199,20 @@ export class MePage implements OnInit {
         this.grossHours = '00:00';
         this.effectiveHours = '00:00';
       },
+    });
+  }
+
+  loadMonthlySummary() {
+    const d = new Date();
+    this.currentMonthName = d.toLocaleString('default', { month: 'long' });
+
+    this.attendanceApi.getMonthlyAttendanceSummary().subscribe({
+      next: (res: any) => {
+        if (res?.summary) {
+          this.monthlySummary = res.summary;
+        }
+      },
+      error: (err) => console.error('Error loading monthly summary:', err)
     });
   }
 
@@ -282,6 +330,8 @@ export class MePage implements OnInit {
   onClockStatusChanged(record: AttendanceRecord) {
     this.record = record;
     this.attendanceRefresh = Date.now(); // trigger refresh
+    this.loadTodayAttendance();
+    this.loadMonthlySummary();
   }
 
   setTab(tab: string) {

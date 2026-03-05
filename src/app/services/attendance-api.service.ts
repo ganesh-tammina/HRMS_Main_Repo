@@ -114,6 +114,25 @@ export class AttendanceApiService {
       }
     );
   }
+
+  /** ✅ GET MONTHLY ATTENDANCE SUMMARY */
+  getMonthlyAttendanceSummary(month?: number, year?: number): Observable<any> {
+    const d = new Date();
+    const m = month || (d.getMonth() + 1);
+    const y = year || d.getFullYear();
+
+    const httpParams = new HttpParams()
+      .set('month', m.toString())
+      .set('year', y.toString());
+
+    return this.http.get(
+      `${this.BASE_URL}/my-report`,
+      {
+        headers: this.getHeaders(),
+        params: httpParams,
+      }
+    );
+  }
   private todayAttendance$: Observable<any> | null = null;
 
   /** 📅 TODAY ATTENDANCE */

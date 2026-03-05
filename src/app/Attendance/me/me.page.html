@@ -11,26 +11,50 @@
           <!-- Attendance Status -->
           <ion-card class="attendance-status">
             <ion-card-header>
-              <ion-card-title>Attendance Status</ion-card-title>
+              <ion-card-title>Attendance Status - {{ currentMonthName }}</ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              Status: <strong>{{ status }}</strong><br />
+              <div class="today-status mb-15">
+                Status today: <ion-badge [color]="status === 'present' ? 'success' : 'danger'">{{ status }}</ion-badge>
+              </div>
+
+              <ion-grid class="monthly-stats ion-no-padding">
+                <ion-row class="mb-10">
+                  <ion-col size="4">
+                    <p class="stat-label">Present</p>
+                    <p class="stat-value text-success"><strong>{{ monthlySummary.present_days }}</strong></p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p class="stat-label">Absent</p>
+                    <p class="stat-value text-danger"><strong>{{ monthlySummary.absent_days }}</strong></p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p class="stat-label">Half Days</p>
+                    <p class="stat-value text-warning"><strong>{{ monthlySummary.half_days }}</strong></p>
+                  </ion-col>
+                </ion-row>
+
+                <div class="divider-dashed mb-10"></div>
+              </ion-grid>
+
+              <div class="divider mb-10"></div>
+
               <ion-grid class="days-grid ion-no-padding">
                 <ion-row>
                   <ion-col class="row-left">
                     <img src="../../assets/user.svg" width="25" />
-                    <p class="pl-5">Me</p>
+                    <p class="pl-5">Today:</p>
                   </ion-col>
                   <ion-col>
                     <div>
-                      <p>Gross Hours:</p>
+                      <p>Gross:</p>
                       <p><strong>{{ grossHours }}</strong></p>
                     </div>
                   </ion-col>
                   <ion-col>
                     <div>
-                      <p>Effective Hours:</p>
+                      <p>Effective:</p>
                       <p><strong>{{ effectiveHours }}</strong></p>
                     </div>
                   </ion-col>

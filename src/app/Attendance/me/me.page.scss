@@ -1,7 +1,7 @@
 @import './../../../theme/variables.scss';
 // .keka-navbar {
 //   height: 56px;
-  
+
 //   .navbar-toolbar {
 //     display: flex;
 //     justify-content: space-between;
@@ -70,89 +70,94 @@
   background-color: #E6F1FF;
   padding: 20px;
   gap: 20px;
-.attendance-block {
-  ion-card {
-    border-radius: 12px;
-    box-shadow: 0 3px 8px #00000036;
-    height: 250px;
-    padding: 8px;
-    ion-card-title {
-     @include card-sub-title();
-     text-align: left;
+
+  .attendance-block {
+    ion-card {
+      border-radius: 12px;
+      box-shadow: 0 3px 8px #00000036;
+      height: 250px;
+      padding: 8px;
+
+      ion-card-title {
+        @include card-sub-title();
+        text-align: left;
+      }
     }
-}
-}
-// Timings style
-.days-grid {
-  padding: 10px;
-}
+  }
 
-.day-container {
- 
-  &::before {
-    content: "";
-    transition: background-color 0.3s ease;
+  // Timings style
+  .days-grid {
+    padding: 10px;
+  }
+
+  .day-container {
+
+    &::before {
+      content: "";
+      transition: background-color 0.3s ease;
+      width: 40px;
+      position: absolute;
+      background: linear-gradient(180deg, #3498DB 0%, #7FCAFD 100%);
+      top: -8px;
+      height: 12px;
+      left: 5px;
+      border-radius: 12px;
+    }
+
+    .day-of-week {
+      font-weight: bold;
+      font-size: 1em;
+      margin: 0;
+      text-overflow: initial;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 4px;
+    }
+
+  }
+
+  .highlight-today {
+    &::before {
+      background: linear-gradient(180deg, #FF4B4B 0%, #FFCCCC 100%);
+    }
+  }
+
+  .highlight-weekoff {
+    // background: #ffe6e6 !important;
+    // color: blue !important;
+    font-weight: 600;
     width: 40px;
-    position: absolute;
-    background: linear-gradient(180deg, #3498DB 0%, #7FCAFD 100%);
-    top: -8px;
-    height: 12px;
-    left: 5px;
-    border-radius: 12px;
-  }
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -6px;
+    margin-left: 6px;
 
-  .day-of-week {
-    font-weight: bold;
-    font-size: 1em;
-    margin: 0;
-    text-overflow: initial;
-    overflow: hidden;
-    white-space: nowrap;
-    padding: 4px;
+    &::before {
+      background: linear-gradient(180deg, #D4D4D4 0%, #EFEFEF 100%);
+      ;
+    }
   }
-  
-}
-
-.highlight-today {
-  &::before {
-    background: linear-gradient(180deg, #FF4B4B 0%, #FFCCCC 100%);
-  }
-}
-
-.highlight-weekoff {
-  // background: #ffe6e6 !important;
-  // color: blue !important;
-  font-weight: 600;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -6px;
-  margin-left: 6px;
-  &::before{
-    background: linear-gradient(180deg, #D4D4D4 0%, #EFEFEF 100%);
-;
-  }
-}
 
 
 }
- ion-progress-bar {
-    height: 6px;
-    border-radius: 6px;
-    --background: #E4E4E4 !important;
-    --progress-background: #3498db !important;
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
+
+ion-progress-bar {
+  height: 6px;
+  border-radius: 6px;
+  --background: #E4E4E4 !important;
+  --progress-background: #3498db !important;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 
 .weekdays-container {
   display: flex;
   justify-content: space-between;
   margin: 0;
-  
+
   span {
     flex: 1;
     text-align: center;
@@ -162,22 +167,22 @@
     font-weight: 400;
     margin: 0 2px;
     transition: all 0.2s ease;
-    
+
     &.work-day {
       background: #3498DB;
       color: white;
       border: 1px solid #2980b9;
     }
-    
+
     &.week-off {
       background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
       color: white;
       border: 1px solid #dc3545;
-      box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+      box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
     }
   }
 }
-  
+
 /* Individual cards */
 .card-pannel {
   background-color: white;
@@ -188,27 +193,68 @@
 }
 
 /* Attendance Stats */
+.attendance-status {
+  .today-status {
+    font-size: 14px;
+    font-weight: 500;
+
+    ion-badge {
+      padding: 4px 8px;
+    }
+  }
+
+  .monthly-stats {
+    background: #f8fbff;
+    padding: 10px;
+    border-radius: 8px;
+
+    .stat-label {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      margin: 0;
+
+      &.text-success {
+        color: #2ecc71;
+      }
+
+      &.text-danger {
+        color: #e74c3c;
+      }
+
+      &.text-warning {
+        color: #f1c40f;
+      }
+    }
+  }
+
+  .divider {
+    height: 1px;
+    background: #e1e9f5;
+    width: 100%;
+  }
+
+  .divider-dashed {
+    height: 1px;
+    border-top: 1px dashed #cedae9;
+    width: 100%;
+  }
+}
+
+.dashboard .attendance-block ion-card.attendance-status {
+  height: auto;
+  min-height: 250px;
+}
+
 .attendance-status .header {
   font-weight: bold;
   margin-bottom: 10px;
-}
-
-.attendance-status .entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-}
-
-.attendance-status .entry .icon {
-  background-color: #fcd462;
-  border-radius: 50%;
-  padding: 8px;
-  color: #fff;
-}
-
-.attendance-status .entry .icon.team {
-  background-color: #5daee0;
 }
 
 /* Timings */
@@ -254,14 +300,14 @@
 
 
 
-.actions { 
+.actions {
   text-align: center;
 
   .actions-card {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    
+
     .clock {
       font-size: 18px;
       font-weight: 400;
@@ -270,11 +316,11 @@
       margin-top: 0;
       padding: 8px;
     }
-    
+
     .clear {
       min-height: auto;
-     @include body-text();
-     font-size: 12px;
+      @include body-text();
+      font-size: 12px;
       --padding-top: 4px;
       --padding-bottom: 4px;
       --padding-start: 0;
@@ -283,13 +329,16 @@
       text-align: left;
       text-transform: capitalize;
       justify-self: flex-start;
+
       &:hover {
-        --background: transparent; 
+        --background: transparent;
       }
+
       img {
         margin-right: 8px;
       }
     }
+
     .info {
       font-size: 12px;
       color: #555;
@@ -299,6 +348,7 @@
       margin: 8px 0;
       font-weight: 500;
     }
+
     .links {
       color: #d35c6b;
       margin-top: 10px;
@@ -309,35 +359,40 @@
       cursor: pointer;
     }
   }
- 
+
 }
+
 // Custom tab
 .custom-tabs {
   width: fit-content;
+
   button {
     &:first-child {
       border-bottom-left-radius: 8px;
       border-top-left-radius: 8px;
     }
+
     &:last-child {
       border-bottom-right-radius: 8px;
       border-top-right-radius: 8px;
     }
+
     padding: 12px 24px;
     background: #fff;
     border: 0.5px solid #DEDEDE;
     @include normal-text-unbold();
+
     &.active {
       background: #3498DB;
-      color: #fff;      
-    } 
-  
+      color: #fff;
+    }
+
   }
 }
 
 
- 
- 
+
+
 
 // attendance-log
 .attendance-log-card {
@@ -356,7 +411,7 @@ ion-modal {
 //   tab style
 
 
- 
+
 
 
 
@@ -383,14 +438,17 @@ ion-modal {
     border-radius: 5px;
     font-size: 0.8rem;
     font-weight: 600;
+
     &.approved {
       background: #e6f9f0;
       color: #0a8754;
     }
+
     &.pending {
       background: #fff4e5;
       color: #d48806;
     }
+
     &.rejected {
       background: #fdecea;
       color: #d93025;
