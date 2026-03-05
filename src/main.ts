@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
@@ -10,6 +10,7 @@ import * as allIcons from 'ionicons/icons';
 
 import { QuillModule } from 'ngx-quill';
 import { importProvidersFrom } from '@angular/core';
+import { employeeInterceptor } from './app/services/employee-interceptor.interceptor';
 
 // addIcons({
 //   'checkmark-outline': checkmarkOutline,
@@ -36,7 +37,9 @@ bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([employeeInterceptor]), // You can add global interceptors here
+    ),
     provideAnimations(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(QuillModule.forRoot())

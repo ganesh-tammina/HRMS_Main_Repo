@@ -1,0 +1,37 @@
+
+.form-block {
+    .to-input, .from-input {
+        width: 50%;      
+    }
+    .to-input {
+      margin-left: 5px;
+    }
+    .from-input {
+      margin-right: 5px;      
+  }
+  }
+.request-btn {   
+  --background: #1870B9 !important;
+  height: 36px !important;
+  --border-radius: 15px;
+  display: flex;
+  justify-content: end;
+}
+.calendar-img {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+}
+ion-select::part(container){
+width: 113vh !important;
+}
+.leaveselect {
+  ion-select{
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+  ion-input{
+    height: 40px !important;
+    min-height: 40px !important; 
+  }
+}

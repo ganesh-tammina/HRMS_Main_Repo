@@ -1,15 +1,27 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { EmployeeService } from '../../employee.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class RouteGuardService {
+
   private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly ROLE_KEY = 'role';
   private readonly EMPLOYEE_ID_KEY = 'employee_id';
-  constructor(private http: HttpClient, private router: Router) {}
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private employeeService: EmployeeService
+  ) { }
+
+  /* ===============================
+     STORE LOGIN DATA
+  =============================== */
   storeTokens(
     accessToken: string,
     refreshToken: string | null,
@@ -17,8 +29,9 @@ export class RouteGuardService {
     role: string
   ): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(this.ROLE_KEY, role);
+    localStorage.setItem(this.ROLE_KEY, role.toLowerCase()); // ✅ IMPORTANT
     localStorage.setItem(this.EMPLOYEE_ID_KEY, employee_id!);
+
     if (refreshToken) {
       localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
     }
@@ -26,44 +39,40 @@ export class RouteGuardService {
 
   login(token: string, role: string): void {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
-    localStorage.setItem(this.ROLE_KEY, role);
+    localStorage.setItem(this.ROLE_KEY, role.toLowerCase()); // ✅ IMPORTANT
   }
 
+  /* ===============================
+     LOGOUT
+  =============================== */
   logout(): void {
-    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.ROLE_KEY);
-    localStorage.removeItem(this.EMPLOYEE_ID_KEY);
-    localStorage.removeItem('login_time'); // Clear login time on logout
-    localStorage.removeItem('uploadedImageUrl'); // Clear profile image
-    
-    // Clear all attendance records for all users
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('attendance_')) {
-        localStorage.removeItem(key);
+    // 1. Clear Employee Service State
+    this.employeeService.clearEmployee();
+
+    // 2. Clear Storage (while preserving attendance)
+    const attendanceData: { [key: string]: string } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('attendance_')) {
+        attendanceData[key] = localStorage.getItem(key) || '';
       }
-    });
-    
-    this.router.navigate(['/']);
-  }
-
-  redirectBasedOnRole(role: string): void {
-    switch (role.toLowerCase()) {
-      case 'admin':
-        this.router.navigate(['/admin']);
-        break;
-      case 'user':
-        this.router.navigate(['/Home']);
-        break;
-      case 'hr':
-        this.router.navigate(['/Home']);
-        break;
-      default:
-        console.warn('Unknown role:', role);
-        this.router.navigate(['/login']);
     }
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Restore attendance data
+    Object.keys(attendanceData).forEach(key => {
+      localStorage.setItem(key, attendanceData[key]);
+    });
+
+    // 3. Force full refresh for clean state re-initialization
+    window.location.href = '/login';
   }
 
+  /* ===============================
+     HELPERS
+  =============================== */
   get token(): string | null {
     return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }

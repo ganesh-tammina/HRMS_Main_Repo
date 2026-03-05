@@ -1,0 +1,12 @@
+@import '../admin.component.scss';
+
+ion-title {
+    padding-inline: 12px;
+}
+.form-block {
+    padding: 0 !important;
+    margin-top: 30px;
+    ion-label {
+     transform: none !important;
+    }
+}

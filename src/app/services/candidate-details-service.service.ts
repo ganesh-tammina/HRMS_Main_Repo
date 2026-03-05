@@ -17,10 +17,26 @@ export interface Candidate {
   BusinessUnit: string;
 }
 
-export interface OfferDetails {
-  Email: string;
-  JoiningDate: string;  // YYYY-MM-DD
-  OfferValidity: number; // days
+export interface OfferPayload {
+  position: string;
+  designation_id: number;
+  department_id: number;
+  location_id: number;
+  reporting_manager_id: number;
+  joining_date: string;
+  offered_ctc: number;
+  annual_salary: number;
+  salary_breakup: {
+    basic: number;
+    hra: number;
+    special: number;
+  };
+  offer_validity_date: string;
+  probation_period: number;
+  notice_period: number;
+  work_mode: string;
+  special_terms: string;
+  benefits: string;
 }
 
 export interface SalaryStructure {
@@ -40,9 +56,8 @@ export interface SalaryStructure {
 })
 export class CandidateDetailsService {
   private env = environment;
-  private baseUrl = `https://${this.env.apiURL}/candidates`;
-  private offerUrl = `https://${this.env.apiURL}/offer-details`;
-  private packageUrl = `https://${this.env.apiURL}/salary-structure`;
+  private baseUrl = `http://${this.env.apiURL}/api/candidates`;
+  private packageUrl = `http://${this.env.apiURL}/api/salary-structure`;
 
   constructor(private http: HttpClient) { }
 
@@ -56,15 +71,15 @@ export class CandidateDetailsService {
 
   /** 📋 Get all candidates */
   getCandidates(): Observable<Candidate[]> {
-    return this.http.get<Candidate[]>(this.baseUrl).pipe(
+    return this.http.get<any>(this.baseUrl).pipe(
       catchError(this.handleError)
     );
   }
 
-  /** 💼 Create offer details for candidate */
-  createOfferDetails(offer: OfferDetails): Observable<any> {
-    console.log('📤 Sending offer details:', offer);
-    return this.http.post(this.offerUrl, offer).pipe(
+  /** 💼 Create offer for candidate */
+  createOffer(candidateId: number, offerData: OfferPayload): Observable<any> {
+    console.log('📤 Sending offer letter data:', offerData);
+    return this.http.post(`${this.baseUrl}/${candidateId}/create-offer`, offerData).pipe(
       catchError(this.handleError)
     );
   }

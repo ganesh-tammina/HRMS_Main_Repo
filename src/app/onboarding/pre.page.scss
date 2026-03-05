@@ -167,7 +167,7 @@ input[type="file"] {
 .page-container {
   display: flex;
   gap: 20px;
-  padding: 20px;
+  padding: 10px 20px;
 }
 
 /* Sidebar */
@@ -331,4 +331,7 @@ input[type="file"] {
 }
 .pre_onboarding_card{
   display: flex;
+}
+.page-header{
+  padding: 10px 20px;
 }

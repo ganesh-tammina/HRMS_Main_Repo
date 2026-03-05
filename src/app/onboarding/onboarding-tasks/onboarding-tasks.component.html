@@ -4,8 +4,14 @@
     <app-onboarding-mainheader></app-onboarding-mainheader>
   </ion-header>
   <ion-content class="pre-on-boarding-block" fullscreen>
-      <p class="page-header mb-8"> Org > Onboarding > Onboarding tasks </p>
-      <ion-row class="mt-30 mb-15">
+    <!-- <ion-content class="pre-on-boarding-block" fullscreen> -->
+    <p class="page-header mt-0 mb-8">
+    <a routerLink="/preonboarding-cards" (click)="org()">Org /</a>
+    <a routerLink="/pre-onboarding-setup" (click)="onboard()">Onboarding /</a>
+    Onboarding tasks
+  </p>
+      <!-- <p class="page-header mb-8"> Org > Onboarding > Onboarding tasks </p> -->
+      <ion-row class="mt-20 mb-10">
         <ion-col>
          <p class="page-sub-header">Onboarding tasks</p>
          <p> Track employees who are assigned onboarding tasks and employees whose onboarding is not initiated.
@@ -123,10 +129,18 @@
       </div>
   <!-- Bulk actions -->
   <div class="actions-bar">
-      <ion-checkbox></ion-checkbox>
-      <span class="select-all">Select all</span>
+    <div class ="row-space-between">
+      <div>
+      <!-- <ion-checkbox></ion-checkbox>
+      <span class="select-all">Select all</span> -->
+      </div>
+      <div class ="login-right">
       <ion-button class="primary-outline-btn">Initiate onboarding</ion-button>
       <ion-button class="primary-outline-btn">Skip onboarding</ion-button>
+      </div>
+    </div>
+
+     
     </div>
 </div>
  
@@ -136,8 +150,7 @@
   <!-- Table -->
   <div class="table">
       <ion-row class="table-header">
-        <ion-col size="3" class="row-left">
-        <ion-checkbox class="pr-15"></ion-checkbox><p>NAME & JOB TITLE</p></ion-col>
+        <ion-col size="3" class="row-left"><p>NAME & JOB TITLE</p></ion-col>
         <ion-col size="3"><p>DEPT. & LOCATION</p></ion-col>
         <ion-col size="3"><p>Joining Date</p></ion-col>     
           <ion-col size="3"> <p>Actions</p></ion-col>
@@ -147,7 +160,6 @@
           <ion-grid>
              <ion-row class="table-list-row">
                 <ion-col size="3"  class="row-left">
-                    <ion-checkbox class="pr-15"></ion-checkbox>
                      <div class="cell">
                        <img src="../../../assets/Icons/user-01.svg" width="18">
                        <div class="name-stack">
@@ -182,7 +194,6 @@
 
              <ion-row class="table-list-row">
                 <ion-col size="3"  class="row-left">
-                    <ion-checkbox class="pr-15"></ion-checkbox>
                      <div class="cell">
                        <img src="../../../assets/Icons/user-01.svg" width="18">
                        <div class="name-stack">

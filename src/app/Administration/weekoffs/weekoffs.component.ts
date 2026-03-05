@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-weekoffs',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, IonicModule],
   templateUrl: './weekoffs.component.html',
   styleUrls: ['./weekoffs.component.scss']
 })
@@ -48,10 +49,10 @@ export class WeekoffsComponent implements OnInit {
       week_off_policy_name: this.weekOffForm.value.week_off_policy_name,
       week_off_days: this.selectedDays.join(",")   // <-- ARRAY → STRING
     };
-    this.candidateService.getWeekOffPolicies(formData).subscribe((res: any) => {
-      alert('Week Off Policy Saved Successfully!');
-      console.log(res);
-    });
+    // this.candidateService.getWeekOffPolicies(formData).subscribe((res: any) => {
+    //   alert('Week Off Policy Saved Successfully!');
+    //   console.log(res);
+    // });
     this.weekOffForm.reset();
     this.selectedDays = [];
   }

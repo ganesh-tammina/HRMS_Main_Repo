@@ -6,6 +6,7 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { RouteGuardService } from './route-guard/route-service/route-guard.service';
 import { refresh } from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
+import { EmployeeService } from './employee.service';
 
 export interface Candidate {
   id: number;
@@ -164,27 +165,7 @@ export interface weekOff {
 export class CandidateService {
   private currentLoggedEmployeeId: number | null = null;
   private env = environment;
-  private api = `https://${this.env.apiURL}/api/v1/`;
-
-  private apiUrl = `${this.api}/candidates/jd`;
-  private adminUrl = 'https://${this.env.apiURL}/1/admin';
-  private offerUrl = `${this.api}candidates/offer-details`;
-  private packageUrl = `${this.api}candidates/package-details`; // ✅ for package details
-  private getapiUrl = `https://${this.env.apiURL}/candidates`;
-  private getEmployees = `${this.api}employee`;
-  private forgotpwd = `${this.api}forgot-password-email`;
-  private newpassword = 'https://30.0.0.78:3562/api/v1/add-pwd';
-  private updatepassword = 'https://30.0.0.78:3562/api/v1/change-new-pwd';
-  private changeoldEmpwd = `${this.api}forgot-password`;
-  private offerStatusapi = 'https://30.0.0.78:3562/offerstatus/status';
-  private holidaysUrl = `${this.api}holidays/public_holidays`;
-  private imagesUrl = `${this.api}employee/profile-pic/upsert`;
-  private empUrl = this.getEmployees;
-  private empProfileUrl = `${this.api}employee/profile-pic/upsert`;
-  private shiftsUrl = `${this.api}`;
-  private leaverequesrUrl = `${this.api}manager/leave-requests`;
-  private leaveactionUrl = `${this.api}leave-action`;
-  private weekoffsUrl = `https://${this.env.apiURL}/api/weekoff`;
+  private getEmployees = `http://${this.env.apiURL}/api/employees`;
 
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
@@ -207,8 +188,9 @@ export class CandidateService {
 
   constructor(
     private http: HttpClient,
-    private routeGuardService: RouteGuardService
-  ) {}
+    private routeGuardService: RouteGuardService,
+    private employeeService: EmployeeService
+  ) { }
   private getStoredEmployee(): Employee | null {
     const activeId = localStorage.getItem('activeEmployeeId');
     if (!activeId) return null;
@@ -224,45 +206,48 @@ export class CandidateService {
     return stored ? JSON.parse(stored) : null;
   }
 
-  loadCandidates(): void {
-    this.http.get<any>(this.getapiUrl).subscribe({
-      next: (data: any) => {
-        const candidates = this.normalizeCandidates(data);
-        this.candidatesSubject.next(candidates);
-      },
-      error: (err: any) => console.error('Error loading candidates:', err),
-    });
+  getAllEmployeeDeatils(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.getEmployees}`);
   }
+  // loadCandidates(): void {
+  //   this.http.get<any>(this.getapiUrl).subscribe({
+  //     next: (data: any) => {
+  //       const candidates = this.normalizeCandidates(data);
+  //       this.candidatesSubject.next(candidates);
+  //     },
+  //     error: (err: any) => console.error('Error loading candidates:', err),
+  //   });
+  // }
 
-  getCandidateById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.getapiUrl}/${id}`);
-  }
+  // getCandidateById(id: string): Observable<any> {
+  //   return this.http.get<any>(`${this.getapiUrl}/${id}`);
+  // }
 
   getEmployeeById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.getEmployees}/${id}`);
+    return this.http.get<any>(`${this.getEmployees}/${id}/details`);
   }
 
-  getAdminById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.adminUrl}`);
-  }
+  // getAdminById(id: string): Observable<any> {
+  //   return this.http.get<any>(`${this.adminUrl}`);
+  // }
 
-  getHolidaysList(id: string): Observable<any> {
-    return this.http.get<any>(`${this.holidaysUrl}`);
-  }
-  getofferStatus(): Observable<any> {
-    return this.http.get<any>(this.offerStatusapi);
-  }
-  getImages(): Observable<any> {
-    return this.http.get<any>(this.imagesUrl);
-  }
+  // getHolidaysList(id: string): Observable<any> {
+  //   return this.http.get<any>(`${this.holidaysApiUrl}`);
+  // }
+  // getofferStatus(): Observable<any> {
+  //   return this.http.get<any>(this.offerStatusapi);
+  // }
+  // getImages(): Observable<any> {
+  //   return this.http.get<any>(this.imagesUrl);
+  // }
 
-  getEmpDet(): Observable<EmployeeResponse> {
-    const body = {
-      access_token: this.routeGuardService.token,
-      refresh_token: this.routeGuardService.refreshToken,
-    };
-    return this.http.post<any>(this.empUrl, body, { withCredentials: true });
-  }
+  // getEmpDet(): Observable<EmployeeResponse> {
+  //   const body = {
+  //     access_token: this.routeGuardService.token,
+  //     refresh_token: this.routeGuardService.refreshToken,
+  //   };
+  //   return this.http.post<any>(this.empUrl, body, { withCredentials: true });
+  // }
 
   setLoggedEmployeeId(id: number) {
     this.currentLoggedEmployeeId = id;
@@ -274,21 +259,30 @@ export class CandidateService {
   /*getShifts(shifts: Shifts): Observable<Shifts> {
     return this.http.post<Shifts>(this.shiftsUrl, shifts);
   }*/
-  getReportingTeam(employeeId: number): Observable<any> {
-    return this.http.get(`${this.api}employees/under-manager/${employeeId}`);
-  }
+  // getReportingTeam(employeeId: number): Observable<any> {
+  //   return this.http.get(`${this.api}employees/under-manager/${employeeId}`);
+  // }
+
+  // getpayslips(employeeId: any): Observable<any> {
+  //   console.log(employeeId);
+  //   return this.http.get(`${this.getPayslips}/${employeeId}`);
+  // }
+
+  // getempslips(): Observable<any> {
+  //   return this.http.get<any>(this.empUrl);
+  // }
 
   // getLeaveRequests(leaveRequest: leaveRequests): Observable<leaveRequests> {
   //   return this.http.post<leaveRequests>(this.leaverequesrUrl, leaveRequest);
   // }
 
-  getLeaveRequests(payload: any) {
-    return this.http.post(`${this.leaverequesrUrl}`, payload);
-  }
+  // getLeaveRequests(payload: any) {
+  //   return this.http.post(`${this.leaverequesrUrl}`, payload);
+  // }
 
-  getLeaveAction(payload: any) {
-    return this.http.post(`${this.leaveactionUrl}`, payload);
-  }
+  // getLeaveAction(payload: any) {
+  //   return this.http.post(`${this.leaveactionUrl}`, payload);
+  // }
 
   /*************  ✨ Windsurf Command ⭐  *************/
   /**
@@ -299,37 +293,37 @@ export class CandidateService {
    * @returns {Observable<Shifts>} an observable of shifts.
    */
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
-  getShifts(shifts: Shifts): Observable<Shifts> {
-    return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
-      withCredentials: true,
-    });
-  }
+  // getShifts(shifts: Shifts): Observable<Shifts> {
+  //   return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
+  //     withCredentials: true,
+  //   });
+  // }
 
-  getWeekOffPolicies(weekoff: weekOff): Observable<weekOff> {
-    return this.http.post<weekOff>(this.weekoffsUrl, weekoff, {
-      withCredentials: true,
-    });
-  }
+  // getWeekOffPolicies(weekoff: weekOff): Observable<weekOff> {
+  //   return this.http.post<weekOff>(this.weekoffsUrl, weekoff, {
+  //     withCredentials: true,
+  //   });
+  // }
 
-  getAllWeeklyOffPolicies(): Observable<any> {
-    return this.http.get<any>(`${this.weekoffsUrl}`, {
-      withCredentials: true
-    });
-  }
+  // getAllWeeklyOffPolicies(): Observable<any> {
+  //   return this.http.get<any>(`${this.weekoffsUrl}`, {
+  //     withCredentials: true
+  //   });
+  // }
 
-  getShiftByName(shift_policy_name: string): Observable<any> {
-    return this.http.post<any>(
-      `${this.shiftsUrl}get-shift-policy`,
-      { shift_policy_name },
-      {
-        withCredentials: true,
-      }
-    );
-  }
+  // getShiftByName(shift_policy_name: string): Observable<any> {
+  //   return this.http.post<any>(
+  //     `${this.shiftsUrl}get-shift-policy`,
+  //     { shift_policy_name },
+  //     {
+  //       withCredentials: true,
+  //     }
+  //   );
+  // }
 
-  getAllEmployees(): Observable<EmployeeResponse> {
-    return this.http.get<EmployeeResponse>(this.empUrl).pipe();
-  }
+  // getAllEmployees(): Observable<EmployeeResponse> {
+  //   return this.http.get<EmployeeResponse>(this.empUrl).pipe();
+  // }
 
   private normalizeCandidates(data: any): Candidate[] {
     if (Array.isArray(data)) return data;
@@ -339,101 +333,101 @@ export class CandidateService {
     return [];
   }
 
-  createCandidate(candidateData: Candidate): Observable<Candidate> {
-    return this.http.post<Candidate>(this.apiUrl, candidateData).pipe(
-      tap((newCandidate) => {
-        const current = this.candidatesSubject.value;
-        this.candidatesSubject.next([...current, newCandidate]);
-      })
-    );
-  }
+  // createCandidate(candidateData: Candidate): Observable<Candidate> {
+  //   return this.http.post<Candidate>(this.apiUrl, candidateData).pipe(
+  //     tap((newCandidate) => {
+  //       const current = this.candidatesSubject.value;
+  //       this.candidatesSubject.next([...current, newCandidate]);
+  //     })
+  //   );
+  // }
 
-  getotp(email: string): Observable<any> {
-    return this.http.post(this.forgotpwd, { email });
-  }
+  // getotp(email: string): Observable<any> {
+  //   return this.http.post(this.forgotpwd, { email });
+  // }
 
-  newpasswordCreation(email: string): Observable<any> {
-    return this.http.post(this.newpassword, { email });
-  }
+  // newpasswordCreation(email: string): Observable<any> {
+  //   return this.http.post(this.newpassword, { email });
+  // }
 
-  changeoldEmpPassword(
-    email: string,
-    otp: string,
-    newPassword: string
-  ): Observable<any> {
-    const body = {
-      email: email,
-      otp: otp,
-      newPassword: newPassword,
-    };
-    console.log(body);
-    return this.http.post(this.changeoldEmpwd, body);
-  }
+  // changeoldEmpPassword(
+  //   email: string,
+  //   otp: string,
+  //   newPassword: string
+  // ): Observable<any> {
+  //   const body = {
+  //     email: email,
+  //     otp: otp,
+  //     newPassword: newPassword,
+  //   };
+  //   console.log(body);
+  //   return this.http.post(this.changeoldEmpwd, body);
+  // }
 
-  updateCandidate(candidate: Candidate): Observable<Candidate> {
-    if (!candidate.offerDetails) {
-      return throwError(
-        () => new Error('offerDetails is missing in candidate')
-      );
-    }
-    if (!candidate.offerDetails.DOJ) {
-      return throwError(() => new Error('DOJ is missing in offerDetails'));
-    }
+  // updateCandidate(candidate: Candidate): Observable<Candidate> {
+  //   if (!candidate.offerDetails) {
+  //     return throwError(
+  //       () => new Error('offerDetails is missing in candidate')
+  //     );
+  //   }
+  //   if (!candidate.offerDetails.DOJ) {
+  //     return throwError(() => new Error('DOJ is missing in offerDetails'));
+  //   }
 
-    // Helper to parse DD/MM/YYYY → YYYY-MM-DD for MySQL DATE
-    const formatDate = (dateStr: string | undefined): string | null => {
-      if (!dateStr) return null;
+  //   // Helper to parse DD/MM/YYYY → YYYY-MM-DD for MySQL DATE
+  //   const formatDate = (dateStr: string | undefined): string | null => {
+  //     if (!dateStr) return null;
 
-      // If already in YYYY-MM-DD, return as is
-      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  //     // If already in YYYY-MM-DD, return as is
+  //     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
 
-      // Parse DD/MM/YYYY
-      const parts = dateStr.split('/');
-      if (parts.length !== 3) return null;
+  //     // Parse DD/MM/YYYY
+  //     const parts = dateStr.split('/');
+  //     if (parts.length !== 3) return null;
 
-      const [day, month, year] = parts;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    };
+  //     const [day, month, year] = parts;
+  //     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  //   };
 
-    const formattedDOJ = formatDate(candidate.offerDetails.DOJ)!;
-    const formattedJoiningDate = formatDate(candidate.offerDetails.JoiningDate);
+  //   const formattedDOJ = formatDate(candidate.offerDetails.DOJ)!;
+  //   const formattedJoiningDate = formatDate(candidate.offerDetails.JoiningDate);
 
-    const offerPayload = {
-      DOJ: formattedDOJ,
-      offerValidity: candidate.offerDetails.offerValidity,
-      JoiningDate: formattedJoiningDate,
-    };
+  //   const offerPayload = {
+  //     DOJ: formattedDOJ,
+  //     offerValidity: candidate.offerDetails.offerValidity,
+  //     JoiningDate: formattedJoiningDate,
+  //   };
 
-    // 🔹 FIRST TIME (no offerDetails.id) → POST
-    if (!candidate.offerDetails.id) {
-      const postBody = {
-        candidateId: candidate.id,
-        offerDetails: offerPayload,
-      };
+  //   // 🔹 FIRST TIME (no offerDetails.id) → POST
+  //   if (!candidate.offerDetails.id) {
+  //     const postBody = {
+  //       candidateId: candidate.id,
+  //       offerDetails: offerPayload,
+  //     };
 
-      return this.http.post<Candidate>(this.offerUrl, postBody).pipe(
-        tap((created) => {
-          // Ensure offerDetails exists
-          if (!candidate.offerDetails) candidate.offerDetails = {};
-          // Store backend id for future PUT
-          if (created.offerDetails?.id)
-            candidate.offerDetails.id = created.offerDetails.id;
+  //     return this.http.post<Candidate>(this.offerUrl, postBody).pipe(
+  //       tap((created) => {
+  //         // Ensure offerDetails exists
+  //         if (!candidate.offerDetails) candidate.offerDetails = {};
+  //         // Store backend id for future PUT
+  //         if (created.offerDetails?.id)
+  //           candidate.offerDetails.id = created.offerDetails.id;
 
-          this.updateLocalCache(created);
-        })
-      );
-    }
+  //         this.updateLocalCache(created);
+  //       })
+  //     );
+  //   }
 
-    // 🔹 NEXT TIME (already has id) → PUT
-    const putBody = {
-      id: candidate.id,
-      ...offerPayload,
-    };
+  //   // 🔹 NEXT TIME (already has id) → PUT
+  //   const putBody = {
+  //     id: candidate.id,
+  //     ...offerPayload,
+  //   };
 
-    return this.http
-      .put<Candidate>(`${this.offerUrl}/${candidate.id}`, putBody)
-      .pipe(tap((updated) => this.updateLocalCache(updated)));
-  }
+  //   return this.http
+  //     .put<Candidate>(`${this.offerUrl}/${candidate.id}`, putBody)
+  //     .pipe(tap((updated) => this.updateLocalCache(updated)));
+  // }
 
   private updateLocalCache(candidate: Candidate) {
     const updatedList = this.candidatesSubject.value.map((c) =>
@@ -451,34 +445,34 @@ export class CandidateService {
   }
 
   // ✅ New method for saving package details
-  addPackageDetails(candidate: any): Observable<any> {
-    if (!candidate.id) {
-      return throwError(() => new Error('Candidate ID is required'));
-    }
-    if (!candidate.packageDetails || !candidate.packageDetails.annualSalary) {
-      return throwError(
-        () => new Error('packageDetails with annualSalary is required')
-      );
-    }
+  // addPackageDetails(candidate: any): Observable<any> {
+  //   if (!candidate.id) {
+  //     return throwError(() => new Error('Candidate ID is required'));
+  //   }
+  //   if (!candidate.packageDetails || !candidate.packageDetails.annualSalary) {
+  //     return throwError(
+  //       () => new Error('packageDetails with annualSalary is required')
+  //     );
+  //   }
 
-    const postBody = {
-      candidateId: candidate.id,
-      packageDetails: { ...candidate.packageDetails },
-    };
+  //   const postBody = {
+  //     candidateId: candidate.id,
+  //     packageDetails: { ...candidate.packageDetails },
+  //   };
 
-    return this.http.post<any>(this.packageUrl, postBody).pipe(
-      tap((res) => {
-        console.log('Package details saved:', res);
-      })
-    );
-  }
-  createEmployee(Emp: any): Observable<any> {
-    return this.http.post<any>(this.api + 'employees', Emp).pipe(
-      tap((newCandidate) => {
-        console.log(newCandidate);
-      })
-    );
-  }
+  //   return this.http.post<any>(this.packageUrl, postBody).pipe(
+  //     tap((res) => {
+  //       console.log('Package details saved:', res);
+  //     })
+  //   );
+  // }
+  // createEmployee(Emp: any): Observable<any> {
+  //   return this.http.post<any>(this.api + 'employees', Emp).pipe(
+  //     tap((newCandidate) => {
+  //       console.log(newCandidate);
+  //     })
+  //   );
+  // }
   createRejectedEmployee(Emp: any): Observable<any> {
     return this.http
       .post<any>(
@@ -491,33 +485,33 @@ export class CandidateService {
         })
       );
   }
-  findEmployee(email: string): Observable<Employee | undefined> {
-    return this.http.get<Employee[]>(this.empUrl).pipe(
-      map((employees) => employees.find((emp) => emp.work_email === email)),
-      tap((found) => {
-        if (found) {
-          this.currentEmployeeSubject.next(found);
-          localStorage.setItem(
-            `loggedInEmployee_${found.employee_id}`,
-            JSON.stringify(found)
-          );
-          localStorage.setItem(
-            'activeEmployeeId',
-            found.employee_id.toString()
-          );
-        }
-      })
-    );
-  }
+  // findEmployee(email: string): Observable<Employee | undefined> {
+  //   return this.http.get<Employee[]>(this.empUrl).pipe(
+  //     map((employees) => employees.find((emp) => emp.work_email === email)),
+  //     tap((found) => {
+  //       if (found) {
+  //         this.currentEmployeeSubject.next(found);
+  //         localStorage.setItem(
+  //           `loggedInEmployee_${found.employee_id}`,
+  //           JSON.stringify(found)
+  //         );
+  //         localStorage.setItem(
+  //           'activeEmployeeId',
+  //           found.employee_id.toString()
+  //         );
+  //       }
+  //     })
+  //   );
+  // }
 
-  verifyAndResetPassword(
-    email: string,
-    otp: string,
-    newPassword: string
-  ): Observable<any> {
-    const body = { email, otp, newPassword };
-    return this.http.post(this.updatepassword, body);
-  }
+  // verifyAndResetPassword(
+  //   email: string,
+  //   otp: string,
+  //   newPassword: string
+  // ): Observable<any> {
+  //   const body = { email, otp, newPassword };
+  //   return this.http.post(this.updatepassword, body);
+  // }
 
   getCurrentCandidate(): Candidate | null {
     return this.currentCandidateSubject.value;
@@ -548,13 +542,14 @@ export class CandidateService {
     this.currentCandidateSubject.next(null);
     this.currentEmployeeSubject.next(null);
     this.profileImageSubject.next(null);
+    this.employeeService.clearEmployee();
     this.routeGuardService.logout();
   }
 
-  searchCandidates(query: string): Observable<CandidateSearchResult[]> {
-    const lowerQuery = query.toLowerCase().trim();
-    return this.http.get<CandidateSearchResult[]>(`${this.api}search?q=${lowerQuery}`);
-  }
+  // searchCandidates(query: string): Observable<CandidateSearchResult[]> {
+  //   const lowerQuery = query.toLowerCase().trim();
+  //   return this.http.get<CandidateSearchResult[]>(`${this.api}search?q=${lowerQuery}`);
+  // }
   setCurrentEmployee(employee: Employee | null): void {
     this.currentEmployeeSubject.next(employee);
 
@@ -569,32 +564,32 @@ export class CandidateService {
       localStorage.removeItem('activeEmployeeId');
     }
   }
-  uploadImage(file: any): Observable<{
-    [x: string]: any;
-    imageUrl: string;
-  }> {
-    return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, file);
-  }
-  uploadEmployeeProfilePic(
-    employeeId: number,
-    profilePicUrl: string
-  ): Observable<any> {
-    const body = {
-      employee_id: employeeId,
-      profile_pic_url: profilePicUrl,
-    };
+  // uploadImage(file: any): Observable<{
+  //   [x: string]: any;
+  //   imageUrl: string;
+  // }> {
+  //   return this.http.post<{ imageUrl: string }>(`${this.imagesUrl}`, file);
+  // }
+  // uploadEmployeeProfilePic(
+  //   employeeId: number,
+  //   profilePicUrl: string
+  // ): Observable<any> {
+  //   const body = {
+  //     employee_id: employeeId,
+  //     profile_pic_url: profilePicUrl,
+  //   };
 
-    console.log('📤 Uploading profile pic:', body);
+  //   console.log('📤 Uploading profile pic:', body);
 
-    return this.http.post<any>(this.empProfileUrl, body).pipe(
-      tap({
-        next: (res) =>
-          console.log('✅ Profile picture updated successfully:', res),
-        error: (err) =>
-          console.error('❌ Error updating profile picture:', err),
-      })
-    );
-  }
+  //   return this.http.post<any>(this.empProfileUrl, body).pipe(
+  //     tap({
+  //       next: (res) =>
+  //         console.log('✅ Profile picture updated successfully:', res),
+  //       error: (err) =>
+  //         console.error('❌ Error updating profile picture:', err),
+  //     })
+  //   );
+  // }
 
   notifyProfileImageUpdate(imageUrl: string): void {
     this.profileImageSubject.next(imageUrl);

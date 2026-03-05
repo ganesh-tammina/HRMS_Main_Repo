@@ -17,56 +17,73 @@
       </div>
     </div>
   </div>
-    <ion-row class="calendar-details-block">
-      <ion-col class="calendar-grid" size="12" size-sm="12" size-md="9" size-lg="9" size-xl="9">
-        <div class="day-header">
-          <button class="day-header-cell" *ngFor="let day of weekDays">{{ day }}</button>
+  <ion-row class="calendar-details-block">
+    <ion-col class="calendar-grid" size="12" size-sm="12" size-md="9" size-lg="9" size-xl="9">
+      <div class="day-header">
+        <button class="day-header-cell" *ngFor="let day of weekDays">{{ day }}</button>
+      </div>
+      <div class="day-cell-row">
+        <div class="day-cell" *ngFor="let date of calendarDays" (click)="selectDate(date)" [ngClass]="{
+              'highlight-today': isTodayCalendarDay(date), 
+              'weekoffs': date.isOff,
+              'selected': selectedDate === date
+            }">
+          <div class="date">{{ date.day }}</div>
+          <!-- <div class="timing" *ngIf="date.timing">{{ date.timing }}</div> -->
+          <div class="timing" *ngIf="date.isOff">W-OFF</div>
         </div>
-        <div class="day-cell-row">
-          <div class="day-cell" *ngFor="let date of calendarDays"
-            [ngClass]="{'highlight-today': isTodayCalendarDay(date), 'weekoffs': date.isOff}">
-            <div class="date">{{ date.day }}</div>
-            <!-- <div class="timing" *ngIf="date.timing">{{ date.timing }}</div> -->
-            <div class="timing" *ngIf="date.isOff">W-OFF</div>
+      </div>
+    </ion-col>
+    <ion-col class="details-container ion-no-padding" size="12" size-sm="12" size-md="3" size-lg="3" size-xl="3">
+      <div class="details-header">
+        <p>Day Shift</p>
+        <p>{{ (selectedDate?.date | date: 'MMM d') || 'Select a date' }} ( {{
+          attendanceDetails?.attendance?.first_check_in | date: 'HH:mm' }} - {{
+          attendanceDetails?.attendance?.last_check_out | date: 'HH:mm' }} )</p>
+      </div>
+      <div class="details-block">
+        <div *ngIf="loadingDetails" class="ion-padding ion-text-center">
+          <ion-spinner></ion-spinner>
+        </div>
+        <div *ngIf="!loadingDetails && !attendanceDetails?.has_attendance" class="ion-padding ion-text-center">
+          <p>No attendance record found</p>
+        </div>
+        <div class="hours-block" *ngIf="!loadingDetails && attendanceDetails?.has_attendance">
+          <div>
+            <p>Gross Hours</p>
+            <p>{{ attendanceDetails?.attendance?.gross_hours | timeFormat }}h</p>
+          </div>
+          <div>
+            <p>Effective Hours</p>
+            <p>{{ attendanceDetails?.attendance?.total_work_hours | timeFormat }}h</p>
           </div>
         </div>
-      </ion-col>
-      <ion-col class="details-container ion-no-padding" size="12" size-sm="12" size-md="3" size-lg="3" size-xl="3">
-        <div class="details-header">
-            <p>Day Shift 1</p>
-            <p>Sept 12 ( 10:00 - 19:00)</p>
-        </div>
-        <div class="details-block">
-            <div class="hours-block">
-                <div>
-                   <p>Gross Hours</p>
-                   <p>6h27m +</p>
-                </div>
-                <div>
-                  <p>Effective Hours</p>
-                  <p>6h27m +</p>
-               </div>
-            </div>
-              <ion-content class="logs-block ion-padding">
-                <div>
-                 <p class="status"><ion-icon name="checkmark-outline" color="success"></ion-icon> Time</p>
-                 <p class="location"><ion-icon name="location"></ion-icon>4th Floor SVS Towers</p>
-                </div>
-                <p class="card-title">Time-Logs</p>                
-                <ion-row class="ion-no-padding">
-                  <ion-col class="clock-logs" size="6">
-                    <div class="d-flex">
-                      <p><img src="../../../../assets/Icons/attendance-icons/bx-log-in.svg" width="18">09:45:48 </p>
-                      <p><img src="../../../../assets/Icons/attendance-icons/bx-log-in (1).svg" width="18">13:06:20</p>      
-                    </div>
-                    <div class="d-flex">
-                      <p><img src="../../../../assets/Icons/attendance-icons/bx-log-in.svg" width="18"> 14:06:20</p>
-                      <p><img src="../../../../assets/Icons/attendance-icons/alert-triangle-fill.svg" width="18">Missing</p>      
-                    </div>
-                  </ion-col>
-                </ion-row>
-              </ion-content>
-        </div>        
-      </ion-col>
-    </ion-row>
+        <ion-content class="logs-block ion-padding" *ngIf="!loadingDetails && attendanceDetails?.has_attendance">
+          <div>
+            <p class="status">
+              <ion-icon
+                [name]="attendanceDetails?.attendance?.status === 'present' ? 'checkmark-outline' : 'alert-circle-outline'"
+                [color]="attendanceDetails?.attendance?.status === 'present' ? 'success' : 'warning'"></ion-icon>
+              {{ getArrivalStatus(attendanceDetails?.attendance) }}
+            </p>
+            <p class="location"><ion-icon name="location"></ion-icon> {{ attendanceDetails?.attendance?.location ||
+              'Office' }}</p>
+          </div>
+          <p class="card-title">Time-Logs</p>
+          <ion-row class="ion-no-padding">
+            <ion-col class="clock-logs" size="12">
+              <div class="d-flex" *ngFor="let punch of attendanceDetails?.punches">
+                <p>
+                  <img
+                    [src]="punch.punch_type === 'in' ? '../../../../assets/Icons/attendance-icons/bx-log-in.svg' : '../../../../assets/Icons/attendance-icons/bx-log-in (1).svg'"
+                    width="18">
+                  {{ punch.punch_time | date: 'HH:mm:ss' }} ({{ punch.punch_type | titlecase }})
+                </p>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-content>
+      </div>
+    </ion-col>
+  </ion-row>
 </div>

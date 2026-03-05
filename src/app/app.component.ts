@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-// import { addIcons } from 'ionicons';
-// import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Candidate, CandidateService } from './services/pre-onboarding.service';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { HeaderComponent } from './shared/header/header.component';
 import { RouteGuardService } from './services/route-guard/route-service/route-guard.service';
 import { NavController } from '@ionic/angular';
+import { EmployeeService } from './services/employee.service';
+import { AdminService } from './services/admin-functionality/admin.service.service';
+import { AuthService } from './services/login-services.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -20,110 +22,158 @@ import { NavController } from '@ionic/angular';
     HeaderComponent,
     CommonModule,
     IonicModule,
-    
   ],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  showIntro = true;
   public showCategories = false;
   showMenu = true;
   currentUser: Observable<Candidate | null>;
-  isLoginPage = false
-  iscandiateofferPage = false
-  iscandiateofferLetterPage = false
-  CurrentuserType: string = ''
+  isLoginPage = false;
+  iscandiateofferPage = false;
+  iscandiateofferLetterPage = false;
+  CurrentuserType: string = '';
   userType: string | null = null;
   one: any;
-  isAdmin: boolean = false
+  isAdmin: boolean = false;
   full_name: string = '';
   currentTime: string = '';
   allEmployees: any[] = [];
-  currentUrl: any;    //get current page
+  currentUrl: any; //get current page
   isRefreshing = false;
-
+  userRole: string | null = null;
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
+  userDesignation: string | null = null;
+  userDepartment: string | null = null;
+
   constructor(
     private router: Router,
     private candidateService: CandidateService,
     private routeGaurdService: RouteGuardService,
-    private navCtrl: NavController   // ✅ add this
-
+    private employeeService: EmployeeService,
+    private service: AdminService,
+    private navCtrl: NavController,
+    private authService: AuthService
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
-    // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
-
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // Hide menu on login page
         this.showMenu = !event.urlAfterRedirects.includes('/login');
-        console.log("this.showMenu", this.showMenu)
         this.isLoginPage = event.urlAfterRedirects.includes('/login');
-        console.log("this.isLoginPage", this.isLoginPage)
         this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
-        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
         this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter');
-        console.log("this.iscandiateofferLetterPage", this.iscandiateofferLetterPage)
-        this.iscandiateofferPage =
-          event.urlAfterRedirects.includes('/candidate_status');
-        console.log("this.iscandiateofferPage", this.iscandiateofferPage)
-
-        // Quick refresh effect for main navigation pages after login
+        this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+        const role = this.userRole || '';
+        this.isAdmin = (role === 'admin' || role === 'hr');
         this.handlePageRefresh(event.urlAfterRedirects);
-
         const userData = localStorage.getItem('loggedInUser');
         if (userData) {
           const parsedData = JSON.parse(userData);
           this.userType = parsedData.type;
-          console.log('User type:', this.userType);
         } else {
           this.userType = null;
         }
+        const introSeen = localStorage.getItem('introSeen');
+        if (!introSeen || this.isLoginPage) {
+          this.showIntro = true;
+          setTimeout(() => {
+            this.showIntro = false;
+            if (!introSeen) {
+              localStorage.setItem('introSeen', 'true');
+            }
+          }, 1000);
+        } else {
+          this.showIntro = false;
+        }
+        // Fetch user department and designation from profile - Skip for Admin/HR as per request
+        if (!this.userDesignation && this.userRole) {
+          this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
+            next: (emp) => {
+              this.userDesignation = (emp?.designation_name || emp?.designation || 'N/A').toLowerCase();
+              this.userDepartment = (emp?.department_name || emp?.department || 'N/A').toLowerCase();
+            },
+            error: (err) => {
+              console.error('Failed to load profile in AppComponent', err);
+              this.userDesignation = 'N/A'; // Prevent retry
+            }
+          });
+        }
       }
     });
-  }
-
-  toggleDropdown() {
-    this.showCategories = !this.showCategories;
-  }
-  ngOnInit(): void {
     this.currentUrl = this.router.url;
+  }
 
-    if (this.routeGaurdService.userRole) {
-      this.routeGaurdService.userRole === 'admin' ? this.isAdmin = true : this.isAdmin = false;
+  ngOnInit(): void {
+    this.updateRoleInfo();
+    this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));
+  }
+
+  private updateRoleInfo(): void {
+    this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
+    const role = this.userRole?.trim() || '';
+    this.isAdmin = (role === 'admin' || role === 'hr');
+  }
+
+  dismissIntro() {
+    this.showIntro = false;
+  }
+
+  shouldShowWorkTrack(): boolean {
+    if (!this.isEmployeeOrManagerOrHr()) return false;
+    if (this.userDepartment && this.userDepartment.trim().toLowerCase() === 'management') {
+      return false;
     }
-   
-
+    return true;
   }
-  // preonboard() {
-  //   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-  //     this.router.navigate(['/pre_onboarding']);
-  //   });
-  //   window.location.href = '/pre_onboarding';
-  // }
+
+  shouldShowLeave(): boolean {
+    // Hide leave for CEO
+    return !(this.userDesignation && this.userDesignation.trim().toLowerCase() === 'ceo');
+  }
+
+  isAdminOnly(): boolean {
+    return this.userRole === 'admin';
+  }
+  isHROnly(): boolean {
+    return this.userRole === 'hr';
+  }
+  isAdminOrHR(): boolean {
+    return this.userRole === 'admin' || this.userRole === 'hr';
+  }
+  isManager(): boolean {
+    return this.userRole === 'manager';
+  }
+  isManagerOrAbove(): boolean {
+    return this.userRole === 'manager' || this.userRole === 'hr';
+  }
+  isEmployeeOrManagerOrHr(): boolean {
+    return this.userRole === 'employee' || this.userRole === 'manager' || this.userRole === 'hr';
+  }
+  isEmployee(): boolean {
+    return this.userRole === 'employee';
+  }
   preonboard() {
-    //this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/pre-onboarding-cards']);
-    //});
+    this.router.navigate(['/pre-onboarding-cards']);
   }
-
   logout() {
     localStorage.clear();
+    this.authService.logout();
     sessionStorage.clear();
-    this.router.navigate(['/login'])
+    localStorage.removeItem('introSeen')
+    this.router.navigate(['/login'], { replaceUrl: true });
+  }
+  handlePageRefresh(url: string) {
+    // Check if user is logged in and navigating to main pages
+    const isLoggedIn =
+      this.routeGaurdService.token && this.routeGaurdService.refreshToken;
+    const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
+    const isMainPage = mainPages.some((page) => url.includes(page));
+    // ...existing logic if needed
   }
 
-  private handlePageRefresh(url: string) {
-    // Check if user is logged in and navigating to main pages
-    const isLoggedIn = this.routeGaurdService.token && this.routeGaurdService.refreshToken;
-    const mainPages = ['/Me', '/Home', '/MyTeam', '/admin', '/profile-page'];
-    const isMainPage = mainPages.some(page => url.includes(page));
-    
-    if (isLoggedIn && isMainPage && !this.isRefreshing) {
-      this.isRefreshing = true;
-      
-      // Quick refresh effect - show loading for milliseconds
-      setTimeout(() => {
-        this.isRefreshing = false;
-      }, 100); // 100ms refresh effect
-    }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

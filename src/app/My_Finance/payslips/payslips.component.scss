@@ -1,0 +1,170 @@
+@import '../../../global.scss';
+.payslip-wrapper {
+  display: flex;
+  height: 100vh;
+  background: #2d323b;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #f8f8f8;
+  padding: 20px;
+  overflow-y: auto;
+
+  .sidebar-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .month-list {
+    list-style: none;
+    padding: 0;
+
+    .month-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+
+      &.active {
+        background: #dce8ff;
+        border-left: 4px solid #3d6ff4;
+      }
+
+      .month-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .company-name {
+        font-size: 11px;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+/* MAIN AREA */
+.content-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  overflow-y: auto;
+}
+
+/* PAYSLIP CARD */
+.payslip-card {
+  width: 850px;
+  background: white;
+  padding: 30px 35px;
+  border-radius: 6px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+
+// Header
+  .payslip-header {
+    display: flex;
+    justify-content: space-between;
+     h2 {
+        @include card-header-title();
+     }
+     p {
+        @include normal-text-unbold();
+        margin: 8px 0px;
+     }
+  }
+  .employee-name {
+     @include card-header-title();
+     border-bottom: 2px solid blue;
+     padding-bottom: 12px;
+  }
+  /* DETAILS GRID */
+.details-grid {
+  margin-top: 25px;
+  width: 100%;
+
+  .detail-item {
+    border-bottom: 0.5px solid #eeeeee;
+    display: flex;
+    justify-content: space-between;
+    label {
+      @include body-text();
+      color: #666666;
+      font-size: 11px;
+    }
+    p {
+       @include text-bold();
+       margin: 8px 0px;
+    }
+  }
+}
+
+/* SALARY TABLE */
+.salary-table {
+ .table-header {
+  ion-col {
+   font-size: 13px;
+   font-weight: 700;
+   height: 40px;
+   text-align: right;
+     &.label {
+      text-align: left;
+  }  
+  } 
+ }
+.table-list {
+  ion-col {
+   @include body-text();
+   height: 35px;
+   text-align: right;
+   &.label, &.label-total {
+    text-align: left;
+   } 
+}
+  &.label-total {
+    ion-col {
+    font-weight: 700 !important;
+    }
+  }
+}
+}
+.border-right {
+  border-right: 1px solid blue;
+}
+.netpay-section {
+    margin-top: 30px;
+    background: $bg-color;
+    .netpay-label {
+        @include normal-text-unbold();
+        font-weight: 500;
+    }    
+    .netpay-amount {
+        @include normal-text();
+    }
+}
+.note-section {
+  display: flex;
+  @include body-text();  
+  margin-top: 15px;
+}
+/* FOOTER */
+.disclaimer {
+  text-align: left;
+  margin-top: 15px;
+  p {
+    @include body-text();
+  }
+}
+}
+
+
+
+
+
+
+
+

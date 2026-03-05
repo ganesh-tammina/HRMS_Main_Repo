@@ -1,80 +1,93 @@
-import { Component, OnInit } from '@angular/core';
-import { CandidateService, Candidate, CandidateSearchResult } from 'src/app/services/pre-onboarding.service';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-// import { EmployeeListModalComponent } from '../employee-list-modal/employee-list-modal.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { EmployeeProfileModalComponent } from '../employee-profile-modal/employee-profile-modal.component';
-
+import { environment } from 'src/environments/environment';
+import { CandidateService } from 'src/app/services/pre-onboarding.service';
 
 @Component({
   selector: 'app-employee-list-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule],
   templateUrl: './employee-list-modal.component.html',
   styleUrls: ['./employee-list-modal.component.scss'],
-  standalone: true,
-   imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonicModule
-  ]
 })
-export class EmployeeListModalComponent  implements OnInit {
-  // currentCandidate: Candidate | null = null;
-   // Search functionality
-    searchQuery: string = '';
-  searchResults: CandidateSearchResult[] = [];
-    results:any
 
-  constructor(
-        private candidateService: CandidateService,
-        private modalCtrl: ModalController
-  ) { }
+export class EmployeeListModalComponent implements OnInit {
+  /** ✅ DATA FROM HEADER */
+  @Input() employees: any[] = [];
+
+  employeeList: any[] = [];
+  apiBaseUrl: string = '';
+
+  constructor(private modalCtrl: ModalController, private candidateService: CandidateService) { }
 
   ngOnInit() {
 
- 
+    this.employeeList = this.employees || [];
+
+    this.apiBaseUrl = environment.apiURL.startsWith('http')
+      ? environment.apiURL
+      : `http://${environment.apiURL}`;
+
+    console.log('✅ Employees received in modal:', this.employeeList);
+    console.log('✅ API Base URL:', this.apiBaseUrl);
   }
-    // Search employees by name
- onSearch() {
-    if (!this.searchQuery || this.searchQuery.trim().length < 3) {
-      this.searchResults = [];
-      this.results = [];
-      return;
+
+  /** ✅ PROFILE IMAGE HANDLER */
+  getEmployeeImage(emp: any): string {
+    if (emp?.profile_image) {
+      return emp.profile_image.startsWith('http')
+        ? emp.profile_image
+        : `${this.apiBaseUrl}/${emp.profile_image}`;
     }
-
-    this.candidateService.searchCandidates(this.searchQuery).subscribe({
-      next: (results) => {
-        this.searchResults = results;
-        this.results = this.searchResults.map(
-          (emp) =>
-            `${emp.first_name} ${emp.last_name}`
-        );
-      },
-    });
-    // this.results = JSON.stringify(this.searchResults)
-    // console.log(this.results)
-
-    console.log(this.results);
+    if (emp?.image) {
+      return emp.image.startsWith('http')
+        ? emp.image
+        : `${this.apiBaseUrl}/${emp.image}`;
+    }
+    // ✅ DEFAULT IMAGE
+    return 'assets/icon/Default-user.svg';
   }
 
-
-  // Open modal to show employee list
+  /** OPEN EMPLOYEE PROFILE */
   async openEmployeeProfile(employee: any) {
-    const modal = await this.modalCtrl.create({
-      component: EmployeeProfileModalComponent,
-      componentProps: { employee }
-    });
-    console.log('Employee Profile Modal opened for:', employee.personalDetails.FirstName);
-    await modal.present();
+    // If we have an employee_id, fetch full details
+    const employeeId = employee.employee_id || employee.id;
+    if (employeeId) {
+      this.candidateService.getEmployeeById(employeeId.toString()).subscribe({
+        next: async (fullDetails: any) => {
+          // Use the full details directly
+          const modal = await this.modalCtrl.create({
+            component: EmployeeProfileModalComponent,
+            componentProps: { selectedEmployee: fullDetails },
+            cssClass: 'profile-modal'
+          });
+          await modal.present();
+        },
+        error: async () => {
+          // Fallback to original minimal data if fetch fails
+          const modal = await this.modalCtrl.create({
+            component: EmployeeProfileModalComponent,
+            componentProps: { selectedEmployee: employee },
+            cssClass: 'profile-modal'
+          });
+          await modal.present();
+        }
+      });
+    } else {
+      // No ID, fallback to original minimal data
+      const modal = await this.modalCtrl.create({
+        component: EmployeeProfileModalComponent,
+        componentProps: { selectedEmployee: employee },
+        cssClass: 'profile-modal'
+      });
+      await modal.present();
+    }
   }
-  //  async openEmployeeListModal() {
-  //   const modal = await this.modalCtrl.create({
-  //     component: EmployeeListModalComponent,
-  //     componentProps: { employees: this.searchResults }
-  //   });
-  //   console.log('Employee List Modal opened');
-  //   await modal.present();
-    
-  // }
+
+  close() {
+    this.modalCtrl.dismiss();
+  }
 }

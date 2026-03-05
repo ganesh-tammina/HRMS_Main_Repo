@@ -1,110 +1,168 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { CandidateService } from '../services/pre-onboarding.service';
-import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+
+import { LeaverequestService } from '../services/leaverequest.service';
+import { WorkFromHomeService } from '../services/work-from-home.service';
 
 @Component({
   selector: 'app-leave-requests',
   templateUrl: './leave-requests.component.html',
   styleUrls: ['./leave-requests.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonicModule],
+  imports: [IonicModule, CommonModule, ReactiveFormsModule],
 })
-export class LeaveRequestsComponent implements OnInit {
-  actions: string = 'Pending';
+export class LeaveRequestsComponent implements OnInit, OnDestroy {
+
   leaveRequests: any[] = [];
+  pendingWFHRequests: any[] = [];
+
   actionForm!: FormGroup;
   selectedRequest: any = null;
-  one: any;
-  full_name: string = '';
-  currentTime: string = '';
-  allEmployees: any[] = [];
-  fullName: any;
-  currentemp: any;
-  employee_id: any;
+
+  loadingWFH = false;
+  private sub!: Subscription;
 
   constructor(
-    private candidateService: CandidateService,
     private fb: FormBuilder,
-    private routeGuardService: RouteGuardService,
+    private leaveState: LeaverequestService,
+    private leaveService: LeaverequestService,
+    private wfhService: WorkFromHomeService
   ) { }
 
   ngOnInit() {
-    if (this.routeGuardService.employeeID) {
-      this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
-          if (this.allEmployees.length > 0) {
-            this.one = this.allEmployees[0];
-            this.fullName = this.one[0].full_name;
-            this.employee_id = this.one[0].employee_id;
-
-            localStorage.setItem('employee_id', this.employee_id);
-            this.candidateService.setLoggedEmployeeId(this.employee_id);
-
-            console.log("Employee ID:", this.employee_id);
-
-            // 🚀 LOAD REQUESTS ONLY AFTER employee_id is available
-            this.loadRequests();
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching all employees:', err);
-        },
-      });
-    }
-
     this.actionForm = this.fb.group({
       status: ['', Validators.required],
       manager_comment: ['']
     });
+
+    this.reloadFromApi();
+    this.loadPendingLeaveRequests();
+    this.loadPendingWFHRequests();
   }
 
-  loadRequests() {
-    const payload = {
-      employee_id: this.employee_id,
-      action: this.actions
-    };
+  reloadFromApi() {
+    this.leaveService.getMyLeaves(new Date().getFullYear())
+      .subscribe(res => {
+        this.leaveRequests = res;
+      });
+  }
 
-    console.log("Payload Sent:", payload); // DEBUG
+  loadPendingWFHRequests() {
+    this.loadingWFH = true;
 
-    this.candidateService.getLeaveRequests(payload).subscribe((data: any) => {
-      this.leaveRequests = data;
-      console.log("Leave Requests:", this.leaveRequests);
+    this.wfhService.getPendingWFHRequests().subscribe({
+      next: (res) => {
+        this.pendingWFHRequests = res;
+        this.loadingWFH = false;
+      },
+      error: () => {
+        this.loadingWFH = false;
+      }
+    });
+  }
+  loadPendingLeaveRequests() {
+    this.leaveService.getPendingLeaveRequests().subscribe({
+      next: (res) => {
+        this.leaveRequests = res;
+      },
+      error: () => {
+        alert('Failed to load pending leave requests');
+      }
     });
   }
 
-  openActionForm(request: any) {
-    this.selectedRequest = request;
-    this.actionForm.reset();
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
-  submitDecision() {
-    if (this.actionForm.invalid) {
-      this.actionForm.markAllAsTouched();
-      return;
-    }
-
-
-    const payload = {
-      action_by_emp_id: this.employee_id,
-      action: this.actionForm.value.status.toUpperCase(),
-      leave_req_id: this.selectedRequest.id,
-    };
-    this.candidateService.getLeaveAction(payload).subscribe(
-
-      (res: any) => {
-        alert("Leave request " + payload);
-        this.selectedRequest = null;
-        this.loadRequests();
-      },
-      (err: any) => alert("Error updating status")
-    );
+  openActionForm(req: any) {
+    this.selectedRequest = req;
+    this.actionForm.reset();
   }
 
   closeForm() {
     this.selectedRequest = null;
+    this.actionForm.reset();
+  }
+
+  submitDecision() {
+    if (!this.selectedRequest) return;
+
+    const status = this.actionForm.value.status;
+    const comment = this.actionForm.value.manager_comment || '';
+    const leaveId = this.selectedRequest.id;
+
+    // Reject requires comment
+    if (status === 'REJECTED' && !comment.trim()) {
+      this.actionForm.get('manager_comment')?.setErrors({ required: true });
+      this.actionForm.markAllAsTouched();
+      return;
+    }
+
+    if (status === 'APPROVED') {
+      this.leaveService.approveLeave(leaveId, comment).subscribe({
+        next: () => {
+          alert('✅ Leave approved');
+          this.updateStateLocally('APPROVED');
+        },
+        error: () => alert('Failed to approve leave')
+      });
+    }
+
+    if (status === 'REJECTED') {
+      this.leaveService.rejectLeave(leaveId, comment).subscribe({
+        next: () => {
+          alert('❌ Leave rejected');
+          this.updateStateLocally('REJECTED');
+        },
+        error: () => alert('Failed to reject leave')
+      });
+    }
+  }
+
+  private updateStateLocally(newStatus: 'APPROVED' | 'REJECTED') {
+    this.leaveRequests = this.leaveRequests.map(req =>
+      req.id === this.selectedRequest.id
+        ? { ...req, status: newStatus }
+        : req
+    );
+
+    this.leaveService.setLeaveRequests(this.leaveRequests);
+
+    this.selectedRequest = null;
+    this.actionForm.reset();
+  }
+
+  /* ================= WFH ACTIONS ================= */
+
+  approveWFH(wfh: any) {
+    this.wfhService.approveWFHRequest(wfh.id, 'Approved by manager')
+      .subscribe({
+        next: () => {
+          alert('✅ WFH Approved');
+          this.pendingWFHRequests =
+            this.pendingWFHRequests.filter(r => r.id !== wfh.id);
+        },
+        error: () => alert('Failed to approve WFH')
+      });
+  }
+
+  rejectWFH(wfh: any) {
+    const comment = prompt('Enter rejection reason');
+    if (!comment) return;
+
+    this.wfhService.rejectWFHRequest(wfh.id, comment)
+      .subscribe({
+        next: () => {
+          alert('❌ WFH Rejected');
+          this.pendingWFHRequests =
+            this.pendingWFHRequests.filter(r => r.id !== wfh.id);
+        },
+        error: () => alert('Failed to reject WFH')
+      });
   }
 }

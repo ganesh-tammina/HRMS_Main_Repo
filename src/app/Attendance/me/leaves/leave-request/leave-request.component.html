@@ -1,0 +1,69 @@
+<form class="form-block" [formGroup]="leaveForm">
+
+  <!-- Leave Type -->
+  <div  class="leaveselect">
+    <label>Leave Type</label>
+    <ion-select formControlName="leave_type" placeholder="Select Leave Type">
+      <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.id" [disabled]="leave.available <= 0">
+
+        {{ leave.name }} ({{ leave.available }} available)
+      </ion-select-option>
+    </ion-select>
+  </div>
+
+  <!-- Dates -->
+  <div class="row-left leaveselect">
+    <div class="from-input">
+      <label>From</label>
+      <ion-input id="from-input" placeholder="Select Start Date" readonly [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''">
+          <ion-img slot="end" src="../../../../../assets/Icons/calender.svg"  class="calendar-img"></ion-img>
+      </ion-input>
+
+      <ion-popover #fromPopover trigger="from-input">
+        <ng-template>
+          <ion-datetime [min]="minDate" (ionChange)="onDateChangeFrom($event, fromPopover)">
+          </ion-datetime>
+        </ng-template>
+      </ion-popover>
+    </div>
+
+    <div class="to-input">
+      <label>To</label>
+      <ion-input id="to-input" placeholder="Select End Date" readonly [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''">
+         <ion-img slot="end" src="../../../../../assets/Icons/calender.svg"  class="calendar-img"></ion-img>
+      </ion-input>
+
+      <ion-popover #toPopover trigger="to-input">
+        <ng-template>
+          <ion-datetime [min]="leaveForm.value.start_date || minDate" (ionChange)="onDateChangeTo($event, toPopover)">
+          </ion-datetime>
+        </ng-template>
+      </ion-popover>
+    </div>
+  </div>
+
+  <!-- Total Days -->
+  <div *ngIf="total_days > 0" class="totalDays">
+    <p>Total Days: {{ total_days }}</p>
+  </div>
+
+  <!-- Reason -->
+  <div>
+    <label>Leave Reason</label>
+    <ion-textarea  placeholder="Reason for Leave"  formControlName="remarks" (ionInput)="validateWordLimit($event)">
+    </ion-textarea>
+    <p>{{ wordsCount }}/100 words</p>
+  </div>
+
+  <!-- Notify -->
+  <div class="leaveselect">
+    <label>Notify</label>
+    <ion-input  placeholder="Search Employee"  formControlName="notify"></ion-input>
+  </div>
+
+  <!-- Submit -->
+  <ion-button class="request-btn" expand="block" (click)="submitRequest()" [disabled]="leaveForm.invalid || total_days <= 0">
+    Request Leave
+  </ion-button>
+
+</form>
