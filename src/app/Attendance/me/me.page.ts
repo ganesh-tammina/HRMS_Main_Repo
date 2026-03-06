@@ -26,6 +26,7 @@ import { AttendanceApiService } from '../../services/attendance-api.service';
 import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { TimeFormatPipe } from './time-format.pipe';
+import { LeaverequestService } from 'src/app/services/leaverequest.service';
 
 @Component({
   selector: 'app-me',
@@ -121,7 +122,8 @@ export class MePage implements OnInit {
     private attendanceApi: AttendanceApiService,
     private adminService: AdminService,
     private employeeService: EmployeeService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private leaveService: LeaverequestService
   ) {
     this.generateDays();
   }
@@ -202,6 +204,9 @@ export class MePage implements OnInit {
     });
   }
 
+  lastAttendance: any[] = [];
+  lastLeaves: any[] = [];
+
   loadMonthlySummary() {
     const d = new Date();
     this.currentMonthName = d.toLocaleString('default', { month: 'long' });
@@ -210,10 +215,104 @@ export class MePage implements OnInit {
       next: (res: any) => {
         if (res?.summary) {
           this.monthlySummary = res.summary;
+          this.lastAttendance = res?.attendance || [];
+
+          // Fallback if backend /my-report wasn't restarted
+          if (res?.leaves) {
+            this.lastLeaves = res.leaves;
+            this.recalculateSummary();
+          } else {
+            this.leaveService.getMyLeaves(d.getFullYear()).subscribe({
+              next: (leaves: any) => {
+                this.lastLeaves = leaves.filter((l: any) => (l.status || '').toUpperCase() === 'APPROVED');
+                this.recalculateSummary();
+              },
+              error: () => {
+                this.lastLeaves = [];
+                this.recalculateSummary();
+              }
+            });
+          }
         }
       },
       error: (err) => console.error('Error loading monthly summary:', err)
     });
+  }
+
+  recalculateSummary() {
+    // Wait until weekend policy is loaded to correctly calculate absent days
+    if (!this.serverWeekOff) {
+      console.log('recalculateSummary aborted: serverWeekOff not yet loaded.');
+      return;
+    }
+
+    if (!this.lastAttendance || !this.monthlySummary) {
+      console.log('recalculateSummary aborted: lastAttendance or monthlySummary not loaded.');
+      return;
+    }
+
+    console.log('recalculateSummary running. att count:', this.lastAttendance.length, 'leaves count:', this.lastLeaves.length);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const todayNum = now.getDate();
+
+    const attMap = new Set();
+    const presentCount = { full: 0, half: 0 };
+    this.lastAttendance.forEach((a: any) => {
+      const dStr = new Date(a.attendance_date).toDateString();
+      attMap.add(dStr);
+      if (a.status === 'half-day') presentCount.half++;
+      else presentCount.full++; // Assuming everything else in DB is present
+    });
+
+    const leaveSet = new Set();
+    this.lastLeaves.forEach((l: any) => {
+      const from = new Date(l.start_date || l.from_date);
+      const to = new Date(l.end_date || l.to_date || l.start_date);
+      let curr = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+      while (curr <= end) {
+        leaveSet.add(new Date(curr).toDateString());
+        curr.setDate(curr.getDate() + 1);
+      }
+    });
+
+    let absentCount = 0;
+    let leaveCount = 0;
+
+    for (let i = 1; i <= todayNum; i++) {
+      const d = new Date(currentYear, currentMonth, i);
+      const dateStr = d.toDateString();
+
+      if (leaveSet.has(dateStr)) {
+        leaveCount++;
+        continue;
+      }
+
+      if (this.isWeekOffDay(d)) {
+        continue;
+      }
+
+      if (attMap.has(dateStr)) {
+        continue;
+      }
+
+      // It is an absent day
+      absentCount++;
+    }
+
+    setTimeout(() => {
+      this.monthlySummary = {
+        ...this.monthlySummary,
+        present_days: presentCount.full,
+        half_days: presentCount.half,
+        absent_days: absentCount,
+        leave_days: leaveCount
+      };
+
+      console.log('Final Summary Updated -> Present:', presentCount.full, 'Absent:', absentCount, 'Leaves:', leaveCount);
+    }, 0);
   }
 
   // ================= MATCHERS =================
@@ -260,6 +359,7 @@ export class MePage implements OnInit {
       .map(day => day.label);
 
     console.log('Server Week Off Days 👉', this.serverWeekOff);
+    this.recalculateSummary();
   }
   trackByDate(index: number, day: Date): string {
     return day.toDateString();
