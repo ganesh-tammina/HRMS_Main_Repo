@@ -257,15 +257,6 @@ export class MePage implements OnInit {
     const currentMonth = now.getMonth();
     const todayNum = now.getDate();
 
-    const attMap = new Set();
-    const presentCount = { full: 0, half: 0 };
-    this.lastAttendance.forEach((a: any) => {
-      const dStr = new Date(a.attendance_date).toDateString();
-      attMap.add(dStr);
-      if (a.status === 'half-day') presentCount.half++;
-      else presentCount.full++; // Assuming everything else in DB is present
-    });
-
     const leaveSet = new Set();
     this.lastLeaves.forEach((l: any) => {
       const from = new Date(l.start_date || l.from_date);
@@ -275,6 +266,19 @@ export class MePage implements OnInit {
       while (curr <= end) {
         leaveSet.add(new Date(curr).toDateString());
         curr.setDate(curr.getDate() + 1);
+      }
+    });
+
+    const attMap = new Set();
+    const presentCount = { full: 0, half: 0 };
+    this.lastAttendance.forEach((a: any) => {
+      const dStr = new Date(a.attendance_date).toDateString();
+      attMap.add(dStr);
+
+      // Do not count as Present if the employee is on an approved leave
+      if (!leaveSet.has(dStr)) {
+        if (a.status === 'half-day') presentCount.half++;
+        else presentCount.full++; // Assuming everything else in DB is present
       }
     });
 
