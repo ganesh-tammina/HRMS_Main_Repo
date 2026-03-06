@@ -20,16 +20,20 @@
               </div>
 
               <ion-grid class="monthly-stats ion-no-padding">
-                <ion-row class="mb-10">
-                  <ion-col size="4">
+                <ion-row class="mb-10 text-center">
+                  <ion-col size="3">
                     <p class="stat-label">Present</p>
                     <p class="stat-value text-success"><strong>{{ monthlySummary.present_days }}</strong></p>
                   </ion-col>
-                  <ion-col size="4">
+                  <ion-col size="3">
                     <p class="stat-label">Absent</p>
                     <p class="stat-value text-danger"><strong>{{ monthlySummary.absent_days }}</strong></p>
                   </ion-col>
-                  <ion-col size="4">
+                  <ion-col size="3">
+                    <p class="stat-label">Leaves</p>
+                    <p class="stat-value text-info"><strong>{{ monthlySummary.leave_days || 0 }}</strong></p>
+                  </ion-col>
+                  <ion-col size="3">
                     <p class="stat-label">Half Days</p>
                     <p class="stat-value text-warning"><strong>{{ monthlySummary.half_days }}</strong></p>
                   </ion-col>

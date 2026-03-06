@@ -325,25 +325,22 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
           const day = new Date(date).getDay();
           const leaveType = this.leaveDaysMap.get(date);
           const isWeekOff = weekOffDays.includes(day);
+
           if (leaveType) {
             return {
+              ...(existing || {}),
               attendance_date: date,
-              total_work_hours: null,
-              gross_hours: null,
               status: 'on-leave',
               leaveType: leaveType,
-              records: [],
-              noLogs: true
+              noLogs: existing ? false : true
             };
           } else if (isWeekOff) {
             return {
+              ...(existing || {}),
               attendance_date: date,
-              total_work_hours: null,
-              gross_hours: null,
               status: 'weekend',
               leaveType: 'Full day week off',
-              records: [],
-              noLogs: true
+              noLogs: existing ? false : true
             };
           } else if (existing) {
             return { ...existing, noLogs: false };
