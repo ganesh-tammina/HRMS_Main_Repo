@@ -130,13 +130,13 @@
                   <p>{{ candidate.WorkEmail || '-' }}</p>
                 </ion-col>
                 <ion-col size="2">
-                  <p>Department</p>
+                  <p>{{ candidate.department_name || '-' }}</p>
                 </ion-col>
                 <ion-col [size]="isHR ? 1 : 2">
-                  <p>Designation</p>
+                  <p>{{ candidate.designation_name || '-' }}</p>
                 </ion-col>
                 <ion-col size="2">
-                  <p>Phone Number</p>
+                  <p>{{ candidate.PhoneNumber || '-' }}</p>
                 </ion-col>
                 <ion-col size="1" *ngIf="isHR">
                   <ion-button fill="clear" size="small" (click)="selectEmployee(candidate)"><img

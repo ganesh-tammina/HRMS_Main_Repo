@@ -198,7 +198,8 @@ export class FinanceAdminComponent implements OnInit {
       this.allCandidates = this.allCandidates.filter(emp =>
         (emp.FullName || '').toLowerCase().includes(term) ||
         (emp.id + '').includes(term) ||
-        (emp.WorkEmail || '').toLowerCase().includes(term)
+        (emp.WorkEmail || '').toLowerCase().includes(term) ||
+        (emp.department_name || '').toLowerCase().includes(term)
       );
     }
   }

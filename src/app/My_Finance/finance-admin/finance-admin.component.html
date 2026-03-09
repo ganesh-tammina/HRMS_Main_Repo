@@ -110,7 +110,7 @@
   </p>
 
   <div class="top-bar">
-    <h3>Employees List</h3  >
+    <h3>Employees List</h3>
     <p>Monitor and maintain employee records</p>
   </div>
 
@@ -161,15 +161,15 @@
                 </ion-col>
 
                 <ion-col size="2">
-                  Department
+                  {{ candidate.department_name || '-' }}
                 </ion-col>
 
                 <ion-col size="2">
-                  Designation
+                  {{ candidate.designation_name || '-' }}
                 </ion-col>
 
                 <ion-col size="2">
-                  Phone
+                  {{ candidate.PhoneNumber || '-' }}
                 </ion-col>
                 <ion-col size="1" *ngIf="isHR">
                   <ion-button fill="clear" size="small" (click)="selectEmployee(candidate)"><img
@@ -274,20 +274,20 @@
   </ion-grid>
 
   <!-- ================= ADMIN DASHBOARD ================= -->
-   <!-- admin-dashboard-card -->
-    <ion-col size="12" class="manage-block">
+  <!-- admin-dashboard-card -->
+  <ion-col size="12" class="manage-block">
 
-  <ion-card class="admin-dashboard" style="margin-bottom: 24px; cursor: pointer;">
-    <ion-card-header style="display: flex;">
-      <ion-icon name="grid-outline" style="font-size: 2rem; margin-right: 12px; color: #fff;"></ion-icon>
-      <ion-card-title>Financial Master Dashboard</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Go to the main Admin Dashboard for advanced HRMS management.</p>
-    </ion-card-content>
-    <ion-button class="primary-outline-btn" (click)="masterpayroll()">Financial Details<ion-icon
-                name="arrow-forward-outline"></ion-icon></ion-button>
-  </ion-card>
+    <ion-card class="admin-dashboard" style="margin-bottom: 24px; cursor: pointer;">
+      <ion-card-header style="display: flex;">
+        <ion-icon name="grid-outline" style="font-size: 2rem; margin-right: 12px; color: #fff;"></ion-icon>
+        <ion-card-title>Financial Master Dashboard</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Go to the main Admin Dashboard for advanced HRMS management.</p>
+      </ion-card-content>
+      <ion-button class="primary-outline-btn" (click)="masterpayroll()">Financial Details<ion-icon
+          name="arrow-forward-outline"></ion-icon></ion-button>
+    </ion-card>
   </ion-col>
 
 </ion-content>
