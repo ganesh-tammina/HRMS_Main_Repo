@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { UpdatealloctionleaveService } from 'src/app/services/updatealloctionleave.service';
 import { LeavePlanService } from 'src/app/services/leave-plans.service';
 import { LeaveTypeService } from 'src/app/services/leavetype.service';
 import { Router } from '@angular/router';
-import {ModalController} from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-leaves-allocation',
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule],
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './leaves-allocation.component.html',
   styleUrls: ['./leaves-allocation.component.scss'],
 })
@@ -27,6 +27,7 @@ export class LeavesAllocationComponent implements OnInit {
   filteredLeaveTypes: any[] = [];
   loadingPlans = false;
   listLoading = false;
+  selectedNewLeaveTypeId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -142,23 +143,54 @@ export class LeavesAllocationComponent implements OnInit {
   }
 
   onPlanChange(planId: any): void {
-    const selectedPlan = this.leavePlans.find((p) => p.id === planId);
+    const selectedPlan = this.leavePlans.find((p) => p.id === Number(planId));
     if (!selectedPlan) return;
-    this.selectedPlanId = planId;
+    this.selectedPlanId = Number(planId);
     this.allocationForm.patchValue({
       name: selectedPlan.name,
       description: selectedPlan.description,
     });
     this.allocations.clear();
-    if (selectedPlan.allocations?.length) {
-      selectedPlan.allocations.forEach((alloc: any) => {
-        this.addAllocation(
-          alloc.leave_type_id,
-          alloc.days_allocated,
-          alloc.prorate_on_joining === 1 || alloc.prorate_on_joining === true
-        );
-      });
+
+    // Fetch full plan detail to get allocations if not already present or for fresh data
+    this.leavePlanService.getLeavePlanById(this.selectedPlanId).subscribe({
+      next: (fullPlan) => {
+        if (fullPlan.allocations?.length) {
+          fullPlan.allocations.forEach((alloc: any) => {
+            this.addAllocation(
+              alloc.leave_type_id,
+              alloc.days_allocated,
+              alloc.prorate_on_joining === 1 || alloc.prorate_on_joining === true
+            );
+          });
+        }
+      }
+    });
+  }
+
+  addNewAllocation(): void {
+    if (!this.selectedNewLeaveTypeId) return;
+
+    // Check if ya already added
+    const exists = this.allocations.controls.some(
+      c => c.value.leave_type_id === Number(this.selectedNewLeaveTypeId)
+    );
+
+    if (exists) {
+      this.showToast('This leave type is already added', 'warning');
+      return;
     }
+
+    const type = this.leaveTypes.find(t => t.id === Number(this.selectedNewLeaveTypeId));
+    if (type) {
+      this.addAllocation(type.id, 0, true);
+      this.selectedNewLeaveTypeId = null;
+    }
+  }
+
+  getTypeName(typeId: number): string {
+    const type = this.leaveTypes.find(t => t.id === Number(typeId));
+    return type ? type.type_name : 'Unknown Type';
   }
 
   leavetype() {

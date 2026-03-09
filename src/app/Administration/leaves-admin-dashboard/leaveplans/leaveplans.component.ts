@@ -2,15 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { LeavePlanService, LeavePlan } from 'src/app/services/leave-plans.service';
+import { LeaveTypeService } from 'src/app/services/leavetype.service';
 
 @Component({
   selector: 'app-create-leave-plan',
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule],
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './leaveplans.component.html',
   styleUrls: ['./leaveplans.component.scss'],
 })
@@ -32,9 +33,14 @@ export class LeaveplansComponent implements OnInit {
   // VIEW STATE
   selectedPlan: LeavePlan | null = null;
 
+  editingPlanAllocations: any[] = [];
+  allLeaveTypes: any[] = [];
+  selectedNewLeaveTypeId: number | null = null;
+
   constructor(
     private fb: FormBuilder,
     private leavePlanService: LeavePlanService,
+    private leaveTypeService: LeaveTypeService,
     private router: Router,
   ) { }
 
@@ -48,6 +54,7 @@ export class LeaveplansComponent implements OnInit {
     });
 
     this.loadLeavePlans();
+    this.loadAllLeaveTypes();
   }
 
   ionViewWillEnter(): void {
@@ -59,6 +66,7 @@ export class LeaveplansComponent implements OnInit {
   openCreateForm(): void {
     this.isEditMode = false;
     this.editingPlanId = null;
+    this.editingPlanAllocations = [];
 
     this.leavePlanForm.reset({
       leave_year_start_month: 1,
@@ -79,10 +87,11 @@ export class LeaveplansComponent implements OnInit {
     // Fetch full plan details including allocations
     this.leavePlanService.getLeavePlanById(plan.id).subscribe({
       next: (fullPlan) => {
+        this.editingPlanAllocations = fullPlan.allocations || [];
         this.leavePlanForm.patchValue({
           name: fullPlan.name,
-          leave_year_start_month: fullPlan.leave_year_start_month,
-          leave_year_start_day: fullPlan.leave_year_start_day,
+          leave_year_start_month: fullPlan.leave_year_start_month || 1,
+          leave_year_start_day: fullPlan.leave_year_start_day || 1,
           description: fullPlan.description,
           is_active: fullPlan.is_active !== undefined ? fullPlan.is_active : true,
         });
@@ -92,7 +101,7 @@ export class LeaveplansComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        alert('Failed to load plan details for editing');
+        alert('Failed to load plan details for editing ganesh');
       }
     });
   }
@@ -101,6 +110,7 @@ export class LeaveplansComponent implements OnInit {
     this.showCreateForm = false;
     this.isEditMode = false;
     this.editingPlanId = null;
+    this.editingPlanAllocations = [];
   }
 
   /* ================= SUBMIT ================= */
@@ -111,7 +121,15 @@ export class LeaveplansComponent implements OnInit {
       return;
     }
 
-    const payload = this.leavePlanForm.value;
+    const payload = { ...this.leavePlanForm.value };
+
+    // Always include allocations in the payload
+    payload.allocations = this.editingPlanAllocations.map((alloc: any) => ({
+      leave_type_id: alloc.leave_type_id,
+      days_allocated: alloc.days_allocated,
+      prorate_on_joining: alloc.prorate_on_joining !== undefined ? alloc.prorate_on_joining : true
+    }));
+
     this.loading = true;
 
     const request$ = this.isEditMode
@@ -128,6 +146,38 @@ export class LeaveplansComponent implements OnInit {
         this.loading = false;
         alert('Failed to submit leave plan');
       },
+    });
+  }
+
+  removeAllocation(index: number) {
+    this.editingPlanAllocations.splice(index, 1);
+  }
+
+  addAllocation() {
+    if (!this.selectedNewLeaveTypeId) return;
+
+    const existing = this.editingPlanAllocations.find(a => a.leave_type_id === Number(this.selectedNewLeaveTypeId));
+    if (existing) {
+      alert('This leave type is already added to the plan.');
+      return;
+    }
+
+    const leaveType = this.allLeaveTypes.find(t => t.id === Number(this.selectedNewLeaveTypeId));
+    if (leaveType) {
+      this.editingPlanAllocations.push({
+        leave_type_id: leaveType.id,
+        type_name: leaveType.type_name,
+        days_allocated: 0,
+        prorate_on_joining: true
+      });
+      this.selectedNewLeaveTypeId = null;
+    }
+  }
+
+  loadAllLeaveTypes() {
+    this.leaveTypeService.getLeaveTypes().subscribe({
+      next: (res) => this.allLeaveTypes = res || [],
+      error: (err) => console.error('Error loading leave types', err)
     });
   }
 

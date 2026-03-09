@@ -13,6 +13,7 @@ export interface LeavePlan {
   is_active: number;
   employees_count?: number;
   leave_types_count?: number;
+  total_days?: number;
   allocations?: any[];
 }
 
@@ -22,7 +23,8 @@ export interface LeavePlan {
 export class LeavePlanService {
 
   private env = environment;
-  private readonly API_URL = `http://${this.env.apiURL}/api/leave-plans`;
+  private readonly ENHANCED_API_URL = `http://${this.env.apiURL}/api/leaves/plans`;
+  private readonly MASTER_API_URL = `http://${this.env.apiURL}/api/leave-plans`;
 
   constructor(private http: HttpClient) { }
 
@@ -36,31 +38,31 @@ export class LeavePlanService {
 
   /* CREATE */
   createLeavePlan(payload: any): Observable<any> {
-    return this.http.post(this.API_URL, payload, { headers: this.getHeaders() });
+    return this.http.post(this.ENHANCED_API_URL, payload, { headers: this.getHeaders() });
   }
 
   /* GET ALL - Now includes employees_count and leave_types_count */
   getLeavePlans(): Observable<LeavePlan[]> {
-    return this.http.get<LeavePlan[]>(this.API_URL, { headers: this.getHeaders() });
+    return this.http.get<LeavePlan[]>(this.ENHANCED_API_URL, { headers: this.getHeaders() });
   }
 
   /* GET BY ID (AS PER CURL) */
   getLeavePlanById(planId: number): Observable<LeavePlan> {
-    return this.http.get<LeavePlan>(`${this.API_URL}/${planId}`, {
+    return this.http.get<LeavePlan>(`${this.ENHANCED_API_URL}/${planId}`, {
       headers: this.getHeaders(),
     });
   }
 
   /* UPDATE */
   updateLeavePlan(planId: number, payload: any): Observable<any> {
-    return this.http.put(`${this.API_URL}/${planId}`, payload, {
+    return this.http.put(`${this.ENHANCED_API_URL}/${planId}`, payload, {
       headers: this.getHeaders(),
     });
   }
 
   /* DELETE */
   deleteLeavePlan(planId: number): Observable<any> {
-    return this.http.delete(`${this.API_URL}/${planId}`, {
+    return this.http.delete(`${this.MASTER_API_URL}/${planId}`, {
       headers: this.getHeaders(),
     });
   }

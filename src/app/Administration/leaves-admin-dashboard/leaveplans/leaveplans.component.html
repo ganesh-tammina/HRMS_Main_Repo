@@ -58,6 +58,52 @@
               <ion-textarea rows="3" fill="outline" formControlName="description"
                 placeholder="Enter plan description"></ion-textarea>
             </div>
+
+            <div class="full leavetype-ipt">
+              <ion-label style="font-weight: 600; color: #334155; margin-bottom: 8px; display: block;">Leave Type
+                Allocations</ion-label>
+
+              <!-- ADD NEW ALLOCATION ROW -->
+              <div
+                style="display: flex; gap: 8px; margin-top: 8px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <select [(ngModel)]="selectedNewLeaveTypeId" [ngModelOptions]="{standalone: true}"
+                  style="flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; background: white;">
+                  <option [ngValue]="null">-- Select Leave Type --</option>
+                  <option *ngFor="let lt of allLeaveTypes" [value]="lt.id">{{ lt.type_name }}</option>
+                </select>
+                <ion-button size="small" (click)="addAllocation()" color="primary" mode="ios"
+                  style="--border-radius: 6px;">
+                  <ion-icon name="add" slot="start"></ion-icon>
+                  Add Type
+                </ion-button>
+              </div>
+
+              <!-- ALLOCATIONS LIST -->
+              <div *ngIf="editingPlanAllocations?.length" style="margin-top: 16px;">
+                <div *ngFor="let alloc of editingPlanAllocations; let i = index"
+                  style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+
+                  <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;">
+                    </div>
+                    <span style="font-weight: 500; color: #1e293b; font-size: 0.95rem;">{{ alloc.type_name }}</span>
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <input type="number" [(ngModel)]="alloc.days_allocated" [ngModelOptions]="{standalone: true}"
+                        style="width: 60px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-size: 0.9rem; font-weight: 600; color: #0f172a; outline: none;">
+                      <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Days</span>
+                    </div>
+
+                    <ion-button (click)="removeAllocation(i)" fill="clear" color="danger"
+                      style="--padding-start: 4px; --padding-end: 4px; height: 32px; margin: 0;">
+                      <ion-icon name="trash-outline" slot="icon-only" style="font-size: 1.1rem;"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="row-right" style="margin-top: 6px;">
@@ -89,11 +135,12 @@
       <ion-card-content>
         <p>{{ plan.description }}</p>
 
-        <!-- Member Count Display -->
-        <div style="margin: 12px 0; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
-          <ion-icon name="people-outline" style="font-size: 20px; color: #3880ff;"></ion-icon>
-          <span style="font-weight: 500; color: #3880ff;">
-            {{ plan.employees_count || 0 }} {{ (plan.employees_count === 1) ? 'Member' : 'Members' }} Assigned
+        <!-- Display Total Days Only -->
+        <div
+          style="margin: 12px 0; padding: 12px; border-radius: 8px; background: #eef2ff; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <ion-icon name="calendar-outline" style="font-size: 24px; color: #3880ff;"></ion-icon>
+          <span style="font-weight: 600; color: #3880ff; font-size: 16px;">
+            {{ plan.total_days || 0 }} {{ (plan.total_days === 1) ? 'Day' : 'Days' }} Allocated
           </span>
         </div>
 
