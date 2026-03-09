@@ -37,6 +37,11 @@ export class LeaveplansComponent implements OnInit {
   allLeaveTypes: any[] = [];
   selectedNewLeaveTypeId: number | null = null;
 
+  months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
   constructor(
     private fb: FormBuilder,
     private leavePlanService: LeavePlanService,
@@ -190,6 +195,11 @@ export class LeaveplansComponent implements OnInit {
       next: (res) => {
         this.selectedPlan = res;
         this.loadingPlanDetails = false;
+        // Scroll to details after a short timeout to ensure DOM is ready
+        setTimeout(() => {
+          const el = document.querySelector('.detail-view');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
       },
       error: () => (this.loadingPlanDetails = false),
     });
@@ -223,5 +233,20 @@ export class LeaveplansComponent implements OnInit {
   }
   adminManagement() {
     this.router.navigate(['./admin']);
+  }
+
+  /* ================= HELPERS ================= */
+
+  getTotalEmployees(): number {
+    return this.leavePlans.reduce((sum, plan) => sum + (plan.employees_count || 0), 0);
+  }
+
+  getActivePlanCount(): number {
+    return this.leavePlans.filter(p => p.is_active).length;
+  }
+
+  getMonthName(monthNumber: number): string {
+    if (!monthNumber || monthNumber < 1 || monthNumber > 12) return 'Unknown';
+    return this.months[monthNumber - 1];
   }
 }
