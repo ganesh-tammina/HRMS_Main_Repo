@@ -345,11 +345,36 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
           } else if (existing) {
             return { ...existing, noLogs: false };
           } else {
+            let defaultStatus = 'absent';
+            const today = new Date();
+            const logD = new Date(date);
+            const isToday = today.getFullYear() === logD.getFullYear() &&
+              today.getMonth() === logD.getMonth() &&
+              today.getDate() === logD.getDate();
+
+            if (isToday) {
+              if (this.shiftPolicy?.start_time) {
+                try {
+                  const [shiftH, shiftM, shiftS] = this.shiftPolicy.start_time.split(':').map(Number);
+                  const shiftStartPlus2Hours = new Date(today);
+                  shiftStartPlus2Hours.setHours(shiftH + 2, shiftM, shiftS || 0, 0);
+
+                  if (today < shiftStartPlus2Hours) {
+                    defaultStatus = 'not-in-yet';
+                  }
+                } catch (e) {
+                  defaultStatus = 'not-in-yet';
+                }
+              } else {
+                defaultStatus = 'not-in-yet';
+              }
+            }
+
             return {
               attendance_date: date,
               total_work_hours: null,
               gross_hours: null,
-              status: 'absent',
+              status: defaultStatus,
               records: [],
               noLogs: true
             };
@@ -583,6 +608,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
       'half-day': 'Half Day',
       late: 'Late Arrival',
       'on-leave': 'On Leave',
+      'not-in-yet': 'NotInat',
     };
 
     // If status is 'present', check if it's actually 'late' based on shift
