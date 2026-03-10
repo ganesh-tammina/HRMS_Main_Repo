@@ -55,6 +55,7 @@ import { PayrollCompoentsComponent } from './My_Finance/payroll-setup/payroll-co
 import { TemplateCompositionComponent } from './My_Finance/template-composition/template-composition.component';
 import { PayrollStructureComponent } from './My_Finance/payroll-structure/payroll-structure.component';
 import { StructureCompoentsComponent } from './My_Finance/payroll-structure/structure-compoents/structure-compoents.component';
+import { TeamReportsPage } from './team-reports/team-reports.page';
 export const routes: Routes = [
   {
     path: 'org-tree',
@@ -369,6 +370,12 @@ export const routes: Routes = [
     component: StructureCompoentsComponent,
     canActivate: [AuthGuard, roleHandlerGuard],
     data: { role: ['admin', 'hr'] }
+  },
+  {
+    path: 'TeamReports',
+    component: TeamReportsPage,
+    canActivate: [AuthGuard, roleHandlerGuard],
+    data: { role: ['manager', 'hr', 'admin'] }
   },
 
 ];

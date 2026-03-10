@@ -479,6 +479,12 @@ export class MyTeamPage implements OnInit, OnDestroy {
     await modal.present();
   }
 
+  onReportTypeSelect(event: any) {
+    const type = event.detail.value;
+    if (type) {
+      this.router.navigate(['/TeamReports'], { queryParams: { type: type } });
+    }
+  }
 
   // navigateToTimesheetApprovals() {
   //   this.router.navigate(['/ManagerTimesheetApprovals']);

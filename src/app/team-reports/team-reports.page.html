@@ -1,0 +1,191 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/MyTeam"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Team Reports</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="downloadReport()" [disabled]="!reportData.length">
+                <ion-icon slot="start" name="download-outline"></ion-icon>
+                Export
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+
+    <ion-toolbar class="selection-toolbar">
+        <ion-item lines="none" class="report-select-item">
+            <ion-label position="stacked">Select Department Report</ion-label>
+            <ion-select [(ngModel)]="reportType" (ionChange)="onReportTypeChange()" interface="popover">
+                <ion-select-option value="attendance">Team Attendance Report</ion-select-option>
+                <ion-select-option value="leave">Team Leave Report</ion-select-option>
+                <ion-select-option value="timesheet">Team Timesheet Report</ion-select-option>
+            </ion-select>
+        </ion-item>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding report-content">
+
+    <div class="filter-controls">
+        <div class="date-input-group">
+            <div class="input-block">
+                <label>From Date</label>
+                <ion-input type="date" [(ngModel)]="startDate" (ionChange)="onFiltersChange()"></ion-input>
+            </div>
+            <div class="input-block">
+                <label>To Date</label>
+                <ion-input type="date" [(ngModel)]="endDate" (ionChange)="onFiltersChange()"></ion-input>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-stats" *ngIf="reportType === 'attendance' && !loading && reportData.length">
+        <div class="stat-card total">
+            <p>Total Team</p>
+            <h2>{{ stats.total }}</h2>
+        </div>
+        <div class="stat-card present">
+            <p>Present</p>
+            <h2>{{ stats.present }}</h2>
+        </div>
+        <div class="stat-card absent">
+            <p>Absent</p>
+            <h2>{{ stats.absent }}</h2>
+        </div>
+        <div class="stat-card on-leave">
+            <p>On Leave</p>
+            <h2>{{ stats.onLeave }}</h2>
+        </div>
+    </div>
+
+    <div class="results-container">
+        <div class="loading-state" *ngIf="loading">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Fetching report data...</p>
+        </div>
+
+        <div class="no-data-state" *ngIf="!loading && !reportData.length">
+            <img src="assets/no_leavedata_img.svg" alt="No data" />
+            <h3>No records found</h3>
+            <p>Try adjusting your search filters or date range.</p>
+        </div>
+
+        <div class="report-list" *ngIf="!loading && reportData.length">
+
+            <!-- ATTENDANCE LIST -->
+            <ng-container *ngIf="reportType === 'attendance'">
+                <ion-card class="data-card" *ngFor="let item of reportData">
+                    <ion-item lines="none">
+                        <ion-avatar slot="start">
+                            <img [src]="getProfileImage(item)" />
+                        </ion-avatar>
+                        <ion-label>
+                            <h3 class="name">{{ item.employee_name }}</h3>
+                            <p class="email">{{ item.email }}</p>
+                        </ion-label>
+                        <ion-chip slot="end"
+                            [color]="item.status === 'present' ? 'success' : (item.status === 'absent' ? 'danger' : 'warning')">
+                            {{ item.status | titlecase }}
+                        </ion-chip>
+                    </ion-item>
+                    <ion-card-content>
+                        <div class="record-details">
+                            <div class="detail-item">
+                                <label>Date</label>
+                                <p>{{ item.date }}</p>
+                            </div>
+                            <div class="detail-item" *ngIf="item.first_check_in">
+                                <label>In / Out</label>
+                                <p>{{ item.first_check_in }} - {{ item.last_check_out || '--' }}</p>
+                            </div>
+                            <div class="detail-item" *ngIf="item.work_mode">
+                                <label>Mode</label>
+                                <p>{{ item.work_mode }}</p>
+                            </div>
+                        </div>
+                    </ion-card-content>
+                </ion-card>
+            </ng-container>
+
+            <!-- LEAVE LIST -->
+            <ng-container *ngIf="reportType === 'leave'">
+                <ion-card class="data-card" *ngFor="let item of reportData">
+                    <ion-item lines="none">
+                        <ion-avatar slot="start">
+                            <img [src]="getProfileImage(item)" />
+                        </ion-avatar>
+                        <ion-label>
+                            <h3 class="name">{{ item.FirstName }} {{ item.LastName }}</h3>
+                            <p class="email">{{ item.WorkEmail }}</p>
+                        </ion-label>
+                        <ion-chip slot="end"
+                            [color]="item.status === 'APPROVED' ? 'success' : (item.status === 'REJECTED' ? 'danger' : 'warning')">
+                            {{ item.status | titlecase }}
+                        </ion-chip>
+                    </ion-item>
+                    <ion-card-content>
+                        <div class="record-details">
+                            <div class="detail-item">
+                                <label>Leave Type</label>
+                                <p>{{ item.type_name || item.leave_type }}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Period</label>
+                                <p>{{ item.start_date }} to {{ item.end_date }}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Duration</label>
+                                <p>{{ item.total_days }} day(s)</p>
+                            </div>
+                        </div>
+                    </ion-card-content>
+                </ion-card>
+            </ng-container>
+
+            <!-- TIMESHEET LIST -->
+            <ng-container *ngIf="reportType === 'timesheet'">
+                <ion-card class="data-card" *ngFor="let item of reportData">
+                    <ion-item lines="none">
+                        <ion-avatar slot="start">
+                            <img [src]="getProfileImage(item)" />
+                        </ion-avatar>
+                        <ion-label>
+                            <h3 class="name">{{ item.FirstName }} {{ item.LastName }}</h3>
+                            <p class="email">{{ item.WorkEmail }}</p>
+                        </ion-label>
+                        <ion-chip slot="end" color="primary">
+                            {{ item.total_hours }}h
+                        </ion-chip>
+                    </ion-item>
+                    <ion-card-content>
+                        <div class="record-details">
+                            <div class="detail-item">
+                                <label>Date</label>
+                                <p>{{ item.date | date:'dd-MM-yyyy' }}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Project</label>
+                                <p>{{ item.project_name || 'Regular' }}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Status</label>
+                                <p>{{ item.status | titlecase }}</p>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons-row">
+                            <ion-button fill="clear" color="primary" (click)="viewTimesheet(item)">
+                                <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+                            </ion-button>
+                            <ion-button fill="clear" color="secondary" (click)="downloadTimesheet(item)">
+                                <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+                            </ion-button>
+                        </div>
+                    </ion-card-content>
+                </ion-card>
+            </ng-container>
+
+        </div>
+    </div>
+
+</ion-content>
