@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { TimesheetService } from '../services/timesheets.service';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { TimesheetPreviewComponent } from '../Today_@_Work/work-track/timesheet-preview.component';
 
 @Component({
     selector: 'app-manager-timesheet-approvals',
@@ -157,6 +158,73 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
         });
     }
 
+    /* ================= VIEW TIMESHEET ================= */
+
+    async viewTimesheet(timesheet: any) {
+        const modal = await this.modalCtrl.create({
+            component: TimesheetPreviewComponent,
+            cssClass: 'side-custom-popup view-work-log',
+            componentProps: { data: timesheet },
+        });
+        await modal.present();
+    }
+
+    /* ================= DOWNLOAD EXCEL ================= */
+
+    downloadTimesheet(timesheet: any) {
+        if (!timesheet || !timesheet.hours_breakdown?.length) {
+            this.showToast('No timesheet data available to download', 'warning');
+            return;
+        }
+
+        let tableRows = '';
+
+        timesheet.hours_breakdown.forEach((b: any, index: number) => {
+            tableRows += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${b.hour || '-'}</td>
+          <td>${b.task || '-'}</td>
+          <td>${b.hours || '-'}</td>
+        </tr>
+      `;
+        });
+
+        const formattedDate = this.formatDateDDMMYYYY(new Date(timesheet.date));
+
+        const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel">
+    <head>
+      <meta charset="UTF-8" />
+    </head>
+    <body>
+      <table border="1">
+        <tr><td>Employee</td><td colspan="3">${timesheet.FirstName} ${timesheet.LastName}</td></tr>
+        <tr><td>Date</td><td colspan="3">${formattedDate}</td></tr>
+        <tr>
+          <th>S.No</th><th>Time</th><th>Task</th><th>Hours</th>
+        </tr>
+        ${tableRows}
+        <tr><td>Note</td><td colspan="3">${timesheet.notes || '-'}</td></tr>
+        <tr><td>Total</td><td colspan="3">${timesheet.total_hours}</td></tr>
+      </table>
+    </body>
+    </html>
+    `;
+
+        const blob = new Blob([html], {
+            type: 'application/vnd.ms-excel;charset=utf-8;'
+        });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Timesheet_${timesheet.FirstName}_${formattedDate}.xls`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        this.showToast('Timesheet downloaded successfully', 'success');
+    }
+
     /* ================= FILTER METHODS ================= */
 
     onFilterTypeChange(event: any) {
@@ -221,6 +289,14 @@ export class ManagerTimesheetApprovalsPage implements OnInit {
             day: 'numeric',
             year: 'numeric'
         });
+    }
+
+    formatDateDDMMYYYY(date: Date): string {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 0-based
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
     }
 
     getProfileImage(timesheet: any): string {

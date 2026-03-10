@@ -223,6 +223,12 @@
 
                 <!-- Action Buttons -->
                 <div class="row-right">
+                    <ion-button fill="clear" color="primary" (click)="viewTimesheet(timesheet)" [disabled]="loading">
+                        <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" color="medium" (click)="downloadTimesheet(timesheet)" [disabled]="loading">
+                        <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+                    </ion-button>
                     <ion-button class="primary-outline-btn" (click)="rejectTimesheet(timesheet)" [disabled]="loading">
                         Reject
                     </ion-button>
@@ -240,7 +246,7 @@
         <ion-col size="12" class="ion-text-center">
             <img src="../../../../assets/no_leavedata_img.svg">
             <p class="no-data-text">
-                    No Pending Timesheets.</p>
+                No Pending Timesheets.</p>
             <!-- <ion-button fill="outline" (click)="clearFilters()">
                 <ion-icon slot="start" name="refresh-outline"></ion-icon>
                 Reset Filters
