@@ -23,7 +23,7 @@
                 <ion-label>Leave Type:</ion-label>
                 <div>
                     <ion-select [(ngModel)]="leaveTypeFilter" (ionChange)="onTypeFilterChange($event)"
-                    interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up">
+                        interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up">
                         <ion-select-option value="all">Select Leaves</ion-select-option>
                         <ion-select-option *ngFor="let type of leaveTypes" [value]="type.type_code">
                             {{ type.type_name }}
@@ -49,29 +49,29 @@
     </div>
 
     <!-- Empty State -->
-    <ion-row class="no-leaves" *ngIf="!isLoading && filteredLeaves.length === 0" >
+    <ion-row class="no-leaves" *ngIf="!isLoading && filteredLeaves.length === 0">
         <ion-col size="12" class="ion-text-center">
-          <img src="../../../../assets/no_leavedata_img.svg">
-          <p class="no-data-text">No Pending Leaves.</p>
+            <img src="../../../../assets/no_leavedata_img.svg">
+            <p class="no-data-text">No Pending Leaves.</p>
         </ion-col>
-      </ion-row>
-  
+    </ion-row>
+
 
     <!-- Leave Cards -->
     <div class="requests-container" *ngIf="!isLoading && filteredLeaves.length > 0">
         <ion-card *ngFor="let leave of filteredLeaves" class="wfh-card">
-                <ion-card-header>
-                        <div class="card-header-content row-space-between">
-                            <div class="row-left">
-                                <ion-avatar class="employee-avatar mr-8">
-                        <img [src]="getProfileImage(leave)" />
-                    </ion-avatar>
-                    <div class="employee-info">
-                        <ion-card-title>{{ leave.FirstName }} {{ leave.LastName }}</ion-card-title>
-                    <p class="employee-number">{{ leave.EmployeeNumber }}</p>
+            <ion-card-header>
+                <div class="card-header-content row-space-between">
+                    <div class="row-left">
+                        <ion-avatar class="employee-avatar mr-8">
+                            <img [src]="getProfileImage(leave)" />
+                        </ion-avatar>
+                        <div class="employee-info">
+                            <ion-card-title>{{ leave.FirstName }} {{ leave.LastName }}</ion-card-title>
+                            <p class="employee-number">{{ leave.EmployeeNumber }}</p>
                         </div>
-                </div>     
-                   
+                    </div>
+
                     <ion-badge [ngClass]="getStatusColor(leave.status)">
                         {{ leave.status || 'pending' }}
                     </ion-badge>
@@ -94,12 +94,12 @@
                         <p class="total-days">{{ leave.total_days }} day(s)</p>
                     </div>
                     <div>
-                            <label>Applied On:</label>
-                            <p>{{ leave.applied_at | date }}</p>
-                        </div>
+                        <label>Applied On:</label>
+                        <p>{{ leave.applied_at | date }}</p>
+                    </div>
                 </div>
 
-         
+
 
                 <!-- Available Balance -->
                 <!-- <div class="info-row" *ngIf="leave.available_balance !== undefined">
@@ -114,21 +114,28 @@
 
                 <!-- Reason -->
                 <div class="info-row" *ngIf="leave.reason">
-                        <label>Reason:</label>
-                        <p>{{ leave.reason }}</p>
+                    <label>Reason:</label>
+                    <p>{{ leave.reason }}</p>
                 </div>
 
-       
+
+
+                <!-- Rejection Reason Input -->
+                <div class="rejection-reason-block">
+                    <ion-textarea [(ngModel)]="rejectionReasons[leave.id]"
+                        placeholder="Enter rejection reason (required to reject)..." class="rejection-textarea" rows="2"
+                        auto-grow="false">
+                    </ion-textarea>
+                </div>
 
                 <!-- Action Buttons -->
-                <div class="row-right">
+                <div class="row-right action-btns">
                     <ion-button class="primary-outline-btn" (click)="rejectLeave(leave)">
-                            Reject
-                        </ion-button>
+                        Reject
+                    </ion-button>
                     <ion-button class="primary-btn" (click)="approveLeave(leave)">
                         Approve
                     </ion-button>
-              
                 </div>
             </ion-card-content>
         </ion-card>

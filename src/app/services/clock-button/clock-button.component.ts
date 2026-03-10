@@ -7,7 +7,7 @@ import {
   Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { Subject, takeUntil } from 'rxjs';
 
 import { AttendanceApiService } from '../attendance-api.service';
@@ -71,7 +71,8 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private attendanceApi: AttendanceApiService
+    private attendanceApi: AttendanceApiService,
+    private toastCtrl: ToastController
   ) { }
 
   ngOnInit(): void {
@@ -174,9 +175,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
-          // Show success message (including lateness if applicable)
-          alert(res?.message || 'Clocked in successfully');
-
+          this.showToast(res?.message || 'Clocked in successfully', 'success');
           // Always emit statusChanged after API success to trigger log refresh
           this.statusChanged.emit({ punch_type: 'in', work_mode });
           if (work_mode === 'Remote') {
@@ -198,10 +197,10 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         this.loading = false;
         if (err?.error?.message?.includes('active punch-in')) {
-          alert('You have an active punch-in. Please punch out before punching in again.');
+          this.showToast('You already have an active punch-in. Please clock out first.', 'warning');
           this.isClockedIn = true;
         } else {
-          alert(err?.error?.message || 'Clock-In failed');
+          this.showToast(err?.error?.message || 'Clock-In failed. Please try again.', 'danger');
         }
       },
     });
@@ -219,6 +218,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
+          this.showToast(res?.message || 'Clocked out successfully', 'success');
           // Always emit statusChanged after API success to trigger log refresh
           this.statusChanged.emit({ punch_type: 'out', work_mode: this.workMode });
           if (wasWFH) {
@@ -229,7 +229,7 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loading = false;
-        alert(err?.error?.message || 'Clock-Out failed');
+        this.showToast((err as any)?.error?.message || 'Clock-Out failed. Please try again.', 'danger');
       },
     });
   }
@@ -248,14 +248,26 @@ export class ClockButtonComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res?.success) {
+          this.showToast(res?.message || 'Remote clocked out successfully', 'success');
           // Always emit statusChanged after API success to trigger log refresh
           this.statusChanged.emit({ punch_type: 'out', work_mode: 'Remote' });
         }
       },
       error: (err) => {
         this.loading = false;
-        alert(err?.error?.message || 'Remote Clock-Out failed');
+        this.showToast((err as any)?.error?.message || 'Remote Clock-Out failed. Please try again.', 'danger');
       },
     });
+  }
+
+  /* ================= TOAST HELPER ================= */
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      color,
+    });
+    await toast.present();
   }
 }

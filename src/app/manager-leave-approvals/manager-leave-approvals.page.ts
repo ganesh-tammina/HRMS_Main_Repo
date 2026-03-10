@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ModalController } from '@ionic/angular';
-import {
-    AlertController, ToastController
-} from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular/standalone';
 import { LeaverequestService } from '../services/leaverequest.service';
 import { LeaveTypeService } from '../services/leavetype.service';
 import { environment } from 'src/environments/environment';
@@ -26,11 +24,11 @@ export class ManagerLeaveApprovalsPage implements OnInit {
     isLoading = false;
     searchTerm = '';
     leaveTypeFilter = 'all';
+    rejectionReasons: { [id: number]: string } = {};
 
     constructor(
         private leaveRequestService: LeaverequestService,
         private leaveTypeService: LeaveTypeService,
-        private alertController: AlertController,
         private toastController: ToastController,
         private router: Router,
         private modalCtrl: ModalController
@@ -96,61 +94,18 @@ export class ManagerLeaveApprovalsPage implements OnInit {
         this.applyFilters();
     }
 
-    async approveLeave(leave: any) {
-        const alert = await this.alertController.create({
-            header: 'Approve Leave',
-            message: `Approve ${leave.FirstName} ${leave.LastName}'s ${leave.type_name} request for ${leave.total_days} day(s)?`,
-            buttons: [
-                {
-                    text: 'Cancel',
-                    role: 'cancel'
-                },
-                {
-                    text: 'Approve',
-                    handler: () => {
-                        this.performApprove(leave);
-                    }
-                }
-            ]
-        });
-
-        await alert.present();
+    approveLeave(leave: any) {
+        this.performApprove(leave);
     }
 
-    async rejectLeave(leave: any) {
-        const alert = await this.alertController.create({
-            header: 'Reject Leave',
-            message: `Are you sure you want to reject this leave request?`,
-            inputs: [
-                {
-                    name: 'rejection_reason',
-                    type: 'textarea',
-                    placeholder: 'Enter rejection reason (required)',
-                    attributes: {
-                        rows: 3
-                    }
-                }
-            ],
-            buttons: [
-                {
-                    text: 'Cancel',
-                    role: 'cancel'
-                },
-                {
-                    text: 'Reject',
-                    handler: (data) => {
-                        if (!data.rejection_reason || data.rejection_reason.trim() === '') {
-                            this.showToast('Please provide a rejection reason', 'warning');
-                            return false;
-                        }
-                        this.performReject(leave, data.rejection_reason);
-                        return true;
-                    }
-                }
-            ]
-        });
-
-        await alert.present();
+    rejectLeave(leave: any) {
+        const reason = (this.rejectionReasons[leave.id] || '').trim();
+        if (!reason) {
+            this.showToast('Please enter a rejection reason before rejecting.', 'warning');
+            return;
+        }
+        this.performReject(leave, reason);
+        this.rejectionReasons[leave.id] = '';
     }
 
     performApprove(leave: any) {

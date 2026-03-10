@@ -1,69 +1,92 @@
-<form class="form-block" [formGroup]="leaveForm">
+<form class="premium-form-container" [formGroup]="leaveForm">
 
-  <!-- Leave Type -->
-  <div  class="leaveselect">
-    <label>Leave Type</label>
-    <ion-select formControlName="leave_type" placeholder="Select Leave Type">
-      <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.id" [disabled]="leave.available <= 0">
-
-        {{ leave.name }} ({{ leave.available }} available)
-      </ion-select-option>
-    </ion-select>
-  </div>
-
-  <!-- Dates -->
-  <div class="row-left leaveselect">
-    <div class="from-input">
-      <label>From</label>
-      <ion-input id="from-input" placeholder="Select Start Date" readonly [value]="selectedDateFrom ? (selectedDateFrom | date:'dd/MM/yyyy') : ''">
-          <ion-img slot="end" src="../../../../../assets/Icons/calender.svg"  class="calendar-img"></ion-img>
-      </ion-input>
-
-      <ion-popover #fromPopover trigger="from-input">
-        <ng-template>
-          <ion-datetime [min]="minDate" (ionChange)="onDateChangeFrom($event, fromPopover)">
-          </ion-datetime>
-        </ng-template>
-      </ion-popover>
+  <div class="form-section">
+    <!-- Leave Type -->
+    <div class="input-group full-width">
+      <label class="premium-label">Leave Type</label>
+      <div class="custom-select-wrapper">
+        <ion-select formControlName="leave_type" placeholder="Select Leave Type" interface="popover"
+          class="premium-input">
+          <ion-select-option *ngFor="let leave of leaveTypes" [value]="leave.id" [disabled]="leave.available <= 0">
+            {{ leave.name }} ({{ leave.available }} available)
+          </ion-select-option>
+        </ion-select>
+        <ion-icon name="chevron-down-outline" class="input-icon select-chevron"></ion-icon>
+      </div>
     </div>
 
-    <div class="to-input">
-      <label>To</label>
-      <ion-input id="to-input" placeholder="Select End Date" readonly [value]="selectedDateTo ? (selectedDateTo | date:'dd/MM/yyyy') : ''">
-         <ion-img slot="end" src="../../../../../assets/Icons/calender.svg"  class="calendar-img"></ion-img>
-      </ion-input>
+    <!-- Dates -->
+    <div class="date-row">
+      <div class="input-group half-width">
+        <label class="premium-label">From Date</label>
+        <div class="premium-input-wrapper">
+          <ion-icon name="calendar-clear-outline" class="input-icon-left"></ion-icon>
+          <ion-input id="from-input" class="premium-input with-left-icon with-cursor" placeholder="Start Date" readonly
+            [value]="selectedDateFrom ? (selectedDateFrom | date:'dd MMM yyyy') : ''"></ion-input>
+        </div>
+        <ion-popover #fromPopover trigger="from-input" class="premium-popover" triggerAction="click">
+          <ng-template>
+            <ion-datetime [min]="minDate" (ionChange)="onDateChangeFrom($event, fromPopover)"
+              presentation="date"></ion-datetime>
+          </ng-template>
+        </ion-popover>
+      </div>
 
-      <ion-popover #toPopover trigger="to-input">
-        <ng-template>
-          <ion-datetime [min]="leaveForm.value.start_date || minDate" (ionChange)="onDateChangeTo($event, toPopover)">
-          </ion-datetime>
-        </ng-template>
-      </ion-popover>
+      <div class="input-group half-width">
+        <label class="premium-label">To Date</label>
+        <div class="premium-input-wrapper">
+          <ion-icon name="calendar-outline" class="input-icon-left"></ion-icon>
+          <ion-input id="to-input" class="premium-input with-left-icon with-cursor" placeholder="End Date" readonly
+            [value]="selectedDateTo ? (selectedDateTo | date:'dd MMM yyyy') : ''"></ion-input>
+        </div>
+        <ion-popover #toPopover trigger="to-input" class="premium-popover" triggerAction="click">
+          <ng-template>
+            <ion-datetime [min]="leaveForm.value.start_date || minDate" (ionChange)="onDateChangeTo($event, toPopover)"
+              presentation="date"></ion-datetime>
+          </ng-template>
+        </ion-popover>
+      </div>
+    </div>
+
+    <!-- Total Days -->
+    <div *ngIf="total_days > 0" class="total-days-badge fade-in">
+      <div class="badge-icon">
+        <ion-icon name="time-outline"></ion-icon>
+      </div>
+      <div class="badge-content">
+        <span class="badge-title">Duration</span>
+        <span class="badge-value">{{ total_days }} {{ total_days === 1 ? 'Day' : 'Days' }}</span>
+      </div>
+    </div>
+
+    <!-- Reason -->
+    <div class="input-group full-width">
+      <label class="premium-label">Reason for Leave <span class="required-asterisk">*</span></label>
+      <div class="premium-textarea-wrapper">
+        <ion-textarea class="premium-textarea" placeholder="Please elaborate on the reason for this request..."
+          formControlName="remarks" (ionInput)="validateWordLimit($event)" rows="4"></ion-textarea>
+        <div class="word-count" [class.warning]="wordsCount > 90">
+          {{ wordsCount }} / 100
+        </div>
+      </div>
+    </div>
+
+    <!-- Notify -->
+    <div class="input-group full-width">
+      <label class="premium-label">Notify Members <span class="optional-label">(Optional)</span></label>
+      <div class="premium-input-wrapper">
+        <ion-icon name="people-outline" class="input-icon-left"></ion-icon>
+        <ion-input class="premium-input with-left-icon" placeholder="Search employees to notify..."
+          formControlName="notify"></ion-input>
+      </div>
     </div>
   </div>
 
-  <!-- Total Days -->
-  <div *ngIf="total_days > 0" class="totalDays">
-    <p>Total Days: {{ total_days }}</p>
+  <div class="form-actions">
+    <ion-button class="submit-btn" expand="block" (click)="submitRequest()"
+      [disabled]="leaveForm.invalid || total_days <= 0">
+      Submit Leave Request
+      <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
   </div>
-
-  <!-- Reason -->
-  <div>
-    <label>Leave Reason</label>
-    <ion-textarea  placeholder="Reason for Leave"  formControlName="remarks" (ionInput)="validateWordLimit($event)">
-    </ion-textarea>
-    <p>{{ wordsCount }}/100 words</p>
-  </div>
-
-  <!-- Notify -->
-  <div class="leaveselect">
-    <label>Notify</label>
-    <ion-input  placeholder="Search Employee"  formControlName="notify"></ion-input>
-  </div>
-
-  <!-- Submit -->
-  <ion-button class="request-btn" expand="block" (click)="submitRequest()" [disabled]="leaveForm.invalid || total_days <= 0">
-    Request Leave
-  </ion-button>
-
 </form>
