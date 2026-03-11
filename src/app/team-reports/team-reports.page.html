@@ -27,6 +27,21 @@
 <ion-content class="ion-padding report-content">
 
     <div class="filter-controls">
+        <div class="quick-month-select">
+            <ion-item lines="none" class="month-item">
+                <ion-label>Month</ion-label>
+                <ion-select [(ngModel)]="selectedMonth" (ionChange)="updateDatesFromMonthYear()" interface="popover">
+                    <ion-select-option *ngFor="let m of months" [value]="m.value">{{ m.name }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item lines="none" class="year-item">
+                <ion-label>Year</ion-label>
+                <ion-select [(ngModel)]="selectedYear" (ionChange)="updateDatesFromMonthYear()" interface="popover">
+                    <ion-select-option *ngFor="let y of years" [value]="y">{{ y }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
+
         <div class="date-input-group">
             <div class="input-block">
                 <label>From Date</label>
@@ -40,15 +55,19 @@
     </div>
 
     <div class="summary-stats" *ngIf="reportType === 'leave' && !loading">
-        <div class="stat-card pending">
+        <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
+            <p>Total Records</p>
+            <h2>{{ reportData.length }}</h2>
+        </div>
+        <div class="stat-card pending" (click)="setFilter('PENDING')" [class.active]="statusFilter === 'PENDING'">
             <p>Pending Requests</p>
             <h2>{{ stats.pending }}</h2>
         </div>
-        <div class="stat-card approved">
+        <div class="stat-card approved" (click)="setFilter('APPROVED')" [class.active]="statusFilter === 'APPROVED'">
             <p>Approved</p>
             <h2>{{ stats.approved }}</h2>
         </div>
-        <div class="stat-card rejected">
+        <div class="stat-card rejected" (click)="setFilter('REJECTED')" [class.active]="statusFilter === 'REJECTED'">
             <p>Rejected</p>
             <h2>{{ stats.rejected }}</h2>
         </div>
@@ -117,8 +136,8 @@
             </ng-container>
 
             <!-- LEAVE HISTORY -->
-            <ng-container *ngIf="reportType === 'leave' && leaveView === 'history' && reportData.length">
-                <ion-card class="data-card leave-card" *ngFor="let item of reportData">
+            <ng-container *ngIf="reportType === 'leave' && leaveView === 'history' && filteredReportData.length">
+                <ion-card class="data-card leave-card" *ngFor="let item of filteredReportData">
                     <ion-item lines="none">
                         <ion-avatar slot="start">
                             <img [src]="getProfileImage(item)" />

@@ -40,6 +40,34 @@
     margin-bottom: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
+    .quick-month-select {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px dashed #e0e0e0;
+
+        .month-item {
+            flex: 2;
+            --background: #f8f9fa;
+            --border-radius: 8px;
+            --padding-start: 12px;
+        }
+
+        .year-item {
+            flex: 1;
+            --background: #f8f9fa;
+            --border-radius: 8px;
+            --padding-start: 12px;
+        }
+
+        ion-label {
+            font-size: 0.75rem;
+            color: var(--ion-color-medium);
+            font-weight: 600;
+        }
+    }
+
     .date-input-group {
         display: flex;
         gap: 16px;
@@ -109,6 +137,17 @@
 
         &.on-leave {
             border-color: var(--ion-color-warning);
+        }
+        
+        &.all {
+            border-color: var(--ion-color-primary);
+        }
+
+        &.active {
+            background: #f0f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            border-width: 5px;
         }
 
         &.pending {

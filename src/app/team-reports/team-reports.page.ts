@@ -41,6 +41,26 @@ export class TeamReportsPage implements OnInit {
         rejected: 0
     };
 
+    statusFilter: string = 'ALL';
+
+    selectedMonth: number = new Date().getMonth();
+    selectedYear: number = new Date().getFullYear();
+    months = [
+        { name: 'January', value: 0 },
+        { name: 'February', value: 1 },
+        { name: 'March', value: 2 },
+        { name: 'April', value: 3 },
+        { name: 'May', value: 4 },
+        { name: 'June', value: 5 },
+        { name: 'July', value: 6 },
+        { name: 'August', value: 7 },
+        { name: 'September', value: 8 },
+        { name: 'October', value: 9 },
+        { name: 'November', value: 10 },
+        { name: 'December', value: 11 }
+    ];
+    years: number[] = [];
+
     constructor(
         private route: ActivatedRoute,
         private employeeService: EmployeeService,
@@ -50,7 +70,12 @@ export class TeamReportsPage implements OnInit {
         private toastCtrl: ToastController,
         private loadingCtrl: LoadingController,
         private modalCtrl: ModalController
-    ) { }
+    ) {
+        const currentYear = new Date().getFullYear();
+        for (let i = 0; i < 5; i++) {
+            this.years.push(currentYear - i);
+        }
+    }
 
     ngOnInit() {
         // Check for query parameter to set report type
@@ -60,11 +85,22 @@ export class TeamReportsPage implements OnInit {
             }
         });
 
-        // Default to current month
-        const now = new Date();
-        this.startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        this.endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+        this.updateDatesFromMonthYear();
+    }
 
+    updateDatesFromMonthYear() {
+        const start = new Date(this.selectedYear, this.selectedMonth, 1);
+        const end = new Date(this.selectedYear, this.selectedMonth + 1, 0);
+
+        const formatDate = (date: Date) => {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
+
+        this.startDate = formatDate(start);
+        this.endDate = formatDate(end);
         this.fetchReport();
     }
 
@@ -74,8 +110,20 @@ export class TeamReportsPage implements OnInit {
 
     onFiltersChange() {
         if (this.startDate && this.endDate) {
+            this.statusFilter = 'ALL'; // Reset filter when date changes
             this.fetchReport();
         }
+    }
+
+    setFilter(status: string) {
+        this.statusFilter = status;
+    }
+
+    get filteredReportData() {
+        if (this.reportType !== 'leave' || this.statusFilter === 'ALL') {
+            return this.reportData;
+        }
+        return this.reportData.filter(item => (item.status || '').toUpperCase() === this.statusFilter);
     }
 
     async fetchReport() {
@@ -121,102 +169,63 @@ export class TeamReportsPage implements OnInit {
         this.reportData = [];
         this.teamBalances = [];
 
-        // 1. Fetch Pending Leaves first (using LeaverequestService which is proven to work in approvals)
-        this.leaveRequestService.getPendingLeaveRequests().subscribe({
-            next: (res: any[]) => {
-                const pendingList = Array.isArray(res) ? res : [];
-                this.reportData = pendingList.map((l: any) => ({
+        // Fetch all team leaves (Pending, Approved, Rejected) in one call
+        this.leaveRequestService.getTeamLeaveReport(this.startDate, this.endDate).subscribe({
+            next: (leaves: any[]) => {
+                this.reportData = (leaves || []).map((l: any) => ({
                     ...l,
                     FirstName: l.FirstName || l.FullName?.split(' ')[0] || 'Employee',
                     LastName: l.LastName || l.FullName?.split(' ').slice(1).join(' ') || '',
                     applied_at: l.applied_at || l.created_at || l.applied_on,
                     total_days: l.total_days || l.days || 1,
-                    leave_type: l.leave_type || l.type_name || 'Leave'
+                    leave_type: l.leave_type || l.type_name || 'Leave',
+                    status: (l.status || 'PENDING').toUpperCase()
                 }));
+
                 this.updateLeaveStats(this.reportData);
-                this.loading = false;
 
-                // 2. Fetch extra data (balances and potentially history)
-                this.fetchTeamExtraData();
-            },
-            error: (err: any) => {
-                console.error('Pending Leaves Error:', err);
-                this.loading = false;
-                this.fetchTeamExtraData();
-            }
-        });
-    }
-
-    private fetchTeamExtraData() {
-        this.employeeService.getMyTeamList().subscribe({
-            next: (members: any[]) => {
-                if (!members || members.length === 0) return;
-
-                // Fetch Balances for all members
-                const balanceRequests = members.map(m =>
-                    this.leaveService.getLeaveBalance(m.employee_id || m.id).pipe(
-                        catchError(() => of(null))
-                    )
-                );
-
-                forkJoin(balanceRequests).subscribe(balances => {
-                    this.teamBalances = members.map((member, index) => {
-                        const b: any = balances[index];
-                        return {
-                            ...member,
-                            annual: b?.annual_leave || 0,
-                            casual: b?.casual_leave || 0,
-                            sick: b?.sick_leave || 0,
-                            used: b?.used_leaves || 0,
-                            remaining: b?.remaining_leaves || 0
-                        };
-                    });
-                });
-
-                // Fetch Individual Histories (to get Approved/Rejected records)
-                const historyRequests = members.map(m =>
-                    this.leaveService.getLeaveRequests(m.employee_id || m.id).pipe(
-                        catchError(() => of([]))
-                    )
-                );
-
-                forkJoin(historyRequests).subscribe(histories => {
-                    let historicalLeaves: any[] = [];
-                    const start = new Date(this.startDate);
-                    const end = new Date(this.endDate);
-
-                    histories.forEach((res: any, index: number) => {
-                        const member = members[index];
-                        const leavesArray = Array.isArray(res) ? res : (res?.data || res?.leaves || []);
-
-                        const processed = leavesArray.map((l: any) => ({
-                            ...l,
-                            FirstName: l.FirstName || member.FirstName || member.FullName?.split(' ')[0],
-                            LastName: l.LastName || member.LastName || member.FullName?.split(' ').slice(1).join(' '),
-                            profile_image: l.profile_image || member.profile_image,
-                            applied_at: l.applied_at || l.created_at || l.applied_on,
-                            total_days: l.total_days || l.days || 1,
-                            leave_type: l.leave_type || l.type_name || 'Leave'
-                        })).filter((l: any) => {
-                            const lDate = new Date(l.start_date || l.from_date);
-                            return lDate >= start && lDate <= end;
-                        });
-                        historicalLeaves = [...historicalLeaves, ...processed];
-                    });
-
-                    if (historicalLeaves.length > 0) {
-                        const existingIds = new Set(this.reportData.map(l => l.id));
-                        const newHistorical = historicalLeaves.filter(l => !existingIds.has(l.id));
-                        this.reportData = [...this.reportData, ...newHistorical].sort((a, b) =>
-                            new Date(b.start_date || b.from_date || b.applied_at).getTime() -
-                            new Date(a.start_date || a.from_date || a.applied_at).getTime()
-                        );
-                        this.updateLeaveStats(this.reportData);
+                // Fetch team list only for balances (non-blocking for history)
+                this.employeeService.getMyTeamList().subscribe({
+                    next: (members: any[]) => {
+                        if (members && members.length > 0) {
+                            this.fetchLeaveBalances(members);
+                        }
                     }
                 });
+
+                this.loading = false;
+            },
+            error: (err) => {
+                console.error('Team Leave Report Error:', err);
+                this.showToast('Error loading leave report', 'danger');
+                this.loading = false;
             }
         });
     }
+
+    private fetchLeaveBalances(members: any[]) {
+        members.forEach((m: any) => {
+            this.leaveService.getLeaveBalance(m.employee_id || m.id).pipe(
+                catchError(() => of(null))
+            ).subscribe((b: any) => {
+                if (b) {
+                    const employeeId = m.employee_id || m.id;
+                    const existing = this.teamBalances.find(tb => (tb.employee_id || tb.id) === employeeId);
+                    if (!existing) {
+                        this.teamBalances.push({
+                            ...m,
+                            annual: b.annual_leave || 0,
+                            casual: b.casual_leave || 0,
+                            sick: b.sick_leave || 0,
+                            used: b.used_leaves || 0,
+                            remaining: b.remaining_leaves || 0
+                        });
+                    }
+                }
+            });
+        });
+    }
+
 
     private updateLeaveStats(data: any[]) {
         this.stats.pending = data.filter(l => (l.status || '').toUpperCase() === 'PENDING' || !l.status).length;
@@ -234,7 +243,8 @@ export class TeamReportsPage implements OnInit {
                 this.reportData = res || [];
                 this.loading = false;
             },
-            error: (err) => {
+            error: (err: any) => {
+                console.error('Timesheet Error:', err);
                 this.showToast('Error loading timesheet report', 'danger');
                 this.loading = false;
             }
@@ -251,17 +261,17 @@ export class TeamReportsPage implements OnInit {
 
         if (this.reportType === 'attendance') {
             csvContent += "Employee,Email,Status,Date,Work Mode\n";
-            this.reportData.forEach(row => {
+            this.reportData.forEach((row: any) => {
                 csvContent += `${row.employee_name},${row.email},${row.status},${row.date},${row.work_mode || '-'}\n`;
             });
         } else if (this.reportType === 'leave') {
             csvContent += "Employee,Type,From,To,Days,Status\n";
-            this.reportData.forEach(row => {
+            this.reportData.forEach((row: any) => {
                 csvContent += `${row.FirstName} ${row.LastName},${row.type_name || row.leave_type},${row.start_date},${row.end_date},${row.total_days},${row.status}\n`;
             });
         } else {
             csvContent += "Employee,Project,Date,Hours,Status\n";
-            this.reportData.forEach(row => {
+            this.reportData.forEach((row: any) => {
                 csvContent += `${row.FirstName} ${row.LastName},${row.project_name || 'Regular'},${row.date},${row.total_hours},${row.status}\n`;
             });
         }
@@ -338,7 +348,8 @@ export class TeamReportsPage implements OnInit {
 
     getProfileImage(row: any): string {
         if (row?.profile_image) {
-            return `http://${environment.apiURL}${row.profile_image}`;
+            const path = row.profile_image.startsWith('/') ? row.profile_image : `/${row.profile_image}`;
+            return `http://${environment.apiURL}${path}?t=${Date.now()}`;
         }
         return 'assets/user.svg';
     }
