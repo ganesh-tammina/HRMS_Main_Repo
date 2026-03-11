@@ -54,13 +54,53 @@
         </div>
     </div>
 
-    <div class="summary-stats" *ngIf="reportType === 'leave' && !loading">
+    <div class="summary-stats" *ngIf="!loading && reportType === 'leave'">
         <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
             <p>Total Records</p>
             <h2>{{ reportData.length }}</h2>
         </div>
         <div class="stat-card pending" (click)="setFilter('PENDING')" [class.active]="statusFilter === 'PENDING'">
             <p>Pending Requests</p>
+            <h2>{{ stats.pending }}</h2>
+        </div>
+        <div class="stat-card approved" (click)="setFilter('APPROVED')" [class.active]="statusFilter === 'APPROVED'">
+            <p>Approved</p>
+            <h2>{{ stats.approved }}</h2>
+        </div>
+        <div class="stat-card rejected" (click)="setFilter('REJECTED')" [class.active]="statusFilter === 'REJECTED'">
+            <p>Rejected</p>
+            <h2>{{ stats.rejected }}</h2>
+        </div>
+    </div>
+
+    <!-- Attendance Stats -->
+    <div class="summary-stats" *ngIf="!loading && reportType === 'attendance'">
+        <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
+            <p>Total Staff</p>
+            <h2>{{ reportData.length }}</h2>
+        </div>
+        <div class="stat-card approved" (click)="setFilter('PRESENT')" [class.active]="statusFilter === 'PRESENT'">
+            <p>Present</p>
+            <h2>{{ stats.present }}</h2>
+        </div>
+        <div class="stat-card rejected" (click)="setFilter('ABSENT')" [class.active]="statusFilter === 'ABSENT'">
+            <p>Absent</p>
+            <h2>{{ stats.absent }}</h2>
+        </div>
+        <div class="stat-card pending" (click)="setFilter('ON-LEAVE')" [class.active]="statusFilter === 'ON-LEAVE'">
+            <p>On Leave</p>
+            <h2>{{ stats.onLeave }}</h2>
+        </div>
+    </div>
+
+    <!-- Timesheet Stats -->
+    <div class="summary-stats" *ngIf="!loading && reportType === 'timesheet'">
+        <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
+            <p>Total Entries</p>
+            <h2>{{ reportData.length }}</h2>
+        </div>
+        <div class="stat-card pending" (click)="setFilter('PENDING')" [class.active]="statusFilter === 'PENDING'">
+            <p>Submitted</p>
             <h2>{{ stats.pending }}</h2>
         </div>
         <div class="stat-card approved" (click)="setFilter('APPROVED')" [class.active]="statusFilter === 'APPROVED'">
@@ -100,19 +140,18 @@
         <div class="report-list" *ngIf="!loading">
 
             <!-- ATTENDANCE LIST -->
-            <ng-container *ngIf="reportType === 'attendance' && reportData.length">
-                <!-- ... attendance items (unchanged logic) ... -->
-                <ion-card class="data-card" *ngFor="let item of reportData">
+            <ng-container *ngIf="reportType === 'attendance' && filteredReportData.length">
+                <ion-card class="data-card" *ngFor="let item of filteredReportData">
                     <ion-item lines="none">
                         <ion-avatar slot="start">
                             <img [src]="getProfileImage(item)" />
                         </ion-avatar>
                         <ion-label>
                             <h3 class="name">{{ item.employee_name }}</h3>
-                            <p class="email">{{ item.email }}</p>
+                            <p class="email">{{ item.WorkEmail || item.email }}</p>
                         </ion-label>
                         <ion-chip slot="end"
-                            [color]="item.status === 'present' ? 'success' : (item.status === 'absent' ? 'danger' : 'warning')">
+                            [color]="item.status === 'PRESENT' ? 'success' : (item.status === 'ABSENT' ? 'danger' : 'warning')">
                             {{ item.status | titlecase }}
                         </ion-chip>
                     </ion-item>
@@ -120,11 +159,11 @@
                         <div class="record-details">
                             <div class="detail-item">
                                 <label>Date</label>
-                                <p>{{ item.date }}</p>
+                                <p>{{ item.attendance_date | date:'dd MMM yyyy' }}</p>
                             </div>
-                            <div class="detail-item" *ngIf="item.first_check_in">
+                            <div class="detail-item" *ngIf="item.check_in">
                                 <label>In / Out</label>
-                                <p>{{ item.first_check_in }} - {{ item.last_check_out || '--' }}</p>
+                                <p>{{ item.check_in }} - {{ item.check_out || '--' }}</p>
                             </div>
                             <div class="detail-item" *ngIf="item.work_mode">
                                 <label>Mode</label>
@@ -221,8 +260,8 @@
             </ng-container>
 
             <!-- TIMESHEET LIST -->
-            <ng-container *ngIf="reportType === 'timesheet'">
-                <ion-card class="data-card" *ngFor="let item of reportData">
+            <ng-container *ngIf="reportType === 'timesheet' && filteredReportData.length">
+                <ion-card class="data-card" *ngFor="let item of filteredReportData">
                     <ion-item lines="none">
                         <ion-avatar slot="start">
                             <img [src]="getProfileImage(item)" />
@@ -231,32 +270,35 @@
                             <h3 class="name">{{ item.FirstName }} {{ item.LastName }}</h3>
                             <p class="email">{{ item.WorkEmail }}</p>
                         </ion-label>
-                        <ion-chip slot="end" color="primary">
-                            {{ item.total_hours }}h
-                        </ion-chip>
+                        <ion-badge slot="end"
+                             [color]="item.status === 'APPROVED' ? 'success' : (item.status === 'REJECTED' ? 'danger' : 'primary')">
+                            {{ item.status }}
+                        </ion-badge>
                     </ion-item>
                     <ion-card-content>
                         <div class="record-details">
                             <div class="detail-item">
                                 <label>Date</label>
-                                <p>{{ item.date | date:'dd-MM-yyyy' }}</p>
+                                <p>{{ item.date | date:'dd MMM yyyy' }}</p>
                             </div>
                             <div class="detail-item">
                                 <label>Project</label>
                                 <p>{{ item.project_name || 'Regular' }}</p>
                             </div>
                             <div class="detail-item">
-                                <label>Status</label>
-                                <p>{{ item.status | titlecase }}</p>
+                                <label>Duration</label>
+                                <p>{{ item.total_hours }}h</p>
                             </div>
                         </div>
 
                         <div class="action-buttons-row">
                             <ion-button fill="clear" color="primary" (click)="viewTimesheet(item)">
-                                <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+                                <ion-icon slot="start" name="eye-outline"></ion-icon>
+                                View Details
                             </ion-button>
                             <ion-button fill="clear" color="secondary" (click)="downloadTimesheet(item)">
-                                <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+                                <ion-icon slot="start" name="download-outline"></ion-icon>
+                                Download
                             </ion-button>
                         </div>
                     </ion-card-content>

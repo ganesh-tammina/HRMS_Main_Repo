@@ -193,5 +193,19 @@ export class TimesheetService {
     );
   }
 
+  /**
+   * Get team timesheet report for a date range
+   * @param startDate YYYY-MM-DD
+   * @param endDate YYYY-MM-DD
+   */
+  getTeamTimesheetReport(startDate: string, endDate: string): Observable<any[]> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
 
+    return this.http.get<any[]>(
+      `${this.baseUrl}/team-report`,
+      { params }
+    );
+  }
 }

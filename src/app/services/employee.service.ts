@@ -255,9 +255,30 @@ export class EmployeeService {
     if (date) {
       params = params.set('date', date);
     }
-
     return this.http.get<any>(
       `${this.ATTENDANCE_API_URL}/report/team`,
+      {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  }
+
+  /**
+   * Get team attendance report for a date range
+   * @param startDate YYYY-MM-DD
+   * @param endDate YYYY-MM-DD
+   */
+  getTeamAttendanceReportByRange(startDate: string, endDate: string): Observable<any[]> {
+    const token = localStorage.getItem('token');
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+
+    return this.http.get<any[]>(
+      `${this.ATTENDANCE_API_URL}/report/team-enhanced`,
       {
         params,
         headers: {

@@ -120,10 +120,15 @@ export class TeamReportsPage implements OnInit {
     }
 
     get filteredReportData() {
-        if (this.reportType !== 'leave' || this.statusFilter === 'ALL') {
+        if (this.statusFilter === 'ALL') {
             return this.reportData;
         }
-        return this.reportData.filter(item => (item.status || '').toUpperCase() === this.statusFilter);
+        
+        // Normalize status for comparison
+        return this.reportData.filter(item => {
+            const status = (item.status || '').toUpperCase();
+            return status === this.statusFilter;
+        });
     }
 
     async fetchReport() {
@@ -147,13 +152,21 @@ export class TeamReportsPage implements OnInit {
     }
 
     private fetchAttendanceReport() {
-        this.employeeService.getTeamAttendanceReport(this.startDate).subscribe({
-            next: (res: any) => {
-                this.reportData = res.attendance || [];
-                this.stats.total = res.summary?.total_team || 0;
-                this.stats.present = res.summary?.present || 0;
-                this.stats.absent = res.summary?.absent || 0;
-                this.stats.onLeave = res.summary?.on_leave || 0;
+        this.loading = true;
+        this.employeeService.getTeamAttendanceReportByRange(this.startDate, this.endDate).subscribe({
+            next: (data: any[]) => {
+                this.reportData = (data || []).map(a => ({
+                    ...a,
+                    employee_name: a.FullName || `${a.FirstName} ${a.LastName}`,
+                    status: (a.status || 'ABSENT').toUpperCase()
+                }));
+                
+                // Calculate Stats
+                this.stats.total = this.reportData.length;
+                this.stats.present = this.reportData.filter(a => a.status === 'PRESENT').length;
+                this.stats.absent = this.reportData.filter(a => a.status === 'ABSENT').length;
+                this.stats.onLeave = this.reportData.filter(a => a.status === 'ON-LEAVE').length;
+                
                 this.loading = false;
             },
             error: (err) => {
@@ -233,14 +246,29 @@ export class TeamReportsPage implements OnInit {
         this.stats.rejected = data.filter(l => (l.status || '').toUpperCase() === 'REJECTED').length;
     }
 
+    private updateTimesheetStats(data: any[]) {
+        this.stats.pending = data.filter(t => (t.status || '').toUpperCase() === 'PENDING').length;
+        this.stats.approved = data.filter(t => (t.status || '').toUpperCase() === 'APPROVED').length;
+        this.stats.rejected = data.filter(t => (t.status || '').toUpperCase() === 'REJECTED').length;
+    }
+
     private fetchTimesheetReport() {
-        const filters = {
-            start_date: this.startDate,
-            end_date: this.endDate
-        };
-        this.timesheetService.getManagerPendingTimesheets(filters).subscribe({
-            next: (res: any) => {
-                this.reportData = res || [];
+        this.loading = true;
+        this.timesheetService.getTeamTimesheetReport(this.startDate, this.endDate).subscribe({
+            next: (data: any[]) => {
+                this.reportData = (data || []).map(t => {
+                    let status = (t.status || 'PENDING').toUpperCase();
+                    if (status === 'SUBMITTED') status = 'PENDING';
+                    if (status === 'VERIFIED') status = 'APPROVED';
+                    
+                    return {
+                        ...t,
+                        status: status,
+                        FirstName: t.FirstName || t.FullName?.split(' ')[0],
+                        LastName: t.LastName || t.FullName?.split(' ').slice(1).join(' ')
+                    };
+                });
+                this.updateTimesheetStats(this.reportData);
                 this.loading = false;
             },
             error: (err: any) => {
