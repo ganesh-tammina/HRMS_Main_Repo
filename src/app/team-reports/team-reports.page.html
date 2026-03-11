@@ -39,23 +39,31 @@
         </div>
     </div>
 
-    <div class="summary-stats" *ngIf="reportType === 'attendance' && !loading && reportData.length">
-        <div class="stat-card total">
-            <p>Total Team</p>
-            <h2>{{ stats.total }}</h2>
+    <div class="summary-stats" *ngIf="reportType === 'leave' && !loading">
+        <div class="stat-card pending">
+            <p>Pending Requests</p>
+            <h2>{{ stats.pending }}</h2>
         </div>
-        <div class="stat-card present">
-            <p>Present</p>
-            <h2>{{ stats.present }}</h2>
+        <div class="stat-card approved">
+            <p>Approved</p>
+            <h2>{{ stats.approved }}</h2>
         </div>
-        <div class="stat-card absent">
-            <p>Absent</p>
-            <h2>{{ stats.absent }}</h2>
+        <div class="stat-card rejected">
+            <p>Rejected</p>
+            <h2>{{ stats.rejected }}</h2>
         </div>
-        <div class="stat-card on-leave">
-            <p>On Leave</p>
-            <h2>{{ stats.onLeave }}</h2>
-        </div>
+    </div>
+
+    <!-- View Toggle for Leave -->
+    <div class="view-toggle" *ngIf="reportType === 'leave' && !loading">
+        <ion-segment [(ngModel)]="leaveView" color="primary">
+            <ion-segment-button value="history">
+                <ion-label>Leave History</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="balances">
+                <ion-label>Leave Balances</ion-label>
+            </ion-segment-button>
+        </ion-segment>
     </div>
 
     <div class="results-container">
@@ -64,16 +72,17 @@
             <p>Fetching report data...</p>
         </div>
 
-        <div class="no-data-state" *ngIf="!loading && !reportData.length">
+        <div class="no-data-state" *ngIf="!loading && !reportData.length && leaveView === 'history'">
             <img src="assets/no_leavedata_img.svg" alt="No data" />
             <h3>No records found</h3>
             <p>Try adjusting your search filters or date range.</p>
         </div>
 
-        <div class="report-list" *ngIf="!loading && reportData.length">
+        <div class="report-list" *ngIf="!loading">
 
             <!-- ATTENDANCE LIST -->
-            <ng-container *ngIf="reportType === 'attendance'">
+            <ng-container *ngIf="reportType === 'attendance' && reportData.length">
+                <!-- ... attendance items (unchanged logic) ... -->
                 <ion-card class="data-card" *ngFor="let item of reportData">
                     <ion-item lines="none">
                         <ion-avatar slot="start">
@@ -107,39 +116,89 @@
                 </ion-card>
             </ng-container>
 
-            <!-- LEAVE LIST -->
-            <ng-container *ngIf="reportType === 'leave'">
-                <ion-card class="data-card" *ngFor="let item of reportData">
+            <!-- LEAVE HISTORY -->
+            <ng-container *ngIf="reportType === 'leave' && leaveView === 'history' && reportData.length">
+                <ion-card class="data-card leave-card" *ngFor="let item of reportData">
                     <ion-item lines="none">
                         <ion-avatar slot="start">
                             <img [src]="getProfileImage(item)" />
                         </ion-avatar>
                         <ion-label>
                             <h3 class="name">{{ item.FirstName }} {{ item.LastName }}</h3>
-                            <p class="email">{{ item.WorkEmail }}</p>
+                            <p class="email">Applied on {{ item.applied_at | date }}</p>
                         </ion-label>
-                        <ion-chip slot="end"
-                            [color]="item.status === 'APPROVED' ? 'success' : (item.status === 'REJECTED' ? 'danger' : 'warning')">
-                            {{ item.status | titlecase }}
-                        </ion-chip>
+                        <ion-badge slot="end"
+                            [color]="(item.status || '').toUpperCase() === 'APPROVED' ? 'success' : ((item.status || '').toUpperCase() === 'REJECTED' ? 'danger' : 'warning')">
+                            {{ item.status || 'PENDING' }}
+                        </ion-badge>
                     </ion-item>
                     <ion-card-content>
-                        <div class="record-details">
-                            <div class="detail-item">
-                                <label>Leave Type</label>
+                        <div class="leave-period-info">
+                            <div class="period-dates">
+                                <div class="date-box">
+                                    <label>From</label>
+                                    <p>{{ item.start_date | date:'dd MMM' }}</p>
+                                </div>
+                                <div class="period-divider">
+                                    <ion-icon name="arrow-forward-outline"></ion-icon>
+                                    <span>{{ item.total_days }} day(s)</span>
+                                </div>
+                                <div class="date-box">
+                                    <label>To</label>
+                                    <p>{{ item.end_date | date:'dd MMM' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="leave-meta">
+                            <div class="meta-item">
+                                <label>Type</label>
                                 <p>{{ item.type_name || item.leave_type }}</p>
                             </div>
-                            <div class="detail-item">
-                                <label>Period</label>
-                                <p>{{ item.start_date }} to {{ item.end_date }}</p>
-                            </div>
-                            <div class="detail-item">
-                                <label>Duration</label>
-                                <p>{{ item.total_days }} day(s)</p>
+                            <div class="meta-item reason" *ngIf="item.reason">
+                                <label>Reason</label>
+                                <p>{{ item.reason }}</p>
                             </div>
                         </div>
                     </ion-card-content>
                 </ion-card>
+            </ng-container>
+
+            <!-- LEAVE BALANCES -->
+            <ng-container *ngIf="reportType === 'leave' && leaveView === 'balances' && teamBalances.length">
+                <div class="balance-grid">
+                    <ion-card class="balance-card" *ngFor="let member of teamBalances">
+                        <ion-item lines="none">
+                            <ion-avatar slot="start">
+                                <img [src]="getProfileImage(member)" />
+                            </ion-avatar>
+                            <ion-label>
+                                <h3 class="name">{{ member.FirstName }} {{ member.LastName }}</h3>
+                                <p class="email">{{ member.EmployeeNumber }}</p>
+                            </ion-label>
+                        </ion-item>
+                        <ion-card-content>
+                            <div class="balance-stats">
+                                <div class="b-stat">
+                                    <span class="label">Total</span>
+                                    <span class="val">{{ member.annual + member.casual + member.sick }}</span>
+                                </div>
+                                <div class="b-stat">
+                                    <span class="label">Used</span>
+                                    <span class="val used">{{ member.used }}</span>
+                                </div>
+                                <div class="b-stat">
+                                    <span class="label">Remaining</span>
+                                    <span class="val rem">{{ member.remaining }}</span>
+                                </div>
+                            </div>
+                            <!-- Simple progress bar -->
+                            <div class="balance-progress">
+                                <div class="progress-fill"
+                                    [style.width.%]="(member.used / (member.used + member.remaining)) * 100"></div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </div>
             </ng-container>
 
             <!-- TIMESHEET LIST -->

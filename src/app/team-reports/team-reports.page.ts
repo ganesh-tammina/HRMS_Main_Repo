@@ -3,8 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController, ModalController } from '@ionic/angular';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { EmployeeService } from '../services/employee.service';
 import { TimesheetService } from '../services/timesheets.service';
+import { LeaveService } from '../services/leave.service';
 import { LeaverequestService } from '../services/leaverequest.service';
 import { environment } from 'src/environments/environment';
 import { TimesheetPreviewComponent } from '../Today_@_Work/work-track/timesheet-preview.component';
@@ -23,21 +26,27 @@ export class TeamReportsPage implements OnInit {
     endDate: string = '';
 
     reportData: any[] = [];
+    teamBalances: any[] = [];
     loading = false;
+    leaveView: 'history' | 'balances' = 'history';
 
     // Stats for the selected report
     stats = {
         total: 0,
         present: 0,
         absent: 0,
-        onLeave: 0
+        onLeave: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
     };
 
     constructor(
         private route: ActivatedRoute,
         private employeeService: EmployeeService,
         private timesheetService: TimesheetService,
-        private leaveService: LeaverequestService,
+        private leaveService: LeaveService,
+        private leaveRequestService: LeaverequestService,
         private toastCtrl: ToastController,
         private loadingCtrl: LoadingController,
         private modalCtrl: ModalController
@@ -72,6 +81,7 @@ export class TeamReportsPage implements OnInit {
     async fetchReport() {
         this.loading = true;
         this.reportData = [];
+        this.teamBalances = [];
 
         try {
             if (this.reportType === 'attendance') {
@@ -89,7 +99,6 @@ export class TeamReportsPage implements OnInit {
     }
 
     private fetchAttendanceReport() {
-        // Reusing the existing team attendance report logic
         this.employeeService.getTeamAttendanceReport(this.startDate).subscribe({
             next: (res: any) => {
                 this.reportData = res.attendance || [];
@@ -108,23 +117,114 @@ export class TeamReportsPage implements OnInit {
     }
 
     private fetchLeaveReport() {
-        // For now, let's use the pending leaves or a simulated team leave list 
-        // since a dedicated historical team leave report endpoint wasn't found.
-        // In a real scenario, we'd call /api/leaves/report/team
-        this.leaveService.getPendingLeaveRequests().subscribe({
-            next: (res: any) => {
-                this.reportData = res || [];
+        this.loading = true;
+        this.reportData = [];
+        this.teamBalances = [];
+
+        // 1. Fetch Pending Leaves first (using LeaverequestService which is proven to work in approvals)
+        this.leaveRequestService.getPendingLeaveRequests().subscribe({
+            next: (res: any[]) => {
+                const pendingList = Array.isArray(res) ? res : [];
+                this.reportData = pendingList.map((l: any) => ({
+                    ...l,
+                    FirstName: l.FirstName || l.FullName?.split(' ')[0] || 'Employee',
+                    LastName: l.LastName || l.FullName?.split(' ').slice(1).join(' ') || '',
+                    applied_at: l.applied_at || l.created_at || l.applied_on,
+                    total_days: l.total_days || l.days || 1,
+                    leave_type: l.leave_type || l.type_name || 'Leave'
+                }));
+                this.updateLeaveStats(this.reportData);
                 this.loading = false;
+
+                // 2. Fetch extra data (balances and potentially history)
+                this.fetchTeamExtraData();
             },
-            error: (err) => {
-                this.showToast('Error loading leave report', 'danger');
+            error: (err: any) => {
+                console.error('Pending Leaves Error:', err);
                 this.loading = false;
+                this.fetchTeamExtraData();
             }
         });
     }
 
+    private fetchTeamExtraData() {
+        this.employeeService.getMyTeamList().subscribe({
+            next: (members: any[]) => {
+                if (!members || members.length === 0) return;
+
+                // Fetch Balances for all members
+                const balanceRequests = members.map(m =>
+                    this.leaveService.getLeaveBalance(m.employee_id || m.id).pipe(
+                        catchError(() => of(null))
+                    )
+                );
+
+                forkJoin(balanceRequests).subscribe(balances => {
+                    this.teamBalances = members.map((member, index) => {
+                        const b: any = balances[index];
+                        return {
+                            ...member,
+                            annual: b?.annual_leave || 0,
+                            casual: b?.casual_leave || 0,
+                            sick: b?.sick_leave || 0,
+                            used: b?.used_leaves || 0,
+                            remaining: b?.remaining_leaves || 0
+                        };
+                    });
+                });
+
+                // Fetch Individual Histories (to get Approved/Rejected records)
+                const historyRequests = members.map(m =>
+                    this.leaveService.getLeaveRequests(m.employee_id || m.id).pipe(
+                        catchError(() => of([]))
+                    )
+                );
+
+                forkJoin(historyRequests).subscribe(histories => {
+                    let historicalLeaves: any[] = [];
+                    const start = new Date(this.startDate);
+                    const end = new Date(this.endDate);
+
+                    histories.forEach((res: any, index: number) => {
+                        const member = members[index];
+                        const leavesArray = Array.isArray(res) ? res : (res?.data || res?.leaves || []);
+
+                        const processed = leavesArray.map((l: any) => ({
+                            ...l,
+                            FirstName: l.FirstName || member.FirstName || member.FullName?.split(' ')[0],
+                            LastName: l.LastName || member.LastName || member.FullName?.split(' ').slice(1).join(' '),
+                            profile_image: l.profile_image || member.profile_image,
+                            applied_at: l.applied_at || l.created_at || l.applied_on,
+                            total_days: l.total_days || l.days || 1,
+                            leave_type: l.leave_type || l.type_name || 'Leave'
+                        })).filter((l: any) => {
+                            const lDate = new Date(l.start_date || l.from_date);
+                            return lDate >= start && lDate <= end;
+                        });
+                        historicalLeaves = [...historicalLeaves, ...processed];
+                    });
+
+                    if (historicalLeaves.length > 0) {
+                        const existingIds = new Set(this.reportData.map(l => l.id));
+                        const newHistorical = historicalLeaves.filter(l => !existingIds.has(l.id));
+                        this.reportData = [...this.reportData, ...newHistorical].sort((a, b) =>
+                            new Date(b.start_date || b.from_date || b.applied_at).getTime() -
+                            new Date(a.start_date || a.from_date || a.applied_at).getTime()
+                        );
+                        this.updateLeaveStats(this.reportData);
+                    }
+                });
+            }
+        });
+    }
+
+    private updateLeaveStats(data: any[]) {
+        this.stats.pending = data.filter(l => (l.status || '').toUpperCase() === 'PENDING' || !l.status).length;
+        this.stats.approved = data.filter(l => (l.status || '').toUpperCase() === 'APPROVED').length;
+        this.stats.rejected = data.filter(l => (l.status || '').toUpperCase() === 'REJECTED').length;
+    }
+
     private fetchTimesheetReport() {
-        // Reusing manager pending timesheets as a starting point for the report
         const filters = {
             start_date: this.startDate,
             end_date: this.endDate
@@ -149,7 +249,6 @@ export class TeamReportsPage implements OnInit {
 
         let csvContent = "data:text/csv;charset=utf-8,";
 
-        // Simple CSV generation based on report type
         if (this.reportType === 'attendance') {
             csvContent += "Employee,Email,Status,Date,Work Mode\n";
             this.reportData.forEach(row => {
@@ -158,7 +257,7 @@ export class TeamReportsPage implements OnInit {
         } else if (this.reportType === 'leave') {
             csvContent += "Employee,Type,From,To,Days,Status\n";
             this.reportData.forEach(row => {
-                csvContent += `${row.FirstName} ${row.LastName},${row.type_name},${row.start_date},${row.end_date},${row.total_days},${row.status}\n`;
+                csvContent += `${row.FirstName} ${row.LastName},${row.type_name || row.leave_type},${row.start_date},${row.end_date},${row.total_days},${row.status}\n`;
             });
         } else {
             csvContent += "Employee,Project,Date,Hours,Status\n";
@@ -176,8 +275,6 @@ export class TeamReportsPage implements OnInit {
         this.showToast('Report downloaded as CSV', 'success');
     }
 
-    /* ================= VIEW TIMESHEET ================= */
-
     async viewTimesheet(timesheet: any) {
         const modal = await this.modalCtrl.create({
             component: TimesheetPreviewComponent,
@@ -187,8 +284,6 @@ export class TeamReportsPage implements OnInit {
         await modal.present();
     }
 
-    /* ================= DOWNLOAD EXCEL (Timesheet) ================= */
-
     downloadTimesheet(timesheet: any) {
         if (!timesheet || !timesheet.hours_breakdown?.length) {
             this.showToast('No timesheet data available to download', 'warning');
@@ -196,45 +291,36 @@ export class TeamReportsPage implements OnInit {
         }
 
         let tableRows = '';
-
         timesheet.hours_breakdown.forEach((b: any, index: number) => {
             tableRows += `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${b.hour || '-'}</td>
-          <td>${b.task || '-'}</td>
-          <td>${b.hours || '-'}</td>
-        </tr>
-      `;
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${b.hour || '-'}</td>
+                    <td>${b.task || '-'}</td>
+                    <td>${b.hours || '-'}</td>
+                </tr>
+            `;
         });
 
         const formattedDate = this.formatDateDDMMYYYY(new Date(timesheet.date));
 
         const html = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office"
-          xmlns:x="urn:schemas-microsoft-com:office:excel">
-    <head>
-      <meta charset="UTF-8" />
-    </head>
-    <body>
-      <table border="1">
-        <tr><td>Employee</td><td colspan="3">${timesheet.FirstName} ${timesheet.LastName}</td></tr>
-        <tr><td>Date</td><td colspan="3">${formattedDate}</td></tr>
-        <tr>
-          <th>S.No</th><th>Time</th><th>Task</th><th>Hours</th>
-        </tr>
-        ${tableRows}
-        <tr><td>Note</td><td colspan="3">${timesheet.notes || '-'}</td></tr>
-        <tr><td>Total</td><td colspan="3">${timesheet.total_hours}</td></tr>
-      </table>
-    </body>
-    </html>
-    `;
+            <html>
+            <head><meta charset="UTF-8" /></head>
+            <body>
+                <table border="1">
+                    <tr><td>Employee</td><td colspan="3">${timesheet.FirstName} ${timesheet.LastName}</td></tr>
+                    <tr><td>Date</td><td colspan="3">${formattedDate}</td></tr>
+                    <tr><th>S.No</th><th>Time</th><th>Task</th><th>Hours</th></tr>
+                    ${tableRows}
+                    <tr><td>Note</td><td colspan="3">${timesheet.notes || '-'}</td></tr>
+                    <tr><td>Total</td><td colspan="3">${timesheet.total_hours}</td></tr>
+                </table>
+            </body>
+            </html>
+        `;
 
-        const blob = new Blob([html], {
-            type: 'application/vnd.ms-excel;charset=utf-8;'
-        });
-
+        const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `Timesheet_${timesheet.FirstName}_${formattedDate}.xls`;
@@ -245,9 +331,8 @@ export class TeamReportsPage implements OnInit {
 
     private formatDateDDMMYYYY(date: Date): string {
         const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // 0-based
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-
         return `${day}-${month}-${year}`;
     }
 

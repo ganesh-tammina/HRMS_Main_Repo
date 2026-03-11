@@ -8,7 +8,7 @@ import { environment } from "src/environments/environment";
 })
 
 export class LeaveService {
-    private apiUrl = `https://${environment.apiURL}/api`;
+    private apiUrl = `http://${environment.apiURL}/api`;
 
     constructor(private http: HttpClient) { }
 
