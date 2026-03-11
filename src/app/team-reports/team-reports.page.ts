@@ -105,6 +105,7 @@ export class TeamReportsPage implements OnInit {
     }
 
     onReportTypeChange() {
+        this.statusFilter = 'ALL';
         this.fetchReport();
     }
 

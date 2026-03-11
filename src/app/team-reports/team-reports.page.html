@@ -1,311 +1,227 @@
-<ion-header>
-    <ion-toolbar>
-        <ion-buttons slot="start">
-            <ion-back-button defaultHref="/MyTeam"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Team Reports</ion-title>
-        <ion-buttons slot="end">
-            <ion-button (click)="downloadReport()" [disabled]="!reportData.length">
-                <ion-icon slot="start" name="download-outline"></ion-icon>
-                Export
+<ion-content class="report-content">
+    <!-- Modern Navigation Header -->
+    <header class="page-header">
+        <div class="header-top">
+            <div class="title-group">
+                <div class="back-btn" (click)="setFilter('ALL')" routerLink="/MyTeam">
+                    <ion-icon name="chevron-back-outline"></ion-icon>
+                </div>
+                <h1>Team Analytics</h1>
+            </div>
+            <ion-button class="export-btn" (click)="downloadReport()" [disabled]="!reportData.length">
+                <ion-icon name="share-outline" slot="start"></ion-icon>
+                Export PDF
             </ion-button>
-        </ion-buttons>
-    </ion-toolbar>
-
-    <ion-toolbar class="selection-toolbar">
-        <ion-item lines="none" class="report-select-item">
-            <ion-label position="stacked">Select Department Report</ion-label>
-            <ion-select [(ngModel)]="reportType" (ionChange)="onReportTypeChange()" interface="popover">
-                <ion-select-option value="attendance">Team Attendance Report</ion-select-option>
-                <ion-select-option value="leave">Team Leave Report</ion-select-option>
-                <ion-select-option value="timesheet">Team Timesheet Report</ion-select-option>
-            </ion-select>
-        </ion-item>
-    </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding report-content">
-
-    <div class="filter-controls">
-        <div class="quick-month-select">
-            <ion-item lines="none" class="month-item">
-                <ion-label>Month</ion-label>
-                <ion-select [(ngModel)]="selectedMonth" (ionChange)="updateDatesFromMonthYear()" interface="popover">
-                    <ion-select-option *ngFor="let m of months" [value]="m.value">{{ m.name }}</ion-select-option>
-                </ion-select>
-            </ion-item>
-            <ion-item lines="none" class="year-item">
-                <ion-label>Year</ion-label>
-                <ion-select [(ngModel)]="selectedYear" (ionChange)="updateDatesFromMonthYear()" interface="popover">
-                    <ion-select-option *ngFor="let y of years" [value]="y">{{ y }}</ion-select-option>
-                </ion-select>
-            </ion-item>
         </div>
 
-        <div class="date-input-group">
-            <div class="input-block">
-                <label>From Date</label>
-                <ion-input type="date" [(ngModel)]="startDate" (ionChange)="onFiltersChange()"></ion-input>
+        <div class="report-tabs">
+            <div class="tab" [class.active]="reportType === 'attendance'" (click)="reportType = 'attendance'; onReportTypeChange()">Attendance</div>
+            <div class="tab" [class.active]="reportType === 'leave'" (click)="reportType = 'leave'; onReportTypeChange()">Leaves</div>
+            <div class="tab" [class.active]="reportType === 'timesheet'" (click)="reportType = 'timesheet'; onReportTypeChange()">Timesheets</div>
+        </div>
+    </header>
+
+    <!-- Interactive Filter Zone -->
+    <section class="filter-zone">
+        <div class="control-group">
+            <div class="input-box">
+                <ion-icon name="calendar-number-outline"></ion-icon>
+                <div class="content">
+                    <label>Report Month</label>
+                    <ion-select [(ngModel)]="selectedMonth" (ionChange)="updateDatesFromMonthYear()" interface="popover">
+                        <ion-select-option *ngFor="let m of months" [value]="m.value">{{ m.name }}</ion-select-option>
+                    </ion-select>
+                </div>
             </div>
-            <div class="input-block">
-                <label>To Date</label>
-                <ion-input type="date" [(ngModel)]="endDate" (ionChange)="onFiltersChange()"></ion-input>
+            <div class="input-box">
+                <ion-icon name="layers-outline"></ion-icon>
+                <div class="content">
+                    <label>Report Year</label>
+                    <ion-select [(ngModel)]="selectedYear" (ionChange)="updateDatesFromMonthYear()" interface="popover">
+                        <ion-select-option *ngFor="let y of years" [value]="y">{{ y }}</ion-select-option>
+                    </ion-select>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="summary-stats" *ngIf="!loading && reportType === 'leave'">
-        <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
-            <p>Total Records</p>
-            <h2>{{ reportData.length }}</h2>
+        <div class="control-group">
+            <div class="input-box">
+                <div class="content">
+                    <label>Period From</label>
+                    <ion-input type="date" [(ngModel)]="startDate" (ionChange)="onFiltersChange()"></ion-input>
+                </div>
+            </div>
+            <div class="input-box">
+                <div class="content">
+                    <label>Period To</label>
+                    <ion-input type="date" [(ngModel)]="endDate" (ionChange)="onFiltersChange()"></ion-input>
+                </div>
+            </div>
         </div>
-        <div class="stat-card pending" (click)="setFilter('PENDING')" [class.active]="statusFilter === 'PENDING'">
-            <p>Pending Requests</p>
-            <h2>{{ stats.pending }}</h2>
-        </div>
-        <div class="stat-card approved" (click)="setFilter('APPROVED')" [class.active]="statusFilter === 'APPROVED'">
-            <p>Approved</p>
-            <h2>{{ stats.approved }}</h2>
-        </div>
-        <div class="stat-card rejected" (click)="setFilter('REJECTED')" [class.active]="statusFilter === 'REJECTED'">
-            <p>Rejected</p>
-            <h2>{{ stats.rejected }}</h2>
-        </div>
-    </div>
+    </section>
 
-    <!-- Attendance Stats -->
-    <div class="summary-stats" *ngIf="!loading && reportType === 'attendance'">
-        <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
-            <p>Total Staff</p>
-            <h2>{{ reportData.length }}</h2>
-        </div>
-        <div class="stat-card approved" (click)="setFilter('PRESENT')" [class.active]="statusFilter === 'PRESENT'">
-            <p>Present</p>
-            <h2>{{ stats.present }}</h2>
-        </div>
-        <div class="stat-card rejected" (click)="setFilter('ABSENT')" [class.active]="statusFilter === 'ABSENT'">
-            <p>Absent</p>
-            <h2>{{ stats.absent }}</h2>
-        </div>
-        <div class="stat-card pending" (click)="setFilter('ON-LEAVE')" [class.active]="statusFilter === 'ON-LEAVE'">
-            <p>On Leave</p>
-            <h2>{{ stats.onLeave }}</h2>
-        </div>
-    </div>
+    <!-- Analytics Dashboard Stats -->
+    <section class="stats-banner" *ngIf="!loading">
+        <!-- Leaves -->
+        <ng-container *ngIf="reportType === 'leave'">
+            <div class="stat-chip" [class.active]="statusFilter === 'ALL'" (click)="setFilter('ALL')">
+                <span class="label">Total Records</span>
+                <span class="value">{{ reportData.length }}</span>
+            </div>
+            <div class="stat-chip p-color" [class.active]="statusFilter === 'PENDING'" (click)="setFilter('PENDING')">
+                <span class="label">Pending</span>
+                <span class="value">{{ stats.pending }}</span>
+            </div>
+            <div class="stat-chip s-color" [class.active]="statusFilter === 'APPROVED'" (click)="setFilter('APPROVED')">
+                <span class="label">Approved</span>
+                <span class="value">{{ stats.approved }}</span>
+            </div>
+            <div class="stat-chip d-color" [class.active]="statusFilter === 'REJECTED'" (click)="setFilter('REJECTED')">
+                <span class="label">Rejected</span>
+                <span class="value">{{ stats.rejected }}</span>
+            </div>
+        </ng-container>
 
-    <!-- Timesheet Stats -->
-    <div class="summary-stats" *ngIf="!loading && reportType === 'timesheet'">
-        <div class="stat-card all" (click)="setFilter('ALL')" [class.active]="statusFilter === 'ALL'">
-            <p>Total Entries</p>
-            <h2>{{ reportData.length }}</h2>
-        </div>
-        <div class="stat-card pending" (click)="setFilter('PENDING')" [class.active]="statusFilter === 'PENDING'">
-            <p>Submitted</p>
-            <h2>{{ stats.pending }}</h2>
-        </div>
-        <div class="stat-card approved" (click)="setFilter('APPROVED')" [class.active]="statusFilter === 'APPROVED'">
-            <p>Approved</p>
-            <h2>{{ stats.approved }}</h2>
-        </div>
-        <div class="stat-card rejected" (click)="setFilter('REJECTED')" [class.active]="statusFilter === 'REJECTED'">
-            <p>Rejected</p>
-            <h2>{{ stats.rejected }}</h2>
-        </div>
-    </div>
+        <!-- Attendance -->
+        <ng-container *ngIf="reportType === 'attendance'">
+            <div class="stat-chip" [class.active]="statusFilter === 'ALL'" (click)="setFilter('ALL')">
+                <span class="label">Headcount</span>
+                <span class="value">{{ reportData.length }}</span>
+            </div>
+            <div class="stat-chip s-color" [class.active]="statusFilter === 'PRESENT'" (click)="setFilter('PRESENT')">
+                <span class="label">Present</span>
+                <span class="value">{{ stats.present }}</span>
+            </div>
+            <div class="stat-chip d-color" [class.active]="statusFilter === 'ABSENT'" (click)="setFilter('ABSENT')">
+                <span class="label">Absent</span>
+                <span class="value">{{ stats.absent }}</span>
+            </div>
+            <div class="stat-chip p-color" [class.active]="statusFilter === 'ON-LEAVE'" (click)="setFilter('ON-LEAVE')">
+                <span class="label">On Leave</span>
+                <span class="value">{{ stats.onLeave }}</span>
+            </div>
+        </ng-container>
 
-    <!-- View Toggle for Leave -->
-    <div class="view-toggle" *ngIf="reportType === 'leave' && !loading">
-        <ion-segment [(ngModel)]="leaveView" color="primary">
-            <ion-segment-button value="history">
-                <ion-label>Leave History</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="balances">
-                <ion-label>Leave Balances</ion-label>
-            </ion-segment-button>
+        <!-- Timesheet -->
+        <ng-container *ngIf="reportType === 'timesheet'">
+            <div class="stat-chip" [class.active]="statusFilter === 'ALL'" (click)="setFilter('ALL')">
+                <span class="label">Total Logs</span>
+                <span class="value">{{ reportData.length }}</span>
+            </div>
+            <div class="stat-chip p-color" [class.active]="statusFilter === 'PENDING'" (click)="setFilter('PENDING')">
+                <span class="label">Submitted</span>
+                <span class="value">{{ stats.pending }}</span>
+            </div>
+            <div class="stat-chip s-color" [class.active]="statusFilter === 'APPROVED'" (click)="setFilter('APPROVED')">
+                <span class="label">Verified</span>
+                <span class="value">{{ stats.approved }}</span>
+            </div>
+            <div class="stat-chip d-color" [class.active]="statusFilter === 'REJECTED'" (click)="setFilter('REJECTED')">
+                <span class="label">Rejected</span>
+                <span class="value">{{ stats.rejected }}</span>
+            </div>
+        </ng-container>
+    </section>
+
+    <!-- Sub-navigation for Balances -->
+    <div style="padding: 0 20px; margin-bottom: 24px;" *ngIf="reportType === 'leave' && !loading">
+        <ion-segment [(ngModel)]="leaveView" mode="ios" style="background: var(--slate-100); border-radius: 12px; padding: 4px;">
+            <ion-segment-button value="history"><ion-label>Timeline</ion-label></ion-segment-button>
+            <ion-segment-button value="balances"><ion-label>Balances</ion-label></ion-segment-button>
         </ion-segment>
     </div>
 
-    <div class="results-container">
-        <div class="loading-state" *ngIf="loading">
-            <ion-spinner name="crescent"></ion-spinner>
-            <p>Fetching report data...</p>
+    <!-- Main Data Feed -->
+    <main class="data-feed">
+        <div class="sync-loader" *ngIf="loading">
+            <ion-spinner name="bubbles"></ion-spinner>
+            <p>Gathering team intelligence...</p>
         </div>
 
-        <div class="no-data-state" *ngIf="!loading && !reportData.length && leaveView === 'history'">
-            <img src="assets/no_leavedata_img.svg" alt="No data" />
-            <h3>No records found</h3>
-            <p>Try adjusting your search filters or date range.</p>
+        <div class="empty-hero" *ngIf="!loading && !reportData.length && leaveView === 'history'">
+            <img src="assets/no_leavedata_img.svg" alt="Empty" />
+            <h2>Silent Period</h2>
+            <p>No activity records found for this range.</p>
         </div>
 
-        <div class="report-list" *ngIf="!loading">
-
-            <!-- ATTENDANCE LIST -->
-            <ng-container *ngIf="reportType === 'attendance' && filteredReportData.length">
-                <ion-card class="data-card" *ngFor="let item of filteredReportData">
-                    <ion-item lines="none">
-                        <ion-avatar slot="start">
-                            <img [src]="getProfileImage(item)" />
-                        </ion-avatar>
-                        <ion-label>
-                            <h3 class="name">{{ item.employee_name }}</h3>
-                            <p class="email">{{ item.WorkEmail || item.email }}</p>
-                        </ion-label>
-                        <ion-chip slot="end"
-                            [color]="item.status === 'PRESENT' ? 'success' : (item.status === 'ABSENT' ? 'danger' : 'warning')">
+        <div class="data-tracks" *ngIf="!loading">
+            <!-- Attendance Row -->
+            <ng-container *ngIf="reportType === 'attendance'">
+                <div class="track-item" *ngFor="let item of filteredReportData">
+                    <div class="track-main">
+                        <div class="avatar-ring"><img [src]="getProfileImage(item)" /></div>
+                        <div class="info">
+                            <h3>{{ item.employee_name }}</h3>
+                            <p>{{ item.attendance_date | date:'EEE, dd MMM yyyy' }}</p>
+                        </div>
+                        <div class="status-pill" [class.present]="item.status === 'PRESENT'" [class.absent]="item.status === 'ABSENT'" [class.pending]="item.status === 'ON-LEAVE'">
                             {{ item.status | titlecase }}
-                        </ion-chip>
-                    </ion-item>
-                    <ion-card-content>
-                        <div class="record-details">
-                            <div class="detail-item">
-                                <label>Date</label>
-                                <p>{{ item.attendance_date | date:'dd MMM yyyy' }}</p>
-                            </div>
-                            <div class="detail-item" *ngIf="item.check_in">
-                                <label>In / Out</label>
-                                <p>{{ item.check_in }} - {{ item.check_out || '--' }}</p>
-                            </div>
-                            <div class="detail-item" *ngIf="item.work_mode">
-                                <label>Mode</label>
-                                <p>{{ item.work_mode }}</p>
-                            </div>
                         </div>
-                    </ion-card-content>
-                </ion-card>
-            </ng-container>
-
-            <!-- LEAVE HISTORY -->
-            <ng-container *ngIf="reportType === 'leave' && leaveView === 'history' && filteredReportData.length">
-                <ion-card class="data-card leave-card" *ngFor="let item of filteredReportData">
-                    <ion-item lines="none">
-                        <ion-avatar slot="start">
-                            <img [src]="getProfileImage(item)" />
-                        </ion-avatar>
-                        <ion-label>
-                            <h3 class="name">{{ item.FirstName }} {{ item.LastName }}</h3>
-                            <p class="email">Applied on {{ item.applied_at | date }}</p>
-                        </ion-label>
-                        <ion-badge slot="end"
-                            [color]="(item.status || '').toUpperCase() === 'APPROVED' ? 'success' : ((item.status || '').toUpperCase() === 'REJECTED' ? 'danger' : 'warning')">
-                            {{ item.status || 'PENDING' }}
-                        </ion-badge>
-                    </ion-item>
-                    <ion-card-content>
-                        <div class="leave-period-info">
-                            <div class="period-dates">
-                                <div class="date-box">
-                                    <label>From</label>
-                                    <p>{{ item.start_date | date:'dd MMM' }}</p>
-                                </div>
-                                <div class="period-divider">
-                                    <ion-icon name="arrow-forward-outline"></ion-icon>
-                                    <span>{{ item.total_days }} day(s)</span>
-                                </div>
-                                <div class="date-box">
-                                    <label>To</label>
-                                    <p>{{ item.end_date | date:'dd MMM' }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="leave-meta">
-                            <div class="meta-item">
-                                <label>Type</label>
-                                <p>{{ item.type_name || item.leave_type }}</p>
-                            </div>
-                            <div class="meta-item reason" *ngIf="item.reason">
-                                <label>Reason</label>
-                                <p>{{ item.reason }}</p>
-                            </div>
-                        </div>
-                    </ion-card-content>
-                </ion-card>
-            </ng-container>
-
-            <!-- LEAVE BALANCES -->
-            <ng-container *ngIf="reportType === 'leave' && leaveView === 'balances' && teamBalances.length">
-                <div class="balance-grid">
-                    <ion-card class="balance-card" *ngFor="let member of teamBalances">
-                        <ion-item lines="none">
-                            <ion-avatar slot="start">
-                                <img [src]="getProfileImage(member)" />
-                            </ion-avatar>
-                            <ion-label>
-                                <h3 class="name">{{ member.FirstName }} {{ member.LastName }}</h3>
-                                <p class="email">{{ member.EmployeeNumber }}</p>
-                            </ion-label>
-                        </ion-item>
-                        <ion-card-content>
-                            <div class="balance-stats">
-                                <div class="b-stat">
-                                    <span class="label">Total</span>
-                                    <span class="val">{{ member.annual + member.casual + member.sick }}</span>
-                                </div>
-                                <div class="b-stat">
-                                    <span class="label">Used</span>
-                                    <span class="val used">{{ member.used }}</span>
-                                </div>
-                                <div class="b-stat">
-                                    <span class="label">Remaining</span>
-                                    <span class="val rem">{{ member.remaining }}</span>
-                                </div>
-                            </div>
-                            <!-- Simple progress bar -->
-                            <div class="balance-progress">
-                                <div class="progress-fill"
-                                    [style.width.%]="(member.used / (member.used + member.remaining)) * 100"></div>
-                            </div>
-                        </ion-card-content>
-                    </ion-card>
+                    </div>
                 </div>
             </ng-container>
 
-            <!-- TIMESHEET LIST -->
-            <ng-container *ngIf="reportType === 'timesheet' && filteredReportData.length">
-                <ion-card class="data-card" *ngFor="let item of filteredReportData">
-                    <ion-item lines="none">
-                        <ion-avatar slot="start">
-                            <img [src]="getProfileImage(item)" />
-                        </ion-avatar>
-                        <ion-label>
-                            <h3 class="name">{{ item.FirstName }} {{ item.LastName }}</h3>
-                            <p class="email">{{ item.WorkEmail }}</p>
-                        </ion-label>
-                        <ion-badge slot="end"
-                             [color]="item.status === 'APPROVED' ? 'success' : (item.status === 'REJECTED' ? 'danger' : 'primary')">
+            <!-- Leave Row -->
+            <ng-container *ngIf="reportType === 'leave' && leaveView === 'history'">
+                <div class="track-item" *ngFor="let item of filteredReportData">
+                    <div class="track-main">
+                        <div class="avatar-ring"><img [src]="getProfileImage(item)" /></div>
+                        <div class="info">
+                            <h3>{{ item.FirstName }} {{ item.LastName }}</h3>
+                            <p>Applied {{ item.applied_at | date:'dd MMM' }}</p>
+                        </div>
+                        <div class="status-pill" [class.approved]="item.status === 'APPROVED'" [class.rejected]="item.status === 'REJECTED'" [class.pending]="item.status === 'PENDING'">
                             {{ item.status }}
-                        </ion-badge>
-                    </ion-item>
-                    <ion-card-content>
-                        <div class="record-details">
-                            <div class="detail-item">
-                                <label>Date</label>
-                                <p>{{ item.date | date:'dd MMM yyyy' }}</p>
-                            </div>
-                            <div class="detail-item">
-                                <label>Project</label>
-                                <p>{{ item.project_name || 'Regular' }}</p>
-                            </div>
-                            <div class="detail-item">
-                                <label>Duration</label>
-                                <p>{{ item.total_hours }}h</p>
-                            </div>
                         </div>
-
-                        <div class="action-buttons-row">
-                            <ion-button fill="clear" color="primary" (click)="viewTimesheet(item)">
-                                <ion-icon slot="start" name="eye-outline"></ion-icon>
-                                View Details
-                            </ion-button>
-                            <ion-button fill="clear" color="secondary" (click)="downloadTimesheet(item)">
-                                <ion-icon slot="start" name="download-outline"></ion-icon>
-                                Download
-                            </ion-button>
-                        </div>
-                    </ion-card-content>
-                </ion-card>
+                    </div>
+                    <div class="track-details">
+                        <div class="chunk"><label>Duration</label><span>{{ item.total_days }} Days • {{ item.type_name || item.leave_type }}</span></div>
+                        <div class="chunk"><label>Schedule</label><span>{{ item.start_date | date:'dd MMM' }} - {{ item.end_date | date:'dd MMM' }}</span></div>
+                    </div>
+                </div>
             </ng-container>
 
-        </div>
-    </div>
+            <!-- Leave Balances -->
+            <ng-container *ngIf="reportType === 'leave' && leaveView === 'balances'">
+                <div class="balance-shelf">
+                    <div class="member-profile" *ngFor="let member of teamBalances">
+                        <div class="member-header">
+                            <img class="mini-avatar" [src]="getProfileImage(member)" />
+                            <div class="meta"><h4>{{ member.FirstName }} {{ member.LastName }}</h4><p>{{ member.EmployeeNumber }}</p></div>
+                        </div>
+                        <div class="mini-stats">
+                            <div class="m-box"><label>Total</label><span>{{ member.annual + member.casual + member.sick }}</span></div>
+                            <div class="m-box"><label>Used</label><span style="color: var(--danger);">{{ member.used }}</span></div>
+                            <div class="m-box"><label>Net</label><span style="color: var(--success);">{{ member.remaining }}</span></div>
+                        </div>
+                        <div class="usage-track"><div class="fill" [style.width.%]="(member.used / (member.used + member.remaining || 1)) * 100"></div></div>
+                    </div>
+                </div>
+            </ng-container>
 
+            <!-- Timesheet Row -->
+            <ng-container *ngIf="reportType === 'timesheet'">
+                <div class="track-item" *ngFor="let item of filteredReportData">
+                    <div class="track-main">
+                        <div class="avatar-ring"><img [src]="getProfileImage(item)" /></div>
+                        <div class="info">
+                            <h3>{{ item.FirstName }} {{ item.LastName }}</h3>
+                            <p>{{ item.date | date:'dd MMM yyyy' }} • {{ item.total_hours }}h</p>
+                        </div>
+                        <div class="status-pill" [class.approved]="item.status === 'APPROVED'" [class.rejected]="item.status === 'REJECTED'" [class.pending]="item.status === 'PENDING'">
+                            {{ item.status }}
+                        </div>
+                    </div>
+                    <div class="track-details">
+                        <div class="chunk"><label>Project</label><span>{{ item.project_name || 'Regular' }}</span></div>
+                        <div class="chunk"><label>Code</label><span>{{ item.project_code || 'GEN-01' }}</span></div>
+                    </div>
+                    <div class="track-actions">
+                        <div class="action-btn" (click)="viewTimesheet(item)"><ion-icon name="scan-outline"></ion-icon> Scan</div>
+                        <div class="action-btn" (click)="downloadTimesheet(item)"><ion-icon name="cloud-download-outline"></ion-icon> File</div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </main>
 </ion-content>
