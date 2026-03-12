@@ -178,6 +178,11 @@
               <ion-badge [ngClass]="getStatusColor(t.status)">{{ t.status || 'pending' | titlecase }}</ion-badge>
             </ion-col>
             <ion-col size="2">
+              <!-- EDIT -->
+              <ion-button fill="clear" *ngIf="t.status && (t.status.toLowerCase() === 'submitted' || t.status.toLowerCase() === 'pending' || t.status.toLowerCase() === 'rejected')" (click)="editTimesheet(t)">
+                <ion-icon name="create-outline" color="primary" style="font-size: 20px;"></ion-icon>
+              </ion-button>
+
               <ion-button fill="clear" (click)="openPreview(t)">
                 <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
               </ion-button>
@@ -218,7 +223,7 @@
   <!-- ================= DAILY WORK LOG - SHOWN FOR ALL EMPLOYEES ================= -->
   <div>
     <!-- ================= CREATE TIMESHEET ================= -->
-    <ion-card class="worklog-block create-card">
+    <ion-card id="daily-work-log-card" class="worklog-block create-card">
       <ion-card-header>
         <div class="header-content">
           <div>
@@ -396,6 +401,11 @@
               No Remarks
             </ion-col>
             <ion-col size="2">
+              <!-- EDIT -->
+              <ion-button fill="clear" *ngIf="t.status && (t.status.toLowerCase() === 'submitted' || t.status.toLowerCase() === 'pending' || t.status.toLowerCase() === 'rejected')" (click)="editTimesheet(t)">
+                <ion-icon name="create-outline" color="primary" style="font-size: 20px;"></ion-icon>
+              </ion-button>
+
               <ion-button fill="clear" (click)="openPreview(t)">
                 <ion-img src="../../../assets/Icons/Eye-blue.svg"></ion-img>
               </ion-button>

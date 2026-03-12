@@ -402,6 +402,47 @@ export class WorkTrackComponent implements OnInit {
     // Delay loading to ensure hasProject is set
     setTimeout(() => this.loadMyTimesheets(), 100);
   }
+
+  /* ================= EDIT ================= */
+  editTimesheet(t: any) {
+    // Scroll smoothly to the Daily Work Log card
+    const formElement = document.getElementById('daily-work-log-card');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const formattedDate = new Date(t.date).toISOString().split('T')[0];
+    this.workTrackForm.patchValue({
+      date: formattedDate,
+      notes: t.work_description || t.notes || ''
+    });
+
+    this.breakdowns.clear();
+
+    let bd = t.hours_breakdown;
+    if (typeof bd === 'string') {
+      try {
+        bd = JSON.parse(bd);
+      } catch (e) { bd = []; }
+    }
+
+    if (bd && Array.isArray(bd) && bd.length > 0) {
+      bd.forEach((b: any) => {
+        this.breakdowns.push(
+          this.fb.group({
+            hour: [b.hour, Validators.required],
+            task: [b.task, Validators.required],
+            hours: [Number(b.hours), [Validators.required, Validators.min(0.5)]],
+          })
+        );
+      });
+    } else {
+      this.initializeFirstTimeSlot();
+    }
+  }
+
   /* ================= PREVIEW ================= */
 
   async openPreview(timesheet: any) {
