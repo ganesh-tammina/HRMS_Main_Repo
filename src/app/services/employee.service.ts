@@ -185,9 +185,21 @@ export class EmployeeService {
     this.currentEmployee = null;
     this.profileInitialized = false;
     this.profile$ = undefined;
+    
+    // Explicitly push nulls to ensure components receive the empty state
     this.currentEmployeeSubject.next(null);
     this.profileImageUpdateSubject.next(null);
     this.employeeIdSubject.next(null);
+    
+    // Clear local storage entries specific to employees
+    localStorage.removeItem('activeEmployeeId');
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('loggedInEmployee_') || key.startsWith('loggedInCandidate_'))) {
+        localStorage.removeItem(key);
+      }
+    }
+    
     console.log('🧹 EmployeeService: All employee state cleared');
   }
 

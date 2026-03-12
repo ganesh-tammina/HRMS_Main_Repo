@@ -87,7 +87,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.showIntro = false;
         }
         // Fetch user department and designation from profile - Skip for Admin/HR as per request
-        if (!this.userDesignation && this.userRole) {
+        if (!this.userDesignation && this.userRole && !this.isLoginPage) {
           this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
             next: (emp) => {
               this.userDesignation = (emp?.designation_name || emp?.designation || 'N/A').toLowerCase();
@@ -106,7 +106,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateRoleInfo();
-    this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));
+    
+    // Only fetch announcements if user is logged in and not on login page
+    if (this.routeGaurdService.isLoggedIn && !this.isLoginPage) {
+      this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));
+    }
   }
 
   private updateRoleInfo(): void {
@@ -157,11 +161,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(['/pre-onboarding-cards']);
   }
   logout() {
-    localStorage.clear();
-    this.authService.logout();
-    sessionStorage.clear();
-    localStorage.removeItem('introSeen')
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.authService.logout().subscribe({
+      next: () => {
+        // Additional cleanup if necessary (RouteGuardService already clears most things)
+        sessionStorage.clear();
+        localStorage.removeItem('introSeen');
+      },
+      error: (err) => console.error('Logout failed in app component', err)
+    });
   }
   handlePageRefresh(url: string) {
     // Check if user is logged in and navigating to main pages

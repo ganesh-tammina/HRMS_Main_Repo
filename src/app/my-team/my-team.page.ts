@@ -214,7 +214,19 @@ export class MyTeamPage implements OnInit, OnDestroy {
 
         // Merge attendance data into existing team members (preserves all original fields like location_name, department_name, etc.)
         this.teamMembers = this.teamMembers.map((member: any) => {
-          const attendanceRecord = this.attendanceData.find((att: any) => att.employee_id === member.id);
+          const memberId = member.id || member.employee_id;
+          const attendanceRecord = this.attendanceData.find((att: any) => att.employee_id === memberId || att.id === memberId);
+          const leaveRecord = this.onLeaveToday.find((leave: any) => leave.employee_id === memberId || leave.id === memberId);
+
+          if (leaveRecord) {
+            return {
+              ...member,
+              attendance: {
+                status: 'on_leave',
+                attendance: { leave_type: leaveRecord.type_name || leaveRecord.leave_type || 'Leave' }
+              }
+            };
+          }
 
           return {
             ...member,

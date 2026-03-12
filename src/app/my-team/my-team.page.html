@@ -152,25 +152,7 @@
          </ion-card>
       </div>
 
-      <!-- On Leave Card: Only show when 'on_leave' filter is selected -->
-      <ion-card *ngIf="attendanceFilter === 'on_leave' && onLeaveToday.length > 0" (click)="onOnLeaveCardClick()"
-         style="cursor:pointer;">
-         <ion-card-content *ngIf="showOnLeaveList">
-            <ion-list>
-               <ion-item *ngFor="let leave of onLeaveToday">
-                  <ion-avatar slot="start">
-                     <img [src]="getProfileImage(leave)" />
-                  </ion-avatar>
-                  <ion-label>
-                     <h3>{{ leave.FirstName }} {{ leave.LastName }}</h3>
-                     <p>{{ leave.WorkEmail }}</p>
-                     <p><strong>Type:</strong> {{ leave.type_name || leave.leave_type || 'Leave' }}</p>
-                     <p><strong>Duration:</strong> {{ leave.start_date }} to {{ leave.end_date }}</p>
-                  </ion-label>
-               </ion-item>
-            </ion-list>
-         </ion-card-content>
-      </ion-card>
+
 
       <!-- Team Attendance List -->
       <div class="team-grid">

@@ -16,6 +16,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { EmployeeService } from '../../services/employee.service';
+import { AuthService } from '../../services/login-services.service';
 
 @Component({
   standalone: true,
@@ -45,7 +46,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private routeGuardService: RouteGuardService,
     private router: Router,
     private employeeService: EmployeeService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private authService: AuthService
   ) {
     this.searchSubject.pipe(
       debounceTime(500),
@@ -123,7 +125,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.candidateService.logout();
+    this.authService.logout().subscribe();
   }
 
   viewProfile() {
