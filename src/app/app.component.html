@@ -194,7 +194,8 @@
                       <ion-item routerLink="/payslip" lines="none" detail="false">
                         <ion-label>Pay Slips</ion-label>
                       </ion-item>
-                      <ion-item routerLink="/finance-admin" lines="none" detail="false">
+                      <ion-item *ngIf="isAdminOnly() || isHROnly()" routerLink="/finance-admin" lines="none"
+                        detail="false">
                         <ion-label>Finance Admin</ion-label>
                       </ion-item>
                     </ion-menu-toggle>

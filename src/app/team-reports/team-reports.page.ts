@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController, ModalController } from '@ionic/angular';
@@ -62,6 +62,7 @@ export class TeamReportsPage implements OnInit {
     years: number[] = [];
 
     constructor(
+        private router: Router,
         private route: ActivatedRoute,
         private employeeService: EmployeeService,
         private timesheetService: TimesheetService,
@@ -124,7 +125,7 @@ export class TeamReportsPage implements OnInit {
         if (this.statusFilter === 'ALL') {
             return this.reportData;
         }
-        
+
         // Normalize status for comparison
         return this.reportData.filter(item => {
             const status = (item.status || '').toUpperCase();
@@ -161,13 +162,13 @@ export class TeamReportsPage implements OnInit {
                     employee_name: a.FullName || `${a.FirstName} ${a.LastName}`,
                     status: (a.status || 'ABSENT').toUpperCase()
                 }));
-                
+
                 // Calculate Stats
                 this.stats.total = this.reportData.length;
                 this.stats.present = this.reportData.filter(a => a.status === 'PRESENT').length;
                 this.stats.absent = this.reportData.filter(a => a.status === 'ABSENT').length;
                 this.stats.onLeave = this.reportData.filter(a => a.status === 'ON-LEAVE').length;
-                
+
                 this.loading = false;
             },
             error: (err) => {
@@ -261,7 +262,7 @@ export class TeamReportsPage implements OnInit {
                     let status = (t.status || 'PENDING').toUpperCase();
                     if (status === 'SUBMITTED') status = 'PENDING';
                     if (status === 'VERIFIED') status = 'APPROVED';
-                    
+
                     return {
                         ...t,
                         status: status,
