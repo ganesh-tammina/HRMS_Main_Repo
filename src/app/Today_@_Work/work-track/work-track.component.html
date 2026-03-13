@@ -179,7 +179,9 @@
             </ion-col>
             <ion-col size="2">
               <!-- EDIT -->
-              <ion-button fill="clear" *ngIf="t.status && (t.status.toLowerCase() === 'submitted' || t.status.toLowerCase() === 'pending' || t.status.toLowerCase() === 'rejected')" (click)="editTimesheet(t)">
+              <ion-button fill="clear"
+                *ngIf="t.status && (t.status.toLowerCase() === 'submitted' || t.status.toLowerCase() === 'pending' || t.status.toLowerCase() === 'rejected')"
+                (click)="editTimesheet(t)">
                 <ion-icon name="create-outline" color="primary" style="font-size: 20px;"></ion-icon>
               </ion-button>
 
@@ -245,12 +247,11 @@
               <span>{{ workTrackForm.get('date')?.value | date:'mediumDate' }}</span>
               <ion-icon name="chevron-down-outline" slot="end" class="chevron"></ion-icon>
             </div>
-            
+
             <!-- Status Display (Leave/Week Off) -->
             <div class="date-status-msg" *ngIf="selectedDateStatus">
-              <span [class.leave]="selectedDateStatus.includes('Leave')" 
-                    [class.weekoff]="selectedDateStatus.includes('Off')"
-                    [title]="selectedDateStatus">
+              <span [class.leave]="selectedDateStatus.includes('Leave')"
+                [class.weekoff]="selectedDateStatus.includes('Off')" [title]="selectedDateStatus">
                 {{ selectedDateStatus }}
               </span>
             </div>
@@ -259,13 +260,8 @@
             <ion-modal trigger="open-date-modal" class="date-picker-modal">
               <ng-template>
                 <ion-content>
-                  <ion-datetime
-                    #datetime
-                    presentation="date"
-                    [max]="today"
-                    [highlightedDates]="highlightedDates"
-                    [value]="workTrackForm.get('date')?.value"
-                    (ionChange)="onDateChange($event)">
+                  <ion-datetime #datetime presentation="date" [max]="today" [highlightedDates]="highlightedDates"
+                    [value]="workTrackForm.get('date')?.value" (ionChange)="onDateChange($event)">
                     <div slot="title">Select Work Date</div>
                   </ion-datetime>
                 </ion-content>
@@ -281,7 +277,8 @@
                   <div class="form-group">
                     <label>Assigned Project</label>
                     <ion-item lines="none" class="custom-item">
-                      <ion-select formControlName="project_id" interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="Select Project">
+                      <ion-select formControlName="project_id" interface="popover" toggleIcon="chevron-down"
+                        expandedIcon="chevron-up" placeholder="Select Project">
                         <ion-select-option *ngFor="let a of assignments" [value]="a.project_id">
                           {{ a.project_name }}
                         </ion-select-option>
@@ -289,14 +286,14 @@
                     </ion-item>
                   </div>
                 </ion-col>
-                <ion-col size="12" size-md="8">
+                <!-- <ion-col size="12" size-md="8">
                   <div class="form-group">
                     <label>Work Description</label>
                     <ion-item lines="none" class="custom-item">
                       <ion-input formControlName="work_description" placeholder="Summary of your work today..."></ion-input>
                     </ion-item>
                   </div>
-                </ion-col>
+                </ion-col> -->
               </ion-row>
             </ion-grid>
           </div>
@@ -459,7 +456,9 @@
             </ion-col>
             <ion-col size="2">
               <!-- EDIT -->
-              <ion-button fill="clear" *ngIf="t.status && (t.status.toLowerCase() === 'submitted' || t.status.toLowerCase() === 'pending' || t.status.toLowerCase() === 'rejected')" (click)="editTimesheet(t)">
+              <ion-button fill="clear"
+                *ngIf="t.status && (t.status.toLowerCase() === 'submitted' || t.status.toLowerCase() === 'pending' || t.status.toLowerCase() === 'rejected')"
+                (click)="editTimesheet(t)">
                 <ion-icon name="create-outline" color="primary" style="font-size: 20px;"></ion-icon>
               </ion-button>
 
