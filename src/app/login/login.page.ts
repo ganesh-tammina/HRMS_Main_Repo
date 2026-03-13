@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/login-services.service';
@@ -34,7 +35,8 @@ export class LoginPage implements OnInit {
     private employeeService: EmployeeService,
     private router: Router,
     private routeGuardService: RouteGuardService,
-    private adminSetup: AdminSetup
+    private adminSetup: AdminSetup,
+    private toastController: ToastController
   ) { }
 
   ngOnInit(): void {
@@ -80,7 +82,7 @@ export class LoginPage implements OnInit {
     this.authService.checkEmployee(value).subscribe({
       next: (res) => {
         if (!res.found) {
-          alert('Email not found in employee records');
+          this.presentToast('Email not found in employee records', 'warning');
           return;
         }
 
@@ -110,7 +112,7 @@ export class LoginPage implements OnInit {
         this.loginForm.get('password')?.setValidators(Validators.required);
         this.loginForm.get('password')?.updateValueAndValidity();
       },
-      error: () => alert('Failed to verify email')
+      error: () => this.presentToast('Failed to verify email', 'danger')
     });
   }
 
@@ -132,7 +134,7 @@ export class LoginPage implements OnInit {
         },
         error: () => {
           this.loading = false;
-          alert('Invalid admin credentials');
+          this.presentToast('Invalid admin credentials', 'danger');
         }
       });
       return;
@@ -144,7 +146,7 @@ export class LoginPage implements OnInit {
         next: () => this.loadEmployeeAndNavigate(),
         error: () => {
           this.loading = false;
-          alert('Invalid credentials');
+          this.presentToast('Invalid credentials', 'danger');
         }
       });
     }
@@ -157,13 +159,13 @@ export class LoginPage implements OnInit {
             next: () => this.loadEmployeeAndNavigate(),
             error: () => {
               this.loading = false;
-              alert('Auto login failed');
+              this.presentToast('Auto login failed', 'danger');
             }
           });
         },
         error: () => {
           this.loading = false;
-          alert('Failed to create password');
+          this.presentToast('Failed to create password', 'danger');
         }
       });
     }
@@ -180,33 +182,31 @@ export class LoginPage implements OnInit {
         this.loading = false;
         this.forgotPasswordSuccess = true;
         this.showForgotPassword = false;
-        this.showToast('Password reset successful! Logging you in...');
+        this.presentToast('Password reset successful! Logging you in...', 'success');
         // Auto-login after password reset
         this.authService.login({ username: employee_id, password }).subscribe({
           next: () => this.loadEmployeeAndNavigate(),
           error: () => {
             this.loading = false;
-            this.showToast('Password reset, but auto-login failed. Please login manually.', true);
+            this.presentToast('Password reset, but auto-login failed. Please login manually.', 'warning');
           }
         });
       },
       error: () => {
         this.loading = false;
-        this.showToast('Failed to reset password.', true);
+        this.presentToast('Failed to reset password.', 'danger');
       }
     });
   }
 
-  /** TOAST MESSAGE */
-  toastMessage: string = '';
-  toastError: boolean = false;
-  showToast(msg: string, error: boolean = false) {
-    this.toastMessage = msg;
-    this.toastError = error;
-    setTimeout(() => {
-      this.toastMessage = '';
-      this.toastError = false;
-    }, 3000);
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
   }
 
   /** SHOW FORGOT PASSWORD FORM */
@@ -230,7 +230,7 @@ export class LoginPage implements OnInit {
       },
       error: () => {
         this.loading = false;
-        alert('Failed to load employee profile');
+        this.presentToast('Failed to load employee profile', 'danger');
       }
     });
   }
@@ -248,7 +248,7 @@ export class LoginPage implements OnInit {
           console.log(`📋 Reason: ${response.reason}`);
 
           // Show notification to user
-          alert(`Your role has been updated to: ${response.newRole.toUpperCase()}\nReason: ${response.reason}`);
+          this.presentToast(`Your role has been updated to: ${response.newRole.toUpperCase()}\nReason: ${response.reason}`, 'primary');
 
           // Update the token with new role
           this.refreshTokenAndNavigate();

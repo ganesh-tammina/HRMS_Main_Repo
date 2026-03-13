@@ -2,7 +2,7 @@ import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UploadService } from '../../../services/uploads.service';
 import { EmployeeService } from 'src/app/services/employee.service';
-import { IonicModule, IonModal } from '@ionic/angular';
+import { IonicModule, IonModal, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -52,7 +52,8 @@ export class EmployeeListComponent implements OnInit {
     private attendancePolicyService: AttendancePolicyService,
     private leavePlanService: LeavePlanService,
     private weeklyOffPolicyService: WeeklyOffPolicyService,
-    private router: Router
+    private router: Router,
+    private toastController: ToastController
   ) { }
 
   ngOnInit() {
@@ -136,12 +137,12 @@ export class EmployeeListComponent implements OnInit {
     if (!this.selectedEmployee) return;
     this.employeeService.updateEmployeeProfile(this.selectedEmployee.id, this.updateData).subscribe({
       next: () => {
-        alert('Employee profile updated successfully');
+        this.presentToast('Employee profile updated successfully', 'success');
         this.selectedEmployee = null;
         this.loadEmployees();
       },
       error: () => {
-        alert('Failed to update employee profile');
+        this.presentToast('Failed to update employee profile', 'danger');
       }
     });
   }
@@ -154,7 +155,7 @@ export class EmployeeListComponent implements OnInit {
   /* ================= UPLOAD EMPLOYEES ================= */
   EmployeesUpload() {
     if (!this.EmployeeselectedFile) {
-      alert('Please select an Excel file');
+      this.presentToast('Please select an Excel file', 'warning');
       return;
     }
 
@@ -164,14 +165,14 @@ export class EmployeeListComponent implements OnInit {
     this.uploadService.uploadEmployees(this.EmployeeselectedFile).subscribe({
       next: () => {
         this.isUploading = false; // Hide loading spinner
-        alert('Employees uploaded successfully');
+        this.presentToast('Employees uploaded successfully', 'success');
         this.EmployeeselectedFile = null;
         // ✅ IMMEDIATE REFRESH (NO PAGE RELOAD)
         this.loadEmployees();
       },
       error: () => {
         this.isUploading = false; // Hide loading spinner
-        alert('Employee upload failed');
+        this.presentToast('Employee upload failed', 'danger');
       }
     });
   }
@@ -205,5 +206,15 @@ export class EmployeeListComponent implements OnInit {
   }
   adminManagement() {
     this.router.navigate(['/admin']);
+  }
+
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      color: color,
+      position: 'top'
+    });
+    toast.present();
   }
 }

@@ -293,11 +293,9 @@ export class CandidateService {
    * @returns {Observable<Shifts>} an observable of shifts.
    */
   /*******  46bc3667-f1a3-45b9-808e-0006236ca4d7  *******/
-  // getShifts(shifts: Shifts): Observable<Shifts> {
-  //   return this.http.post<Shifts>(`${this.shiftsUrl}shift-policy`, shifts, {
-  //     withCredentials: true,
-  //   });
-  // }
+  getShifts(shifts: any): Observable<any> {
+    return this.http.get<any>(`http://${this.env.apiURL}/api/shift-policy`, shifts);
+  }
 
   // getWeekOffPolicies(weekoff: weekOff): Observable<weekOff> {
   //   return this.http.post<weekOff>(this.weekoffsUrl, weekoff, {

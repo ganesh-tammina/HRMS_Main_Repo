@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -47,6 +47,7 @@ export class LeaveplansComponent implements OnInit {
     private leavePlanService: LeavePlanService,
     private leaveTypeService: LeaveTypeService,
     private router: Router,
+    private toastCtrl: ToastController
   ) { }
 
   ngOnInit(): void {
@@ -106,7 +107,7 @@ export class LeaveplansComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        alert('Failed to load plan details for editing ganesh');
+        this.showToast('Failed to load plan details', 'danger');
       }
     });
   }
@@ -145,11 +146,12 @@ export class LeaveplansComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.showCreateForm = false; // Close the modal on success
+        this.showToast(this.isEditMode ? 'Leave plan updated' : 'Leave plan created', 'success');
         this.loadLeavePlans(); // Refresh the leave plans immediately
       },
       error: () => {
         this.loading = false;
-        alert('Failed to submit leave plan');
+        this.showToast('Failed to submit leave plan', 'danger');
       },
     });
   }
@@ -163,7 +165,7 @@ export class LeaveplansComponent implements OnInit {
 
     const existing = this.editingPlanAllocations.find(a => a.leave_type_id === Number(this.selectedNewLeaveTypeId));
     if (existing) {
-      alert('This leave type is already added to the plan.');
+      this.showToast('This leave type is already added to the plan.', 'warning');
       return;
     }
 
@@ -248,5 +250,15 @@ export class LeaveplansComponent implements OnInit {
   getMonthName(monthNumber: number): string {
     if (!monthNumber || monthNumber < 1 || monthNumber > 12) return 'Unknown';
     return this.months[monthNumber - 1];
+  }
+
+  async showToast(message: string, color: string = 'primary') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
   }
 }

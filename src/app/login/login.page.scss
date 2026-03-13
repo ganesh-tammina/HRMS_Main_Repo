@@ -1,4 +1,4 @@
-@import "../../global.scss";
+@use "../../global.scss" as *;
 
 // --- Design Tokens ---
 $primary-gradient: linear-gradient(135deg, #2f86d6 0%, #1e6bb8 100%);
@@ -281,31 +281,8 @@ $error-red: #ef4444;
   margin-top: 8px;
 }
 
-// --- Toast ---
-.toast {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #2f86d6;
-  color: #fff;
-  padding: 16px 32px;
-  border-radius: 12px;
-  font-weight: 600;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  min-width: 300px;
-  text-align: center;
-
-  &.toast-error {
-    background: $error-red;
-  }
-}
 
 // --- Animations ---
-.fade-in-down {
-  animation: fadeInDown 0.5s ease-out;
-}
 
 .fade-in-left {
   animation: fadeInLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -323,17 +300,6 @@ $error-red: #ef4444;
   animation: bgPulse 20s infinite alternate ease-in-out;
 }
 
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
 
 @keyframes fadeInUp {
   from {

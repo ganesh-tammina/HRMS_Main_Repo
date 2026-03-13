@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminService, ShiftPolicyPayload } from 'src/app/services/admin-functionality/admin.service.service';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 
@@ -122,8 +122,12 @@ export class adminFunctionalityComponent implements OnInit {
 
   designationName: string = '';
   editingDesignationId: number | null = null;
-
-  constructor(private service: AdminService, private router: Router, private routeGaurdService: RouteGuardService) { }
+  constructor(
+    private service: AdminService,
+    private router: Router,
+    private routeGaurdService: RouteGuardService,
+    private toastCtrl: ToastController
+  ) { }
 
   ngOnInit() {
     // Try to get userRole from routeGaurdService, fallback to localStorage
@@ -156,10 +160,10 @@ export class adminFunctionalityComponent implements OnInit {
     this.calculateWeeklyOffPagination();
   });
   }
-  saveWeeklyOffPolicy() { this.service.createWeeklyOffPolicy(this.weeklyOffPolicyForm).subscribe(() => { this.loadWeeklyOffPolicies(); this.cancelWeeklyOffPolicy(); }); }
+  saveWeeklyOffPolicy() { this.service.createWeeklyOffPolicy(this.weeklyOffPolicyForm).subscribe(() => { this.showToast('Weekly off policy saved', 'success'); this.loadWeeklyOffPolicies(); this.cancelWeeklyOffPolicy(); }); }
   editWeeklyOffPolicy(item: any) { this.editingWeeklyOffPolicyId = item.id; this.weeklyOffPolicyForm = { ...item }; }
-  updateWeeklyOffPolicy() { this.service.updateWeeklyOffPolicy(this.editingWeeklyOffPolicyId!, this.weeklyOffPolicyForm).subscribe(() => { this.loadWeeklyOffPolicies(); this.cancelWeeklyOffPolicy(); }); }
-  deleteWeeklyOffPolicy(id: number) { this.service.deleteWeeklyOffPolicy(id).subscribe(() => this.loadWeeklyOffPolicies()); }
+  updateWeeklyOffPolicy() { this.service.updateWeeklyOffPolicy(this.editingWeeklyOffPolicyId!, this.weeklyOffPolicyForm).subscribe(() => { this.showToast('Weekly off policy updated', 'success'); this.loadWeeklyOffPolicies(); this.cancelWeeklyOffPolicy(); }); }
+  deleteWeeklyOffPolicy(id: number) { this.service.deleteWeeklyOffPolicy(id).subscribe(() => { this.showToast('Weekly off policy deleted', 'success'); this.loadWeeklyOffPolicies(); }); }
   cancelWeeklyOffPolicy() {
     this.editingWeeklyOffPolicyId = null;
     this.weeklyOffPolicyForm = {
@@ -191,10 +195,10 @@ export class adminFunctionalityComponent implements OnInit {
   }); 
   }
   openAddLocation() { this.showLocationForm = true; this.editingLocationId = null; this.locationName = ''; }
-  saveLocation() { this.service.createLocation({ name: this.locationName }).subscribe(() => { this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
+  saveLocation() { this.service.createLocation({ name: this.locationName }).subscribe(() => { this.showToast('Location saved', 'success'); this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
   editLocation(i: any) { this.showLocationForm = true; this.locationName = i.name; this.editingLocationId = i.id; }
-  updateLocation() { this.service.updateLocation(this.editingLocationId!, { name: this.locationName }).subscribe(() => { this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
-  deleteLocation(id: number) { this.service.deleteLocation(id).subscribe(() => this.loadLocations()); }
+  updateLocation() { this.service.updateLocation(this.editingLocationId!, { name: this.locationName }).subscribe(() => { this.showToast('Location updated', 'success'); this.loadLocations(); this.locationName = ''; this.cancelLocation(); }); }
+  deleteLocation(id: number) { this.service.deleteLocation(id).subscribe(() => { this.showToast('Location deleted', 'success'); this.loadLocations(); }); }
   cancelLocation() { this.locationName = ''; this.editingLocationId = null; }
 
   /* DEPARTMENTS */
@@ -206,10 +210,10 @@ export class adminFunctionalityComponent implements OnInit {
   });
   }
   openAddDepartment() { this.showDepartmentForm = true; this.editingDepartmentId = null; this.departmentName = ''; }
-  saveDepartment() { this.service.createDepartment({ name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
+  saveDepartment() { this.service.createDepartment({ name: this.departmentName }).subscribe(() => { this.showToast('Department saved', 'success'); this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
   editDepartment(i: any) { this.showDepartmentForm = true; this.departmentName = i.name; this.editingDepartmentId = i.id; }
-  updateDepartment() { this.service.updateDepartment(this.editingDepartmentId!, { name: this.departmentName }).subscribe(() => { this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
-  deleteDepartment(id: number) { this.service.deleteDepartment(id).subscribe(() => this.loadDepartments()); }
+  updateDepartment() { this.service.updateDepartment(this.editingDepartmentId!, { name: this.departmentName }).subscribe(() => { this.showToast('Department updated', 'success'); this.loadDepartments(); this.departmentName = ''; this.cancelDepartment(); }); }
+  deleteDepartment(id: number) { this.service.deleteDepartment(id).subscribe(() => { this.showToast('Department deleted', 'success'); this.loadDepartments(); }); }
   cancelDepartment() { this.departmentName = ''; this.editingDepartmentId = null; }
 
   /* SHIFTS */
@@ -225,12 +229,12 @@ export class adminFunctionalityComponent implements OnInit {
     console.log('Saving new shift:', this.shiftForm);
     this.service.createShiftPolicy(this.shiftForm).subscribe({
       next: () => {
-        console.log('Shift saved successfully');
+        this.showToast('Shift saved', 'success');
         this.loadShiftPolicies();
         this.resetShiftForm();
       },
       error: (err) => {
-        console.error('Error saving shift:', err);
+        this.showToast('Failed to save shift', 'danger');
       }
     });
   }
@@ -246,12 +250,12 @@ export class adminFunctionalityComponent implements OnInit {
     console.log('Updating shift:', this.editingShiftId, this.shiftForm);
     this.service.updateShiftPolicy(this.editingShiftId!, this.shiftForm).subscribe({
       next: () => {
-        console.log('Shift updated successfully');
+        this.showToast('Shift updated', 'success');
         this.loadShiftPolicies();
         this.resetShiftForm();
       },
       error: (err) => {
-        console.error('Error updating shift:', err);
+        this.showToast('Failed to update shift', 'danger');
       }
     });
   }
@@ -278,10 +282,10 @@ export class adminFunctionalityComponent implements OnInit {
   });
    }
   openAddAnnouncement() { this.showAnnouncementForm = true; this.editingAnnouncementId = null; this.announcementForm = { title: '', body: '', starts_at: '', ends_at: '' }; }
-  saveAnnouncement() { this.service.createAnnouncement(this.announcementForm).subscribe(() => { this.loadAnnouncements(); this.cancelAnnouncement(); }); }
+  saveAnnouncement() { this.service.createAnnouncement(this.announcementForm).subscribe(() => { this.showToast('Announcement saved', 'success'); this.loadAnnouncements(); this.cancelAnnouncement(); }); }
   editAnnouncement(i: any) { this.showAnnouncementForm = true; this.editingAnnouncementId = i.id; this.announcementForm = { ...i }; }
-  updateAnnouncement() { this.service.updateAnnouncement(this.editingAnnouncementId!, this.announcementForm).subscribe(() => { this.loadAnnouncements(); this.cancelAnnouncement(); }); }
-  deleteAnnouncement(id: number) { this.service.deleteAnnouncement(id).subscribe(() => this.loadAnnouncements()); }
+  updateAnnouncement() { this.service.updateAnnouncement(this.editingAnnouncementId!, this.announcementForm).subscribe(() => { this.showToast('Announcement updated', 'success'); this.loadAnnouncements(); this.cancelAnnouncement(); }); }
+  deleteAnnouncement(id: number) { this.service.deleteAnnouncement(id).subscribe(() => { this.showToast('Announcement deleted', 'success'); this.loadAnnouncements(); }); }
   cancelAnnouncement() { this.showAnnouncementForm = false; }
 
   /* DESIGNATIONS */
@@ -302,12 +306,12 @@ export class adminFunctionalityComponent implements OnInit {
     const payload = { name: this.designationName };
     this.service.createDesignation(payload).subscribe(
       (response) => {
-        console.log('Designation created:', response);
+        this.showToast('Designation created', 'success');
         this.getDesignations();
         this.designationName = '';
       },
       (error) => {
-        console.error('Error creating designation:', error);
+        this.showToast('Failed to create designation', 'danger');
       }
     );
   }
@@ -322,12 +326,12 @@ export class adminFunctionalityComponent implements OnInit {
     if (this.editingDesignationId) {
       this.service.updateDesignation(this.editingDesignationId, payload).subscribe(
         (response) => {
-          console.log('Designation updated:', response);
+          this.showToast('Designation updated', 'success');
           this.getDesignations();
           this.cancelDesignation();
         },
         (error) => {
-          console.error('Error updating designation:', error);
+          this.showToast('Failed to update designation', 'danger');
         }
       );
     }
@@ -336,11 +340,11 @@ export class adminFunctionalityComponent implements OnInit {
   deleteDesignation(id: number) {
     this.service.deleteDesignation(id).subscribe(
       (response) => {
-        console.log('Designation deleted:', response);
+        this.showToast('Designation deleted', 'success');
         this.getDesignations();
       },
       (error) => {
-        console.error('Error deleting designation:', error);
+        this.showToast('Failed to delete designation', 'danger');
       }
     );
   }
@@ -371,12 +375,13 @@ export class adminFunctionalityComponent implements OnInit {
     const payload = { name: this.businessUnitName };
     this.service.createBusinessUnit(payload).subscribe(
       () => {
+        this.showToast('Business unit saved', 'success');
         this.loadBusinessUnits();
         this.businessUnitName = '';
         this.cancelBusinessUnit();
       },
       (error) => {
-        console.error('Error creating business unit:', error);
+        this.showToast('Failed to save business unit', 'danger');
       }
     );
   }
@@ -391,11 +396,12 @@ export class adminFunctionalityComponent implements OnInit {
     if (this.editingBusinessUnitId) {
       this.service.updateBusinessUnit(this.editingBusinessUnitId, payload).subscribe(
         () => {
+          this.showToast('Business unit updated', 'success');
           this.loadBusinessUnits();
           this.cancelBusinessUnit();
         },
         (error) => {
-          console.error('Error updating business unit:', error);
+          this.showToast('Failed to update business unit', 'danger');
         }
       );
     }
@@ -404,10 +410,11 @@ export class adminFunctionalityComponent implements OnInit {
   deleteBusinessUnit(id: number) {
     this.service.deleteBusinessUnit(id).subscribe(
       () => {
+        this.showToast('Business unit deleted', 'success');
         this.loadBusinessUnits();
       },
       (error) => {
-        console.error('Error deleting business unit:', error);
+        this.showToast('Failed to delete business unit', 'danger');
       }
     );
   }
@@ -614,4 +621,14 @@ goToPreviousBusinessUnitPage() {
     this.updatePaginatedBusinessUnits();
   }
 }
+
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
+  }
 }
