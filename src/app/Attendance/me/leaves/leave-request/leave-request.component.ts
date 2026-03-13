@@ -7,6 +7,8 @@ import { HeaderComponent } from '../../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../../employee-header/employee-header.component';
 import { EmployeeLeavesService } from 'src/app/services/employee-leaves.service';
 import { LeaverequestService } from 'src/app/services/leaverequest.service';
+import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-leave-request',
@@ -39,10 +41,15 @@ export class LeaveRequestComponent implements OnInit {
   /** Store all leaves for date check (pending, approved, rejected) */
   existingLeaves: { from_date: string; to_date: string; status: string }[] = [];
 
+  weekOffDays: number[] = []; // 0 = Sun, 1 = Mon ...
+  highlightedDates: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private employeeLeaves: EmployeeLeavesService,
     private leaveRequestService: LeaverequestService,
+    private adminService: AdminService,
+    private employeeService: EmployeeService,
     private toastController: ToastController
   ) { }
 
@@ -51,6 +58,7 @@ export class LeaveRequestComponent implements OnInit {
     this.loadLeaveBalance();
     this.handleDateChanges();
     this.loadPendingLeaves();
+    this.loadWeeklyOffPolicy();
   }
   /** Load all leaves (pending, approved, rejected) for this employee */
   loadPendingLeaves() {
@@ -98,6 +106,46 @@ export class LeaveRequestComponent implements OnInit {
     });
   }
 
+  loadWeeklyOffPolicy() {
+    this.adminService.getWeeklyOffPolicies().subscribe(policies => {
+      this.employeeService.getMyProfile().subscribe((profile: any) => {
+        const policyId = profile.weekly_off_policy_id;
+        const policy = policies.find((p: any) => p.id === policyId);
+        if (policy) {
+          this.weekOffDays = [];
+          if (policy.sunday_off) this.weekOffDays.push(0);
+          if (policy.monday_off) this.weekOffDays.push(1);
+          if (policy.tuesday_off) this.weekOffDays.push(2);
+          if (policy.wednesday_off) this.weekOffDays.push(3);
+          if (policy.thursday_off) this.weekOffDays.push(4);
+          if (policy.friday_off) this.weekOffDays.push(5);
+          if (policy.saturday_off) this.weekOffDays.push(6);
+
+          this.generateHighlightedDates();
+        }
+      });
+    });
+  }
+
+  generateHighlightedDates() {
+    const dates = [];
+    const today = new Date();
+    // Generate for current year +/- 1 year to cover future leaves
+    const start = new Date(today.getFullYear() - 1, 0, 1);
+    const end = new Date(today.getFullYear() + 1, 11, 31);
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (this.weekOffDays.includes(d.getDay())) {
+        dates.push({
+          date: d.toISOString().split('T')[0],
+          textColor: '#ffffff',
+          backgroundColor: '#ff9800' // Orange for week-offs
+        });
+      }
+    }
+    this.highlightedDates = dates;
+  }
+
   /* ================= API ================= */
 
   loadLeaveBalance() {
@@ -132,38 +180,73 @@ export class LeaveRequestComponent implements OnInit {
       return;
     }
 
+    console.log('Validating weekend leave. WeekOffDays:', this.weekOffDays);
 
-    // Check if any date in the new request is already taken (pending, approved, or rejected)
-    const normalize = (date: any) => {
-      if (!date) return '';
-      if (typeof date === 'string' && date.length === 10) return date; // already YYYY-MM-DD
-      const d = new Date(date);
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    // Robust date parsing to avoid timezone bias
+    const parseLocalDate = (dateStr: string) => {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, m - 1, d);
     };
 
-    const newFrom = new Date(form.start_date);
-    const newTo = new Date(form.end_date);
+    const newFrom = parseLocalDate(form.start_date);
+    const newTo = parseLocalDate(form.end_date);
+    let workingDaysFound = 0;
+
+    console.log(`Checking range from ${newFrom.toDateString()} to ${newTo.toDateString()}`);
+
+    let current = new Date(newFrom);
+    while (current <= newTo) {
+      const dayOfWeek = current.getDay();
+      if (!this.weekOffDays.includes(dayOfWeek)) {
+        workingDaysFound++;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    console.log('Working days found in selection:', workingDaysFound);
+
+    if (workingDaysFound === 0) {
+      this.presentToast('Selected leave on weekend please select another dates', 'warning');
+      return;
+    }
+
+    // Check if any date in the new request is already taken (pending, approved)
+    const normalize = (date: any) => {
+      if (!date) return '';
+      if (typeof date === 'string' && date.length === 10) return date;
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     let dateConflict = false;
-    for (let d = new Date(newFrom); d <= newTo; d.setDate(d.getDate() + 1)) {
-      const dStr = normalize(d);
+    let dIter = new Date(newFrom);
+    while (dIter <= newTo) {
+      const dStr = normalize(dIter);
+      
       for (const l of this.existingLeaves) {
-        const lFrom = new Date(l.from_date);
-        const lTo = new Date(l.to_date);
-        for (let ld = new Date(lFrom); ld <= lTo; ld.setDate(ld.getDate() + 1)) {
-          const ldStr = normalize(ld);
-          // Debug log for troubleshooting
-          // console.log('Comparing', dStr, 'with', ldStr, 'status:', l.status);
-          if (dStr === ldStr) {
+        const lFrom = parseLocalDate(l.from_date);
+        const lTo = parseLocalDate(l.to_date);
+        
+        let existingIter = new Date(lFrom);
+        while (existingIter <= lTo) {
+          if (normalize(existingIter) === dStr) {
             dateConflict = true;
             break;
           }
+          existingIter.setDate(existingIter.getDate() + 1);
         }
         if (dateConflict) break;
       }
+      
       if (dateConflict) break;
+      dIter.setDate(dIter.getDate() + 1);
     }
+
     if (dateConflict) {
-      this.presentToast('A leave request already exists for at least one of these dates. Duplicate leave requests are not allowed.', 'danger');
+      this.presentToast('A leave request already exists for at least one of these dates.', 'danger');
       return;
     }
 
@@ -182,15 +265,12 @@ export class LeaveRequestComponent implements OnInit {
         this.selectedDateFrom = '';
         this.selectedDateTo = '';
         this.presentToast('Leave request submitted successfully', 'success');
-        this.leaveSubmitted.emit(); // Emit event to parent
-        this.loadPendingLeaves(); // Refresh pending leaves
+        this.leaveSubmitted.emit(); 
+        this.loadPendingLeaves(); 
       },
       error: (err) => {
-        this.presentToast(
-          err?.error?.error || 'Failed to submit leave',
-          'danger'
-        );
-        this.loadPendingLeaves(); // Always refresh leaves after error too
+        this.presentToast(err?.error?.error || 'Failed to submit leave', 'danger');
+        this.loadPendingLeaves();
       }
     });
   }
