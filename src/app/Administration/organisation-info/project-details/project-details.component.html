@@ -58,9 +58,19 @@
             </div>
         </div>      
             
-        <ion-chip [ngClass]="s.is_active ? 'success' : 'medium'">
-            {{ s.is_active ? 'Active' : 'Inactive' }}
-          </ion-chip>
+        <div class="row-space-between w-100">
+            <ion-chip [ngClass]="s.is_active ? 'success' : 'medium'">
+                {{ s.is_active ? 'Active' : 'Inactive' }}
+            </ion-chip>
+            <div class="action-buttons row-right">
+                <ion-button fill="clear" size="small" (click)="openShiftModal(s)">
+                    <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" size="small" color="danger" (click)="deleteShift(s.id)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+            </div>
+        </div>
         </ion-col>
       </ion-row>     
       </ion-grid>
@@ -74,7 +84,7 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Add Shift</ion-title>
+          <ion-title>{{ editingShiftId ? 'Edit Shift' : 'Add Shift' }}</ion-title>
           <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeShiftModal()">
               <ion-icon name="close-outline"></ion-icon>
@@ -121,7 +131,7 @@
               Cancel
             </ion-button>
             <ion-button type="submit" class="primary-btn" [disabled]="submittingShift">
-              {{ submittingShift ? 'Adding…' : 'Add Shift' }}
+              {{ submittingShift ? (editingShiftId ? 'Updating…' : 'Adding…') : (editingShiftId ? 'Update Shift' : 'Add Shift') }}
             </ion-button>
           </div>
         </form>
@@ -165,6 +175,9 @@
           <ion-col size="1">
             <p>Status</p>
           </ion-col>
+          <ion-col size="1">
+            <p>Actions</p>
+          </ion-col>
         </ion-row>
 
         <ion-row class="table-row-list" *ngFor="let a of assignments">
@@ -207,6 +220,14 @@
               {{ a.status }}
             </ion-badge>
           </ion-col>
+          <ion-col size="1" class="action-buttons">
+            <ion-button fill="clear" size="small" (click)="openAssignModal(a)">
+                <ion-icon name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" color="danger" (click)="deleteAssignment(a.id)">
+                <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
         </ion-row>
       </ion-grid>
 
@@ -221,7 +242,7 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Assign Employee</ion-title>
+          <ion-title>{{ editingAssignmentId ? 'Edit Assignment' : 'Assign Employee' }}</ion-title>
           <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeAssignModal()">
               <ion-icon name="close-outline"></ion-icon>
@@ -307,7 +328,7 @@
               Cancel
             </ion-button>
             <ion-button type="submit" class="primary-btn" [disabled]="submittingAssignment">
-              {{ submittingAssignment ? 'Assigning…' : 'Assign Employee' }}
+              {{ submittingAssignment ? (editingAssignmentId ? 'Updating…' : 'Assigning…') : (editingAssignmentId ? 'Update Assignment' : 'Assign Employee') }}
             </ion-button>
           </div>
         </form>

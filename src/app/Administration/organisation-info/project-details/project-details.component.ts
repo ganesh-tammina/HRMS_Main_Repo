@@ -41,6 +41,9 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   showAssignModal = false;
   submittingShift = false;
   submittingAssignment = false;
+  
+  editingShiftId: number | null = null;
+  editingAssignmentId: number | null = null;
 
   allEmployees: any[] = [];
   filteredEmployees: any[] = [];
@@ -143,24 +146,61 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   }
 
   /* ================= MODAL CONTROLS ================= */
-  openShiftModal(): void {
+  openShiftModal(shift?: any): void {
+    if (shift) {
+      this.editingShiftId = shift.id;
+      this.shiftForm.patchValue({
+        shift_type: shift.shift_type,
+        shift_name: shift.shift_name,
+        start_time: shift.start_time,
+        end_time: shift.end_time,
+        timezone: shift.timezone || 'UTC'
+      });
+    } else {
+      this.editingShiftId = null;
+      this.shiftForm.reset({ shift_type: 'day', timezone: 'UTC' });
+    }
     this.showShiftModal = true;
   }
 
   closeShiftModal(): void {
     this.showShiftModal = false;
+    this.editingShiftId = null;
     this.shiftForm.reset({ shift_type: 'day', timezone: 'UTC' });
   }
 
-  openAssignModal(): void {
-    this.showAssignModal = true;
-    this.searchTerm = '';
+  openAssignModal(assignment?: any): void {
+    if (assignment) {
+      this.editingAssignmentId = assignment.id;
+      this.assignForm.patchValue({
+        employee_id: assignment.employee_id,
+        role_in_project: assignment.role_in_project,
+        allocation_percentage: assignment.allocation_percentage,
+        shift_id: assignment.shift_id,
+        assignment_start_date: assignment.assignment_start_date ? assignment.assignment_start_date.split('T')[0] : '',
+        assignment_end_date: assignment.assignment_end_date ? assignment.assignment_end_date.split('T')[0] : ''
+      });
+      // Pre-select employee for UI
+      this.selectedEmployee = {
+        id: assignment.employee_id,
+        FirstName: assignment.employee_name ? assignment.employee_name.split(' ')[0] : '',
+        LastName: assignment.employee_name ? assignment.employee_name.split(' ').slice(1).join(' ') : '',
+        EmployeeNumber: ''
+      };
+      this.searchTerm = assignment.employee_name;
+    } else {
+      this.editingAssignmentId = null;
+      this.searchTerm = '';
+      this.selectedEmployee = null;
+      this.assignForm.reset({ allocation_percentage: 100 });
+    }
     this.filteredEmployees = [];
-    this.selectedEmployee = null;
+    this.showAssignModal = true;
   }
 
   closeAssignModal(): void {
     this.showAssignModal = false;
+    this.editingAssignmentId = null;
     this.searchTerm = '';
     this.filteredEmployees = [];
     this.selectedEmployee = null;
@@ -243,20 +283,51 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
     this.submittingShift = true;
 
-    this.projectService
-      .createProjectShift(this.projectId, this.shiftForm.value)
-      .subscribe({
+    if (this.editingShiftId) {
+      this.projectService
+        .updateProjectShift(this.editingShiftId, this.shiftForm.value)
+        .subscribe({
+          next: () => {
+            this.showToast('Shift updated successfully', 'success');
+            this.submittingShift = false;
+            this.closeShiftModal();
+            this.loadShifts();
+          },
+          error: () => {
+            this.showToast('Shift update failed', 'danger');
+            this.submittingShift = false;
+          }
+        });
+    } else {
+      this.projectService
+        .createProjectShift(this.projectId, this.shiftForm.value)
+        .subscribe({
+          next: () => {
+            this.showToast('Shift created successfully', 'success');
+            this.submittingShift = false;
+            this.closeShiftModal();
+            this.loadShifts();
+          },
+          error: () => {
+            this.showToast('Shift creation failed', 'danger');
+            this.submittingShift = false;
+          }
+        });
+    }
+  }
+
+  deleteShift(shiftId: number) {
+    if (confirm('Are you sure you want to delete this shift?')) {
+      this.projectService.deleteProjectShift(shiftId).subscribe({
         next: () => {
-          this.showToast('Shift created successfully', 'success');
-          this.submittingShift = false;
-          this.closeShiftModal();
+          this.showToast('Shift deleted successfully', 'success');
           this.loadShifts();
         },
         error: () => {
-          this.showToast('Shift creation failed', 'danger');
-          this.submittingShift = false;
+          this.showToast('Failed to delete shift', 'danger');
         }
       });
+    }
   }
 
   loadShifts() {
@@ -274,20 +345,51 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
     this.submittingAssignment = true;
 
-    this.projectService
-      .assignEmployee(this.projectId, this.assignForm.value)
-      .subscribe({
+    if (this.editingAssignmentId) {
+       this.projectService
+        .updateAssignment(this.editingAssignmentId, this.assignForm.value)
+        .subscribe({
+          next: () => {
+            this.showToast('Employee assignment updated successfully', 'success');
+            this.submittingAssignment = false;
+            this.closeAssignModal();
+            this.loadAssignments();
+          },
+          error: () => {
+            this.showToast('Assignment update failed', 'danger');
+            this.submittingAssignment = false;
+          }
+        });
+    } else {
+      this.projectService
+        .assignEmployee(this.projectId, this.assignForm.value)
+        .subscribe({
+          next: () => {
+            this.showToast('Employee assigned successfully', 'success');
+            this.submittingAssignment = false;
+            this.closeAssignModal();
+            this.loadAssignments();
+          },
+          error: () => {
+            this.showToast('Assignment failed', 'danger');
+            this.submittingAssignment = false;
+          }
+        });
+    }
+  }
+
+  deleteAssignment(assignmentId: number) {
+     if (confirm('Are you sure you want to remove this employee from the project?')) {
+      this.projectService.deleteAssignment(assignmentId).subscribe({
         next: () => {
-          this.showToast('Employee assigned successfully', 'success');
-          this.submittingAssignment = false;
-          this.closeAssignModal();
+          this.showToast('Employee removed successfully', 'success');
           this.loadAssignments();
         },
         error: () => {
-          this.showToast('Assignment failed', 'danger');
-          this.submittingAssignment = false;
+          this.showToast('Failed to remove employee', 'danger');
         }
       });
+    }
   }
 
   loadAssignments() {

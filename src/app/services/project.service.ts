@@ -139,10 +139,47 @@ export class ProjectService {
       { headers: this.getHeaders() }
     );
   }
+
   getProjectById(id: number): Observable<Project> {
     return this.http.get<Project>(
       `${this.BASE_URL}/${id}`,
       { headers: this.getHeaders() }
     );
+  }
+
+  /* =========================
+     UPDATE ASSIGNMENT
+  ========================= */
+  updateAssignment(assignmentId: number, payload: any): Observable<any> {
+    return this.http.put(`${this.BASE_URL}/assignments/${assignmentId}`, payload, {
+      headers: this.getHeaders()
+    });
+  }
+
+  /* =========================
+     DELETE ASSIGNMENT
+  ========================= */
+  deleteAssignment(assignmentId: number): Observable<any> {
+    return this.http.delete(`${this.BASE_URL}/assignments/${assignmentId}`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  /* =========================
+     UPDATE PROJECT SHIFT
+  ========================= */
+  updateProjectShift(shiftId: number, payload: any): Observable<any> {
+    return this.http.put(`${this.BASE_URL}/shifts/${shiftId}`, payload, {
+      headers: this.getHeaders()
+    });
+  }
+
+  /* =========================
+     DELETE PROJECT SHIFT
+  ========================= */
+  deleteProjectShift(shiftId: number): Observable<any> {
+    return this.http.delete(`${this.BASE_URL}/shifts/${shiftId}`, {
+      headers: this.getHeaders()
+    });
   }
 }
