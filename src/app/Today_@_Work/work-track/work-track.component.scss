@@ -178,6 +178,49 @@ ion-content {
   }
 }
 
+.project-selection-section {
+  padding: 0 16px;
+  margin-bottom: 20px;
+
+  .form-group {
+    margin-bottom: 12px;
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ion-color-medium);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .custom-item {
+      --background: #f8fafc;
+      --border-radius: 8px;
+      --padding-start: 12px;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:focus-within {
+        border-color: var(--ion-color-primary);
+        background: white;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+      }
+
+      ion-select {
+        width: 100%;
+        --padding-start: 0;
+      }
+
+      ion-input {
+        --padding-start: 0;
+      }
+    }
+  }
+}
+
 .date-picker-modal {
   --width: 350px;
   --height: 350px;

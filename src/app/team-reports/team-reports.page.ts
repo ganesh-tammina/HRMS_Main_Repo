@@ -21,7 +21,7 @@ import { TimesheetPreviewComponent } from '../Today_@_Work/work-track/timesheet-
 })
 export class TeamReportsPage implements OnInit {
 
-    reportType: 'timesheet' | 'leave' | 'attendance' = 'attendance';
+    reportType: 'timesheet' | 'leave' | 'attendance' | 'client-timesheet' = 'attendance';
     startDate: string = '';
     endDate: string = '';
 
@@ -81,8 +81,8 @@ export class TeamReportsPage implements OnInit {
     ngOnInit() {
         // Check for query parameter to set report type
         this.route.queryParams.subscribe(params => {
-            if (params['type'] && ['timesheet', 'leave', 'attendance'].includes(params['type'])) {
-                this.reportType = params['type'];
+            if (params['type'] && ['timesheet', 'leave', 'attendance', 'client-timesheet'].includes(params['type'])) {
+                this.reportType = params['type'] as any;
             }
         });
 
@@ -145,6 +145,8 @@ export class TeamReportsPage implements OnInit {
                 this.fetchLeaveReport();
             } else if (this.reportType === 'timesheet') {
                 this.fetchTimesheetReport();
+            } else if (this.reportType === 'client-timesheet') {
+                this.fetchClientTimesheetReport();
             }
         } catch (error) {
             console.error('Error fetching report:', error);
@@ -272,10 +274,28 @@ export class TeamReportsPage implements OnInit {
                 });
                 this.updateTimesheetStats(this.reportData);
                 this.loading = false;
+            }
+        });
+    }
+
+    private fetchClientTimesheetReport() {
+        this.loading = true;
+        // The API month is 1-12, but selectedMonth is 0-11
+        this.timesheetService.getClientTimesheetReport(this.selectedMonth + 1, this.selectedYear).subscribe({
+            next: (data: any[]) => {
+                this.reportData = (data || []).map(r => ({
+                    ...r,
+                    status: (r.validation_status || 'PENDING').toUpperCase()
+                }));
+                this.stats.total = this.reportData.length;
+                this.stats.pending = this.reportData.filter(r => r.status === 'PENDING_VALIDATION' || r.status === 'PENDING').length;
+                this.stats.approved = this.reportData.filter(r => r.status === 'VALIDATED' || r.status === 'APPROVED').length;
+                this.stats.rejected = this.reportData.filter(r => r.status === 'REJECTED').length;
+                this.loading = false;
             },
-            error: (err: any) => {
-                console.error('Timesheet Error:', err);
-                this.showToast('Error loading timesheet report', 'danger');
+            error: (err) => {
+                console.error('Client Timesheet Report Error:', err);
+                this.showToast('Error loading client timesheet report', 'danger');
                 this.loading = false;
             }
         });

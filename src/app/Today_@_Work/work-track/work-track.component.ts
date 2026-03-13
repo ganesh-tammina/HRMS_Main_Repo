@@ -157,6 +157,11 @@ export class WorkTrackComponent implements OnInit {
         this.assignments = res.assignments || [];
         this.loadingStatus = false;
 
+        // Set default project if assignments exist
+        if (this.assignments.length > 0) {
+          this.workTrackForm.patchValue({ project_id: this.assignments[0].project_id });
+        }
+
         // Initialize first row with shift timing after assignments are loaded
         this.initializeFirstTimeSlot();
 
@@ -183,7 +188,9 @@ export class WorkTrackComponent implements OnInit {
   initForm() {
     this.workTrackForm = this.fb.group({
       date: [this.today, Validators.required],
+      project_id: [null],
       hours_breakdown: this.fb.array([]),
+      work_description: [''],
       notes: [''],
     });
 
@@ -524,8 +531,8 @@ export class WorkTrackComponent implements OnInit {
 
       const projectPayload = {
         ...basePayload,
-        project_id: this.assignments?.[0]?.project_id,   // ✅ from assignment API
-        work_description: this.workTrackForm.value.notes // API expects this
+        project_id: this.workTrackForm.value.project_id || this.assignments?.[0]?.project_id,
+        work_description: this.workTrackForm.value.work_description || this.workTrackForm.value.notes 
       };
 
       this.timesheetService.submitProjectTimesheet(projectPayload).subscribe({
@@ -576,7 +583,9 @@ export class WorkTrackComponent implements OnInit {
     const formattedDate = new Date(t.date).toISOString().split('T')[0];
     this.workTrackForm.patchValue({
       date: formattedDate,
-      notes: t.work_description || t.notes || ''
+      project_id: t.project_id,
+      work_description: t.work_description || '',
+      notes: t.notes || ''
     });
 
     this.breakdowns.clear();

@@ -208,4 +208,20 @@ export class TimesheetService {
       { params }
     );
   }
+
+  /**
+   * Get aggregated client timesheet report for a month/year
+   * @param month 1-12
+   * @param year YYYY
+   */
+  getClientTimesheetReport(month: number, year: number): Observable<any[]> {
+    const params = new HttpParams()
+      .set('month', month.toString())
+      .set('year', year.toString());
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/client-timesheet-report`,
+      { params }
+    );
+  }
 }

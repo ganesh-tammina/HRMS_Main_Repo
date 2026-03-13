@@ -21,6 +21,8 @@
                 (click)="reportType = 'leave'; onReportTypeChange()">Leaves</div>
             <div class="tab" [class.active]="reportType === 'timesheet'"
                 (click)="reportType = 'timesheet'; onReportTypeChange()">Timesheets</div>
+            <div class="tab" [class.active]="reportType === 'client-timesheet'"
+                (click)="reportType = 'client-timesheet'; onReportTypeChange()">Client Timesheets</div>
         </div>
     </header>
 
@@ -240,6 +242,50 @@
                                 name="scan-outline"></ion-icon>View</div>
                         <div class="action-btn" (click)="downloadTimesheet(item)"><ion-icon
                                 name="cloud-download-outline"></ion-icon> File</div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- Client Timesheets Report -->
+            <ng-container *ngIf="reportType === 'client-timesheet'">
+                <div class="report-card client-timesheet-item" *ngFor="let item of filteredReportData">
+                    <div class="card-header">
+                        <div class="employee-meta">
+                            <img class="mini-avatar" [src]="getProfileImage(item)" />
+                            <div class="text">
+                                <h3>{{ item.FullName || (item.FirstName + ' ' + item.LastName) }}</h3>
+                                <p>{{ months[selectedMonth].name }} {{ selectedYear }}</p>
+                            </div>
+                        </div>
+                        <div class="status-pill" 
+                            [class.approved]="item.status === 'VALIDATED' || item.status === 'APPROVED'"
+                            [class.rejected]="item.status === 'REJECTED'" 
+                            [class.pending]="item.status === 'PENDING_VALIDATION' || item.status === 'PENDING'">
+                            {{ item.status === 'PENDING_VALIDATION' ? 'Validation' : (item.status | titlecase) }}
+                        </div>
+                    </div>
+                    <div class="track-details">
+                        <div class="chunk">
+                            <label>Project</label>
+                            <span>{{ item.project_name }} ({{ item.project_code }})</span>
+                        </div>
+                        <div class="chunk">
+                            <label>Internal Log</label>
+                            <span>{{ item.total_days }} Logs • {{ item.internal_total_hours }}h</span>
+                        </div>
+                        <div class="chunk">
+                            <label>Client Sheet</label>
+                            <span *ngIf="item.client_file"><ion-icon name="document-attach-outline"></ion-icon> Attached</span>
+                            <span *ngIf="!item.client_file">None</span>
+                        </div>
+                    </div>
+                    <div class="track-actions">
+                        <a *ngIf="item.client_file" [href]="'http://localhost:3000/' + item.client_file" target="_blank" class="action-btn">
+                            <ion-icon name="eye-outline"></ion-icon> View
+                        </a>
+                        <a *ngIf="item.client_file" [href]="'http://localhost:3000/' + item.client_file" [download]="item.client_file" class="action-btn">
+                            <ion-icon name="cloud-download-outline"></ion-icon> File
+                        </a>
                     </div>
                 </div>
             </ng-container>

@@ -272,6 +272,35 @@
               </ng-template>
             </ion-modal>
           </div>
+
+          <!-- Project & Work Description (For Project Employees) -->
+          <div class="project-selection-section" *ngIf="hasProject">
+            <ion-grid class="ion-no-padding">
+              <ion-row>
+                <ion-col size="12" size-md="4">
+                  <div class="form-group">
+                    <label>Assigned Project</label>
+                    <ion-item lines="none" class="custom-item">
+                      <ion-select formControlName="project_id" interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="Select Project">
+                        <ion-select-option *ngFor="let a of assignments" [value]="a.project_id">
+                          {{ a.project_name }}
+                        </ion-select-option>
+                      </ion-select>
+                    </ion-item>
+                  </div>
+                </ion-col>
+                <ion-col size="12" size-md="8">
+                  <div class="form-group">
+                    <label>Work Description</label>
+                    <ion-item lines="none" class="custom-item">
+                      <ion-input formControlName="work_description" placeholder="Summary of your work today..."></ion-input>
+                    </ion-item>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+
           <ion-grid class="table-block ion-no-padding">
             <ion-row class="table-header">
               <ion-col size="2">
@@ -338,15 +367,15 @@
 
 
           <!-- NOTES -->
-          <!-- <div class="notes-section">
+          <div class="notes-section">
             <label>
               <ion-icon name="reader-outline"></ion-icon>
               Additional Notes (Optional)
             </label>
             <ion-textarea formControlName="notes" placeholder="Add any additional context or notes about your work..."
-              rows="4">
+              rows="3">
             </ion-textarea>
-          </div> -->
+          </div>
 
 
         </form>
