@@ -37,6 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   uploadedImageUrl: string | null = null;
   profileImageUrl: string = 'assets/user.svg';
   env: string = '';
+  isAdmin: boolean = false;
 
   private destroy$ = new Subject<void>();
 
@@ -60,6 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
+    this.isAdmin = this.routeGuardService.userRole?.toLowerCase() === 'admin';
 
     // Listen for general profile image changes (e.g. from candidate service)
     this.candidateService.profileImage$

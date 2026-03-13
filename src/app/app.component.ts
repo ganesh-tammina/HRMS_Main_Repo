@@ -82,7 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
             if (!introSeen) {
               localStorage.setItem('introSeen', 'true');
             }
-          }, 1000);
+          }, 5000);
         } else {
           this.showIntro = false;
         }
@@ -106,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateRoleInfo();
-    
+
     // Only fetch announcements if user is logged in and not on login page
     if (this.routeGaurdService.isLoggedIn && !this.isLoginPage) {
       this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));

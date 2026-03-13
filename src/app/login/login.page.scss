@@ -84,6 +84,48 @@ $error-red: #ef4444;
   justify-content: flex-end;
 }
 
+// --- Flip Animation Setup ---
+.flip-container {
+  perspective: 1500px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.flipper {
+  width: 100%;
+  position: relative;
+  transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+  display: grid;
+  // This ensures the container takes the height of the tallest face.
+  grid-template-columns: 100%;
+}
+
+.flip-container.is-flipped .flipper {
+  transform: rotateY(180deg);
+}
+
+.front-face, .back-face {
+  backface-visibility: hidden;
+  width: 100%;
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.front-face {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.back-face {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+// ----------------
+
 .login-glass-card {
   width: 100%;
   max-width: 440px;
@@ -94,10 +136,10 @@ $error-red: #ef4444;
   border: 1px solid $glass-border;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   padding: 48px;
+  
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   &:hover {
-    transform: translateY(-5px);
     box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
   }
 }
