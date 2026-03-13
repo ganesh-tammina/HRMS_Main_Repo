@@ -239,10 +239,38 @@
       <ion-card-content>
         <form [formGroup]="workTrackForm">
           <div class="date-selector">
-            <label>
-              Select Date
-            </label>
-            <ion-input type="date" formControlName="date" [max]="today"></ion-input>
+            <label>Select Date</label>
+            <div class="date-picker-input" id="open-date-modal">
+              <ion-icon name="calendar-outline" color="primary"></ion-icon>
+              <span>{{ workTrackForm.get('date')?.value | date:'mediumDate' }}</span>
+              <ion-icon name="chevron-down-outline" slot="end" class="chevron"></ion-icon>
+            </div>
+            
+            <!-- Status Display (Leave/Week Off) -->
+            <div class="date-status-msg" *ngIf="selectedDateStatus">
+              <span [class.leave]="selectedDateStatus.includes('Leave')" 
+                    [class.weekoff]="selectedDateStatus.includes('Off')"
+                    [title]="selectedDateStatus">
+                {{ selectedDateStatus }}
+              </span>
+            </div>
+
+            <!-- Date Modal -->
+            <ion-modal trigger="open-date-modal" class="date-picker-modal">
+              <ng-template>
+                <ion-content>
+                  <ion-datetime
+                    #datetime
+                    presentation="date"
+                    [max]="today"
+                    [highlightedDates]="highlightedDates"
+                    [value]="workTrackForm.get('date')?.value"
+                    (ionChange)="onDateChange($event)">
+                    <div slot="title">Select Work Date</div>
+                  </ion-datetime>
+                </ion-content>
+              </ng-template>
+            </ion-modal>
           </div>
           <ion-grid class="table-block ion-no-padding">
             <ion-row class="table-header">

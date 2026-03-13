@@ -120,6 +120,73 @@ ion-content {
     max-width: 200px;
     font-weight: 500;
   }
+
+  .date-picker-input {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    min-width: 180px;
+    gap: 10px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--ion-color-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    span {
+      flex: 1;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+      font-size: 14px;
+    }
+
+    .chevron {
+      font-size: 16px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .date-status-msg {
+    margin-left: auto;
+    
+    span {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      &.leave {
+        background: #f3e8ff;
+        color: #7c3aed;
+        border: 1px solid #d8b4fe;
+      }
+
+      &.weekoff {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+      }
+    }
+  }
+}
+
+.date-picker-modal {
+  --width: 350px;
+  --height: 350px;
+  --border-radius: 16px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+
+  ion-datetime {
+    border-radius: 16px;
+  }
 }
 
 /* TABS */

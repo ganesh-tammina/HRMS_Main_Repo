@@ -12,10 +12,15 @@ import {
   IonicModule,
   ToastController,
   ModalController,
+  PopoverController,
 } from '@ionic/angular';
 
 import { TimesheetService } from 'src/app/services/timesheets.service';
 import { TimesheetPreviewComponent } from './timesheet-preview.component';
+import { LeaverequestService, MyLeave } from 'src/app/services/leaverequest.service';
+import { EmployeeService } from 'src/app/services/employee.service';
+import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly-off-policy.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-work-track',
@@ -108,17 +113,28 @@ export class WorkTrackComponent implements OnInit {
   assignments: any[] = [];
   timesheetType: 'regular' | 'project' = 'regular'; // fallback default
 
+  /* ================= ATTENDANCE / LEAVE INFO ================= */
+  highlightedDates: any[] = [];
+  leaveTooltipMap: Map<string, string> = new Map();
+  weekOffsMap: Set<string> = new Set();
+  selectedDateStatus: string = '';
+  private attendanceSub!: Subscription;
+
   constructor(
     private fb: FormBuilder,
     private timesheetService: TimesheetService,
     private toastCtrl: ToastController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private leaveService: LeaverequestService,
+    private employeeService: EmployeeService,
+    private weeklyOffService: WeeklyOffPolicyService
   ) { }
 
   ngOnInit() {
     this.initForm();
     this.initializeYears();
-    this.checkAssignmentOrFallback(); // ✅ NEW - this will call loadMyTimesheets() after assignment is loaded
+    this.checkAssignmentOrFallback(); 
+    this.loadAttendanceInfo();
   }
 
   initializeYears() {
@@ -204,6 +220,150 @@ export class WorkTrackComponent implements OnInit {
         hours: [1, [Validators.required, Validators.min(0.5)]],
       })
     );
+  }
+
+  /* ================= ATTENDANCE INFO LOAD ================= */
+
+  loadAttendanceInfo() {
+    const currentYear = new Date().getFullYear();
+    
+    // 1. Load Leaves
+    this.leaveService.getMyLeaves(currentYear).subscribe({
+      next: (leaves: MyLeave[]) => {
+        const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
+        approvedLeaves.forEach(leave => {
+          const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
+          const from = new Date(leave.start_date || leave.from_date || '');
+          const to = new Date(leave.end_date || leave.to_date || leave.start_date || leave.from_date || '');
+          
+          if (from.getTime()) {
+            let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+            const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+            while (d <= end) {
+              const dateStr = this.formatDate(d);
+              this.leaveTooltipMap.set(dateStr, leaveType);
+              d.setDate(d.getDate() + 1);
+            }
+          }
+        });
+        this.updateHighlightedDates();
+        this.checkSelectedDateStatus(this.workTrackForm.get('date')?.value);
+      }
+    });
+
+    // 2. Load Week Offs via Profile -> Policy
+    this.employeeService.getMyProfile().subscribe({
+      next: (profile) => {
+        const policyId = profile?.weekly_off_policy_id;
+        if (policyId) {
+          this.weeklyOffService.getWeeklyOffPolicies().subscribe({
+            next: (policies) => {
+              const policy = policies.find(p => p.id === policyId);
+              if (policy) {
+                this.mapWeekOffs(policy);
+                this.updateHighlightedDates();
+                this.checkSelectedDateStatus(this.workTrackForm.get('date')?.value);
+              }
+            }
+          });
+        }
+      }
+    });
+
+    // Listen to form value changes
+    this.workTrackForm.get('date')?.valueChanges.subscribe(val => {
+      this.checkSelectedDateStatus(val);
+    });
+  }
+
+  mapWeekOffs(policy: WeeklyOffPolicy) {
+    this.weekOffsMap.clear();
+    const offDays: number[] = [];
+    if (policy.sunday_off) { this.weekOffsMap.add('0'); offDays.push(0); }
+    if (policy.monday_off) { this.weekOffsMap.add('1'); offDays.push(1); }
+    if (policy.tuesday_off) { this.weekOffsMap.add('2'); offDays.push(2); }
+    if (policy.wednesday_off) { this.weekOffsMap.add('3'); offDays.push(3); }
+    if (policy.thursday_off) { this.weekOffsMap.add('4'); offDays.push(4); }
+    if (policy.friday_off) { this.weekOffsMap.add('5'); offDays.push(5); }
+    if (policy.saturday_off) { this.weekOffsMap.add('6'); offDays.push(6); }
+
+    // Generate specific week-off dates for the current year to highlight in calendar
+    const currentYear = new Date().getFullYear();
+    const startDate = new Date(currentYear, 0, 1);
+    const endDate = new Date(currentYear, 11, 31);
+    
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      if (offDays.includes(d.getDay())) {
+        // This is a week off
+        // We don't need to store all in weekOffsMap, just for highlighting
+      }
+    }
+  }
+
+  updateHighlightedDates() {
+    const highlights: any[] = [];
+    
+    // 1. Add Leaves (Purple)
+    this.leaveTooltipMap.forEach((type, dateStr) => {
+      highlights.push({
+        date: dateStr,
+        textColor: '#ffffff',
+        backgroundColor: '#b39ddb'
+      });
+    });
+
+    // 2. Add Week Offs (Gray/Blue) - for the current month roughly
+    // To keep it simple and performant, we only highlight weekoffs 
+    // for a 6-month window around today
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+    
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const day = d.getDay().toString();
+      const dateStr = this.formatDate(d);
+      
+      // Only highlight if it's NOT already a leave
+      if (this.weekOffsMap.has(day) && !this.leaveTooltipMap.has(dateStr)) {
+        highlights.push({
+          date: dateStr,
+          textColor: '#475569',
+          backgroundColor: '#f1f5f9'
+        });
+      }
+    }
+    
+    this.highlightedDates = highlights;
+  }
+
+  checkSelectedDateStatus(dateStr: string) {
+    if (!dateStr) {
+      this.selectedDateStatus = '';
+      return;
+    }
+
+    const leave = this.leaveTooltipMap.get(dateStr);
+    if (leave) {
+      this.selectedDateStatus = `🏖️ On Leave: ${leave}`;
+      return;
+    }
+
+    const day = new Date(dateStr).getDay().toString();
+    if (this.weekOffsMap.has(day)) {
+      this.selectedDateStatus = `🏠 Weekly Off`;
+      return;
+    }
+
+    this.selectedDateStatus = '';
+  }
+
+  onDateChange(event: any) {
+    const date = event.detail.value;
+    if (date) {
+      const formatted = date.split('T')[0];
+      this.workTrackForm.get('date')?.setValue(formatted);
+    }
+    this.modalCtrl.dismiss();
   }
 
   /* Generate time slot from start time (e.g., "09:00" -> "09:00-10:00") */
@@ -603,7 +763,10 @@ export class WorkTrackComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   async showToast(msg: string) {
