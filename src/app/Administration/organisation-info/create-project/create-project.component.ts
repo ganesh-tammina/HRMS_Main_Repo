@@ -128,6 +128,7 @@ export class CreateProjectComponent implements OnInit {
   }
 
   openEditForm(project: Project): void {
+    console.log('Opening edit form for project:', project);
     this.isEditMode = true;
     this.selectedProjectId = project.id || null;
 
@@ -144,13 +145,32 @@ export class CreateProjectComponent implements OnInit {
       project_code: project.project_code,
       project_name: project.project_name,
       client_name: project.client_name,
-      start_date: project.start_date,
-      end_date: project.end_date,
+      start_date: this.formatDateForInput(project.start_date),
+      end_date: this.formatDateForInput(project.end_date),
       status: project.status,
       description: project.description,
       project_manager_id: project.project_manager_id
     });
     this.showCreateForm = true;
+  }
+
+  private formatDateForInput(date: any): string {
+    if (!date) return '';
+    
+    // If it's already a string starting with YYYY-MM-DD, just take that part
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}/.test(date)) {
+      return date.substring(0, 10);
+    }
+    
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    
+    // Use UTC methods to avoid local timezone shifts for DATE values coming from MySQL
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   }
 
   navigateToDetails(project: Project): void {
