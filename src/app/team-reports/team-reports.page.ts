@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController, ModalController } from '@ionic/angular';
 import { forkJoin, of } from 'rxjs';
@@ -70,7 +70,8 @@ export class TeamReportsPage implements OnInit {
         private leaveRequestService: LeaverequestService,
         private toastCtrl: ToastController,
         private loadingCtrl: LoadingController,
-        private modalCtrl: ModalController
+        private modalCtrl: ModalController,
+        private location: Location
     ) {
         const currentYear = new Date().getFullYear();
         for (let i = 0; i < 5; i++) {
@@ -119,6 +120,10 @@ export class TeamReportsPage implements OnInit {
 
     setFilter(status: string) {
         this.statusFilter = status;
+    }
+
+    goBack() {
+        this.location.back();
     }
 
     get filteredReportData() {
