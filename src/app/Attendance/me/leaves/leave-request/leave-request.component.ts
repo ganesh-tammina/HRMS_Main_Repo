@@ -116,12 +116,7 @@ export class LeaveRequestComponent implements OnInit {
           current.setDate(current.getDate() + 1);
         }
         
-        // If they pick any weekend, we set total_days to 0 to trigger validation
-        if (hasWeekOff) {
-          this.total_days = 0;
-        } else {
-          this.total_days = workingDays;
-        }
+        this.total_days = workingDays;
       } else {
         this.total_days = 0;
       }
@@ -230,35 +225,12 @@ export class LeaveRequestComponent implements OnInit {
       return;
     }
 
-    console.log('Validating weekend leave. WeekOffDays:', this.weekOffDays);
-
-    // Robust date parsing to avoid timezone bias
+    // Weekend block removed as per new requirement: 
+    // "employee can apply leaves on week ends also but in leave balance we will reduce only working days only"
     const newFrom = this.parseLocalDate(form.start_date);
     const newTo = this.parseLocalDate(form.end_date);
-    let workingDaysFound = 0;
-
-    console.log(`Checking range from ${newFrom.toDateString()} to ${newTo.toDateString()}`);
-
-    let current = new Date(newFrom);
-    while (current <= newTo) {
-      const dayOfWeek = current.getDay();
-      if (!this.weekOffDays.includes(dayOfWeek)) {
-        workingDaysFound++;
-      }
-      current.setDate(current.getDate() + 1);
-    }
-
-    console.log('Working days found in selection:', workingDaysFound);
-
-    // Final safety check for any weekend day in selection
-    let checkDay = new Date(newFrom);
-    while (checkDay <= newTo) {
-      if (this.weekOffDays.includes(checkDay.getDay())) {
-        this.presentToast('slectes dates are week off please check the dates', 'warning');
-        return;
-      }
-      checkDay.setDate(checkDay.getDate() + 1);
-    }
+    
+    console.log('Final working days to be deducted:', this.total_days);
 
     // Check if any date in the new request is already taken (pending, approved)
     const normalize = (date: any) => {

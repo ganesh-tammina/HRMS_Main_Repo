@@ -24,6 +24,8 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
 import { Router } from '@angular/router';
+import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-leaves',
@@ -65,6 +67,7 @@ export class LeavesComponent implements OnInit, OnDestroy {
   /** FORM */
   leaveForm!: FormGroup;
   total_days = 0;
+  weekOffDays: number[] = []; // Sunday=0, Monday=1...
 
   /** TEXTAREA */
   wordsCount = 0;
@@ -80,7 +83,9 @@ export class LeavesComponent implements OnInit, OnDestroy {
     private employeeLeaves: EmployeeLeavesService,
     private leaveRequestService: LeaverequestService,
     private toastCtrl: ToastController,
-    private router: Router
+    private router: Router,
+    private adminService: AdminService,
+    private employeeService: EmployeeService
   ) { }
 
   /* ===================== INIT ===================== */
@@ -90,8 +95,8 @@ export class LeavesComponent implements OnInit, OnDestroy {
     this.loadLeaveRequests();
     this.watchDateChanges();
     this.getallLeaves();
-    this.setCurrentMonthFirstDate(); // ✅ ADD THIS
-
+    this.setCurrentMonthFirstDate(); 
+    this.loadWeeklyOffPolicy();
   }
   getallLeaves() {
     this.leaveRequestService.getMyLeaves(this.currentYear).subscribe({
@@ -135,18 +140,62 @@ export class LeavesComponent implements OnInit, OnDestroy {
   recalculateTotalDays() {
     const val = this.leaveForm.value;
     if (val.start_date && val.end_date) {
-      const start = new Date(val.start_date);
-      const end = new Date(val.end_date);
+      const start = this.parseLocalDate(val.start_date);
+      const end = this.parseLocalDate(val.end_date);
 
-      if (end >= start) {
-        const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-        this.total_days = Math.floor(diff) + 1;
+      if (start && end && end >= start && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
+        let workingDays = 0;
+        let current = new Date(start);
+        while (current <= end) {
+          if (!this.weekOffDays.includes(current.getDay())) {
+            workingDays++;
+          }
+          current.setDate(current.getDate() + 1);
+        }
+        this.total_days = workingDays;
       } else {
         this.total_days = 0;
       }
     } else {
       this.total_days = 0;
     }
+  }
+
+  private parseLocalDate(dateStr: string): Date {
+    if (!dateStr) return new Date(NaN);
+    const cleanDate = dateStr.substring(0, 10);
+    const parts = cleanDate.split('-');
+    if (parts.length !== 3) return new Date(NaN);
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    const d = parseInt(parts[2], 10);
+    return new Date(y, m - 1, d);
+  }
+
+  loadWeeklyOffPolicy() {
+    this.adminService.getWeeklyOffPolicies().subscribe(policies => {
+      this.employeeService.getMyProfile().subscribe({
+        next: (profile: any) => {
+          const policyId = profile.weekly_off_policy_id;
+          const policy = policies.find((p: any) => p.id === policyId);
+          if (policy) {
+            this.weekOffDays = [];
+            if (policy.sunday_off) this.weekOffDays.push(0);
+            if (policy.monday_off) this.weekOffDays.push(1);
+            if (policy.tuesday_off) this.weekOffDays.push(2);
+            if (policy.wednesday_off) this.weekOffDays.push(3);
+            if (policy.thursday_off) this.weekOffDays.push(4);
+            if (policy.friday_off) this.weekOffDays.push(5);
+            if (policy.saturday_off) this.weekOffDays.push(6);
+            this.recalculateTotalDays();
+          }
+        },
+        error: () => {
+          this.weekOffDays = [0]; // fallback
+          this.recalculateTotalDays();
+        }
+      });
+    });
   }
 
   /* ===================== LEAVE BALANCE ===================== */
