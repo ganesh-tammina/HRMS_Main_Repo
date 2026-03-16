@@ -26,7 +26,7 @@
         </div>
         <ion-popover #fromPopover trigger="from-input" class="premium-popover" triggerAction="click">
           <ng-template>
-            <ion-datetime (ionChange)="onDateChangeFrom($event, fromPopover)"
+            <ion-datetime (ionChange)="onDateChangeFrom($event, fromPopover)" [isDateEnabled]="isDateEnabled"
               [highlightedDates]="highlightedDates" presentation="date"></ion-datetime>
             <div class="datetime-footer">
               <span class="highlight-orange"></span> Orange dates are Week Offs
@@ -44,7 +44,7 @@
         </div>
         <ion-popover #toPopover trigger="to-input" class="premium-popover" triggerAction="click">
           <ng-template>
-            <ion-datetime [min]="leaveForm.value.start_date" (ionChange)="onDateChangeTo($event, toPopover)"
+            <ion-datetime [min]="leaveForm.value.start_date" (ionChange)="onDateChangeTo($event, toPopover)" [isDateEnabled]="isDateEnabled"
               [highlightedDates]="highlightedDates" presentation="date"></ion-datetime>
             <div class="datetime-footer">
               <span class="highlight-orange"></span> Orange dates are Week Offs

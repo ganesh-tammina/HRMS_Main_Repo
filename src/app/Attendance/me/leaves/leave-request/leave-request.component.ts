@@ -127,14 +127,22 @@ export class LeaveRequestComponent implements OnInit {
 
   private parseLocalDate(dateStr: string): Date {
     if (!dateStr) return new Date(NaN);
-    // Take YYYY-MM-DD from the start of the string
+    // Take YYYY-MM-DD from the start to avoid any time components
     const cleanDate = dateStr.substring(0, 10);
     const parts = cleanDate.split('-');
     if (parts.length !== 3) return new Date(NaN);
     const y = parseInt(parts[0], 10);
     const m = parseInt(parts[1], 10);
     const d = parseInt(parts[2], 10);
+    // Creating date with year, monthIndex, day (Local time)
     return new Date(y, m - 1, d);
+  }
+
+  private formatLocalDate(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   loadWeeklyOffPolicy() {
@@ -145,13 +153,16 @@ export class LeaveRequestComponent implements OnInit {
           const policy = policies.find((p: any) => p.id === policyId);
           if (policy) {
             this.weekOffDays = [];
-            if (policy.sunday_off) this.weekOffDays.push(0);
-            if (policy.monday_off) this.weekOffDays.push(1);
-            if (policy.tuesday_off) this.weekOffDays.push(2);
-            if (policy.wednesday_off) this.weekOffDays.push(3);
-            if (policy.thursday_off) this.weekOffDays.push(4);
-            if (policy.friday_off) this.weekOffDays.push(5);
-            if (policy.saturday_off) this.weekOffDays.push(6);
+            // Handle truthy values strictly (1, true, "1")
+            if (Number(policy.sunday_off) === 1) this.weekOffDays.push(0);
+            if (Number(policy.monday_off) === 1) this.weekOffDays.push(1);
+            if (Number(policy.tuesday_off) === 1) this.weekOffDays.push(2);
+            if (Number(policy.wednesday_off) === 1) this.weekOffDays.push(3);
+            if (Number(policy.thursday_off) === 1) this.weekOffDays.push(4);
+            if (Number(policy.friday_off) === 1) this.weekOffDays.push(5);
+            if (Number(policy.saturday_off) === 1) this.weekOffDays.push(6);
+
+            console.log('✅ Loaded WeekOffDays:', this.weekOffDays);
 
             this.generateHighlightedDates();
             this.recalculateTotalDays(); // Recalculate once policy is known
@@ -177,7 +188,7 @@ export class LeaveRequestComponent implements OnInit {
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       if (this.weekOffDays.includes(d.getDay())) {
         dates.push({
-          date: d.toISOString().split('T')[0],
+          date: this.formatLocalDate(d),
           textColor: '#ffffff',
           backgroundColor: '#ff9800' // Orange for week-offs
         });
@@ -185,6 +196,16 @@ export class LeaveRequestComponent implements OnInit {
     }
     this.highlightedDates = dates;
   }
+
+  isDateEnabled = (dateString: string) => {
+    const date = this.parseLocalDate(dateString);
+    if (isNaN(date.getTime())) return true;
+    
+    // Disable if it's in our weekOffDays array
+    return !this.weekOffDays.includes(date.getDay());
+  };
+
+
 
   /* ================= API ================= */
 
