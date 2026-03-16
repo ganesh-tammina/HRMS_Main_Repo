@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -40,7 +41,8 @@ import { Router } from '@angular/router';
     BaseChartDirective
   ]
 })
-export class LeavesComponent implements OnInit {
+export class LeavesComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   currentYear = new Date().getFullYear();
 
   /** UI STATE */
@@ -123,21 +125,28 @@ export class LeavesComponent implements OnInit {
   }
 
   watchDateChanges() {
-    this.leaveForm.valueChanges.subscribe(val => {
-      if (val.start_date && val.end_date) {
-        const start = new Date(val.start_date);
-        const end = new Date(val.end_date);
+    this.leaveForm.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.recalculateTotalDays();
+      });
+  }
 
-        if (end >= start) {
-          const diff =
-            (end.getTime() - start.getTime()) /
-            (1000 * 60 * 60 * 24);
-          this.total_days = diff + 1;
-        } else {
-          this.total_days = 0;
-        }
+  recalculateTotalDays() {
+    const val = this.leaveForm.value;
+    if (val.start_date && val.end_date) {
+      const start = new Date(val.start_date);
+      const end = new Date(val.end_date);
+
+      if (end >= start) {
+        const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+        this.total_days = Math.floor(diff) + 1;
+      } else {
+        this.total_days = 0;
       }
-    });
+    } else {
+      this.total_days = 0;
+    }
   }
 
   /* ===================== LEAVE BALANCE ===================== */
@@ -336,5 +345,9 @@ export class LeavesComponent implements OnInit {
       month: 'short',
       day: 'numeric'
     });
+  }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

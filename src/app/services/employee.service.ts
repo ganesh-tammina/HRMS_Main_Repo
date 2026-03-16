@@ -107,8 +107,8 @@ export class EmployeeService {
       return of(null);
     }
 
-    // Return cached observable if already initialized and not forced
-    if (!force && this.profileInitialized && this.profile$) {
+    // Return cached observable if already exists and not forced
+    if (!force && this.profile$) {
       return this.profile$;
     }
 

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, forkJoin, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -20,7 +21,6 @@ import { TimesheetPreviewComponent } from './timesheet-preview.component';
 import { LeaverequestService, MyLeave } from 'src/app/services/leaverequest.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { WeeklyOffPolicyService, WeeklyOffPolicy } from 'src/app/services/weekly-off-policy.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-work-track',
@@ -29,7 +29,8 @@ import { Subscription } from 'rxjs';
   templateUrl: './work-track.component.html',
   styleUrls: ['./work-track.component.scss'],
 })
-export class WorkTrackComponent implements OnInit {
+export class WorkTrackComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // Client timesheet upload state
   clientUploadFile: File | null = null;
   clientUploadMonth: number = new Date().getMonth() + 1;
@@ -118,7 +119,6 @@ export class WorkTrackComponent implements OnInit {
   leaveTooltipMap: Map<string, string> = new Map();
   weekOffsMap: Set<string> = new Set();
   selectedDateStatus: string = '';
-  private attendanceSub!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -133,8 +133,83 @@ export class WorkTrackComponent implements OnInit {
   ngOnInit() {
     this.initForm();
     this.initializeYears();
-    this.checkAssignmentOrFallback(); 
-    this.loadAttendanceInfo();
+    this.loadAllData();
+  }
+  
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+  
+  loadAllData() {
+    const currentYear = new Date().getFullYear();
+    this.loadingStatus = true;
+    
+    forkJoin({
+      assignment: this.timesheetService.getAssignmentStatus(),
+      leaves: this.leaveService.getMyLeaves(currentYear),
+      profile: this.employeeService.getMyProfile(),
+      policies: this.weeklyOffService.getWeeklyOffPolicies()
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        // Assignment Logic
+        this.hasProject = res.assignment.has_project;
+        this.timesheetType = res.assignment.timesheet_type;
+        this.assignments = res.assignment.assignments || [];
+        this.loadingStatus = false;
+        
+        if (this.assignments.length > 0) {
+          this.workTrackForm.patchValue({ project_id: this.assignments[0].project_id });
+        }
+        
+        this.initializeFirstTimeSlot();
+        this.loadMyTimesheets();
+        
+        // Leaves Logic
+        this.processLeaves(res.leaves);
+        
+        // Week off Logic
+        const policyId = res.profile?.weekly_off_policy_id;
+        const policy = res.policies.find((p: any) => p.id === policyId);
+        if (policy) {
+          this.mapWeekOffs(policy);
+        }
+        
+        this.updateHighlightedDates();
+        this.checkSelectedDateStatus(this.workTrackForm.get('date')?.value);
+      },
+      error: () => {
+        this.loadingStatus = false;
+        this.initializeFirstTimeSlot();
+        this.loadMyTimesheets();
+      }
+    });
+
+    // Listen to form value changes
+    this.workTrackForm.get('date')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(val => {
+        this.checkSelectedDateStatus(val);
+      });
+  }
+
+  processLeaves(leaves: MyLeave[]) {
+    const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
+    approvedLeaves.forEach(leave => {
+      const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
+      const fromRaw = leave.start_date || leave.from_date;
+      const toRaw = leave.end_date || leave.to_date || fromRaw;
+      if (!fromRaw) return;
+      
+      const from = new Date(fromRaw);
+      const to = new Date(toRaw || fromRaw);
+      let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+      while (d <= end) {
+        this.leaveTooltipMap.set(this.formatDate(d), leaveType);
+        d.setDate(d.getDate() + 1);
+      }
+    });
   }
 
   initializeYears() {
@@ -142,45 +217,6 @@ export class WorkTrackComponent implements OnInit {
     for (let i = currentYear; i >= currentYear - 5; i--) {
       this.years.push(i);
     }
-  }
-
-  /* ================= ASSIGNMENT CHECK ================= */
-
-  checkAssignmentOrFallback() {
-    this.loadingStatus = true;
-
-    this.timesheetService.getAssignmentStatus().subscribe({
-      next: (res: any) => {
-        console.log('Assignment API Output 👉', res);
-        this.hasProject = res.has_project;
-        this.timesheetType = res.timesheet_type;
-        this.assignments = res.assignments || [];
-        this.loadingStatus = false;
-
-        // Set default project if assignments exist
-        if (this.assignments.length > 0) {
-          this.workTrackForm.patchValue({ project_id: this.assignments[0].project_id });
-        }
-
-        // Initialize first row with shift timing after assignments are loaded
-        this.initializeFirstTimeSlot();
-
-        // Load timesheets after assignment status is determined
-        this.loadMyTimesheets();
-      },
-      error: () => {
-        // ✅ FALLBACK TO REGULAR
-        this.hasProject = false;
-        this.timesheetType = 'regular';
-        this.loadingStatus = false;
-
-        // Initialize with default timing for regular employees
-        this.initializeFirstTimeSlot();
-
-        // Load timesheets after assignment status is determined
-        this.loadMyTimesheets();
-      }
-    });
   }
 
   /* ================= FORM ================= */
@@ -193,8 +229,6 @@ export class WorkTrackComponent implements OnInit {
       work_description: [''],
       notes: [''],
     });
-
-    // Don't add row here - will be added after getting shift info
   }
 
   get breakdowns(): FormArray {
@@ -208,7 +242,7 @@ export class WorkTrackComponent implements OnInit {
 
     let firstTimeSlot = '';
 
-    if (this.hasProject && this.assignments.length > 0) {
+    if (this.hasProject && (this.assignments?.length || 0) > 0) {
       // For project-based employees, use project shift timing
       const assignment = this.assignments[0];
       if (assignment.start_time) {
@@ -229,59 +263,7 @@ export class WorkTrackComponent implements OnInit {
     );
   }
 
-  /* ================= ATTENDANCE INFO LOAD ================= */
 
-  loadAttendanceInfo() {
-    const currentYear = new Date().getFullYear();
-    
-    // 1. Load Leaves
-    this.leaveService.getMyLeaves(currentYear).subscribe({
-      next: (leaves: MyLeave[]) => {
-        const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
-        approvedLeaves.forEach(leave => {
-          const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
-          const from = new Date(leave.start_date || leave.from_date || '');
-          const to = new Date(leave.end_date || leave.to_date || leave.start_date || leave.from_date || '');
-          
-          if (from.getTime()) {
-            let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-            const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
-            while (d <= end) {
-              const dateStr = this.formatDate(d);
-              this.leaveTooltipMap.set(dateStr, leaveType);
-              d.setDate(d.getDate() + 1);
-            }
-          }
-        });
-        this.updateHighlightedDates();
-        this.checkSelectedDateStatus(this.workTrackForm.get('date')?.value);
-      }
-    });
-
-    // 2. Load Week Offs via Profile -> Policy
-    this.employeeService.getMyProfile().subscribe({
-      next: (profile) => {
-        const policyId = profile?.weekly_off_policy_id;
-        if (policyId) {
-          this.weeklyOffService.getWeeklyOffPolicies().subscribe({
-            next: (policies) => {
-              const policy = policies.find(p => p.id === policyId);
-              if (policy) {
-                this.mapWeekOffs(policy);
-                this.updateHighlightedDates();
-                this.checkSelectedDateStatus(this.workTrackForm.get('date')?.value);
-              }
-            }
-          });
-        }
-      }
-    });
-
-    // Listen to form value changes
-    this.workTrackForm.get('date')?.valueChanges.subscribe(val => {
-      this.checkSelectedDateStatus(val);
-    });
-  }
 
   mapWeekOffs(policy: WeeklyOffPolicy) {
     this.weekOffsMap.clear();

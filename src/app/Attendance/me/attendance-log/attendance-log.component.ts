@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Subject, forkJoin, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { takeUntil, catchError } from 'rxjs/operators';
 
 import { AttendanceService } from 'src/app/services/attendance.service';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
@@ -47,8 +47,9 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   todayPunches: any[] = [];
 
   /* ================= INTERNAL ================= */
+  private destroy$ = new Subject<void>();
+  private reloadInProgress = false;
   private refreshInterval: any;
-  private routeSub!: Subscription;
   leaveDaysMap: Map<string, string> = new Map(); // date string -> leave type
 
 
@@ -103,6 +104,15 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
+
+    // Also initialize dates if missing
+    if (!this.startDate || !this.endDate) {
+      const now = new Date();
+      this.currentMonth = now.getMonth() + 1;
+      this.currentYear = now.getFullYear();
+      this.startDate = `${this.currentYear}-${String(this.currentMonth).padStart(2, '0')}-01`;
+      this.endDate = this.formatDateOnly(new Date(this.currentYear, this.currentMonth, 0));
+    }
   }
 
   /* =================================================
@@ -110,14 +120,7 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
    * Reload data every time route becomes active
    * ================================================= */
   ngOnInit(): void {
-    // Only subscribe ONCE
-    if (!this.routeSub) {
-      this.routeSub = this.router.events
-        .pipe(filter(event => event instanceof NavigationEnd))
-        .subscribe(() => {
-          this.reloadAttendance();
-        });
-    }
+    this.reloadAttendance();
   }
 
   ionViewWillEnter(): void {
@@ -126,9 +129,8 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
@@ -166,125 +168,71 @@ export class AttendanceLogComponent implements OnInit, OnDestroy, OnChanges {
   /* ================= CORE RELOAD ================= */
 
   private reloadAttendance(): void {
-    console.log('🔄 Reloading attendance data');
+    if (this.reloadInProgress) return;
+    this.reloadInProgress = true;
+    
+    console.log('🔄 Reloading attendance data (Optimized)');
     this.resetState();
-    // 1. Fetch employee profile
-    this.employeeService.getMyProfile().subscribe({
-      next: (profile) => {
-        this.employeeProfile = profile;
-        const weeklyOffPolicyId = profile?.weekly_off_policy_id;
-        if (weeklyOffPolicyId) {
-          // 2. Fetch weekly off policy
-          this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe({
-            next: (policies) => {
-              this.weeklyOffPolicy = policies.find(p => p.id === weeklyOffPolicyId) || null;
-              this.loadShiftPolicyAndProceed(profile?.shift_policy_id);
-            },
-            error: () => {
-              this.weeklyOffPolicy = null;
-              this.loadShiftPolicyAndProceed(profile?.shift_policy_id);
-            }
-          });
-        } else {
-          this.weeklyOffPolicy = null;
-          this.loadShiftPolicyAndProceed(profile?.shift_policy_id);
-        }
-      },
-      error: () => {
-        this.employeeProfile = null;
-        this.weeklyOffPolicy = null;
-        this.loadShiftPolicyAndProceed(null);
-      }
-    });
-    this.loadTodayAttendance();
-  }
+    
+    const profile$ = this.employeeService.getMyProfile().pipe(catchError(() => of(null)));
+    const policies$ = this.weeklyOffPolicyService.getWeeklyOffPolicies().pipe(catchError(() => of([])));
+    const shiftPolicies$ = this.adminService.getShiftPolicies().pipe(catchError(() => of([])));
+    const leaves$ = this.leaveService.getMyLeaves(this.currentYear).pipe(catchError(() => of([])));
+    const todayPunches$ = this.attendanceApi.getTodayAttendance().pipe(catchError(() => of({ punches: [] })));
 
-  private loadShiftPolicyAndProceed(shiftPolicyId: number | null): void {
-    if (shiftPolicyId) {
-      this.adminService.getShiftPolicies().subscribe({
-        next: (policies) => {
-          this.shiftPolicy = policies.find(p => p.id === shiftPolicyId) || null;
-          this.loadLeaveDaysAndMonthlyReport();
-        },
-        error: () => {
-          this.shiftPolicy = null;
-          this.loadLeaveDaysAndMonthlyReport();
-        }
-      });
-    } else {
-      this.shiftPolicy = null;
-      this.loadLeaveDaysAndMonthlyReport();
-    }
-  }
-
-  /**
-   * Force reload employee profile and week off policy from server
-   * Call this after HR updates employee profile (e.g. after modal save)
-   */
-  refreshEmployeeProfileAndWeekOff() {
-    this.employeeService.getMyProfile(true).subscribe({
-      next: (profile) => {
-        this.employeeProfile = profile;
-        const weeklyOffPolicyId = profile?.weekly_off_policy_id;
-        if (weeklyOffPolicyId) {
-          this.weeklyOffPolicyService.getWeeklyOffPolicies().subscribe({
-            next: (policies) => {
-              this.weeklyOffPolicy = policies.find(p => p.id === weeklyOffPolicyId) || null;
-              this.loadLeaveDaysAndMonthlyReport();
-            },
-            error: () => {
-              this.weeklyOffPolicy = null;
-              this.loadLeaveDaysAndMonthlyReport();
-            }
-          });
-        } else {
-          this.weeklyOffPolicy = null;
-          this.loadLeaveDaysAndMonthlyReport();
-        }
+    forkJoin({
+      profile: profile$,
+      weekOffPolicies: policies$,
+      shiftPolicies: shiftPolicies$,
+      leaves: leaves$,
+      today: todayPunches$
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: any) => {
+        this.employeeProfile = res.profile;
+        
+        // Match Week Off Policy
+        const woId = res.profile?.weekly_off_policy_id;
+        this.weeklyOffPolicy = res.weekOffPolicies.find((p: any) => p.id === woId) || null;
+        
+        // Match Shift Policy
+        const sId = res.profile?.shift_policy_id;
+        this.shiftPolicy = res.shiftPolicies.find((p: any) => p.id === sId) || null;
+        
+        // Today's punches
+        this.todayPunches = res.today?.punches || [];
+        
+        // Process Leaves
+        this.processLeavesIntoMap(res.leaves);
+        
+        // Finally load report
+        this.loadMonthlyReport();
+        this.reloadInProgress = false;
       },
-      error: () => {
-        this.employeeProfile = null;
-        this.weeklyOffPolicy = null;
-        this.loadLeaveDaysAndMonthlyReport();
+      error: (err) => {
+        console.error('❌ Failed to reload attendance', err);
+        this.loadMonthlyReport(); // fallback
+        this.reloadInProgress = false;
       }
     });
   }
 
-  /**
-   * Loads leave days for the current year, then loads the monthly report and merges leave/weekend info.
-   */
-  private loadLeaveDaysAndMonthlyReport(): void {
-    this.leaveService.getMyLeaves(this.currentYear).subscribe({
-      next: (leaves: MyLeave[]) => {
-        console.log('All leaves fetched from backend:', leaves);
-        this.leaveDaysMap = new Map();
-        const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
-        const approvedLeaveDates: { date: string, type: string }[] = [];
-        approvedLeaves.forEach(leave => {
-          // Use type_name or type_code for badge, and start_date/end_date for date range
-          const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
-          const fromRaw = leave.start_date || leave.from_date;
-          const toRaw = leave.end_date || leave.to_date || fromRaw;
-          const fromDateString = fromRaw ? fromRaw : new Date().toISOString();
-          const toDateString = toRaw ? toRaw : fromDateString;
-          const from = new Date(fromDateString);
-          const to = new Date(toDateString);
-          let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-          const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
-          while (d <= end) {
-            const dateStr = this.formatDateOnly(d);
-            this.leaveDaysMap.set(dateStr, leaveType);
-            approvedLeaveDates.push({ date: dateStr, type: leaveType });
-            d.setDate(d.getDate() + 1);
-          }
-        });
-        console.log('Approved leave days for badge:', approvedLeaveDates);
-        console.log('leaveDaysMap for badge:', Array.from(this.leaveDaysMap.entries()));
-        this.loadMonthlyReport();
-      },
-      error: () => {
-        this.leaveDaysMap = new Map();
-        this.loadMonthlyReport();
+
+
+  private processLeavesIntoMap(leaves: MyLeave[]) {
+    this.leaveDaysMap = new Map();
+    const approvedLeaves = leaves.filter(l => (l.status || '').toUpperCase() === 'APPROVED');
+    approvedLeaves.forEach(leave => {
+      const leaveType = leave.type_name || leave.type_code || leave.leave_type || 'Leave';
+      const fromRaw = leave.start_date || leave.from_date;
+      const toRaw = leave.end_date || leave.to_date || fromRaw;
+      if (!fromRaw) return;
+      const from = new Date(fromRaw);
+      const to = new Date(toRaw || fromRaw);
+      let d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+      while (d <= end) {
+        this.leaveDaysMap.set(this.formatDateOnly(d), leaveType);
+        d.setDate(d.getDate() + 1);
       }
     });
   }
