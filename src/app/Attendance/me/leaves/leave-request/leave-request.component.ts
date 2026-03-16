@@ -92,36 +92,81 @@ export class LeaveRequestComponent implements OnInit {
   }
 
   handleDateChanges() {
-    this.leaveForm.valueChanges.subscribe(val => {
-      const from = val.start_date ? new Date(val.start_date) : null;
-      const to = val.end_date ? new Date(val.end_date) : null;
+    this.leaveForm.valueChanges.subscribe(() => {
+      this.recalculateTotalDays();
+    });
+  }
 
-      if (from && to && to >= from) {
-        const diff =
-          (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24);
-        this.total_days = Math.floor(diff) + 1;
+  recalculateTotalDays() {
+    const val = this.leaveForm.value;
+    if (val.start_date && val.end_date) {
+      const from = this.parseLocalDate(val.start_date);
+      const to = this.parseLocalDate(val.end_date);
+
+      if (from && to && to >= from && !isNaN(from.getTime()) && !isNaN(to.getTime())) {
+        let workingDays = 0;
+        let hasWeekOff = false;
+        let current = new Date(from);
+        while (current <= to) {
+          if (!this.weekOffDays.includes(current.getDay())) {
+            workingDays++;
+          } else {
+            hasWeekOff = true;
+          }
+          current.setDate(current.getDate() + 1);
+        }
+        
+        // If they pick any weekend, we set total_days to 0 to trigger validation
+        if (hasWeekOff) {
+          this.total_days = 0;
+        } else {
+          this.total_days = workingDays;
+        }
       } else {
         this.total_days = 0;
       }
-    });
+    } else {
+      this.total_days = 0;
+    }
+  }
+
+  private parseLocalDate(dateStr: string): Date {
+    if (!dateStr) return new Date(NaN);
+    // Take YYYY-MM-DD from the start of the string
+    const cleanDate = dateStr.substring(0, 10);
+    const parts = cleanDate.split('-');
+    if (parts.length !== 3) return new Date(NaN);
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    const d = parseInt(parts[2], 10);
+    return new Date(y, m - 1, d);
   }
 
   loadWeeklyOffPolicy() {
     this.adminService.getWeeklyOffPolicies().subscribe(policies => {
-      this.employeeService.getMyProfile().subscribe((profile: any) => {
-        const policyId = profile.weekly_off_policy_id;
-        const policy = policies.find((p: any) => p.id === policyId);
-        if (policy) {
-          this.weekOffDays = [];
-          if (policy.sunday_off) this.weekOffDays.push(0);
-          if (policy.monday_off) this.weekOffDays.push(1);
-          if (policy.tuesday_off) this.weekOffDays.push(2);
-          if (policy.wednesday_off) this.weekOffDays.push(3);
-          if (policy.thursday_off) this.weekOffDays.push(4);
-          if (policy.friday_off) this.weekOffDays.push(5);
-          if (policy.saturday_off) this.weekOffDays.push(6);
+      this.employeeService.getMyProfile().subscribe({
+        next: (profile: any) => {
+          const policyId = profile.weekly_off_policy_id;
+          const policy = policies.find((p: any) => p.id === policyId);
+          if (policy) {
+            this.weekOffDays = [];
+            if (policy.sunday_off) this.weekOffDays.push(0);
+            if (policy.monday_off) this.weekOffDays.push(1);
+            if (policy.tuesday_off) this.weekOffDays.push(2);
+            if (policy.wednesday_off) this.weekOffDays.push(3);
+            if (policy.thursday_off) this.weekOffDays.push(4);
+            if (policy.friday_off) this.weekOffDays.push(5);
+            if (policy.saturday_off) this.weekOffDays.push(6);
 
+            this.generateHighlightedDates();
+            this.recalculateTotalDays(); // Recalculate once policy is known
+          }
+        },
+        error: () => {
+          // Fallback to Sunday if profile fails
+          this.weekOffDays = [0];
           this.generateHighlightedDates();
+          this.recalculateTotalDays();
         }
       });
     });
@@ -164,8 +209,13 @@ export class LeaveRequestComponent implements OnInit {
   /* ================= SUBMIT ================= */
 
   submitRequest() {
-    if (this.leaveForm.invalid || this.total_days <= 0) {
+    if (this.leaveForm.invalid) {
       this.presentToast('Please fill all required fields', 'warning');
+      return;
+    }
+
+    if (this.total_days <= 0) {
+      this.presentToast('slectes dates are week off please check the dates', 'warning');
       return;
     }
 
@@ -183,13 +233,8 @@ export class LeaveRequestComponent implements OnInit {
     console.log('Validating weekend leave. WeekOffDays:', this.weekOffDays);
 
     // Robust date parsing to avoid timezone bias
-    const parseLocalDate = (dateStr: string) => {
-      const [y, m, d] = dateStr.split('-').map(Number);
-      return new Date(y, m - 1, d);
-    };
-
-    const newFrom = parseLocalDate(form.start_date);
-    const newTo = parseLocalDate(form.end_date);
+    const newFrom = this.parseLocalDate(form.start_date);
+    const newTo = this.parseLocalDate(form.end_date);
     let workingDaysFound = 0;
 
     console.log(`Checking range from ${newFrom.toDateString()} to ${newTo.toDateString()}`);
@@ -205,9 +250,14 @@ export class LeaveRequestComponent implements OnInit {
 
     console.log('Working days found in selection:', workingDaysFound);
 
-    if (workingDaysFound === 0) {
-      this.presentToast('Selected leave on weekend please select another dates', 'warning');
-      return;
+    // Final safety check for any weekend day in selection
+    let checkDay = new Date(newFrom);
+    while (checkDay <= newTo) {
+      if (this.weekOffDays.includes(checkDay.getDay())) {
+        this.presentToast('slectes dates are week off please check the dates', 'warning');
+        return;
+      }
+      checkDay.setDate(checkDay.getDate() + 1);
     }
 
     // Check if any date in the new request is already taken (pending, approved)
@@ -227,8 +277,8 @@ export class LeaveRequestComponent implements OnInit {
       const dStr = normalize(dIter);
       
       for (const l of this.existingLeaves) {
-        const lFrom = parseLocalDate(l.from_date);
-        const lTo = parseLocalDate(l.to_date);
+        const lFrom = this.parseLocalDate(l.from_date);
+        const lTo = this.parseLocalDate(l.to_date);
         
         let existingIter = new Date(lFrom);
         while (existingIter <= lTo) {

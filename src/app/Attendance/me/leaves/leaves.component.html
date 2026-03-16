@@ -39,28 +39,39 @@
   <!-- Leave Balance Cards -->
   <ion-grid class="card-tabs-block">
     <p class="card-header">Leave Balances</p>
-    <ion-row>
-      <ion-col size="2" class="card-block" *ngFor="let leave of leaveCards">
-        <p class="card-header">{{ leave.title }}</p>
+    <ion-row class="cards-row">
+      <ion-col size="12" size-md="4" size-lg="3" class="card-wrapper" *ngFor="let leave of leaveCards">
+        <div class="leave-card-premium">
+          <div class="card-top">
+            <h3 class="leave-title">{{ leave.title }}</h3>
+            <span class="annual-quota">Quota: {{ leave.allocated_days }}</span>
+          </div>
 
-        <ion-img [src]="leave.icon"></ion-img>
-        <div class="txt-color">
-          <p>{{ leave.used }}/ {{ leave.available}}</p>
+          <div class="chart-container">
+            <canvas baseChart
+              [data]="leave.chartData"
+              [options]="leave.chartOptions"
+              [type]="leave.chartType">
+            </canvas>
+            <div class="available-center">
+              <span class="count">{{ leave.available }}</span>
+              <span class="label">Left</span>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <span class="dot used"></span>
+              <span class="stat-label">Used:</span>
+              <span class="stat-value">{{ leave.used }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="dot available"></span>
+              <span class="stat-label">Avail:</span>
+              <span class="stat-value">{{ leave.available }}</span>
+            </div>
+          </div>
         </div>
-        <!-- <div>
-          <p> Used {{ leave.used }}</p>
-        </div>
-
-        <p>
-          <span>Available</span>
-          {{ leave.available}}
-        </p> -->
-        <p>
-          <span>ANNUAL QUOTA</span>
-          {{ leave.allocated_days}}
-        </p>
-
-        <p class="label">days available</p>
       </ion-col>
     </ion-row>
   </ion-grid>

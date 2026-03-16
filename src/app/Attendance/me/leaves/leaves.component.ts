@@ -17,6 +17,8 @@ import { RouteGuardService } from 'src/app/services/route-guard/route-service/ro
 import { LeaveRequestComponent } from './leave-request/leave-request.component';
 import { EmployeeLeavesService } from 'src/app/services/employee-leaves.service';
 import { LeaverequestService } from '../../../services/leaverequest.service';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { EmployeeHeaderComponent } from '../employee-header/employee-header.component';
@@ -34,7 +36,8 @@ import { Router } from '@angular/router';
     HeaderComponent,
     EmployeeHeaderComponent,
     ReactiveFormsModule,
-    LeaveRequestComponent
+    LeaveRequestComponent,
+    BaseChartDirective
   ]
 })
 export class LeavesComponent implements OnInit {
@@ -145,13 +148,38 @@ export class LeavesComponent implements OnInit {
         res.forEach(item => {
           this.leaveCodeIdMap[item.type_code] = item.leave_type_id || item.id;
         });
-        this.leaveCards = res.map(item => ({
-          title: item.type_name,
-          allocated_days: Number(item.allocated_days),
-          used: Number(item.used_days),
-          available: Number(item.available_days),
-          icon: this.getLeaveIcon(item.type_code),
-        }));
+        this.leaveCards = res.map(item => {
+          const allocated = Number(item.allocated_days) || 0;
+          const used = Number(item.used_days) || 0;
+          const available = Number(item.available_days) || 0;
+          
+          return {
+            title: item.type_name,
+            allocated_days: allocated,
+            used: used,
+            available: available,
+            icon: this.getLeaveIcon(item.type_code),
+            chartData: {
+              labels: ['Used', 'Available'],
+              datasets: [{
+                data: [used, available],
+                backgroundColor: ['#ef4444', '#10b981'],
+                hoverBackgroundColor: ['#dc2626', '#059669'],
+                borderWidth: 0
+              }]
+            } as ChartData<'doughnut'>,
+            chartOptions: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '75%',
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+              }
+            } as ChartConfiguration<'doughnut'>['options'],
+            chartType: 'doughnut' as ChartType
+          };
+        });
 
         this.leaveTypes = res.map(item => ({
           code: item.type_code,
@@ -185,8 +213,12 @@ export class LeavesComponent implements OnInit {
   /* ===================== SUBMIT (MATCHES CURL) ===================== */
   submitRequest() {
     if (this.leaveForm.invalid || this.total_days <= 0) {
-      this.leaveForm.markAllAsTouched();
-      this.presentToast('Please fill all required fields', 'warning');
+      if (this.total_days <= 0 && this.leaveForm.valid) {
+        this.presentToast('slectes dates are week off please check the dates', 'warning');
+      } else {
+        this.leaveForm.markAllAsTouched();
+        this.presentToast('Please fill all required fields', 'warning');
+      }
       return;
     }
 

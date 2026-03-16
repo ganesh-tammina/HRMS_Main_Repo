@@ -11,26 +11,8 @@ import * as allIcons from 'ionicons/icons';
 import { QuillModule } from 'ngx-quill';
 import { importProvidersFrom } from '@angular/core';
 import { employeeInterceptor } from './app/services/employee-interceptor.interceptor';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
-// addIcons({
-//   'checkmark-outline': checkmarkOutline,
-//   'checkmark-circle': checkmarkCircle,
-//   'alert-circle-outline': alertCircleOutline,
-//   'calendar-outline': calendarOutline,
-//   'list-outline': listOutline,
-//   'chevron-back-outline': chevronBackOutline,
-//   'chevron-forward-outline': chevronForwardOutline,
-//   'close-outline': closeOutline,
-//   'notifications-outline' :notificationsOutline,
-//    'location': location,
-//    'mail': mail,
-//    'person-circle':personCircle,
-//    'add-circle-outline': addCircleOutline,
-//    'create-outline': createOutline,
-//    'ellipsis-vertical-circle-outline': ellipsisVerticalCircleOutline,
-//    'person-add-outline': personAddOutline,
-//    'phone-portrait' : phonePortrait
-// });
 addIcons(allIcons);
 
 bootstrapApplication(AppComponent, {
@@ -42,6 +24,7 @@ bootstrapApplication(AppComponent, {
     ),
     provideAnimations(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    importProvidersFrom(QuillModule.forRoot())
+    importProvidersFrom(QuillModule.forRoot()),
+    provideCharts(withDefaultRegisterables())
   ],
 });
