@@ -4,14 +4,26 @@ import { IonicModule } from '@ionic/angular';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { PayrollService } from '../payroll-service.service';
 
+import { IncometaxComponent } from '../taxiation/incometax/incometax.component';
+
 @Component({
   selector: 'app-payslips',
   templateUrl: './payslips.component.html',
   styleUrls: ['./payslips.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, IncometaxComponent],
 })
 export class PayslipsComponent implements OnInit {
+  private _currentTab: string = 'payslips';
+
+  get currentTab(): string {
+    return this._currentTab;
+  }
+
+  set currentTab(value: string) {
+    this._currentTab = value;
+    localStorage.setItem('payslip_active_tab', value);
+  }
   // Attendance/Leave summary
   payableDays: number = 0;
   lopDays: number = 0;
@@ -52,6 +64,11 @@ export class PayslipsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    const savedTab = localStorage.getItem('payslip_active_tab');
+    if (savedTab) {
+      this._currentTab = savedTab;
+    }
+
     this.employeeService.getMyProfile().subscribe((emp: any) => {
       this.currentEmployee = emp;
       if (!emp?.id) return;

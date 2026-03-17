@@ -1,10 +1,62 @@
 @import '../../../global.scss';
-.payslip-wrapper {
+
+.payslip-container {
   display: flex;
+  flex-direction: column;
   height: 100vh;
-  background: #2d323b;
-  padding: 0;
+  background: #f4f7f9;
+  overflow: hidden; /* Prevent body scroll */
+}
+
+/* MINI HEADER */
+.mini-header {
+  display: flex;
+  background: white;
+  padding: 0 40px;
+  border-bottom: 1px solid #e0e6ed;
+  gap: 30px;
+  flex-shrink: 0; /* Header stays at top */
+
+  .nav-item {
+    padding: 15px 5px;
+    font-size: 14px;
+    color: #64748b;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #3d6ff4;
+    }
+
+    &.active {
+      color: #3d6ff4;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #3d6ff4;
+        border-radius: 3px 3px 0 0;
+      }
+    }
+  }
+}
+
+.payslip-wrapper {
+  flex: 1;
+  display: flex;
   overflow: hidden;
+  background: #2d323b;
+}
+
+.tax-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  background: white;
 }
 
 /* SIDEBAR */
@@ -52,7 +104,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  padding-top: 20px;
+  padding: 20px;
   overflow-y: auto;
 }
 
@@ -63,7 +115,7 @@
   padding: 30px 35px;
   border-radius: 6px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-  overflow-y: auto;
+  height: fit-content;
 
 // Header
   .payslip-header {
