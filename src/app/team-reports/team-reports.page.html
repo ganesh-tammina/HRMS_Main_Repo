@@ -280,12 +280,12 @@
                         </div>
                     </div>
                     <div class="track-actions">
-                        <a *ngIf="item.client_file" [href]="'http://localhost:3000/' + item.client_file" target="_blank" class="action-btn">
+                        <div *ngIf="item.client_file" (click)="viewClientFile(item)" class="action-btn">
                             <ion-icon name="eye-outline"></ion-icon> View
-                        </a>
-                        <a *ngIf="item.client_file" [href]="'http://localhost:3000/' + item.client_file" [download]="item.client_file" class="action-btn">
+                        </div>
+                        <div *ngIf="item.client_file" (click)="downloadClientFile(item)" class="action-btn">
                             <ion-icon name="cloud-download-outline"></ion-icon> File
-                        </a>
+                        </div>
                     </div>
                 </div>
             </ng-container>

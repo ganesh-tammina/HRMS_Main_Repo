@@ -403,10 +403,34 @@ export class TeamReportsPage implements OnInit {
 
     getProfileImage(row: any): string {
         if (row?.profile_image) {
-            const path = row.profile_image.startsWith('/') ? row.profile_image : `/${row.profile_image}`;
+            let path = row.profile_image.replace(/\\/g, '/');
+            if (!path.startsWith('/')) path = '/' + path;
             return `http://${environment.apiURL}${path}?t=${Date.now()}`;
         }
         return 'assets/user.svg';
+    }
+
+    viewClientFile(item: any) {
+        if (!item.client_file) return;
+        const filePath = item.client_file.replace(/\\/g, '/');
+        const url = `http://${environment.apiURL}/${filePath}`;
+        window.open(url, '_blank');
+    }
+
+    downloadClientFile(item: any) {
+        if (!item.client_file) return;
+        const filePath = item.client_file.replace(/\\/g, '/');
+        const url = `http://${environment.apiURL}/${filePath}`;
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        // Extract filename from path
+        const fileName = filePath.split('/').pop() || 'client_timesheet';
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     async showToast(msg: string, color: string = 'dark') {
