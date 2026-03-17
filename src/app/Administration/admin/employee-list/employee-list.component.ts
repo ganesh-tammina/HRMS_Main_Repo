@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { ShiftPolicyService, ShiftPolicy } from 'src/app/services/shift-policy.service';
 import { AttendancePolicyService, AttendancePolicy } from 'src/app/services/attendance-policy.service';
 import { LeavePlanService, LeavePlan } from 'src/app/services/leave-plan.service';
+import { AdminSetup } from 'src/app/services/admin-setup.service';
 
 @Component({
   selector: 'app-employee-list',
@@ -27,12 +28,18 @@ export class EmployeeListComponent implements OnInit {
     leave_plan_id: null,
     shift_policy_id: null,
     attendance_policy_id: null,
-    PayGradeId: null
+    PayGradeId: null,
+    DepartmentId: null
   };
   shiftPolicies: ShiftPolicy[] = [];
   attendancePolicies: AttendancePolicy[] = [];
   leavePlans: LeavePlan[] = [];
   weeklyOffPolicies: WeeklyOffPolicy[] = [];
+  departments: any[] = [];
+  allEmployees: any[] = []; // For reporting manager selection
+  filteredManagers: any[] = []; // Filtered list for searchable dropdown
+  managerSearchTerm: string = '';
+  managerDropdownOpen: boolean = false;
   /* ================= EMPLOYEES ================= */
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
@@ -52,6 +59,7 @@ export class EmployeeListComponent implements OnInit {
     private attendancePolicyService: AttendancePolicyService,
     private leavePlanService: LeavePlanService,
     private weeklyOffPolicyService: WeeklyOffPolicyService,
+    private adminSetupService: AdminSetup,
     private router: Router,
     private toastController: ToastController
   ) { }
@@ -64,6 +72,41 @@ export class EmployeeListComponent implements OnInit {
     this.loadAttendancePolicies();
     this.loadLeavePlans();
     this.loadWeeklyOffPolicies();
+    this.loadDepartments();
+  }
+
+  loadDepartments() {
+    this.adminSetupService.getDepartments().subscribe(deps => {
+      this.departments = deps || [];
+    });
+  }
+
+  /* ================= SEARCHABLE MANAGER DROPDOWN ================= */
+  toggleManagerDropdown() {
+    this.managerDropdownOpen = !this.managerDropdownOpen;
+    if (this.managerDropdownOpen) {
+      this.managerSearchTerm = '';
+      this.filteredManagers = [...this.allEmployees];
+    }
+  }
+
+  filterManagers() {
+    const term = (this.managerSearchTerm || '').toLowerCase().trim();
+    this.filteredManagers = term
+      ? this.allEmployees.filter(e => (e.FullName || '').toLowerCase().includes(term))
+      : [...this.allEmployees];
+  }
+
+  selectManager(id: number | null) {
+    this.updateData.reporting_manager_id = id;
+    this.managerDropdownOpen = false;
+    this.managerSearchTerm = '';
+  }
+
+  getManagerName(id: number | null): string {
+    if (!id) return 'Select Reporting Manager';
+    const found = this.allEmployees.find(e => e.id === id);
+    return found ? found.FullName : 'Select Reporting Manager';
   }
 
   loadWeeklyOffPolicies() {
@@ -93,6 +136,8 @@ export class EmployeeListComponent implements OnInit {
   loadEmployees() {
     this.employeeService.getAllEmployees().subscribe((res: any[]) => {
       this.allCandidates = res || [];
+      this.allEmployees = [...this.allCandidates]; // Keep a copy for dropdowns
+      this.filteredManagers = [...this.allCandidates]; // Initialize filtered list
       this.sortEmployeesById(); // Sort employees by ID
       this.applySearch();
       // reset pagination
@@ -129,20 +174,50 @@ export class EmployeeListComponent implements OnInit {
       shift_policy_id: emp.shift_policy_id || null,
       attendance_policy_id: emp.attendance_policy_id || null,
       weekly_off_policy_id: emp.weekly_off_policy_id || null,
-      PayGradeId: emp.PayGradeId || null
+      PayGradeId: emp.PayGradeId || null,
+      DepartmentId: emp.DepartmentId || null
     };
   }
 
   updateEmployeeProfile() {
     if (!this.selectedEmployee) return;
-    this.employeeService.updateEmployeeProfile(this.selectedEmployee.id, this.updateData).subscribe({
-      next: () => {
+
+    // Build payload: only include fields that have a real (non-null, non-undefined) value
+    const payload: any = {};
+    if (this.updateData.reporting_manager_id !== null && this.updateData.reporting_manager_id !== undefined) {
+      payload.reporting_manager_id = this.updateData.reporting_manager_id;
+    }
+    if (this.updateData.leave_plan_id !== null && this.updateData.leave_plan_id !== undefined) {
+      payload.leave_plan_id = this.updateData.leave_plan_id;
+    }
+    if (this.updateData.shift_policy_id !== null && this.updateData.shift_policy_id !== undefined) {
+      payload.shift_policy_id = this.updateData.shift_policy_id;
+    }
+    if (this.updateData.attendance_policy_id !== null && this.updateData.attendance_policy_id !== undefined) {
+      payload.attendance_policy_id = this.updateData.attendance_policy_id;
+    }
+    if (this.updateData.weekly_off_policy_id !== null && this.updateData.weekly_off_policy_id !== undefined) {
+      payload.weekly_off_policy_id = this.updateData.weekly_off_policy_id;
+    }
+    if (this.updateData.PayGradeId !== null && this.updateData.PayGradeId !== undefined) {
+      payload.PayGradeId = this.updateData.PayGradeId;
+    }
+    if (this.updateData.DepartmentId !== null && this.updateData.DepartmentId !== undefined) {
+      payload.DepartmentId = this.updateData.DepartmentId;
+    }
+
+    console.log('[updateEmployeeProfile] Sending payload:', JSON.stringify(payload));
+
+    this.employeeService.updateEmployeeProfile(this.selectedEmployee.id, payload).subscribe({
+      next: (res: any) => {
+        console.log('[updateEmployeeProfile] Server response:', res);
         this.presentToast('Employee profile updated successfully', 'success');
         this.selectedEmployee = null;
         this.loadEmployees();
       },
-      error: () => {
-        this.presentToast('Failed to update employee profile', 'danger');
+      error: (err: any) => {
+        console.error('[updateEmployeeProfile] Error:', err);
+        this.presentToast('Failed to update employee profile: ' + (err?.error?.error || err?.message || 'Unknown error'), 'danger');
       }
     });
   }

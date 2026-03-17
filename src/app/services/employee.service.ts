@@ -83,6 +83,7 @@ export class EmployeeService {
       shift_policy_id?: number;
       attendance_policy_id?: number;
       PayGradeId?: number | null;
+      DepartmentId?: number | null;
       lpa?: number;
     }
   ): Observable<any> {

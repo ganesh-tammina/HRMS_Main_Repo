@@ -27,6 +27,11 @@ export class AdminSetup {
     return this.http.get<any[]>(this.baseUrl, this.getHeaders());
   }
 
+  /** GET ALL DEPARTMENTS */
+  getDepartments(): Observable<any[]> {
+    return this.http.get<any[]>(`http://${this.env.apiURL}/api/departments`, this.getHeaders());
+  }
+
   /** MAKE HR */
   makeHR(userId: number): Observable<any> {
     return this.http.post(

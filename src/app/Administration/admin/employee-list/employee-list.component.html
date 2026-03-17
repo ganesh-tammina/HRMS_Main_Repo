@@ -157,6 +157,62 @@
                           <ion-input [value]="selectedEmployee?.reporting_manager_name || '-'" readonly></ion-input>
                         </ion-item> -->
                       <ion-list lines="none" class="form-container">
+                        <!-- Reporting Manager: Inline searchable field -->
+                        <div class="manager-field-wrapper">
+                          <ion-label class="manager-field-label">Reporting Manager</ion-label>
+
+                          <!-- Trigger row -->
+                          <div class="manager-trigger" (click)="toggleManagerDropdown()">
+                            <ion-icon name="person-circle-outline" class="trigger-icon"></ion-icon>
+                            <span class="trigger-text">{{ getManagerName(updateData.reporting_manager_id) }}</span>
+                            <ion-icon [name]="managerDropdownOpen ? 'chevron-up-outline' : 'chevron-down-outline'" class="trigger-chevron"></ion-icon>
+                          </div>
+
+                          <!-- Inline expanded panel (no absolute positioning) -->
+                          <div class="manager-panel" *ngIf="managerDropdownOpen">
+                            <ion-searchbar
+                              [(ngModel)]="managerSearchTerm"
+                              (ionInput)="filterManagers()"
+                              placeholder="Search by name..."
+                              [debounce]="150"
+                              showCancelButton="never"
+                              class="manager-search">
+                            </ion-searchbar>
+                            <div class="manager-list">
+                              <!-- No Manager option -->
+                              <div class="manager-option clear-option" (click)="selectManager(null)">
+                                <ion-icon name="close-circle-outline"></ion-icon>
+                                <span>No Manager</span>
+                              </div>
+                              <!-- Employee options -->
+                              <div class="manager-option"
+                                *ngFor="let emp of filteredManagers"
+                                (click)="selectManager(emp.id)"
+                                [class.is-selected]="updateData.reporting_manager_id === emp.id">
+                                <ion-icon name="person-outline"></ion-icon>
+                                <span>{{ emp.FullName }}</span>
+                                <ion-icon name="checkmark" class="check-icon" *ngIf="updateData.reporting_manager_id === emp.id"></ion-icon>
+                              </div>
+                              <!-- Empty state -->
+                              <div class="manager-option empty-msg" *ngIf="filteredManagers.length === 0">
+                                <ion-icon name="search-outline"></ion-icon>
+                                <span>No employees match "{{ managerSearchTerm }}"</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <ion-item>
+                          <ion-label position="stacked">Department</ion-label>
+                          <ion-select [(ngModel)]="updateData.DepartmentId" interface="popover"
+                            placeholder="Select Department" toggleIcon="chevron-down" expandedIcon="chevron-up">
+                            <ion-select-option *ngFor="let dep of departments" [value]="dep.id">
+                              {{dep.name}}
+                            </ion-select-option>
+                          </ion-select>
+                        </ion-item>
+
                         <ion-item>
                           <ion-label position="stacked">Leave Plan</ion-label>
                           <ion-select [(ngModel)]="updateData.leave_plan_id" interface="popover"
