@@ -257,7 +257,7 @@ export const routes: Routes = [
     data: { role: ['admin', 'hr'] },
   },
   {
-    path: 'payslip',
+    path: 'MyPay',
     component: PayslipsComponent,
     canActivate: [AuthGuard],
   },

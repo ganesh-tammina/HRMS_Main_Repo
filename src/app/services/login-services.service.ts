@@ -12,6 +12,7 @@ export class AuthService {
   private LOGIN_URL = `http://${this.env.apiURL}/api/auth/login`;
   private CHECK_EMAIL_URL = `http://${this.env.apiURL}/api/auth/employee/check`;
   private CREATE_USER_URL = `http://${this.env.apiURL}/api/auth/user/create`;
+  private CREATE_AUTO_USER_URL = `http://${this.env.apiURL}/api/auth/user/create-auto`;
   private CREATE_PASSWORD_URL = `http://${this.env.apiURL}/api/auth/password/create`;
   private PREVIEW_ROLE_URL = `http://${this.env.apiURL}/api/auth/user/preview-role`;
   private LOGOUT_URL = `http://${this.env.apiURL}/api/auth/logout`;
@@ -40,6 +41,26 @@ export class AuthService {
           );
 
           // Also keep backward compatibility
+          localStorage.setItem('token', res.token);
+        }
+      })
+    );
+  }
+
+  /** AUTO CREATE USER / LOGIN WITH EMPLOYEE ID */
+  autoCreateUser(employee_id: number, password: string): Observable<any> {
+    return this.http.post<any>(this.CREATE_AUTO_USER_URL, {
+      employee_id,
+      password
+    }).pipe(
+      tap(res => {
+        if (res?.token && res?.user) {
+          this.routeGuardService.storeTokens(
+            res.token,
+            res.token,
+            res.user.id?.toString() || null,
+            res.user.role || 'employee'
+          );
           localStorage.setItem('token', res.token);
         }
       })

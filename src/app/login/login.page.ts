@@ -24,6 +24,8 @@ export class LoginPage implements OnInit {
   showCreatePassword = false;
   loading = false;
   isAdmin = false;
+  isEmpId = false;
+  empId: number | null = null;
   rolePreviewData: any = null;
   showForgotPassword = false;
   forgotPasswordForm!: FormGroup;
@@ -79,11 +81,21 @@ export class LoginPage implements OnInit {
     }
 
     /* 🔹 EMPLOYEE FLOW */
+    this.isEmpId = /^\d+$/.test(value);
+
+    // If it's a numeric ID, we still want to check if it exists
     this.authService.checkEmployee(value).subscribe({
       next: (res) => {
         if (!res.found) {
-          this.presentToast('Email not found in employee records', 'warning');
+          this.presentToast('Employee not found', 'warning');
           return;
+        }
+
+        // Store the numeric ID from response if available
+        if (res.employee?.id) {
+          this.empId = res.employee.id;
+        } else if (this.isEmpId) {
+          this.empId = parseInt(value);
         }
 
         // Check if employee has team/reporting members
@@ -112,7 +124,7 @@ export class LoginPage implements OnInit {
         this.loginForm.get('password')?.setValidators(Validators.required);
         this.loginForm.get('password')?.updateValueAndValidity();
       },
-      error: () => this.presentToast('Failed to verify email', 'danger')
+      error: () => this.presentToast('Failed to verify employee', 'danger')
     });
   }
 
@@ -140,34 +152,47 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    /* 🔹 EMPLOYEE LOGIN */
-    if (this.showPassword) {
-      this.authService.login({ username: email, password }).subscribe({
-        next: () => this.loadEmployeeAndNavigate(),
-        error: () => {
-          this.loading = false;
-          this.presentToast('Invalid credentials', 'danger');
-        }
-      });
-    }
+    /* 🔹 EMPLOYEE LOGIN (Create-Auto / Normal) */
+    if (this.showPassword || this.showCreatePassword) {
+      this.loading = true;
 
-    /* 🔹 CREATE PASSWORD */
-    if (this.showCreatePassword) {
-      this.authService.createUser(email, password).subscribe({
-        next: () => {
-          this.authService.login({ username: email, password }).subscribe({
-            next: () => this.loadEmployeeAndNavigate(),
-            error: () => {
+      if (this.empId) {
+        // Trigger autoCreateUser to ensure role mapping as requested
+        this.authService.autoCreateUser(this.empId, password).subscribe({
+          next: () => this.loadEmployeeAndNavigate(),
+          error: (err) => {
+            console.warn('create-auto failed or user exists:', err);
+            const errorMsg = err.error?.error || err.error?.message || "";
+
+            // If user already exists, fall back to normal login
+            if (err.status === 400 || errorMsg.toLowerCase().includes('already exists')) {
+              this.authService.login({ username: email, password }).subscribe({
+                next: () => this.loadEmployeeAndNavigate(),
+                error: (loginErr) => {
+                  this.loading = false;
+                  this.presentToast('Invalid credentials', 'danger');
+                }
+              });
+            } else {
               this.loading = false;
-              this.presentToast('Auto login failed', 'danger');
+              this.presentToast('Login failed', 'danger');
             }
-          });
-        },
-        error: () => {
-          this.loading = false;
-          this.presentToast('Failed to create password', 'danger');
-        }
-      });
+          }
+        });
+      } else {
+        // Email-based flow without numeric ID
+        const loginAction = this.showPassword
+          ? this.authService.login({ username: email, password })
+          : this.authService.createUser(email, password);
+
+        loginAction.subscribe({
+          next: () => this.loadEmployeeAndNavigate(),
+          error: () => {
+            this.loading = false;
+            this.presentToast('Login failed', 'danger');
+          }
+        });
+      }
     }
   }
 

@@ -39,10 +39,10 @@
 
               <!-- USERNAME -->
               <div class="form-field">
-                <label for="email">Username</label>
+                <label for="email">Username / Employee ID</label>
 
                 <div class="input-wrapper">
-                  <input id="email" type="email" formControlName="email" placeholder="Enter your username"
+                  <input id="email" type="text" formControlName="email" placeholder="Enter your username or ID"
                     [disabled]="emailChecked" autofocus (keydown)="onKeyPress($event)" />
                   <span class="focus-border"></span>
                 </div>
