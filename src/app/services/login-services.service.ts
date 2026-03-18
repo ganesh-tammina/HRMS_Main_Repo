@@ -54,14 +54,16 @@ export class AuthService {
       password
     }).pipe(
       tap(res => {
-        if (res?.token && res?.user) {
+        // Updated to use 'token' from registration response if available
+        const token = res?.token;
+        if (token && res?.user) {
           this.routeGuardService.storeTokens(
-            res.token,
-            res.token,
+            token,
+            token,
             res.user.id?.toString() || null,
             res.user.role || 'employee'
           );
-          localStorage.setItem('token', res.token);
+          localStorage.setItem('token', token);
         }
       })
     );
@@ -69,11 +71,27 @@ export class AuthService {
 
   /** CREATE USER */
   createUser(email: string, password: string): Observable<any> {
-    return this.http.post(this.CREATE_USER_URL, {
+    return this.http.post<any>(this.CREATE_USER_URL, {
       email,
       password,
       role: 'employee'
-    });
+    }).pipe(
+      tap(res => {
+        // 🔥 CRITICAL: If backend sent a token, store it now 
+        // to avoid second click requirement
+        const token = res?.token;
+        if (token && res?.user) {
+          console.log('✅ Token received during account creation, initializing session.');
+          this.routeGuardService.storeTokens(
+            token,
+            token,
+            res.user.id?.toString() || null,
+            res.user.role || 'employee'
+          );
+          localStorage.setItem('token', token);
+        }
+      })
+    );
   }
 
   /** CREATE PASSWORD (Forgot Password) */

@@ -43,7 +43,7 @@
 
                 <div class="input-wrapper">
                   <input id="email" type="text" formControlName="email" placeholder="Enter your username or ID"
-                    [disabled]="emailChecked" autofocus (keydown)="onKeyPress($event)" />
+                    [readonly]="emailChecked" autofocus (keydown)="onKeyPress($event)" />
                   <span class="focus-border"></span>
                 </div>
 

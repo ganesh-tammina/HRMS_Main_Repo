@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { of, switchMap, catchError, Observable } from 'rxjs';
 import { AuthService } from '../services/login-services.service';
 import { EmployeeService } from '../services/employee.service';
 import { RouteGuardService } from '../services/route-guard/route-service/route-guard.service';
@@ -152,51 +153,74 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    /* 🔹 EMPLOYEE LOGIN (Create-Auto / Normal) */
+    /* 🔹 EMPLOYEE LOGIN (Integrated Flow) */
     if (this.showPassword || this.showCreatePassword) {
+      if (this.loginForm.invalid) {
+        this.presentToast('Please enter your password', 'warning');
+        return;
+      }
       this.loading = true;
 
-      if (this.empId) {
-        // Trigger autoCreateUser to ensure role mapping as requested
-        this.authService.autoCreateUser(this.empId, password).subscribe({
-          next: () => this.loadEmployeeAndNavigate(),
-          error: (err) => {
-            console.warn('create-auto failed or user exists:', err);
-            const errorMsg = err.error?.error || err.error?.message || "";
+      // Determine the primary authentication stream
+      // We always ensure a login happens after an attempted creation
+      const isCreate = this.showCreatePassword;
+      console.log('🚀 Starting integrated auth flow:', { isCreate });
 
-            // If user already exists, fall back to normal login
-            if (err.status === 400 || errorMsg.toLowerCase().includes('already exists')) {
-              this.authService.login({ username: email, password }).subscribe({
-                next: () => this.loadEmployeeAndNavigate(),
-                error: (loginErr) => {
-                  this.loading = false;
-                  this.presentToast('Invalid credentials', 'danger');
-                }
-              });
-            } else {
-              this.loading = false;
-              this.presentToast('Login failed', 'danger');
-            }
-          }
-        });
-      } else {
-        // Email-based flow without numeric ID
-        const loginAction = this.showPassword
-          ? this.authService.login({ username: email, password })
+      let authSource$: Observable<any>;
+      if (isCreate) {
+        // Step A: Attempt Creation
+        const createCall$ = this.empId 
+          ? this.authService.autoCreateUser(this.empId, password)
           : this.authService.createUser(email, password);
 
-        loginAction.subscribe({
-          next: () => this.loadEmployeeAndNavigate(),
-          error: () => {
-            this.loading = false;
-            this.presentToast('Login failed', 'danger');
-          }
-        });
+        authSource$ = createCall$.pipe(
+          switchMap(res => {
+            // 🔥 OPTIMIZATION: If backend already gave us a token, don't login again
+            if (res?.token) {
+              console.log('✅ Registration returned a valid token. Skipping redundant login call.');
+              return of(res);
+            }
+            console.log('🔑 Registration successful but no token found. Performing explicit login fallback...');
+            return this.authService.login({ username: email, password });
+          }),
+          catchError(err => {
+            console.warn('⚠️ Registration failed or user already exists. Falling back to direct login:', err.error?.message || err.message);
+            return this.authService.login({ username: email, password });
+          })
+        );
+      } else {
+        // Step A: Direct Login
+        authSource$ = this.authService.login({ username: email, password });
       }
+
+      // Step B: Chain Auth -> Profile -> Navigate
+      authSource$.pipe(
+        switchMap(() => {
+          console.log('✅ Session secured, fetching profile...');
+          return this.employeeService.getMyProfile(true).pipe(
+            catchError(() => of(null))
+          );
+        })
+      ).subscribe({
+        next: () => {
+          console.log('🏁 Auth sequence complete. Navigating in 100ms...');
+          // Small delay ensures localStorage and app state are fully synchronized
+          setTimeout(() => {
+            this.loading = false;
+            this.navigateBasedOnRole();
+          }, 100);
+        },
+        error: (err) => {
+          console.error('❌ Integrated flow failed:', err);
+          this.loading = false;
+          const msg = err.error?.message || err.error?.error || 'Authentication failed. Please check your credentials.';
+          this.presentToast(msg, 'danger');
+        }
+      });
     }
   }
 
-  /** FORGOT PASSWORD SUBMIT */
+
   onForgotPasswordSubmit(): void {
     if (this.forgotPasswordForm.invalid) return;
     this.loading = true;
@@ -210,7 +234,7 @@ export class LoginPage implements OnInit {
         this.presentToast('Password reset successful! Logging you in...', 'success');
         // Auto-login after password reset
         this.authService.login({ username: employee_id, password }).subscribe({
-          next: () => this.loadEmployeeAndNavigate(),
+          next: () => this.navigateBasedOnRole(),
           error: () => {
             this.loading = false;
             this.presentToast('Password reset, but auto-login failed. Please login manually.', 'warning');
@@ -246,75 +270,7 @@ export class LoginPage implements OnInit {
     this.showForgotPassword = false;
   }
 
-  /** EMPLOYEE PROFILE */
-  private loadEmployeeAndNavigate(): void {
-    this.employeeService.getMyProfile(true).subscribe({
-      next: () => {
-        // Auto-assign role based on employee data
-        this.autoAssignRole();
-      },
-      error: () => {
-        this.loading = false;
-        this.presentToast('Failed to load employee profile', 'danger');
-      }
-    });
-  }
 
-  /** AUTO-ASSIGN ROLE (HR/Manager/Employee) */
-  private autoAssignRole(): void {
-    console.log('🔄 Starting auto-assign role process...');
-
-    this.adminSetup.autoAssignRole().subscribe({
-      next: (response) => {
-        console.log('📊 Role assignment result:', response);
-
-        if (response.changed) {
-          console.log(`✅ Role auto-assigned: ${response.previousRole} → ${response.newRole}`);
-          console.log(`📋 Reason: ${response.reason}`);
-
-          // Show notification to user
-          this.presentToast(`Your role has been updated to: ${response.newRole.toUpperCase()}\nReason: ${response.reason}`, 'primary');
-
-          // Update the token with new role
-          this.refreshTokenAndNavigate();
-        } else {
-          console.log(`ℹ️ Role unchanged: ${response.role}`);
-          this.loading = false;
-          this.navigateBasedOnRole();
-        }
-      },
-      error: (err) => {
-        console.error('❌ Auto-assign role failed:', err);
-        console.error('Error details:', err.error || err.message);
-
-        // Continue with current role even if auto-assign fails
-        this.loading = false;
-        this.navigateBasedOnRole();
-      }
-    });
-  }
-
-  /** REFRESH TOKEN AFTER ROLE CHANGE */
-  private refreshTokenAndNavigate(): void {
-    const { email, password } = this.loginForm.value;
-
-    // Re-authenticate to get new token with updated role
-    this.authService.login({ username: email, password }).subscribe({
-      next: (response) => {
-        console.log('✅ Token refreshed with new role:', response?.user?.role);
-        this.loading = false;
-
-        // Force reload route guard service role
-        window.location.reload();
-      },
-      error: (err) => {
-        console.error('❌ Token refresh failed:', err);
-        // Even if refresh fails, try to navigate with existing token
-        this.loading = false;
-        this.navigateBasedOnRole();
-      }
-    });
-  }
 
   /** NAVIGATE BASED ON USER ROLE */
   private navigateBasedOnRole(): void {
