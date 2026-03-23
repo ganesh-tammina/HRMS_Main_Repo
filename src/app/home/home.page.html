@@ -199,16 +199,22 @@
           <!-- Up Comming holidays card -->
           <div class="row-space-between border-bottom">
             <div>
-              <h3 class="card-header">Upcoming holidays</h3>
+              <h3 class="card-header">Holidays</h3>
               <p class="card-dec">Next few company and regional holidays</p>
             </div>
             <div class="label">
               <p>Location : Vizag</p>
             </div>
           </div>
-          <div class="holidays-section" [style.backgroundImage]="'url(' + backgroundImageUrl + ')'">
-            <h2 class="card-main-header mb-30">Christmas</h2>
-            <p>Thu, 25 December, 2025</p>
+          <div class="holidays-coming-soon">
+            <div class="coming-soon-content">
+              <!-- Professional GIF animation -->
+              <img src="https://media.tenor.com/_7n1_44wGisAAAAC/coming-soon-loading.gif" alt="Coming Soon GIF" class="coming-soon-gif">
+              
+              <h2 class="card-main-header">Upcoming Holidays</h2>
+              <p class="coming-soon-text">We're updating the festive list for you!</p>
+              <div class="glow-tag">COMING SOON</div>
+            </div>
           </div>
         </ion-card>
       </ion-col>
@@ -311,55 +317,80 @@
           </div>
         </ion-card>
         <!-- Birthdays & work anniversaries card -->
-        <ion-card class="overview-block" style="height: 34%;">
-          <div class="row-space-between border-bottom">
+        <ion-card class="overview-block milestone-container">
+          <div class="row-space-between border-bottom pb-12">
             <div>
-              <h3 class="card-header">Birthdays & work anniversaries</h3>
-              <p class="card-dec">Celebrate your teammates this week</p>
+              <h3 class="card-header">Birthdays & Work Anniversaries</h3>
+              <p class="card-dec">Celebrate your teammates' special moments</p>
             </div>
-            <div class="label">
-              <p>Today + next 7 days</p>
+            <div class="milestone-badge">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Next 7 days</span>
             </div>
           </div>
-          <div class="card-content">
-            <div class="birthday-card" *ngFor="let birthday of birthdays; trackBy: trackById">
-              <div class="row-left" (click)="$event.stopPropagation()">
-                <div class="img-block">
-                  <img [src]="getProfileImage(birthday)" width="38" [alt]="birthday.FirstName">
-                </div>
-                <div>
-                  <p>{{ birthday.FirstName }}</p>
-                  <p>Birthday • {{ birthday.DateOfBirth | date:'MMM dd' }}</p>
+
+          <div class="card-content milestone-list">
+            <!-- Empty State -->
+            <div *ngIf="birthdays.length === 0" class="empty-milestones">
+              <ion-icon name="sparkles-outline"></ion-icon>
+              <p>No milestones coming up this week. Keep the spirits high!</p>
+            </div>
+
+            <!-- Milestone Item -->
+            <div class="milestone-item" *ngFor="let milestone of birthdays; trackBy: trackById"
+              [class.today]="milestone.isToday">
+              <div class="item-main">
+                <div class="avatar-block">
+                  <img [src]="milestone.fullImageUrl" [alt]="milestone.FirstName">
+                  <div class="event-icon-badge" [class.birthday-badge]="milestone.eventType === 'Birthday'"
+                    [class.anniversary-badge]="milestone.eventType === 'Anniversary'">
+                    <ion-icon [name]="milestone.eventType === 'Birthday' ? 'gift' : 'medal'"></ion-icon>
+                  </div>
                 </div>
 
-              </div>
-              <div>
-                <ion-button class="primary-button pull-right" (click)="showWishInput(birthday.employee_id)">Send
-                  Wishes</ion-button>
-              </div>
-              <!-- <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
-                <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
-                <ion-button (click)="sendWish(birthday.employee_id)">Send</ion-button>
-              </div>
-              <div *ngIf="birthdayWishes[birthday.employee_id]?.length">
-                <div class="wish-list">
-                  <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
+                <div class="info-block" (click)="$event.stopPropagation()">
+                  <div class="name-row">
+                    <span class="emp-name">{{ milestone.FirstName }} {{ milestone.LastName }}</span>
+                    <span class="today-tag" *ngIf="milestone.isToday">TODAY</span>
+                  </div>
+                  <p class="event-desc">
+                    <span class="event-type">{{ milestone.eventType }}</span>
+                    <span class="dot-separator">•</span>
+                    <span class="event-date">{{ milestone.originalDate | date:'MMM dd' }}</span>
+                    <span class="anniversary-years" *ngIf="milestone.eventType === 'Anniversary'">
+                      <span class="dot-separator">•</span>
+                      {{ milestone.years }} {{ milestone.years > 1 ? 'years' : 'year' }}
+                    </span>
+                  </p>
                 </div>
-              </div> -->
-            </div>
-            <div class="sendwish" *ngFor="let birthday of birthdays; trackBy: trackById">
-              <div *ngIf="activeWishEmployeeId === birthday.employee_id" class="wish-input-block">
-                <ion-input [(ngModel)]="wishMessages[birthday.employee_id]" placeholder="Type your wish..."></ion-input>
-                <ion-button class="primary-button pull-right" (click)="sendWish(birthday.employee_id)">Send</ion-button>
+
+                <div class="action-block" *ngIf="activeWishEmployeeId !== milestone.id">
+                  <ion-button fill="clear" (click)="showWishInput(milestone.id)" class="wish-btn">
+                    <ion-icon slot="icon-only" name="paper-plane-outline"></ion-icon>
+                  </ion-button>
+                </div>
               </div>
-              <div *ngIf="birthdayWishes[birthday.employee_id]?.length">
-                <div class="wish-list">
-                  <p *ngFor="let wish of birthdayWishes[birthday.employee_id]">{{ wish }}</p>
+
+              <!-- Inline Wish Input -->
+              <div class="wish-reveal-input" *ngIf="activeWishEmployeeId === milestone.id">
+                <ion-input [(ngModel)]="wishMessages[milestone.id]" placeholder="Write a warm note..."></ion-input>
+                <div class="reveal-actions">
+                  <ion-button fill="clear" color="medium" (click)="hideWishInput()">Cancel</ion-button>
+                  <ion-button fill="solid" class="send-small-btn" (click)="sendWish(milestone.id)">Send</ion-button>
+                </div>
+              </div>
+
+              <!-- Wishes List -->
+              <div class="mini-wish-list" *ngIf="birthdayWishes[milestone.id]?.length">
+                <div class="wish-count">
+                  <ion-icon name="heart" color="danger"></ion-icon>
+                  <span>{{ birthdayWishes[milestone.id].length }} wish sent</span>
                 </div>
               </div>
             </div>
           </div>
         </ion-card>
+
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -227,13 +227,59 @@ export class HomePage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data: any[]) => {
-          this.birthdays = data.map(b => ({
-            ...b,
-            fullImageUrl: b.profile_image
-              ? `${this.env}${b.profile_image}`
-              : 'assets/icon/Default-user.svg'
-          }));
-          console.log('🎂 Birthdays:', this.birthdays);
+          const today = moment().startOf('day');
+          const nextWeek = moment().add(7, 'days').endOf('day');
+          const results: any[] = [];
+
+          data.forEach(emp => {
+            const dob = emp.DateOfBirth ? moment(emp.DateOfBirth) : null;
+            const doj = emp.DateJoined ? moment(emp.DateJoined) : null;
+
+            // Check Birthday
+            if (dob) {
+              const bday = dob.clone().year(today.year());
+              if (bday.isBefore(today)) bday.add(1, 'year');
+              
+              if (bday.isBetween(today, nextWeek, 'day', '[]')) {
+                results.push({
+                  ...emp,
+                  uid: `${emp.id}_Birthday`,
+                  eventType: 'Birthday',
+                  eventDate: bday.toDate(),
+                  originalDate: dob.toDate(),
+                  isToday: bday.isSame(today, 'day'),
+                  fullImageUrl: emp.profile_image ? `${this.env}${emp.profile_image}` : 'assets/icon/Default-user.svg'
+                });
+              }
+            }
+
+            // Check Anniversary
+            if (doj) {
+              const anniv = doj.clone().year(today.year());
+              if (anniv.isBefore(today)) anniv.add(1, 'year');
+              
+              if (anniv.isBetween(today, nextWeek, 'day', '[]')) {
+                const years = today.subtract(0, 'years').year() - doj.year();
+                if (years > 0) {
+                  results.push({
+                    ...emp,
+                    uid: `${emp.id}_Anniversary`,
+                    eventType: 'Anniversary',
+                    eventDate: anniv.toDate(),
+                    originalDate: doj.toDate(),
+                    years: years,
+                    isToday: anniv.isSame(today, 'day'),
+                    fullImageUrl: emp.profile_image ? `${this.env}${emp.profile_image}` : 'assets/icon/Default-user.svg'
+                  });
+                }
+              }
+            }
+          });
+
+          // Sort by date
+          this.birthdays = results.sort((a, b) => moment(a.eventDate).diff(moment(b.eventDate)));
+          console.log('🎂 Filtered Milestones:', this.birthdays);
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.birthdays = [];
@@ -448,7 +494,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   trackById(index: number, item: any) {
-    return item.id || item.employee_id || index;
+    return item.uid || item.id || item.employee_id || index;
   }
 
   loadAnnouncements() {

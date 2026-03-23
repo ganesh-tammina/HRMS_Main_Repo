@@ -199,7 +199,10 @@ ion-progress-bar {
     font-weight: 500;
 
     ion-badge {
-      padding: 4px 8px;
+      text-transform: capitalize;
+      color: #fff;
+      position: relative;
+      top: 5px;
     }
   }
 

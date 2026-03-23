@@ -86,20 +86,17 @@
           @include page-header();
         }
       }
-
-
     }
-
   }
 
-  //Today Overview card
+  //Overview card common styles
   .overview-block {
     padding: 16px;
     border: 1px solid #ABABAB;
     margin-bottom: 12px;
 
     .border-bottom {
-      border-bottom: 1px solid #E0E0E0
+      border-bottom: 1px solid #E0E0E0;
     }
 
     .card-header {
@@ -232,30 +229,86 @@
             }
           }
         }
-
       }
     }
 
-    // Holidays section style
-    .holidays-section {
+    // Holidays Coming Soon Premium Style
+    .holidays-coming-soon {
       height: 245px;
-      background-size: 100%;
-      background-position: center center;
-      width: 80%;
-      border-radius: 10px;
-      background-repeat: no-repeat;
-      padding: 24px;
+      width: 100%;
+      border-radius: 12px;
       margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+      position: relative;
+      overflow: hidden;
 
-      .section-title,
-      .card-main-header {
-        color: #fff;
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(24, 112, 185, 0.1) 0%, transparent 70%);
+        animation: rotateBg 15s linear infinite;
       }
 
-      p {
-        @include text-style-normal();
-        color: #fff;
+      .coming-soon-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        padding: 20px;
+
+        .coming-soon-gif {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          margin-bottom: 12px;
+          box-shadow: 0 0 20px rgba(255,255,255,0.1);
+          filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .card-main-header {
+          color: #fff;
+          font-size: 1.5rem;
+          margin: 0;
+          @include card-header();
+          letter-spacing: 1px;
+        }
+
+        .coming-soon-text {
+          color: #94A3B8;
+          font-size: 0.9rem;
+          margin: 8px 0 16px;
+        }
+
+        .glow-tag {
+          display: inline-block;
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          padding: 6px 16px;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 2px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(4px);
+          animation: glowText 2.5s infinite alternate;
+        }
       }
+    }
+
+    @keyframes rotateBg {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes glowText {
+      from { box-shadow: 0 0 5px rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+      to { box-shadow: 0 0 15px rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
     }
 
     .no-announcements {
@@ -280,7 +333,6 @@
     .carousel-track {
       display: flex;
       width: 100%;
-      height: 100%;
       transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
       will-change: transform;
     }
@@ -323,7 +375,7 @@
       padding: 16px;
       border-radius: 12px;
       background: #ffffff;
-      margin: 2px 2px 8px 2px; // Shadows visibility
+      margin: 2px 2px 8px 2px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 
       .announce-icon {
@@ -360,113 +412,223 @@
         line-height: 1.5;
         font-size: 0.95rem;
       }
-
-      .comments-block {
-        .time {
-          font-size: 11px;
-          color: #9CA3AF;
-          margin: 0;
-          font-weight: 500;
-        }
-      }
     }
 
-    .birthday-card {
-      background: #E4EEFA;
-      border-radius: 10px;
-      background: #E4EEFA;
-      border-radius: 10px;
-      margin-top: 12px;
-      margin-bottom: 12px;
-      @extend .row-space-between;
-      position: relative;
+    /* --- People Milestones PREMIUM --- */
+    &.milestone-container {
+      height: 380px; 
       overflow: hidden;
-      padding: 16px;
+      display: flex;
+      flex-direction: column;
 
-      .img-block {
-        width: 70px;
+      .pb-12 { padding-bottom: 12px; }
 
-        &::before {
-          content: '';
-          width: 100px;
-          height: 100px;
-          border-radius: 50%;
-          background: #1870B9;
-          position: absolute;
-          left: -41px;
-          top: -12px;
-          z-index: 2;
+      .milestone-badge {
+        background: rgba(24, 112, 185, 0.1);
+        color: #1870B9;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid rgba(24, 112, 185, 0.2);
+        ion-icon { font-size: 1rem; }
+      }
+
+      .milestone-list {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 4px;
+        margin-top: 10px;
+
+        &::-webkit-scrollbar { width: 4px; }
+        &::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 4px; }
+
+        .empty-milestones {
+          text-align: center;
+          padding: 40px 20px;
+          color: #94A3B8;
+          ion-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+          p { margin: 0; font-size: 0.9rem; line-height: 1.4; }
+        }
+      }
+
+      .milestone-item {
+        background: #F8FAFC;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 12px;
+        border: 1px solid #F1F5F9;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+          background: #ffffff;
+          border-color: #E2E8F0;
         }
 
-        img {
-          z-index: 2;
+        &.today {
+          background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+          border-color: #BFDBFE;
+          box-shadow: 0 2px 8px rgba(30, 64, 175, 0.05);
+
+          .today-tag {
+            background: #2563EB;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+          }
+        }
+
+        .item-main {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .avatar-block {
           position: relative;
-          left: 23px;
-          border-radius: 50%;
+          width: 54px;
+          height: 54px;
+          flex-shrink: 0;
+
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+
+          .event-icon-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            ion-icon { font-size: 11px; }
+
+            &.birthday-badge { background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); }
+            &.anniversary-badge { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+          }
         }
-      }
 
-      p {
-        margin: 0;
-        @include normal-text-unbold();
-
-        &:first-child {
-          font-weight: 600;
+        .info-block {
+          flex: 1;
+          .name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+          }
+          .emp-name {
+            @include text-style-bold();
+            font-size: 1rem;
+            color: #1E293B;
+          }
+          .event-desc {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            .event-type { font-weight: 600; color: #475569; }
+            .dot-separator { color: #CBD5E1; }
+            .anniversary-years { color: #15803D; font-weight: 600; }
+          }
         }
-      }
 
-      ion-button {
-        --background: #1E73BB;
-        --border-radius: 60px;
-        font-size: 12px;
+        .action-block {
+          .wish-btn {
+            --color: #64748B;
+            --padding-start: 8px;
+            --padding-end: 8px;
+            margin: 0;
+            &:hover { --color: #1870B9; }
+          }
+        }
+
+        .wish-reveal-input {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px dashed #E2E8F0;
+          animation: slideDown 0.3s ease-out;
+
+          ion-input {
+            --background: #fff;
+            --padding-start: 12px;
+            --border-radius: 8px;
+            border: 1px solid #CBD5E1;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            border-radius: 8px;
+          }
+
+          .reveal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            ion-button {
+              height: 30px;
+              font-size: 0.8rem;
+              text-transform: none;
+              font-weight: 600;
+            }
+            .send-small-btn {
+              --background: #1E73BB;
+              --border-radius: 6px;
+            }
+          }
+        }
+
+        .mini-wish-list {
+          margin-top: 8px;
+          .wish-count {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #F43F5E;
+            font-weight: 600;
+            background: rgba(244, 63, 94, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+            width: fit-content;
+          }
+        }
       }
     }
   }
-
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-//Media queries below 768px screen
+// Media queries below 768px screen
 @media screen and (max-width: 768px) {
   .Announcement-card {
     display: block !important;
-
     p {
       white-space: normal !important;
       overflow: auto !important;
       width: auto !important;
-    }
-  }
-}
-
-.sendwish {
-  background: #E4EEFA;
-  border-radius: 10px;
-  margin-top: -30px;
-  position: relative;
-  overflow: hidden;
-  margin-left: 0px;
-  width: 100%;
-
-  .wish-input-block {
-    display: flex;
-
-    ion-input {
-      padding-left: 95px !important;
-    }
-  }
-
-  ion-button {
-    --border-radius: 60px;
-    font-size: 10px;
-    margin-right: 65px;
-  }
-
-  .wish-list {
-
-    // display: flex;
-    p {
-      padding-left: 80px;
     }
   }
 }
