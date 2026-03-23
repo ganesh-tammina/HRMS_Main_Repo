@@ -47,7 +47,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
   font-weight: bold;
 }
 
@@ -321,7 +320,18 @@ ion-menu {
       flex-direction: column;
       gap: 6px;
 
-      img, lord-icon {
+      img.sidebar-icon {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        
+        &.active-white {
+          filter: brightness(0) invert(1);
+        }
+      }
+
+      lord-icon {
         width: 24px;
         height: 24px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
