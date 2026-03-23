@@ -24,6 +24,17 @@ export class EmployeeService {
       }
     });
   }
+
+  /**
+   * Get wishes for an employee
+   */
+  getBirthdayWishes(employeeId: number): Observable<any[]> {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const url = `http://${this.env.apiURL}/api/birthdays/wishes/${employeeId}`;
+    return this.http.get<any[]>(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
   /**
    * Get birthdays list from /api/birthdays
    */

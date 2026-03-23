@@ -209,8 +209,9 @@
           <div class="holidays-coming-soon">
             <div class="coming-soon-content">
               <!-- Professional GIF animation -->
-              <img src="https://media.tenor.com/_7n1_44wGisAAAAC/coming-soon-loading.gif" alt="Coming Soon GIF" class="coming-soon-gif">
-              
+              <img src="https://media.tenor.com/_7n1_44wGisAAAAC/coming-soon-loading.gif" alt="Coming Soon GIF"
+                class="coming-soon-gif">
+
               <h2 class="card-main-header">Upcoming Holidays</h2>
               <p class="coming-soon-text">We're updating the festive list for you!</p>
               <div class="glow-tag">COMING SOON</div>
@@ -323,10 +324,10 @@
               <h3 class="card-header">Birthdays & Work Anniversaries</h3>
               <p class="card-dec">Celebrate your teammates' special moments</p>
             </div>
-            <div class="milestone-badge">
+            <!-- <div class="milestone-badge">
               <ion-icon name="calendar-outline"></ion-icon>
               <span>Next 7 days</span>
-            </div>
+            </div> -->
           </div>
 
           <div class="card-content milestone-list">
@@ -365,7 +366,10 @@
                 </div>
 
                 <div class="action-block" *ngIf="activeWishEmployeeId !== milestone.id">
-                  <ion-button fill="clear" (click)="showWishInput(milestone.id)" class="wish-btn">
+                  <ion-button fill="clear" (click)="viewWishes(milestone)" class="view-btn" title="View Wishes">
+                    <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" (click)="showWishInput(milestone.id)" class="wish-btn" title="Send Wish">
                     <ion-icon slot="icon-only" name="paper-plane-outline"></ion-icon>
                   </ion-button>
                 </div>
@@ -380,16 +384,50 @@
                 </div>
               </div>
 
-              <!-- Wishes List -->
-              <div class="mini-wish-list" *ngIf="birthdayWishes[milestone.id]?.length">
-                <div class="wish-count">
+              <!-- Wishes Summary Indicator -->
+              <div class="mini-wish-list" *ngIf="milestone.isToday">
+                <div class="wish-count" (click)="viewWishes(milestone)">
                   <ion-icon name="heart" color="danger"></ion-icon>
-                  <span>{{ birthdayWishes[milestone.id].length }} wish sent</span>
+                  <span>See celebration notes</span>
                 </div>
               </div>
             </div>
           </div>
         </ion-card>
+
+        <!-- View Wishes Modal -->
+        <ion-modal [isOpen]="isViewingWishes" (didDismiss)="closeWishesModal()" class="wishes-modal">
+          <ng-template>
+            <ion-header class="ion-no-border">
+              <ion-toolbar>
+                <ion-title>Wishes for {{ viewingMilestoneName }}</ion-title>
+                <ion-buttons slot="end">
+                  <ion-button (click)="closeWishesModal()">
+                    <ion-icon slot="icon-only" name="close"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+              <div class="modal-wishes-list" *ngIf="wishesToView.length > 0; else noWishes">
+                <div class="wish-card-item" *ngFor="let wish of wishesToView">
+                  <div class="wish-header">
+                    <span class="sender">{{ wish.sender_name }}</span>
+                    <span class="time">{{ wish.created_at | date:'MMM dd, h:mm a' }}</span>
+                  </div>
+                  <p class="wish-text">{{ wish.message }}</p>
+                </div>
+              </div>
+              <ng-template #noWishes>
+                <div class="no-wishes-state">
+                  <ion-icon name="heart-dislike-outline"></ion-icon>
+                  <p>No celebrations yet. Be the first to send a note!</p>
+                </div>
+              </ng-template>
+            </ion-content>
+          </ng-template>
+        </ion-modal>
+
 
       </ion-col>
     </ion-row>

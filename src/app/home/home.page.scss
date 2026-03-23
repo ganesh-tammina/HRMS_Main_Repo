@@ -554,7 +554,11 @@
         }
 
         .action-block {
-          .wish-btn {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          .view-btn, .wish-btn {
             --color: #64748B;
             --padding-start: 8px;
             --padding-end: 8px;
@@ -609,12 +613,72 @@
             padding: 4px 10px;
             border-radius: 6px;
             width: fit-content;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            &:hover { background: rgba(244, 63, 94, 0.1); transform: scale(1.02); }
           }
         }
       }
     }
   }
 }
+
+/* Modal Wishes Premium Styling */
+.wishes-modal {
+  --height: 50%;
+  --border-radius: 20px 20px 0 0;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+  align-items: flex-end;
+
+  ion-header {
+    ion-toolbar {
+      --background: #ffffff;
+      --color: #1E293B;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      ion-title { font-weight: 700; font-size: 1.1rem; }
+    }
+  }
+
+  ion-content { --background: #F8FAFC; }
+
+  .modal-wishes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+  }
+
+  .wish-card-item {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    .wish-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      .sender { font-weight: 700; color: #1E293B; font-size: 0.95rem; }
+      .time { font-size: 0.75rem; color: #94A3B8; }
+    }
+    .wish-text { margin: 0; color: #475569; font-size: 0.95rem; line-height: 1.5; }
+  }
+
+  .no-wishes-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 40px;
+    color: #94A3B8;
+    text-align: center;
+    ion-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.4; }
+    p { font-size: 1rem; margin: 0; }
+  }
+}
+
 
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-10px); }

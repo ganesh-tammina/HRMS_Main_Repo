@@ -41,7 +41,12 @@ export class HomePage implements OnInit, OnDestroy {
   // Birthday wishes UI state
   activeWishEmployeeId: number | null = null;
   wishMessages: { [employeeId: number]: string } = {};
-  birthdayWishes: { [employeeId: number]: string[] } = {};
+  birthdayWishes: { [employeeId: number]: any[] } = {};
+  
+  // Viewing wishes state
+  isViewingWishes = false;
+  wishesToView: any[] = [];
+  viewingMilestoneName = '';
 
   // Announcements Carousel
   currentAnnounceIndex = 0;
@@ -314,15 +319,38 @@ export class HomePage implements OnInit, OnDestroy {
           if (!this.birthdayWishes[employeeId]) {
             this.birthdayWishes[employeeId] = [];
           }
-          this.birthdayWishes[employeeId].push(message);
+          this.birthdayWishes[employeeId].push({ message, sender_name: 'Me' }); // Optimistic local update
           this.wishMessages[employeeId] = '';
           this.hideWishInput();
+          console.log("Wish sent successfully!");
         },
         error: (err) => {
           alert('Failed to send wish');
           console.error('Failed to send wish:', err);
         }
       });
+  }
+
+  viewWishes(milestone: any) {
+    this.viewingMilestoneName = `${milestone.FirstName} ${milestone.LastName}`;
+    this.employeeService.getBirthdayWishes(milestone.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any[]) => {
+          this.wishesToView = res;
+          this.isViewingWishes = true;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Failed to load wishes:', err);
+        }
+      });
+  }
+
+  closeWishesModal() {
+    this.isViewingWishes = false;
+    this.wishesToView = [];
+    this.viewingMilestoneName = '';
   }
 
   /* ================= ENV ================= */
