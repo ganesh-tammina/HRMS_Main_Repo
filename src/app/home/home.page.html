@@ -266,34 +266,47 @@
           </div>
         </ion-card>
         <!-- Announcements card -->
-        <ion-card class="overview-block">
+        <ion-card class="overview-block carousel-parent">
           <div class="row-space-between border-bottom">
             <div>
               <h3 class="card-header">Announcements</h3>
-              <p class="card-dec">Your attendance, progress, and status at a glance</p>
+              <p class="card-dec">Stay updated with company news</p>
             </div>
-            <div class="label">
-              <p>3 new</p>
+            <div class="label" *ngIf="announcements.length > 0">
+              <p>{{ announcements.length }} latest</p>
             </div>
           </div>
-          <div class="card-content">
-            <div class="Announcement-card">
-              <img src="../../assets/home-icons/sample-announce.svg" width="50">
-              <div>
-                <p class="title">Happy Thanksgiving Day Holiday - 27th & 28th Nov</p>
-                <p>May all the good things of life be yours, not only on this day
-                  but throughout the coming year." "Wishing you a harvest of blessings,
-                  good health and good times.</p>
-                <div class="row-left comments-block">
-                  <p class="mr-15">5 hours ago</p>
-                  <p class="row-left"><img [src]="imageUrls" width="15" class="mr-8">Aswitha Anusha</p>
-                </div>
-                <div class="row-right">
-                  <p class="row-left mr-15"><img src="../../assets/home-icons/thumbsup.png" width="14" class="mr-8"> 24
-                  </p>
-                  <p class="row-left"><img src="../../assets/home-icons/message.png" width="14" class="mr-8"> 6</p>
+
+          <div class="card-content carousel-viewport">
+            <!-- Empty State -->
+            <div *ngIf="announcements.length === 0" class="no-announcements">
+              <p>No new announcements at this time.</p>
+            </div>
+
+            <!-- Carousel Wrapper -->
+            <div class="carousel-track" *ngIf="announcements.length > 0"
+              [style.transform]="'translateX(-' + (currentAnnounceIndex * 100) + '%)'">
+              <div class="carousel-slide" *ngFor="let announce of announcements; let i = index">
+                <div class="Announcement-card">
+                  <div class="announce-icon">
+                    <img src="../../assets/home-icons/sample-announce.svg" width="50">
+                  </div>
+                  <div class="announce-body">
+                    <p class="title">{{ announce.title }}</p>
+                    <p class="body-text">{{ announce.body }}</p>
+                    <div class="row-left comments-block">
+                      <!-- <p class="time">{{ announce.relativeTime }}</p> -->
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
+
+            <!-- Indicator Dots -->
+            <div class="carousel-indicators" *ngIf="announcements.length > 1">
+              <span *ngFor="let dot of announcements; let dotIdx = index" class="dot"
+                [class.active]="dotIdx === currentAnnounceIndex" (click)="setAnnounce(dotIdx)">
+              </span>
             </div>
           </div>
         </ion-card>

@@ -19,6 +19,7 @@ import { ClockButtonComponent } from '../services/clock-button/clock-button.comp
 import { EmployeeLeavesService } from '../services/employee-leaves.service';
 import { AttendanceService } from '../services/attendance.service';
 import { AttendanceApiService } from '../services/attendance-api.service';
+import { AdminService } from '../services/admin-functionality/admin.service.service';
 
 
 @Component({
@@ -41,6 +42,10 @@ export class HomePage implements OnInit, OnDestroy {
   activeWishEmployeeId: number | null = null;
   wishMessages: { [employeeId: number]: string } = {};
   birthdayWishes: { [employeeId: number]: string[] } = {};
+
+  // Announcements Carousel
+  currentAnnounceIndex = 0;
+  private announceTimer: any;
 
   /* ================= CONSTANTS ================= */
   private static readonly REFRESH_DELAY_MS = 10;
@@ -73,6 +78,9 @@ export class HomePage implements OnInit, OnDestroy {
   /* ================= BIRTHDAYS ================= */
   birthdays: any[] = [];
 
+  /* ================= ANNOUNCEMENTS ================= */
+  announcements: any[] = [];
+
   /* ================= DASHBOARD ================= */
   days: { date: string; status: 'Complete' | 'Remaining' }[] = [];
   cdRef: ChangeDetectorRef;
@@ -84,6 +92,7 @@ export class HomePage implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
     private attendanceApi: AttendanceApiService,
     private employeeLeaves: EmployeeLeavesService,
+    private adminService: AdminService,
     private cdr: ChangeDetectorRef
   ) { this.cdRef = cdr; }
 
@@ -96,6 +105,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.setupClock();
     this.setupDays();
     this.loadLeaveBalance()
+    this.loadAnnouncements();
 
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
@@ -441,6 +451,45 @@ export class HomePage implements OnInit, OnDestroy {
     return item.id || item.employee_id || index;
   }
 
+  loadAnnouncements() {
+    this.adminService.getAnnouncements()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: any[]) => {
+          this.announcements = data.map(announce => ({
+            ...announce,
+            relativeTime: moment(announce.created_at).fromNow()
+          }));
+          console.log('📢 Announcements loaded:', this.announcements.length);
+          this.startAnnounceCarousel();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('❌ Failed to load announcements:', err);
+        }
+      });
+  }
+
+  startAnnounceCarousel() {
+    if (this.announceTimer) clearInterval(this.announceTimer);
+    if (this.announcements.length > 1) {
+      this.announceTimer = setInterval(() => {
+        this.nextAnnounce();
+      }, 5000);
+    }
+  }
+
+  nextAnnounce() {
+    this.currentAnnounceIndex = (this.currentAnnounceIndex + 1) % this.announcements.length;
+    this.cdr.detectChanges();
+  }
+
+  setAnnounce(index: number) {
+    this.currentAnnounceIndex = index;
+    this.startAnnounceCarousel(); // Reset timer
+    this.cdr.detectChanges();
+  }
+
   getStatusLabel(): string {
     // Use the real-time shared clock state for the most accurate IN/OUT status
     const isClockedIn = this.attendanceApi.getClockState();
@@ -460,8 +509,7 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.clockInterval) {
-      clearInterval(this.clockInterval);
-    }
+    if (this.clockInterval) clearInterval(this.clockInterval);
+    if (this.announceTimer) clearInterval(this.announceTimer);
   }
 }
