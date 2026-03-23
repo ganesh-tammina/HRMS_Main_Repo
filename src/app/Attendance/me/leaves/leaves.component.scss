@@ -123,9 +123,14 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            
-            &.used { background: #ef4444; }
-            &.available { background: #10b981; }
+
+            &.used {
+              background: #ef4444;
+            }
+
+            &.available {
+              background: #10b981;
+            }
           }
 
           .stat-label {
@@ -321,9 +326,30 @@ ion-popover {
   }
 }
 
-.leave-header {
-  ion-title {
-    font-size: 17px !important;
+.leave-header-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  padding: 8px 12px 0;
+
+  .close-btn-styled {
+    --background: #f1f5f9;
+    --background-hover: #e2e8f0;
+    --border-radius: 50%;
+    --color: #64748b;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 36px;
+    width: 36px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      --color: #1e293b;
+      transform: rotate(90deg);
+    }
+
+    ion-icon {
+      font-size: 22px;
+    }
   }
 }
 

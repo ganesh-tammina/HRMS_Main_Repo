@@ -19,10 +19,9 @@
   <ion-modal [isOpen]="IsOpenleavePopup" (didDismiss)="closeleavePopup()" class="cute-side-popup" [animated]="false">
     <ng-template>
       <ion-header>
-        <ion-toolbar class="leave-header">
-          <ion-title>Apply Leave</ion-title>
+        <ion-toolbar class="leave-header-toolbar">
           <ion-buttons slot="end">
-            <ion-button (click)="closeleavePopup()">
+            <ion-button (click)="closeleavePopup()" class="close-btn-styled">
               <ion-icon name="close-outline"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -133,7 +132,7 @@
   </div>
   <ion-grid class="side-by-side-grids">
     <ion-row>
-      <ion-col size="7">
+      <ion-col size="12">
         <!-- Leave Requests History -->
         <ion-grid class="card-leaves-block">
           <h4 class="card-header">Leave Approvals History</h4>
@@ -241,7 +240,7 @@
           </ng-template>
         </ion-modal>
       </ion-col>
-      <ion-col size="5">
+      <ion-col size="5" class="d-none">
         <div class="side-by-side-grids">
           <ion-grid class="upcomingholidays-block">
             <div class="card-header">

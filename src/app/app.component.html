@@ -210,8 +210,7 @@
                       <ion-item routerLink="/MyPay" lines="none" detail="false">
                         <ion-label> My Pay</ion-label>
                       </ion-item>
-                      <ion-item *ngIf="isAdminOnly() || isHROnly()" routerLink="/finance-admin" lines="none"
-                        detail="false">
+                      <ion-item *ngIf="isAdminOnly()" routerLink="/finance-admin" lines="none" detail="false">
                         <ion-label>Finance Admin</ion-label>
                       </ion-item>
                     </ion-menu-toggle>
