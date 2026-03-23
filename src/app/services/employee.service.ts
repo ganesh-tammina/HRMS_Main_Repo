@@ -14,7 +14,7 @@ export class EmployeeService {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
     const url = `http://${this.env.apiURL}/api/birthdays/wishes`;
     return this.http.post(url, {
-      employee_id: employeeId,
+      birthday_employee_id: employeeId,
       message
     }, {
       headers: {
