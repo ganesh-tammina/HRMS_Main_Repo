@@ -44,9 +44,10 @@ export class EmployeeListComponent implements OnInit {
   allCandidates: any[] = [];
   pagedCandidates: any[] = [];
 
-  pageSize = 5;        // 5 records per page
+  pageSize = 20;        // 20 records per page (matching backend)
   currentPage = 1;
   totalPages = 1;
+  totalEmployees = 0;
 
   EmployeeselectedFile: File | null = null;
   isUploading = false; // Loading state for upload
@@ -132,19 +133,22 @@ export class EmployeeListComponent implements OnInit {
       this.shiftPolicies = policies || [];
     });
   }
-  /* ================= LOAD EMPLOYEES (REUSABLE) ================= */
+  /* ================= LOAD EMPLOYEES (SERVER-SIDE PAGINATION) ================= */
   loadEmployees() {
-    this.employeeService.getAllEmployees().subscribe((res: any[]) => {
-      this.allCandidates = res || [];
-      this.allEmployees = [...this.allCandidates]; // Keep a copy for dropdowns
-      this.filteredManagers = [...this.allCandidates]; // Initialize filtered list
-      this.sortEmployeesById(); // Sort employees by ID
-      this.applySearch();
-      // reset pagination
-      this.currentPage = 1;
-      this.calculatePagination();
-      this.updatePagedCandidates();
-      console.log('Employees loaded and sorted by ID:', this.allCandidates);
+    this.employeeService.getAllEmployees(this.currentPage, this.pageSize).subscribe((res: any) => {
+      // Backend returns { data: [...], pagination: { page, limit, total, pages } }
+      this.allCandidates = res.data || [];
+      this.allEmployees = [...this.allCandidates]; 
+      this.filteredManagers = [...this.allCandidates];
+      
+      if (res.pagination) {
+        this.currentPage = res.pagination.page;
+        this.totalPages = res.pagination.pages;
+        this.totalEmployees = res.pagination.total;
+      }
+      
+      this.pagedCandidates = [...this.allCandidates]; // Entire server response slice is paged candidates
+      console.log('Employees loaded paginated:', this.allCandidates);
     });
   }
 
@@ -269,14 +273,14 @@ export class EmployeeListComponent implements OnInit {
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.updatePagedCandidates();
+      this.loadEmployees();
     }
   }
 
   prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updatePagedCandidates();
+      this.loadEmployees();
     }
   }
   adminManagement() {

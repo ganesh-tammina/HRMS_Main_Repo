@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap, shareReplay } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, shareReplay, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -185,10 +185,15 @@ export class EmployeeService {
   }
 
 
-  /* Get all employees */
-  getAllEmployees(): Observable<any[]> {
+  /* Get all employees with pagination */
+  getAllEmployees(page: number = 1, limit: number = 20): Observable<any> {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-    return this.http.get<any[]>(this.API_URL, {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<any>(this.API_URL, {
+      params,
       headers: { Authorization: `Bearer ${token}` }
     });
   }
