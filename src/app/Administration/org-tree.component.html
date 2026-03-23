@@ -24,31 +24,9 @@
     <ng-container *ngIf="orgTree && orgTree.length">
         <div class="org-tree-root">
             <ng-container *ngFor="let root of orgTree">
-                <!-- Top Manager node -->
                 <div class="org-vertical-stack">
-                    <div *ngIf="root.topManager">
-                        <div style="margin: 0 0 8px 0; font-weight: 500; color: #0077b6;">Top Manager</div>
-                        <ng-container
-                            *ngTemplateOutlet="recursiveTree; context: { $implicit: root.topManager, level: 0 }"></ng-container>
-                        <div class="org-vertical-connector"></div>
-                    </div>
-                    <div *ngIf="root.manager">
-                        <div style="margin: 16px 0 8px 0; font-weight: 500; color: #0077b6;">Manager</div>
-                        <ng-container
-                            *ngTemplateOutlet="recursiveTree; context: { $implicit: root.manager, level: 0 }"></ng-container>
-                        <div class="org-vertical-connector"></div>
-                    </div>
-                    <div style="margin: 24px 0 0 0; font-weight: 500; color: #023e8a;">You</div>
                     <ng-container
                         *ngTemplateOutlet="recursiveTree; context: { $implicit: root, level: 0 }"></ng-container>
-                </div>
-                <!-- Co-team (peers) -->
-                <div *ngIf="root.coTeam && root.coTeam.length" class="org-co-team">
-                    <div style="margin: 16px 0 8px 0; font-weight: 500; color: #0077b6;">Your Peers</div>
-                    <ng-container *ngFor="let peer of root.coTeam">
-                        <ng-container
-                            *ngTemplateOutlet="recursiveTree; context: { $implicit: peer, level: 0 }"></ng-container>
-                    </ng-container>
                 </div>
             </ng-container>
         </div>
@@ -57,7 +35,12 @@
     <ng-template #recursiveTree let-employee let-level="level">
         <div class="org-tree-node-flex">
             <div class="org-tree-node-card">
-                <ion-card class="org-card org-card-member">
+                <ion-card class="org-card org-card-member" [class.org-me]="employee.isMe" [class.org-manager]="employee.isManager" [class.org-coteam]="employee.isCoTeam" [class.org-team]="employee.isTeam">
+                    <div class="org-label-badge" *ngIf="employee.isMe">Me</div>
+                    <div class="org-label-badge" *ngIf="employee.isManager">Reporting Manager</div>
+                    <div class="org-label-badge" *ngIf="employee.isCoTeam">Co-Team</div>
+                    <div class="org-label-badge" *ngIf="employee.isTeam">My Team</div>
+                    
                     <div class="org-member-header" style="display: flex; align-items: center; gap: 0.5em;" >
                         <div
                         class="avatar"
@@ -65,11 +48,13 @@
                         {{ employee.FirstName?.[0] || employee.name?.[0] }}
                       </div>                      
 
-                        <span>{{ employee.name || employee.FirstName + ' ' + employee.LastName }}</span>
-                        <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>                      
+                        <div class="member-info">
+                            <span class="member-name">{{ employee.FullName || employee.FirstName + ' ' + employee.LastName }}</span>
+                            <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>                      
+                        </div>
                        
-                          <button *ngIf="employee.directReports && employee.directReports.length > 0" type="button"
-                            class="expand-btn" (click)="$event.stopPropagation(); exclusiveExpand(employee.id)"
+                          <button *ngIf="employee.directReports && employee.directReports.length > 0 || !employee.isManager" type="button"
+                            class="expand-btn" (click)="$event.stopPropagation(); toggleExpand(employee)"
                             [attr.aria-expanded]="expanded[employee.id]">
                             <ion-icon [name]="expanded[employee.id] ? 'chevron-down' : 'chevron-forward'"></ion-icon>
                         </button>

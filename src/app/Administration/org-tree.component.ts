@@ -5,6 +5,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { EmployeeService } from '../services/employee.service';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-org-tree',
@@ -49,6 +50,39 @@ export class OrgTreeComponent implements OnInit {
       ];
     constructor(private employeeService: EmployeeService) { }
 
+    // Handle expansion with lazy loading
+    toggleExpand(node: any) {
+        if (!this.expanded[node.id]) {
+            // Expanding
+            if ((!node.directReports || node.directReports.length === 0)) {
+                this.loading = true;
+                this.employeeService.getReportingTeamByEmployeeId(node.id).subscribe({
+                    next: (res: any) => {
+                        node.directReports = res.team || [];
+                        // Identify team members if node is 'Me' or already 'Manager' path
+                        if (node.isMe || node.isManager) {
+                            node.directReports.forEach((dr: any) => {
+                                if (node.isMe) dr.isTeam = true;
+                            });
+                        }
+                        this.exclusiveExpand(node.id);
+                        this.loading = false;
+                    },
+                    error: (err) => {
+                        console.error('Error fetching reporting team:', err);
+                        this.loading = false;
+                        this.exclusiveExpand(node.id);
+                    }
+                });
+            } else {
+                this.exclusiveExpand(node.id);
+            }
+        } else {
+            // Collapsing
+            this.expanded[node.id] = false;
+        }
+    }
+
     // Collapse all siblings and expand only the selected node
     exclusiveExpand(nodeId: number) {
         // Build parentMap if not present
@@ -63,9 +97,24 @@ export class OrgTreeComponent implements OnInit {
                 }
             };
             buildParentMap(this.orgTree, null);
+        } else {
+            // Update parentMap for the expanded node's children
+            const node = this.findEmployeeNode(this.orgTree, nodeId);
+            if (node && node.directReports) {
+                node.directReports.forEach((dr: any) => {
+                    this.parentMap[dr.id] = nodeId;
+                });
+            }
         }
+
         const parentId = this.parentMap[nodeId];
         let siblings: number[] = [];
+        if (parentId === undefined) {
+             // Fallback if not found
+             this.expanded[nodeId] = !this.expanded[nodeId];
+             return;
+        }
+        
         if (parentId === null) {
             siblings = Object.keys(this.parentMap)
                 .filter(id => this.parentMap[id] === null)
@@ -78,13 +127,14 @@ export class OrgTreeComponent implements OnInit {
         siblings.forEach(id => {
             if (id !== nodeId) this.expanded[id] = false;
         });
-        this.expanded[nodeId] = !this.expanded[nodeId];
+        this.expanded[nodeId] = true;
     }
 
     // Find a node by employee id in the org tree
-    findEmployeeNode(nodes: any[], id: number): any | null {
+    findEmployeeNode(nodes: any[], id: any): any | null {
+        if (!id) return null;
         for (const node of nodes) {
-            if (node.id === id) return node;
+            if (node.id == id) return node;
             if (node.directReports && node.directReports.length > 0) {
                 const found = this.findEmployeeNode(node.directReports, id);
                 if (found) return found;
@@ -100,10 +150,13 @@ export class OrgTreeComponent implements OnInit {
 
         // Prepare map and clear directReports
         employees.forEach(emp => {
-            map[emp.id] = { ...emp, directReports: [] };
+            if (emp && emp.id) {
+                map[emp.id] = { ...emp, directReports: [] };
+            }
         });
 
         employees.forEach(emp => {
+            if (!emp || !emp.id) return;
             const managerId = emp.reporting_manager_id || emp.manager_id || emp.reportingTo || emp.reporting_to;
             if (managerId && map[managerId]) {
                 map[managerId].directReports.push(map[emp.id]);
@@ -119,7 +172,7 @@ export class OrgTreeComponent implements OnInit {
         if (!myId) return;
         // Find the node for the logged-in user and expand its path
         const expandPath = (node: any): boolean => {
-            if (node.id === myId) {
+            if (node.id == myId) {
                 this.expanded[node.id] = true;
                 return true;
             }
@@ -136,104 +189,113 @@ export class OrgTreeComponent implements OnInit {
         };
         nodes.forEach(root => expandPath(root));
     }
+
+    private flagNodes(myNode: any, managerNode: any) {
+        if (myNode) {
+            myNode.isMe = true;
+            // Identify team members
+            if (myNode.directReports) {
+                myNode.directReports.forEach((dr: any) => {
+                    dr.isTeam = true;
+                });
+            }
+        }
+        if (managerNode) {
+            managerNode.isManager = true;
+            // Identify co-team members
+            if (managerNode.directReports) {
+                managerNode.directReports.forEach((dr: any) => {
+                    if (dr.id !== this.myEmployeeId) {
+                        dr.isCoTeam = true;
+                    }
+                });
+            }
+        }
+    }
     ngOnInit() {
         this.loading = true;
         // Get logged-in employee profile first
         this.employeeService.getMyProfile().subscribe({
             next: (me) => {
+                console.log('OrgTree: My Profile:', me);
                 if (!me || !me.id) {
                     this.error = 'Could not load employee profile.';
                     this.loading = false;
                     return;
                 }
                 this.myEmployeeId = me.id;
-                // Now get all employees
-                this.employeeService.getAllEmployees().subscribe({
-                    next: (employees) => {
-                        if (!Array.isArray(employees) || employees.length === 0) {
-                            this.error = 'No employees found.';
-                            this.loading = false;
-                            return;
-                        }
-                        const orgTree = this.buildOrgTree(employees);
-                        // Only proceed if myEmployeeId is not null
-                        if (this.myEmployeeId !== null) {
-                            const myNode = this.findEmployeeNode(orgTree, this.myEmployeeId);
-                            if (myNode) {
-                                // Find manager
-                                const myManagerId = myNode.reporting_manager_id || myNode.manager_id || myNode.reportingTo || myNode.reporting_to;
-                                let coTeam: any[] = [];
-                                let managerNode: any = null;
-                                let managerTeam: any[] = [];
-                                let topManagerNode: any = null;
-                                if (myManagerId) {
-                                    managerNode = this.findEmployeeNode(orgTree, myManagerId);
-                                    if (managerNode && managerNode.directReports) {
-                                        coTeam = managerNode.directReports.filter((e: any) => e.id !== this.myEmployeeId);
-                                    }
-                                    // Find manager's manager (top of the manager)
-                                    const managerManagerId = managerNode ? (managerNode.reporting_manager_id || managerNode.manager_id || managerNode.reportingTo || managerNode.reporting_to) : null;
-                                    if (managerManagerId) {
-                                        topManagerNode = this.findEmployeeNode(orgTree, managerManagerId);
-                                        if (topManagerNode && topManagerNode.directReports) {
-                                            managerTeam = topManagerNode.directReports.filter((e: any) => e.id !== myManagerId);
-                                        }
-                                    }
-                                }
-                                // Compose the focused view: top manager, manager, my node, co-team
-                                const focusNode = {
-                                    ...myNode,
-                                    coTeam: coTeam,
-                                    manager: managerNode,
-                                    managerTeam: managerTeam,
-                                    topManager: topManagerNode
-                                };
-                                this.orgTree = [focusNode];
-                                this.expanded = {};
-                                this.expanded[myNode.id] = true;
-                                if (myNode.directReports) {
-                                    myNode.directReports.forEach((dr: any) => {
-                                        this.expanded[dr.id] = false;
-                                    });
-                                }
-                                if (coTeam) {
-                                    coTeam.forEach((ct: any) => {
-                                        this.expanded[ct.id] = false;
-                                    });
-                                }
-                                if (managerNode) {
-                                    this.expanded[managerNode.id] = false;
-                                }
-                                if (managerTeam) {
-                                    managerTeam.forEach((mt: any) => {
-                                        this.expanded[mt.id] = false;
-                                    });
-                                }
-                                if (topManagerNode) {
-                                    this.expanded[topManagerNode.id] = false;
-                                }
-                            } else {
-                                this.orgTree = [];
-                            }
+                
+                const managerId = me.reporting_manager_id || me.manager_id || me.reportingTo || me.reporting_to;
+                const requests: any = {
+                    coTeam: this.employeeService.getMyCoTeam(),
+                    reportingTeam: this.employeeService.getMyReportingTeam()
+                };
+                if (managerId) {
+                    requests.manager = this.employeeService.getEmployeeById(managerId);
+                }
+
+                forkJoin(requests).subscribe({
+                    next: (res: any) => {
+                        const manager = res.manager;
+                        const coTeam = res.coTeam?.team || [];
+                        const myTeam = res.reportingTeam?.team || [];
+
+                        // Build 'Me' node
+                        const myNode = { ...me, isMe: true, directReports: myTeam };
+                        myTeam.forEach((dr: any) => dr.isTeam = true);
+
+                        if (manager) {
+                            // If manager exists, he is the root of this local hierarchy
+                            const managerNode = { ...manager, isManager: true, directReports: [myNode] };
+                            coTeam.forEach((peer: any) => {
+                                peer.isCoTeam = true;
+                                managerNode.directReports.push(peer);
+                            });
+                            
+                            // Sort reports (Me should be first or co-team sorted)
+                            managerNode.directReports.sort((a: any, b: any) => {
+                                if (a.isMe) return -1;
+                                if (b.isMe) return 1;
+                                return (a.FirstName || '').localeCompare(b.FirstName || '');
+                            });
+
+                            this.orgTree = [managerNode];
+                            this.parentMap = {}; // Reset parent map for exclusive expansion
+                            this.parentMap[managerNode.id] = null;
+                            managerNode.directReports.forEach((dr: any) => this.parentMap[dr.id] = managerNode.id);
+                            myNode.directReports.forEach((dr: any) => this.parentMap[dr.id] = myNode.id);
+
+                            this.expanded = {};
+                            this.expanded[managerNode.id] = true;
+                            this.expanded[myNode.id] = true;
                         } else {
-                            this.orgTree = [];
+                            // Employee is root
+                            this.orgTree = [myNode];
+                            this.parentMap = {};
+                            this.parentMap[myNode.id] = null;
+                            myNode.directReports.forEach((dr: any) => this.parentMap[dr.id] = myNode.id);
+
+                            this.expanded = {};
+                            this.expanded[myNode.id] = true;
                         }
                         this.loading = false;
                     },
-                    error: () => {
-                        this.error = 'Could not load employees.';
+                    error: (err) => {
+                        console.error('OrgTree: Error fetching hierarchy data:', err);
+                        this.error = 'Could not load hierarchy data.';
                         this.loading = false;
                     }
                 });
             },
-            error: () => {
+            error: (err) => {
+                console.error('OrgTree: Error fetching profile:', err);
                 this.error = 'Could not load employee profile.';
                 this.loading = false;
             }
         });
     }
     getAvatarColor(emp: any): string {
-        const key = emp.id || emp.email || emp.name;
+        const key = emp.id || emp.WorkEmail || emp.FirstName;
         let hash = 0;
       
         for (let i = 0; i < String(key).length; i++) {
