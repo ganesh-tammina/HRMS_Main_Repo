@@ -175,10 +175,14 @@ export class EmployeeService {
     return this.currentEmployee;
   }
 
-  searchEmployees(keyword: string): Observable<any[]> {
+  searchEmployees(keyword: string, page: number = 1, limit: number = 20): Observable<any> {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-    const params = new HttpParams().set('q', keyword);
-    return this.http.get<any[]>(`${this.API_URL}/search/query`, {
+    const params = new HttpParams()
+      .set('q', keyword)
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<any>(`${this.API_URL}/search/query`, {
       params,
       headers: { Authorization: `Bearer ${token}` }
     });

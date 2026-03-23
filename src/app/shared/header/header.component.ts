@@ -145,14 +145,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.employeeService.searchEmployees(query.trim()).subscribe({
-      next: (results: any) => {
-        this.searchResults = results;
+    this.employeeService.searchEmployees(query.trim(), 1, 20).subscribe({
+      next: (res: any) => {
+        // Backend returns { data: [...], pagination: { ... } }
+        this.searchResults = res.data || [];
         this.results = this.searchResults.map(
-          (emp: any) => `${emp.first_name} ${emp.last_name || ''}`
+          (emp: any) => emp.FullName || `${emp.FirstName} ${emp.LastName || ''}`
         );
         if (this.searchResults.length > 0) {
-          this.openEmployeeListModal(results);
+          this.openEmployeeListModal(this.searchResults);
         }
       },
       error: (err) => console.error('Search error:', err)
