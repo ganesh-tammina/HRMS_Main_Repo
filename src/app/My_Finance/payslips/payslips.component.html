@@ -7,9 +7,9 @@
     <div class="nav-item" [class.active]="currentTab === 'fbp'" (click)="currentTab = 'fbp'">Flexible Benefit Plan (FBP)</div>
   </nav>
 
-  <div class="payslip-wrapper" *ngIf="currentEmployee && currentTab === 'payslips'">
+  <div class="payslip-wrapper coming-soon" *ngIf="currentEmployee && currentTab === 'payslips'">
     <!-- MAIN CONTENT -->
-    <main class="content-area">
+    <main class="content-area d-none">
       <div class="payslip-card">
         <!-- HEADER -->
         <header class="payslip-header">
@@ -184,7 +184,15 @@
     </main>
   </div>
 
-  <div class="tax-wrapper" *ngIf="currentTab === 'incometax'">
-    <app-incometax></app-incometax>
+  <div class="tax-wrapper coming-soon" *ngIf="currentTab === 'incometax'">
+    <app-incometax class="d-none"></app-incometax>
+  </div>
+
+  <div class="salary-wrapper coming-soon" *ngIf="currentTab === 'salary'">
+    <!-- Placeholder for salary content -->
+  </div>
+
+  <div class="fbp-wrapper coming-soon" *ngIf="currentTab === 'fbp'">
+    <!-- Placeholder for FBP content -->
   </div>
 </div>
