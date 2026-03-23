@@ -48,10 +48,7 @@
           </div>
 
           <div class="chart-container">
-            <canvas baseChart
-              [data]="leave.chartData"
-              [options]="leave.chartOptions"
-              [type]="leave.chartType">
+            <canvas baseChart [data]="leave.chartData" [options]="leave.chartOptions" [type]="leave.chartType">
             </canvas>
             <div class="available-center">
               <span class="count">{{ leave.available }}</span>
@@ -61,15 +58,16 @@
 
           <div class="stats-row">
             <div class="stat-item">
+              <span class="dot available"></span>
+              <span class="stat-label">Available:</span>
+              <span class="stat-value">{{ leave.available }}</span>
+            </div>
+            <div class="stat-item">
               <span class="dot used"></span>
               <span class="stat-label">Used:</span>
               <span class="stat-value">{{ leave.used }}</span>
             </div>
-            <div class="stat-item">
-              <span class="dot available"></span>
-              <span class="stat-label">Avail:</span>
-              <span class="stat-value">{{ leave.available }}</span>
-            </div>
+
           </div>
         </div>
       </ion-col>

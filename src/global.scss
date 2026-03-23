@@ -42,12 +42,26 @@
 html.md {
   --ion-default-font: 'Open Sans';
   @include normal-text-unbold();
+  @include scroll-style();
 }
 
 html,
 body {
   font-family: 'Open Sans';
   @include normal-text-unbold();
+  @include scroll-style();
+}
+
+/* Global scroll styling for ion-content */
+ion-content {
+  &::part(scroll) {
+    @include scroll-style();
+  }
+}
+
+/* Common overflow elements */
+* {
+  @include scroll-style();
 }
 
 :host {
@@ -909,6 +923,7 @@ ion-badge {
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     text-overflow: ellipsis;
   }
 }

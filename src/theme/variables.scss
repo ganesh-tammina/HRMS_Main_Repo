@@ -127,24 +127,32 @@ body{
 @mixin scroll-style {
     /* width */
     &::-webkit-scrollbar {
-      width: 8px;
+      width: 6px !important;
+      height: 6px !important;
     }
-    &::-webkit-scrollbar {
-      width: 8px !important;
-      height: 8px !important;
-    }
+  
     /* Track */
     &::-webkit-scrollbar-track {
-      background: #fff;
-      border-radius: 0px;
+      background: transparent;
+      border-radius: 10px;
     }
   
     /* Handle */
     &::-webkit-scrollbar-thumb {
-      background: #ABABAB;
-      border-radius: 31px;
+      background: rgba(31, 116, 187, 0.2); // $primary-color with low opacity
+      border-radius: 10px;
+      transition: background 0.3s ease;
+      
+      &:hover {
+        background: rgba(31, 116, 187, 0.6); // $primary-color with higher opacity
+      }
     }
+  
     &::-webkit-scrollbar-button {
       display: none;
     }
+
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(31, 116, 187, 0.4) transparent;
   }
