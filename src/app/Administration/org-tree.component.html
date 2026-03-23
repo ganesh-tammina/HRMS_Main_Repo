@@ -23,7 +23,7 @@
 
     <ng-container *ngIf="orgTree && orgTree.length">
         <div class="org-tree-root">
-            <ng-container *ngFor="let root of orgTree">
+            <ng-container *ngFor="let root of orgTree; trackBy: trackById">
                 <div class="org-vertical-stack">
                     <ng-container
                         *ngTemplateOutlet="recursiveTree; context: { $implicit: root, level: 0 }"></ng-container>
@@ -73,7 +73,7 @@
                 [@expandCollapse]="expanded[employee.id] ? 'expanded' : 'collapsed'" class="org-children-flex">
                 <div class="org-horizontal-line"></div>
                 <ng-container *ngIf="expanded[employee.id]">
-                    <ng-container *ngFor="let sub of employee.directReports">
+                    <ng-container *ngFor="let sub of employee.directReports; trackBy: trackById">
                         <ng-container
                             *ngTemplateOutlet="recursiveTree; context: { $implicit: sub, level: level + 1 }"></ng-container>
                     </ng-container>

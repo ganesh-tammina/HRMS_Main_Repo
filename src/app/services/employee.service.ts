@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap, shareReplay, map } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, shareReplay, map, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -134,7 +134,11 @@ export class EmployeeService {
         // Broadcast profile data via subject for reactive updates
         this.currentEmployeeSubject.next(emp);
       }),
-      shareReplay(1) // Cache the result for subsequent subscribers
+      shareReplay(1), // Cache the result for subsequent subscribers
+      catchError((err) => {
+        this.profile$ = undefined; // Clear cache on error
+        return throwError(() => err);
+      })
     );
 
     return this.profile$;

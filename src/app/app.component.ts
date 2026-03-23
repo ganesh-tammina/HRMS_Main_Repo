@@ -58,51 +58,57 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
-    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+    this.router.events.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.showMenu = !event.urlAfterRedirects.includes('/login');
-        this.isLoginPage = event.urlAfterRedirects.includes('/login');
-        this.iscandiateofferPage = event.urlAfterRedirects.includes('/candidate_status');
-        this.iscandiateofferLetterPage = event.urlAfterRedirects.includes('/candidate-offer-letter');
+        this.currentUrl = event.urlAfterRedirects;
+        this.showMenu = !this.currentUrl.includes('/login');
+        this.isLoginPage = this.currentUrl.includes('/login');
+        this.iscandiateofferPage = this.currentUrl.includes('/candidate_status');
+        this.iscandiateofferLetterPage = this.currentUrl.includes('/candidate-offer-letter');
+        
         this.userRole = this.routeGaurdService.userRole?.toLowerCase() || null;
-        const role = this.userRole || '';
-        this.isAdmin = (role === 'admin' || role === 'hr');
-        this.handlePageRefresh(event.urlAfterRedirects);
-        const userData = localStorage.getItem('loggedInUser');
-        if (userData) {
-          const parsedData = JSON.parse(userData);
-          this.userType = parsedData.type;
-        } else {
-          this.userType = null;
-        }
-        const introSeen = localStorage.getItem('introSeen');
-        if (!introSeen || this.isLoginPage) {
-          this.showIntro = true;
-          setTimeout(() => {
-            this.showIntro = false;
-            if (!introSeen) {
-              localStorage.setItem('introSeen', 'true');
-            }
-          }, 5000);
-        } else {
-          this.showIntro = false;
-        }
-        // Fetch user department and designation from profile - Skip for Admin/HR as per request
-        if (!this.userDesignation && this.userRole && !this.isLoginPage) {
-          this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
-            next: (emp) => {
-              this.userDesignation = (emp?.designation_name || emp?.designation || 'N/A').toLowerCase();
-              this.userDepartment = (emp?.department_name || emp?.department || 'N/A').toLowerCase();
-            },
-            error: (err) => {
-              console.error('Failed to load profile in AppComponent', err);
-              this.userDesignation = 'N/A'; // Prevent retry
-            }
-          });
-        }
+        this.isAdmin = (this.userRole === 'admin' || this.userRole === 'hr');
+        
+        this.handleIntroLogic();
+        this.fetchProfileInfoIfNeeded();
       }
     });
     this.currentUrl = this.router.url;
+  }
+
+  private handleIntroLogic() {
+    const introSeen = localStorage.getItem('introSeen');
+    if (!introSeen || this.isLoginPage) {
+      this.showIntro = true;
+      // Use a slightly shorter timeout and ensure it's cleared if needed
+      setTimeout(() => {
+        if (this.showIntro) {
+          this.dismissIntro();
+          if (!introSeen) localStorage.setItem('introSeen', 'true');
+        }
+      }, 2500);
+    } else {
+      this.showIntro = false;
+    }
+  }
+
+  private fetchProfileInfoIfNeeded() {
+    if (!this.userDesignation && this.userRole && !this.isLoginPage && this.routeGaurdService.isLoggedIn) {
+      this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (emp) => {
+          if (emp) {
+            this.userDesignation = (emp.designation_name || emp.designation || 'N/A').toLowerCase();
+            this.userDepartment = (emp.department_name || emp.department || 'N/A').toLowerCase();
+          }
+        },
+        error: (err) => {
+          console.error('Failed to load profile in AppComponent', err);
+          this.userDesignation = 'N/A'; // Prevent infinite retries
+        }
+      });
+    }
   }
 
   ngOnInit(): void {

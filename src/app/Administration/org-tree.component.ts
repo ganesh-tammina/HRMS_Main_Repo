@@ -1,11 +1,9 @@
-
-
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { EmployeeService } from '../services/employee.service';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject, takeUntil, of } from 'rxjs';
 
 @Component({
     selector: 'app-org-tree',
@@ -32,7 +30,8 @@ import { forkJoin } from 'rxjs';
         ])
     ]
 })
-export class OrgTreeComponent implements OnInit {
+export class OrgTreeComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
     orgTree: any[] = [];
     loading = false;
     error: string | null = null;
@@ -212,10 +211,19 @@ export class OrgTreeComponent implements OnInit {
             }
         }
     }
+    trackById(index: number, item: any) {
+        return item.id || index;
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     ngOnInit() {
         this.loading = true;
         // Get logged-in employee profile first
-        this.employeeService.getMyProfile().subscribe({
+        this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
             next: (me) => {
                 console.log('OrgTree: My Profile:', me);
                 if (!me || !me.id) {
@@ -234,7 +242,7 @@ export class OrgTreeComponent implements OnInit {
                     requests.manager = this.employeeService.getEmployeeById(managerId);
                 }
 
-                forkJoin(requests).subscribe({
+                forkJoin(requests).pipe(takeUntil(this.destroy$)).subscribe({
                     next: (res: any) => {
                         const manager = res.manager;
                         const coTeam = res.coTeam?.team || [];

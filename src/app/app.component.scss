@@ -85,6 +85,19 @@
   text-shadow: 0 2px 8px rgba(255, 224, 102, 0.18);
 }
 
+.hrms-intro-hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-top: 24px;
+  font-weight: 400;
+  animation: fadeInText 2.5s 1.5s both, breathe 2s infinite ease-in-out;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: scale(0.98); }
+  50% { opacity: 0.8; transform: scale(1); }
+}
+
 @keyframes fadeInUp {
   0% {
     opacity: 0;
@@ -294,8 +307,9 @@
 
 .hrms-blur {
   filter: blur(2px);
-  pointer-events: none;
   user-select: none;
+  opacity: 0.8;
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
 @import '../global.scss';

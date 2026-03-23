@@ -1,248 +1,165 @@
 <ion-app>
   <!-- HRMS Intro Screen -->
-  <div *ngIf="showIntro" class="hrms-intro-screen">
+  <div *ngIf="showIntro" class="hrms-intro-screen" (click)="dismissIntro()">
     <div class="hrms-intro-content">
-      <!-- <img src="assets/TT_blue_logo.svg" alt="HRMS Logo" class="hrms-intro-logo animated-logo" /> -->
       <div class="hrms-intro-title animated-title">Welcome to <span class="brand-gradient">Master HRMS</span></div>
       <div class="hrms-intro-tagline animated-tagline">Your complete Human Resource Management Solution</div>
       <img src="../assets/Tammina-logo.gif" alt="HRMS Animation" class="hrms-intro-gif" />
       <div class="hrms-intro-wow">Empowering People. <span class="wow-highlight">Empowering Business.</span></div>
+      <div class="hrms-intro-hint">Tap anywhere to skip</div>
     </div>
   </div>
-  <div [class.hrms-blur]="showIntro">
-    <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage"></app-header>
 
-    <ion-split-pane contentId="main-content"
-      [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''">
-      <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
-        <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
-          <ion-content class="menu-content sidenav-content">
-            <ion-list class="side-menu-list">
-              <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())"
-                auto-hide="false">
-                <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable':''">
-                  <div class="row-left">
-                    <lord-icon src="https://cdn.lordicon.com/wmwqvixz.json" trigger="hover" colors="primary:#94a3b8"
-                      class="inactive-menu"></lord-icon>
-                    <lord-icon src="https://cdn.lordicon.com/wmwqvixz.json" trigger="loop" colors="primary:#ffffff"
-                      class="active-menu"></lord-icon>
-                    <ion-label>Home</ion-label>
-                  </div>
-                </ion-item>
-              </ion-menu-toggle>
+  <app-header *ngIf="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage"></app-header>
 
-              <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowLeave()" auto-hide="false">
-                <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable':''">
-                  <div class="row-left">
-                    <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="hover" colors="primary:#94a3b8"
-                      class="inactive-menu" title="Leave"></lord-icon>
-                    <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="loop" colors="primary:#ffffff"
-                      class="active-menu" title="Leave"></lord-icon>
-                    <ion-label>Leave</ion-label>
-                  </div>
-                </ion-item>
-              </ion-menu-toggle>
-
-              <!-- Org Parent Item - Only for HR -->
-              <ng-container *ngIf="isHROnly()">
-                <ion-menu-toggle auto-hide="false" id="menu-button">
-                  <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
-                    [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable':''">
-                    <div class="row-left">
-                      <ion-icon name="person-add-outline" class="inactive-menu"></ion-icon>
-                      <ion-icon name="person-add-outline" class="active-menu"></ion-icon>
-                      <ion-label>Onboarding</ion-label>
-                    </div>
-                  </ion-item>
-                </ion-menu-toggle>
-                <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown"
-                  side="right">
-                  <ng-template>
-                    <ion-content>
-                      <ion-menu-toggle auto-hide="false">
-                        <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false"
-                          [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected':''">
-                          <lord-icon src="https://cdn.lordicon.com/kdduutun.json" trigger="hover" 
-                            colors="primary:#121331,secondary:#08a88a"
-                            style="width:24px;height:24px;margin-right:8px;">
-                          </lord-icon>
-                          <ion-label>Pre Onboarding</ion-label>
-                        </ion-item>
-                      </ion-menu-toggle>
-                      <!-- <ion-menu-toggle auto-hide="false">
-                        <ion-item routerLink="/post-onboarding" lines="none" detail="false">
-                          <ion-label>Post Onboarding</ion-label>
-                        </ion-item>
-                      </ion-menu-toggle> -->
-                      <!-- <ion-menu-toggle auto-hide="false">
-                        <ion-item lines="none" detail="false">
-                          <ion-label>Candidate Status</ion-label>
-                        </ion-item>
-                      </ion-menu-toggle> -->
-                    </ion-content>
-                  </ng-template>
-                </ion-popover>
-              </ng-container>
-
-              <!-- My Team - Only for Manager, HR, Employee -->
-              <ng-container *ngIf="isManager() || isHROnly() || isEmployee()">
-                <ion-menu-toggle auto-hide="false">
-                  <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false"
-                    routerLinkActive="selected" [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable':''">
-                    <div class="row-left">
-                      <lord-icon src="https://cdn.lordicon.com/kthelypq.json" trigger="hover" colors="primary:#94a3b8"
-                        class="inactive-menu" title="My Team"></lord-icon>
-                      <lord-icon src="https://cdn.lordicon.com/kthelypq.json" trigger="loop" colors="primary:#ffffff"
-                        class="active-menu" title="My Team"></lord-icon>
-                      <ion-label>My Team</ion-label>
-                    </div>
-                  </ion-item>
-                </ion-menu-toggle>
-              </ng-container>
-
-              <!-- <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="['/organisation_info']" lines="none" detail="false"
-                routerLinkActive="selected">
+  <ion-split-pane contentId="main-content" [class.hrms-blur]="showIntro"
+    [ngClass]="!isLoginPage && !iscandiateofferPage && !iscandiateofferLetterPage ? 'main-content-block' : ''">
+    
+    <ng-container *ngIf="!iscandiateofferPage && !iscandiateofferLetterPage">
+      <ion-menu *ngIf="showMenu" contentId="main-content" type="overlay">
+        <ion-content class="menu-content sidenav-content">
+          <ion-list class="side-menu-list">
+            
+            <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())" auto-hide="false">
+              <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable' : ''">
                 <div class="row-left">
-                  <img src="assets/Icons/Group 104.svg">
-                  <ion-label>Org Info</ion-label>
+                  <lord-icon src="https://cdn.lordicon.com/wmwqvixz.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu"></lord-icon>
+                  <lord-icon src="https://cdn.lordicon.com/wmwqvixz.json" trigger="loop" colors="primary:#ffffff" class="active-menu"></lord-icon>
+                  <ion-label>Home</ion-label>
                 </div>
               </ion-item>
-            </ion-menu-toggle> -->
+            </ion-menu-toggle>
 
-
-              <!-- Org Tree - Accessible to all except admin -->
-              <ng-container *ngIf="!isAdminOnly()">
-                <ion-menu-toggle auto-hide="false">
-                  <ion-item routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
-                    [ngClass]="(currentUrl=='/org-tree') ? 'selected ion-activatable':''">
-                    <div class="row-left">
-                      <ion-icon name="git-branch-outline" class="inactive-menu"></ion-icon>
-                      <ion-icon name="git-branch-outline" class="active-menu"></ion-icon>
-                      <ion-label>Org Tree</ion-label>
-                    </div>
-                  </ion-item>
-                </ion-menu-toggle>
-              </ng-container>
-
-              <!-- Admin - Only for admin and HR -->
-              <ng-container *ngIf="isAdminOnly() || isHROnly()">
-                <ion-menu-toggle auto-hide="false">
-                  <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
-                    [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable':''">
-                    <div class="row-left">
-                      <lord-icon src="https://cdn.lordicon.com/wzwygmng.json" trigger="hover" colors="primary:#94a3b8"
-                        class="inactive-menu" title="Admin"></lord-icon>
-                      <lord-icon src="https://cdn.lordicon.com/wzwygmng.json" trigger="loop" colors="primary:#ffffff"
-                        class="active-menu" title="Admin"></lord-icon>
-                      <ion-label>Admin</ion-label>
-                    </div>
-                  </ion-item>
-                </ion-menu-toggle>
-              </ng-container>
-
-              <!-- ///////////////////////////////////////////////// -->
-              <!-- ///////////////////////////////////////////////// -->
-
-              <!-- Inbox -->
-              <!-- <ion-menu-toggle auto-hide="false">
-              <ion-item lines="none" detail="false" routerLinkActive="selected"
-                [ngClass]="(currentUrl=='/inbox') ? 'selected ion-activatable':''">
+            <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowLeave()" auto-hide="false">
+              <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable' : ''">
                 <div class="row-left">
-                  <img src="../assets/icon/inbox.svg" class="inactive-menu" />
-                  <img src="../assets/icon/inbox-active.svg" class="active-menu" />
-                  <ion-label>Inbox</ion-label>
+                  <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="Leave"></lord-icon>
+                  <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="loop" colors="primary:#ffffff" class="active-menu" title="Leave"></lord-icon>
+                  <ion-label>Leave</ion-label>
                 </div>
               </ion-item>
-            </ion-menu-toggle> -->
-              <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowWorkTrack()" auto-hide="false" id='menu-buttons2'>
-                <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable':''">
+            </ion-menu-toggle>
+
+            <ng-container *ngIf="isHROnly()">
+              <ion-menu-toggle auto-hide="false" id="menu-button">
+                <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable' : ''">
                   <div class="row-left">
-                    <lord-icon src="https://cdn.lordicon.com/qjuahhae.json" trigger="hover" colors="primary:#94a3b8"
-                      class="inactive-menu" title="Work Track"></lord-icon>
-                    <lord-icon src="https://cdn.lordicon.com/qjuahhae.json" trigger="loop" colors="primary:#ffffff"
-                      class="active-menu" title="Work Track"></lord-icon>
-                    <ion-label>Work Track</ion-label>
+                    <ion-icon name="person-add-outline" class="inactive-menu"></ion-icon>
+                    <ion-icon name="person-add-outline" class="active-menu"></ion-icon>
+                    <ion-label>Onboarding</ion-label>
                   </div>
                 </ion-item>
               </ion-menu-toggle>
-              <!-- <ion-popover trigger="menu-buttons2" [dismissOnSelect]="true" class="menu-dropdown" side="right">
-              <ng-template>
-                <ion-content>
-                  <ion-menu-toggle auto-hide="false"> -->
-              <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-              <!-- <ion-item [routerLink]="['/workTrack']" lines="none" detail="false">
-                      <ion-label>My Work Track</ion-label>
-                    </ion-item>
-                  </ion-menu-toggle>
-                  <ion-menu-toggle auto-hide="false"> -->
-              <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-              <!-- <ion-item [routerLink]="['/ClientWorkTrack']" lines="none" detail="false">
-                      <ion-label>Client Work Track </ion-label>
-                    </ion-item>
-                  </ion-menu-toggle>
-                </ion-content>
-              </ng-template>
-            </ion-popover> -->
-
-
-              <ion-menu-toggle auto-hide="false" id="menu-buttons1">
-                <ion-item lines="none" detail="false" routerLinkActive="selected"
-                  [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable':''">
-                  <div class="row-left">
-                    <lord-icon src="https://cdn.lordicon.com/qhviklyi.json" trigger="hover" colors="primary:#94a3b8"
-                      class="inactive-menu" title="My Finances"></lord-icon>
-                    <lord-icon src="https://cdn.lordicon.com/qhviklyi.json" trigger="loop" colors="primary:#ffffff"
-                      class="active-menu" title="My Finances"></lord-icon>
-                    <ion-label>My Finances</ion-label>
-                  </div>
-                </ion-item>
-              </ion-menu-toggle>
-              <ion-popover trigger="menu-buttons1" [dismissOnSelect]="true" class="menu-dropdown menu-drop1"
-                side="right">
+              <ion-popover trigger="menu-button" [dismissOnSelect]="true" triggerAction="hover" class="menu-dropdown" side="right">
                 <ng-template>
                   <ion-content>
                     <ion-menu-toggle auto-hide="false">
-                      <!-- *ngIf="(currentUser | async)?.jobDetailsForm?.Department === 'QA'" -->
-                      <ion-item routerLink="/MyPay" lines="none" detail="false">
-                        <ion-label> My Pay</ion-label>
-                      </ion-item>
-                      <ion-item *ngIf="isAdminOnly()" routerLink="/finance-admin" lines="none" detail="false">
-                        <ion-label>Finance Admin</ion-label>
+                      <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false">
+                        <lord-icon src="https://cdn.lordicon.com/kdduutun.json" trigger="hover" colors="primary:#121331,secondary:#08a88a" style="width:24px;height:24px;margin-right:8px;"></lord-icon>
+                        <ion-label>Pre Onboarding</ion-label>
                       </ion-item>
                     </ion-menu-toggle>
                   </ion-content>
                 </ng-template>
               </ion-popover>
-              <!-- Inbox -->
+            </ng-container>
 
-              <!-- ///////////////////////////////////////////////// -->
-
-              <!-- Log Out -->
+            <ng-container *ngIf="isManager() || isHROnly() || isEmployee()">
               <ion-menu-toggle auto-hide="false">
-                <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false"
-                  routerLinkActive="selected">
+                <ion-item routerDirection="root" [routerLink]="['/MyTeam']" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/MyTeam') ? 'selected ion-activatable' : ''">
                   <div class="row-left">
-                    <ion-icon name="log-out-outline" class="inactive-menu"></ion-icon>
-                    <ion-icon name="log-out-outline" class="active-menu"></ion-icon>
-                    <ion-label>Log out</ion-label>
+                    <lord-icon src="https://cdn.lordicon.com/kthelypq.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="My Team"></lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/kthelypq.json" trigger="loop" colors="primary:#ffffff" class="active-menu" title="My Team"></lord-icon>
+                    <ion-label>My Team</ion-label>
                   </div>
                 </ion-item>
               </ion-menu-toggle>
-              <!-- Log Out -->
-            </ion-list>
-          </ion-content>
-        </ion-menu>
-      </ng-container>
-      <!-- Quick refresh overlay -->
-      <div *ngIf="isRefreshing" class="refresh-overlay">
-        <ion-spinner name="crescent" color="primary"></ion-spinner>
-      </div>
+            </ng-container>
 
-      <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
-    </ion-split-pane>
-  </div>
+            <ng-container *ngIf="!isAdminOnly()">
+              <ion-menu-toggle auto-hide="false">
+                <ion-item routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/org-tree') ? 'selected ion-activatable' : ''">
+                  <div class="row-left">
+                    <ion-icon name="git-branch-outline" class="inactive-menu"></ion-icon>
+                    <ion-icon name="git-branch-outline" class="active-menu"></ion-icon>
+                    <ion-label>Org Tree</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
+            </ng-container>
+
+            <ng-container *ngIf="isAdminOnly() || isHROnly()">
+              <ion-menu-toggle auto-hide="false">
+                <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
+                  [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable' : ''">
+                  <div class="row-left">
+                    <lord-icon src="https://cdn.lordicon.com/wzwygmng.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="Admin"></lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/wzwygmng.json" trigger="loop" colors="primary:#ffffff" class="active-menu" title="Admin"></lord-icon>
+                    <ion-label>Admin</ion-label>
+                  </div>
+                </ion-item>
+              </ion-menu-toggle>
+            </ng-container>
+
+            <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowWorkTrack()" auto-hide="false">
+              <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable' : ''">
+                <div class="row-left">
+                  <lord-icon src="https://cdn.lordicon.com/qjuahhae.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="Work Track"></lord-icon>
+                  <lord-icon src="https://cdn.lordicon.com/qjuahhae.json" trigger="loop" colors="primary:#ffffff" class="active-menu" title="Work Track"></lord-icon>
+                  <ion-label>Work Track</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
+
+            <ion-menu-toggle auto-hide="false" id="menu-finances">
+              <ion-item lines="none" detail="false" routerLinkActive="selected"
+                [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable' : ''">
+                <div class="row-left">
+                  <lord-icon src="https://cdn.lordicon.com/qhviklyi.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="My Finances"></lord-icon>
+                  <lord-icon src="https://cdn.lordicon.com/qhviklyi.json" trigger="loop" colors="primary:#ffffff" class="active-menu" title="My Finances"></lord-icon>
+                  <ion-label>My Finances</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
+            <ion-popover trigger="menu-finances" [dismissOnSelect]="true" class="menu-dropdown" side="right">
+              <ng-template>
+                <ion-content>
+                  <ion-menu-toggle auto-hide="false">
+                    <ion-item routerLink="/MyPay" lines="none" detail="false">
+                      <ion-label>My Pay</ion-label>
+                    </ion-item>
+                    <ion-item *ngIf="isAdminOnly()" routerLink="/finance-admin" lines="none" detail="false">
+                      <ion-label>Finance Admin</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+
+            <ion-menu-toggle auto-hide="false">
+              <ion-item routerDirection="root" (click)="logout()" lines="none" detail="false">
+                <div class="row-left">
+                  <ion-icon name="log-out-outline" class="inactive-menu"></ion-icon>
+                  <ion-icon name="log-out-outline" class="active-menu"></ion-icon>
+                  <ion-label>Log out</ion-label>
+                </div>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+        </ion-content>
+      </ion-menu>
+    </ng-container>
+
+    <div *ngIf="isRefreshing" class="refresh-overlay">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+
+    <ion-router-outlet id="main-content" [ngClass]="{'refreshing': isRefreshing}"></ion-router-outlet>
+  </ion-split-pane>
 </ion-app>
