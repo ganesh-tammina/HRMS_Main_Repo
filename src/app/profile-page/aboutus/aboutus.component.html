@@ -4,14 +4,14 @@
   <div class="ion-card ion-padding">
     <p class="header-text row-space-between">
       Personal Summary
-      <img (click)="isEditSummary()" src="../../assets/Icons/pencil.svg" width="18" />
+      <!-- <img (click)="isEditSummary()" src="../../assets/Icons/pencil.svg" width="18" /> -->
     </p>
 
     <ion-grid>
       <ion-row>
         <ion-col>
           <div class="editor-container" *ngIf="viewEditor">
-              <ion-textarea placeholder="About yourself"></ion-textarea>
+            <ion-textarea placeholder="About yourself"></ion-textarea>
           </div>
 
           <p *ngIf="!viewEditor">
@@ -28,7 +28,7 @@
   <div class="ion-card">
     <p class="header-text row-space-between">
       Organizational Details
-      <img (click)="isEditOrg()" src="../../assets/Icons/pencil.svg" width="18" />
+      <!-- <img (click)="isEditOrg()" src="../../assets/Icons/pencil.svg" width="18" /> -->
     </p>
 
     <div class="report-block">
@@ -55,7 +55,7 @@
       <div>
         <p class="mb-8">Reporting Manager</p>
         <h6 class="row-left" *ngIf="!IsOrg">
-          <img src="../../assets/user.svg" width="18" class="mr-8"/>
+          <img src="../../assets/user.svg" width="18" class="mr-8" />
           {{ currentEmployee?.manager_first_name }}
           {{ currentEmployee?.manager_last_name }}
         </h6>
