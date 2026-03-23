@@ -308,11 +308,12 @@
     color: #4b5563;
     font-weight: 500;
 
-    .highlight-orange {
+    .highlight-off {
       width: 12px;
       height: 12px;
-      background-color: #ff9800;
-      border-radius: 2px;
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 4px;
       display: inline-block;
     }
   }

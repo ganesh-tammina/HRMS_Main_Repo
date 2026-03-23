@@ -189,8 +189,8 @@ export class LeaveRequestComponent implements OnInit {
       if (this.weekOffDays.includes(d.getDay())) {
         dates.push({
           date: this.formatLocalDate(d),
-          textColor: '#ffffff',
-          backgroundColor: '#ff9800' // Orange for week-offs
+          textColor: '#2563eb',
+          backgroundColor: '#eff6ff' // Soft blue for professional 'Off' look
         });
       }
     }
