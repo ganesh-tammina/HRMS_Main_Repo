@@ -65,6 +65,9 @@ export class HomePage implements OnInit, OnDestroy {
   userDesignation: string | null = null;
   leaveCodeIdMap: any = {};
   todayAttendance: any = null;
+  weeklyGrossHours: string = '0h 0m';
+  todayEffectivePercentage: number = 0;
+  weeklyAttendanceRate: number = 0;
   backgroundImageUrl: string = '../../assets/holidays-pics/christmas_pic.svg';
 
   /* ================= BIRTHDAYS ================= */
@@ -103,7 +106,6 @@ export class HomePage implements OnInit, OnDestroy {
       month
     );
 
-
     // ✅ RECEIVE MONTHLY ATTENDANCE
     this.attendanceService.monthlyReport$
       .pipe(takeUntil(this.destroy$))
@@ -113,7 +115,7 @@ export class HomePage implements OnInit, OnDestroy {
 
         // Find today's specific record
         const todayStr = moment().format('YYYY-MM-DD');
-        this.todayAttendance = report.find(r => moment(r.date).format('YYYY-MM-DD') === todayStr) || null;
+        this.todayAttendance = report.find(r => moment(r.attendance_date || r.date).format('YYYY-MM-DD') === todayStr) || null;
         console.log('📅 Today Attendance:', this.todayAttendance);
 
         // Example calculation
@@ -124,7 +126,60 @@ export class HomePage implements OnInit, OnDestroy {
           );
         }
 
+        // --- Calculate Dynamic Weekly Stats ---
+        const startOfWeek = moment().startOf('week');
+        const endOfWeek = moment().endOf('week');
+
+        const weekRecords = report.filter(r => {
+          const d = moment(r.attendance_date || r.date);
+          return d.isSameOrAfter(startOfWeek) && d.isSameOrBefore(endOfWeek);
+        });
+
+        // 1. Weekly Gross Hours
+        let weekTotalMinutes = 0;
+        weekRecords.forEach(r => {
+          const gross = r.gross_hours || "0";
+          const val = parseFloat(gross) || 0;
+          weekTotalMinutes += val * 60;
+        });
+        const h = Math.floor(weekTotalMinutes / 60);
+        const m = Math.round(weekTotalMinutes % 60);
+        this.weeklyGrossHours = `${h}h ${m}m`;
+
+        // 2. Weekly Attendance Rate (On Time)
+        if (weekRecords.length) {
+          const presentWeekDays = weekRecords.filter(r => r.status === 'present' || r.status === 'on-time').length;
+          this.weeklyAttendanceRate = Math.round((presentWeekDays / weekRecords.length) * 100);
+        } else {
+          this.weeklyAttendanceRate = 0;
+        }
+
+        // 3. Today's Effective Percentage
+        if (this.todayAttendance) {
+          const eff = parseFloat(this.todayAttendance.effective_hours) || 0;
+          this.todayEffectivePercentage = Math.round((eff / 8) * 100);
+        } else {
+          this.todayEffectivePercentage = 0;
+        }
+
         // Force UI update if needed
+        this.cdr.detectChanges();
+      });
+
+    // 🔄 REFRESH REPORT ON ANY PUNCH SUCCESS (Real-time update)
+    this.attendanceApi.punchRefresh$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const y = new Date().getFullYear();
+        const m = new Date().getMonth() + 1;
+        console.log('🔄 Punch action confirmed, refreshing dashboard stats...');
+        this.attendanceService.loadMonthlyReportOnAppStart(this.attendanceApi, y, m);
+      });
+
+    // 🔄 RE-RENDER ON CLOCK STATE CHANGE (Instant UI feedback)
+    this.attendanceApi.clockState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.cdr.detectChanges();
       });
 
@@ -384,6 +439,22 @@ export class HomePage implements OnInit, OnDestroy {
 
   trackById(index: number, item: any) {
     return item.id || item.employee_id || index;
+  }
+
+  getStatusLabel(): string {
+    // Use the real-time shared clock state for the most accurate IN/OUT status
+    const isClockedIn = this.attendanceApi.getClockState();
+
+    if (isClockedIn) {
+      return 'IN';
+    } else {
+      // If not currently clocked in, check if they have any punch record for today
+      // If they have a first check-in but are not currently clocked in, they must be OUT
+      const hasPunchedToday = this.todayAttendance && 
+        (this.todayAttendance.first_check_in || this.todayAttendance.check_in);
+      
+      return hasPunchedToday ? 'OUT' : 'NOT IN AT';
+    }
   }
 
   ngOnDestroy() {

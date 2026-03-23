@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, shareReplay } from 'rxjs';
+import { BehaviorSubject, Observable, tap, shareReplay, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -13,6 +13,10 @@ export class AttendanceApiService {
   // Shared clock state - broadcasts to all clock button instances
   private clockStateSubject = new BehaviorSubject<boolean>(false);
   clockState$ = this.clockStateSubject.asObservable();
+
+  // Observable for refreshing shared reports (e.g. on Home page)
+  private punchRefreshSubject = new Subject<void>();
+  punchRefresh$ = this.punchRefreshSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -67,6 +71,7 @@ export class AttendanceApiService {
         if (res?.success) {
           this.clearCaches();
           this.setClockState(true); // Broadcast clock in state
+          this.punchRefreshSubject.next(); // Trigger UI refreshes
         }
       })
     );
@@ -85,6 +90,7 @@ export class AttendanceApiService {
         if (res?.success) {
           this.clearCaches();
           this.setClockState(false); // Broadcast clock out state
+          this.punchRefreshSubject.next(); // Trigger UI refreshes
         }
       })
     );

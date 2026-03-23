@@ -39,7 +39,11 @@
               <div class="row-right">
                 <ion-button class="primary-btn" id="open-upload-modal">
                   <ion-icon name="add-circle-outline" class="pr-5"></ion-icon>
-                  Add Employees
+                  Upload Employees
+                </ion-button>
+                <ion-button class="primary-btn" id="open-upload-modal">
+                  <ion-icon name="add-circle-outline" class="pr-5"></ion-icon>
+                  Create Employee
                 </ion-button>
               </div>
 
@@ -165,17 +169,14 @@
                           <div class="manager-trigger" (click)="toggleManagerDropdown()">
                             <ion-icon name="person-circle-outline" class="trigger-icon"></ion-icon>
                             <span class="trigger-text">{{ getManagerName(updateData.reporting_manager_id) }}</span>
-                            <ion-icon [name]="managerDropdownOpen ? 'chevron-up-outline' : 'chevron-down-outline'" class="trigger-chevron"></ion-icon>
+                            <ion-icon [name]="managerDropdownOpen ? 'chevron-up-outline' : 'chevron-down-outline'"
+                              class="trigger-chevron"></ion-icon>
                           </div>
 
                           <!-- Inline expanded panel (no absolute positioning) -->
                           <div class="manager-panel" *ngIf="managerDropdownOpen">
-                            <ion-searchbar
-                              [(ngModel)]="managerSearchTerm"
-                              (ionInput)="filterManagers()"
-                              placeholder="Search by name..."
-                              [debounce]="150"
-                              showCancelButton="never"
+                            <ion-searchbar [(ngModel)]="managerSearchTerm" (ionInput)="filterManagers()"
+                              placeholder="Search by name..." [debounce]="150" showCancelButton="never"
                               class="manager-search">
                             </ion-searchbar>
                             <div class="manager-list">
@@ -185,13 +186,13 @@
                                 <span>No Manager</span>
                               </div>
                               <!-- Employee options -->
-                              <div class="manager-option"
-                                *ngFor="let emp of filteredManagers"
+                              <div class="manager-option" *ngFor="let emp of filteredManagers"
                                 (click)="selectManager(emp.id)"
                                 [class.is-selected]="updateData.reporting_manager_id === emp.id">
                                 <ion-icon name="person-outline"></ion-icon>
                                 <span>{{ emp.FullName }}</span>
-                                <ion-icon name="checkmark" class="check-icon" *ngIf="updateData.reporting_manager_id === emp.id"></ion-icon>
+                                <ion-icon name="checkmark" class="check-icon"
+                                  *ngIf="updateData.reporting_manager_id === emp.id"></ion-icon>
                               </div>
                               <!-- Empty state -->
                               <div class="manager-option empty-msg" *ngIf="filteredManagers.length === 0">

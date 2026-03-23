@@ -72,65 +72,55 @@
               <h3 class="card-header">Today’s Overview</h3>
               <p class="card-dec">Your attendance, progress, and status at a glance</p>
             </div>
-            <div class="label">
-              <p>On Time • {{ attendanceRate }}% this Week</p>
-            </div>
+            <!-- <div class="label">
+              <p>On Time • {{ weeklyAttendanceRate }}% this Week</p>
+            </div> -->
           </div>
 
-          <div class="card-content" *ngIf="todayAttendance">
+          <div class="card-content">
             <ion-row>
               <ion-col size="7">
                 <div class="row-space-between">
                   <p class="label-test">Clock In</p>
-                  <p class="time">{{todayAttendance.first_check_in | date:'h:mm a'}}</p>
+                  <p class="time">{{ (todayAttendance?.first_check_in | date:'h:mm a') || '--:--' }}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Last Punch Out</p>
-                  <p class="time">{{todayAttendance.last_check_out | date:'h:mm a'}}</p>
+                  <p class="time">{{ (todayAttendance?.last_check_out | date:'h:mm a') || '--:--' }}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Status</p>
-                  <p class="status">{{todayAttendance.status}}</p>
+                  <p class="status">{{ getStatusLabel() }}</p>
                 </div>
+
+
+              </ion-col>
+              <ion-col size="5">
                 <div class="row-space-between">
                   <p class="label-test">Gross Hours</p>
-                  <p class="time">{{todayAttendance.gross_hours}}</p>
+                  <p class="time">{{ todayAttendance?.gross_hours || '0h 0m' }}</p>
                 </div>
                 <div class="row-space-between">
                   <p class="label-test">Effective Hours</p>
-                  <p class="time">68% of 8hrs</p>
+                  <p class="time">{{ todayEffectivePercentage }}.00</p>
                 </div>
-                <div class="label">
+                <div class="label" *ngIf="todayAttendance?.work_mode">
                   <p class="w-auto">Mode: {{todayAttendance.work_mode}}</p>
                 </div>
-              </ion-col>
-              <ion-col size="5">
-                <div class="time-block">
+                <!-- <div class="time-block">
                   <div>
                     <p>This Week</p>
-                    <p>18h 40m</p>
+                    <p>{{ weeklyGrossHours }}</p>
                   </div>
                   <ion-icon name="time-outline"></ion-icon>
-                </div>
-                <div class="time-block">
-                  <div>
-                    <p>Avg. Start Time</p>
-                    <p>09 : 07 AM</p>
-                  </div>
-                  <ion-icon name="time-outline"></ion-icon>
-                </div>
+                </div> -->
+
               </ion-col>
             </ion-row>
           </div>
-
-          <!-- Empty state if no attendance for today -->
-          <div class="card-content" *ngIf="!todayAttendance">
-            <p class="ion-text-center ion-padding">No attendance record found for today.</p>
-          </div>
         </ion-card>
-
+        <!-- 
         <ion-card class="overview-block">
-          <!-- Attendance Overview card -->
           <div class="row-space-between border-bottom">
             <div>
               <h3 class="card-header">Attendance overview</h3>
@@ -152,7 +142,7 @@
             <p class="note">You're consistently hitting 7.5-8.5 hours per day. Great balance.</p>
 
           </div>
-        </ion-card>
+        </ion-card> -->
 
         <ion-card class="overview-block">
           <!-- Leave balance card -->
@@ -224,7 +214,7 @@
       </ion-col>
       <ion-col size-sm="12" size-md="12" size-lg="6" size-xl="6">
         <!-- Quick links card -->
-        <ion-card class="overview-block">
+        <ion-card class="overview-block d-none">
           <div class="row-space-between border-bottom">
             <div>
               <h3 class="card-header">Quick links</h3>
