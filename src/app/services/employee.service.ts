@@ -182,25 +182,29 @@ export class EmployeeService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.API_URL}/search/query`, {
+    return this.http.get<any>(this.API_URL, {
       params,
       headers: { Authorization: `Bearer ${token}` }
     });
   }
 
 
-  /* Get all employees with pagination */
-  getAllEmployees(page: number = 1, limit: number = 20): Observable<any> {
+  getAllEmployees(page: number = 1, limit: number = 20, search: string = ''): Observable<any> {
     const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
+
+    if (search && search.trim()) {
+      params = params.set('q', search.trim());
+    }
 
     return this.http.get<any>(this.API_URL, {
       params,
       headers: { Authorization: `Bearer ${token}` }
     });
   }
+
 
   clearEmployee(): void {
     this.currentEmployee = null;

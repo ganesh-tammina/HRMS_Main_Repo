@@ -135,12 +135,12 @@ export class EmployeeListComponent implements OnInit {
   }
   /* ================= LOAD EMPLOYEES (SERVER-SIDE PAGINATION) ================= */
   loadEmployees() {
-    this.employeeService.getAllEmployees(this.currentPage, this.pageSize).subscribe((res: any) => {
+    this.employeeService.getAllEmployees(this.currentPage, this.pageSize, this.searchTerm).subscribe((res: any) => {
       // Backend returns { data: [...], pagination: { page, limit, total, pages } }
       this.allCandidates = res.data || [];
       this.allEmployees = [...this.allCandidates]; 
       this.filteredManagers = [...this.allCandidates];
-      
+      this.pagedCandidates = [...this.allCandidates];
       if (res.pagination) {
         this.currentPage = res.pagination.page;
         this.totalPages = res.pagination.pages;

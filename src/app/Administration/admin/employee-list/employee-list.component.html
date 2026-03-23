@@ -32,7 +32,7 @@
           <ion-card-header class="row-space-between">
             <ion-card-title>Employees <small>{{totalEmployees}}</small></ion-card-title>
             <!-- *ngIf="isHR" -->
-            <ion-searchbar *ngIf="isHR" [(ngModel)]="searchTerm" (ionInput)="loadEmployees()"
+            <ion-searchbar *ngIf="isHR" [(ngModel)]="searchTerm" (ionInput)="currentPage = 1; loadEmployees()"
               placeholder="Search Employees, Employee ID or Department " showCancelButton="never">
             </ion-searchbar>
             <ion-card-subtitle>
@@ -87,22 +87,22 @@
 
               <!-- Header -->
               <ion-row class="table-header">
-                <ion-col size="1">
+                <ion-col size="0.8">
                   <p>Emp ID</p>
                 </ion-col>
-                <ion-col size="1.5">
+                <ion-col size="1.2">
                   <p>Emp Number</p>
                 </ion-col>
-                <ion-col size="2">
+                <ion-col size="1.8">
                   <p>Name</p>
                 </ion-col>
-                <ion-col size="2.5">
+                <ion-col size="2.3">
                   <p>Email ID</p>
                 </ion-col>
                 <ion-col size="1.5">
                   <p>Department</p>
                 </ion-col>
-                <ion-col size="1.5">
+                <ion-col size="1.4">
                   <p>Designation</p>
                 </ion-col>
                 <ion-col size="1">
@@ -118,22 +118,22 @@
 
               <!-- Rows -->
               <ion-row class="table-row-list" *ngFor="let candidate of pagedCandidates">
-                <ion-col size="1">
+                <ion-col size="0.8">
                   <p>{{ candidate.id }} </p>
                 </ion-col>
-                <ion-col size="1.5">
+                <ion-col size="1.2">
                   <p>{{ candidate.EmployeeNumber || '-' }}</p>
                 </ion-col>
-                <ion-col size="2">
+                <ion-col size="1.8">
                   <p>{{ candidate.FullName || '-' }}</p>
                 </ion-col>
-                <ion-col size="2">
+                <ion-col size="2.3">
                   <p>{{ candidate.WorkEmail || '-' }}</p>
                 </ion-col>
                 <ion-col size="1.5">
                   <p>{{ candidate.department_name || '-' }}</p>
                 </ion-col>
-                <ion-col size="1.0">
+                <ion-col size="1.4">
                   <p>{{ candidate.designation_name || '-' }}</p>
                 </ion-col>
                 <ion-col size="1">
