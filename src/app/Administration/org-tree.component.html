@@ -35,26 +35,30 @@
     <ng-template #recursiveTree let-employee let-level="level">
         <div class="org-tree-node-flex">
             <div class="org-tree-node-card">
-                <ion-card class="org-card org-card-member" [class.org-me]="employee.isMe" [class.org-manager]="employee.isManager" [class.org-coteam]="employee.isCoTeam" [class.org-team]="employee.isTeam">
+                <ion-card class="org-card org-card-member" [class.org-me]="employee.isMe"
+                    [class.org-manager]="employee.isManager" [class.org-coteam]="employee.isCoTeam"
+                    [class.org-team]="employee.isTeam">
                     <div class="org-label-badge" *ngIf="employee.isMe">Me</div>
                     <div class="org-label-badge" *ngIf="employee.isManager">Reporting Manager</div>
                     <div class="org-label-badge" *ngIf="employee.isCoTeam">Co-Team</div>
                     <div class="org-label-badge" *ngIf="employee.isTeam">My Team</div>
-                    
-                    <div class="org-member-header" style="display: flex; align-items: center; gap: 0.5em;" >
-                        <div
-                        class="avatar"
-                        [style.background]="getAvatarColor(employee)">
-                        {{ employee.FirstName?.[0] || employee.name?.[0] }}
-                      </div>                      
+
+                    <div class="org-member-header"
+                        style="display: flex; align-items: center; gap: 0.5em;margin-top: 15px;">
+                        <div class="avatar" [style.background]="getAvatarColor(employee)">
+                            {{ employee.FirstName?.[0] || employee.name?.[0] }}
+                        </div>
 
                         <div class="member-info">
-                            <span class="member-name">{{ employee.FullName || employee.FirstName + ' ' + employee.LastName }}</span>
-                            <span class="org-member-role">{{ employee.role || employee.designation_name }}</span>                      
+                            <span class="member-name">{{ employee.FullName || employee.full_name || employee.FirstName +
+                                ' ' + employee.LastName }}</span>
+                            <span class="org-member-role">{{ employee.role || employee.designation_name ||
+                                employee.job_title || '-' }}</span>
                         </div>
-                       
-                          <button *ngIf="employee.directReports && employee.directReports.length > 0 || !employee.isManager" type="button"
-                            class="expand-btn" (click)="$event.stopPropagation(); toggleExpand(employee)"
+
+                        <button
+                            *ngIf="employee.directReports && employee.directReports.length > 0 || !employee.isManager"
+                            type="button" class="expand-btn" (click)="$event.stopPropagation(); toggleExpand(employee)"
                             [attr.aria-expanded]="expanded[employee.id]">
                             <ion-icon [name]="expanded[employee.id] ? 'chevron-down' : 'chevron-forward'"></ion-icon>
                         </button>
