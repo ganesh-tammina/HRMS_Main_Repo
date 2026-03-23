@@ -139,7 +139,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private performSearch(query: string) {
-    if (!query || query.trim().length < 3) {
+    if (!query || query.trim().length < 1) {
       this.searchResults = [];
       this.results = [];
       return;

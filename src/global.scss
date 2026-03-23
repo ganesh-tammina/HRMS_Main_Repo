@@ -587,11 +587,13 @@ ion-popover ion-content::-webkit-scrollbar {
 
 
 .profile-modal {
-  --width: 625px;
-  --height: 400px;
+  --height: 80%;
+  --border-radius: 24px 24px 0 0;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+  align-items: flex-end;
 
   &::part(backdrop) {
-    opacity: 0.35 !important;
+    opacity: 0.5 !important;
   }
 }
 
