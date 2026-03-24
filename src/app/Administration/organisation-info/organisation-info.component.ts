@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CandidateService } from 'src/app/services/pre-onboarding.service';
 
 @Component({
@@ -14,7 +14,10 @@ export class OrganisationInfoComponent implements OnInit {
   selectedFile: File | null = null;
   imageUrl: string | null = null;
   previewUrl: string | null = null;
-  constructor(private candidateService: CandidateService) { }
+  constructor(
+    private candidateService: CandidateService,
+    private toastCtrl: ToastController
+  ) { }
 
   ngOnInit() { }
 
@@ -28,21 +31,18 @@ export class OrganisationInfoComponent implements OnInit {
   }
   onUpload() {
     if (!this.selectedFile) {
-      alert('Please select a file first!');
+      this.showToast('Please select a file first!', 'warning');
       return;
     }
+  }
 
-    this.candidateService.uploadImage(this.selectedFile).subscribe({
-      next: (res) => {
-        console.log('Uploaded successfully:', res);
-        this.imageUrl = res.imageUrl; // URL from server
-        this.candidateService.getImages().subscribe(images => {
-          console.log('Images:', images);
-        })
-      },
-      error: (err) => {
-        console.error('Upload failed:', err);
-      }
+  async showToast(message: string, color: string = 'primary') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'top'
     });
+    await toast.present();
   }
 }

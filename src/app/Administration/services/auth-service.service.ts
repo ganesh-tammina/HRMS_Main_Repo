@@ -12,7 +12,7 @@ export interface LoggedUser {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AdminAuthService {
   private userSubject = new BehaviorSubject<LoggedUser | null>(null);
 
   constructor() {

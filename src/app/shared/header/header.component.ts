@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import {
   CandidateService,
   Candidate,
@@ -12,8 +12,12 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { EmployeeService } from '../../services/employee.service';
+import { AuthService } from '../../services/login-services.service';
+
 @Component({
   standalone: true,
   selector: 'app-header',
@@ -21,147 +25,152 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./header.component.scss'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule],
 })
-export class HeaderComponent implements OnInit {
-  currentCandidate: Candidate | null = null;
-  // Search functionality
+export class HeaderComponent implements OnInit, OnDestroy {
+  // Search state
   searchQuery: string = '';
   searchResults: CandidateSearchResult[] = [];
-  results: any;
-  one: any;
-  full_name: string = '';
-  currentTime: string = '';
-  allEmployees: any[] = [];
-  @Input() employee: any;
-  fullName: any;
-  currentemp: any;
-  employee_id: any;
-  uploadedImageUrl: string | null = null;
-  currentCandidate$!: Observable<any>;
-  currentEmployee$!: Observable<Employee | null>;
-  imageUrls: any;
+  results: string[] = [];
+  private searchSubject = new Subject<string>();
 
-profileimg: string = environment.apiURL;
- 
+  // Profile status
+  currentEmployee: any;
+  uploadedImageUrl: string | null = null;
+  profileImageUrl: string = 'assets/user.svg';
+  env: string = '';
+  isAdmin: boolean = false;
+
+  private destroy$ = new Subject<void>();
+
   constructor(
     private candidateService: CandidateService,
     private modalCtrl: ModalController,
     private routeGuardService: RouteGuardService,
     private router: Router,
-    private navCtrl: NavController // ✅ add this
-  ) {}
+    private employeeService: EmployeeService,
+    private navCtrl: NavController,
+    private authService: AuthService
+  ) {
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(query => {
+      this.performSearch(query);
+    });
+  }
 
   ngOnInit() {
-    this.candidateService.Employee$.subscribe((employees) => {
-      console.log('👀 Employee$ value:', employees);
-    });
+    this.env = environment.apiURL.startsWith('http') ? environment.apiURL : `http://${environment.apiURL}`;
+    this.isAdmin = this.routeGuardService.userRole?.toLowerCase() === 'admin';
 
-    // Load profile image from localStorage
-    this.uploadedImageUrl = localStorage.getItem('uploadedImageUrl');
-
-    // Listen for profile image updates
-    this.candidateService.profileImage$.subscribe((imageUrl) => {
-      if (imageUrl) {
-        this.uploadedImageUrl = imageUrl;
-        console.log('🖼️ Header: Profile image updated to:', imageUrl);
-      } else if (imageUrl === '') {
-        // Handle logout case
-        this.uploadedImageUrl = null;
-        console.log('🖼️ Header: Profile image cleared on logout');
-      }
-    });
-    console.log(
-      '🖼️ Loaded image URL from localStorage:',
-      this.uploadedImageUrl
-    );
-
-    // this.currentEmployee$ = this.candidateService.currentEmployee$;
-
-    // this.currentEmployee$.subscribe((emp: any) => {
-    //   if (Array.isArray(emp) && emp.length > 0) {
-    //     this.currentemp = emp[0]; // ✅ pick first employee object
-    //   } else {
-    //     this.currentemp = emp; // if it's already a single object
-    //   }
-
-    //   console.log('Current Employee:', this.currentemp);
-    // });
-
-    if (this.routeGuardService.employeeID) {
-      this.candidateService.getEmpDet().subscribe({
-        next: (response: any) => {
-          this.allEmployees = response.data || [];
-          if (this.allEmployees.length > 0) {
-            this.one = this.allEmployees[0];
-            this.fullName = this.one[0].full_name;
-            this.employee_id = this.one[0].employee_id;
-            this.imageUrls = this.one[0].image;
-            console.log('profile',this.imageUrls);
-            localStorage.setItem('employee_id', this.employee_id);
-            this.candidateService.setLoggedEmployeeId(this.employee_id);
-            console.log(this.fullName);
-
-            console.log(this.employee_id);
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching all employees:', err);
-        },
+    // Listen for general profile image changes (e.g. from candidate service)
+    this.candidateService.profileImage$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imageUrl) => {
+        if (imageUrl) {
+          this.uploadedImageUrl = imageUrl;
+          this.profileImageUrl = imageUrl;
+        } else if (imageUrl === '') {
+          this.uploadedImageUrl = null;
+          this.profileImageUrl = 'assets/user.svg';
+        }
       });
-      // Subscribe to current candidate observable
 
-      // Fallback: if page refreshed
+    // Fetch profile data regardless of role to ensure "who is login" is displayed correctly
+    this.employeeService.getMyProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.currentEmployee = res;
+          if (res) {
+            this.updateProfileImageUrl();
+            if (res.id) {
+              // Set reporting manager if appropriate for the view
+              this.employeeService.setEmployeeId(res.reporting_manager_id);
+            }
+          }
+        }
+      });
+
+    // Listen to real-time updates from currentEmployee$ stream
+    this.employeeService.currentEmployee$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(emp => {
+        if (emp) {
+          this.currentEmployee = emp;
+          this.updateProfileImageUrl();
+        }
+      });
+
+    // Listen for specific employee profile image updates
+    this.employeeService.profileImageUpdate$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((imagePath) => {
+        if (imagePath && this.currentEmployee) {
+          this.currentEmployee.profile_image = imagePath;
+          this.updateProfileImageUrl();
+        }
+      });
+  }
+
+  private updateProfileImageUrl() {
+    if (this.currentEmployee?.profile_image) {
+      this.profileImageUrl = `${this.env}${this.currentEmployee.profile_image}`;
+    } else {
+      this.profileImageUrl = 'assets/user.svg';
     }
   }
 
-  // Logout method
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   logout() {
-    this.candidateService.logout();
+    this.authService.logout().subscribe();
   }
 
   viewProfile() {
     this.navCtrl.navigateForward('/profile-page');
   }
 
-  // Search employees by name
   onSearch() {
-    if (!this.searchQuery || this.searchQuery.trim().length < 3) {
+    this.searchSubject.next(this.searchQuery);
+  }
+
+  private performSearch(query: string) {
+    if (!query || query.trim().length < 1) {
       this.searchResults = [];
       this.results = [];
       return;
     }
 
-    this.candidateService.searchCandidates(this.searchQuery).subscribe({
-      next: (results) => {
-        this.searchResults = results;
+    this.employeeService.searchEmployees(query.trim(), 1, 20).subscribe({
+      next: (res: any) => {
+        // Backend returns { data: [...], pagination: { ... } }
+        this.searchResults = res.data || [];
         this.results = this.searchResults.map(
-          (emp) => `${emp.first_name} ${emp.last_name}`
+          (emp: any) => emp.FullName || `${emp.FirstName} ${emp.LastName || ''}`
         );
+        if (this.searchResults.length > 0) {
+          this.openEmployeeListModal(this.searchResults);
+        }
       },
+      error: (err) => console.error('Search error:', err)
     });
-    // this.results = JSON.stringify(this.searchResults)
-    // console.log(this.results)
-
-    console.log(this.results);
   }
 
-  // Get profile image URL with fallback
-  getProfileImageUrl(): string {
-    // Always check localStorage for latest image
-    const latestImage = localStorage.getItem('uploadedImageUrl');
-    if (latestImage) {
-      this.uploadedImageUrl = latestImage;
-      return latestImage;
+  async openEmployeeListModal(data: any) {
+    // Dismiss existing modal if any
+    const existingModal = await this.modalCtrl.getTop();
+    if (existingModal) {
+      await existingModal.dismiss();
     }
-    // If localStorage is empty, clear component cache and return default
-    this.uploadedImageUrl = null;
-    return '../../../assets/user.svg';
-  }
 
-  // Open modal to show employee list
-  async openEmployeeListModal() {
     const modal = await this.modalCtrl.create({
       component: EmployeeListModalComponent,
-      componentProps: { employees: this.searchResults },
+      componentProps: { employees: data },
+      cssClass: 'employee-list-modal'
     });
     await modal.present();
   }

@@ -4,7 +4,12 @@
   <app-onboarding-mainheader></app-onboarding-mainheader>
 </ion-header>
 <ion-content class="pre-on-boarding-block" fullscreen>
-  <p class="page-header mb-8"> Onboarding > Preboarding </p>
+  <p class="page-header mb-8">
+    <a routerLink="/preonboarding-cards" (click)="org()">Org /</a>
+    <a routerLink="/pre-onboarding-setup" (click)="onboard()">Onboarding /</a>
+    Preboarding
+  </p>
+  <!-- <p class="page-header mb-8"> <a routerLink="/pre_onboarding" (click)="preonboard()">Onboarding ></a> Preboarding </p> -->
   <ion-row class="mt-30 mb-15">
     <ion-col>
       <p class="page-sub-header">Preboarding</p>
@@ -23,56 +28,57 @@
   <div class="filters">
     <ion-grid class="filters-grid">
       <ion-row class="ion-align-items-center">
-        <ion-col class="row-left">
+        <ion-col class="row-left" size="2">
           <div class="filter-chip" lines="none">
             <ion-label>Business Unit</ion-label>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down" (ionChange)="onFilterChange('businessunit', $event)"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let list1 of BusinessunitList" [value]="list1" >
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
+              (ionChange)="onFilterChange('businessunit', $event)" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let list1 of BusinessunitList" [value]="list1">
                 {{list1}}
               </ion-select-option>
             </ion-select>
           </div>
           <div class="filter-chip">
             <ion-label>Job Title</ion-label>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('jobtitle', $event)">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let title of JobTitleList" [value]="title" >
-                  {{title}}
-                </ion-select-option>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover" (ionChange)="onFilterChange('jobtitle', $event)">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let title of JobTitleList" [value]="title">
+                {{title}}
+              </ion-select-option>
             </ion-select>
             <!-- <ion-icon color="gray" slot="end" name="chevron-down-outline"></ion-icon> -->
           </div>
           <div class="filter-chip">
             <span>Department</span>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('department', $event)">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let department of DeptList" [value]="department" >
-                  {{department}}
-                </ion-select-option>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover" (ionChange)="onFilterChange('department', $event)">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let department of DeptList" [value]="department">
+                {{department}}
+              </ion-select-option>
             </ion-select>
           </div>
           <div class="filter-chip">
             <span>Location</span>
-            <ion-select class="custom-dropdown" toggleIcon="chevron-down"
-              expandedIcon="chevron-up" placeholder="ALL" interface="popover" (ionChange)="onFilterChange('location', $event)">
-              <ion-select-option value="" >
-                  All
-                </ion-select-option>
-              <ion-select-option *ngFor="let location of LocationList" [value]="location" >
-                  {{location}}
-                </ion-select-option>
+            <ion-select class="custom-dropdown" toggleIcon="chevron-down" expandedIcon="chevron-up" placeholder="ALL"
+              interface="popover" (ionChange)="onFilterChange('location', $event)">
+              <ion-select-option value="">
+                All
+              </ion-select-option>
+              <ion-select-option *ngFor="let location of LocationList" [value]="location">
+                {{location}}
+              </ion-select-option>
             </ion-select>
-          </div>        
+          </div>
         </ion-col>
       </ion-row>
 
@@ -80,12 +86,12 @@
         <ion-col size="6" size-lg="5" size-md="6">
           <div class="search-wrap">
             <ion-icon name="search-outline"></ion-icon>
-            <input #searchInput placeholder="Search" (keyup)="SearchCandidates($event)"/>
+            <input #searchInput placeholder="Search" (keyup)="SearchCandidates($event)" />
           </div>
         </ion-col>
         <ion-col>
           <div class="clear">
-            <ion-button class="primary-btn" (click)="clearSearch(searchInput)">
+            <ion-button class="primary-btn clearbtn" (click)="clearSearch(searchInput)">
               Clear
             </ion-button>
           </div>
@@ -96,60 +102,53 @@
 
   <!-- Table Header -->
   <div class="table">
-    <ion-row class="table-header">
+    <ion-row class="table-header header-table">
       <ion-col size="2" class="row-left">
-        <ion-checkbox class="pr-15"></ion-checkbox>
         <p>Candidate Name</p>
       </ion-col>
-      <ion-col size="1">
-        <p>Offer Status</p>
+      <ion-col size="2">
+        <p>Job Title</p>
       </ion-col>
+
       <ion-col size="2">
         <p>Department</p>
       </ion-col>
       <ion-col size="2">
-        <p>Location</p>
-      </ion-col>  
-      <ion-col size="2">
-        <p>Joining Date</p>
+        <p>Offer Status</p>
       </ion-col>
-      <ion-col size="3">
+      <ion-col size="2">
+        <p>Location</p>
+      </ion-col>
+
+      <ion-col size="2">
         <p>Actions</p>
       </ion-col>
+
     </ion-row>
     <div class="table-list">
       <ion-grid *ngFor="let candidate of candidates">
-        <ion-row class="table-list-row" *ngIf="candidate.status === 'accepted' || candidate.status === 'pending'">
+        <ion-row class="table-list-row">
           <ion-col size="2" class="row-left">
-            <ion-checkbox class="pr-15"></ion-checkbox>
             <div class="cell">
-              <!-- <div class="avatar">{{candidate.personalDetails.initials}}</div> -->
               <div class="name-stack">
-                <p class="name-link"> {{candidate.FirstName}}</p>
-                <p class="sub">{{candidate.JobTitle}}</p>
+                <p class="name-link" (click)="goToCreateOffer(candidate)"> {{candidate.full_name}}</p>
               </div>
             </div>
-            <!-- <div class="stage-bars">
-              <span class="bar done" [class.done]="currentStage >= 1"></span>
-              <span class="bar done" *ngIf="currentStage >= 2" class="bar" [class.done]="currentStage >= 2"></span>
-              <span class="bar done" *ngIf="currentStage >= 3" class="bar" [class.done]="currentStage >= 3"></span>
-            </div> -->
           </ion-col>
-          <ion-col size="1">
+          <ion-col size="2">
+            <p class="clickable-item" (click)="goToCreateOffer(candidate)">{{candidate.designation_name}}</p>
+          </ion-col>
+          <ion-col size="2">
+            <p class="clickable-item" (click)="goToCreateOffer(candidate)">{{candidate.department_name}}</p>
+          </ion-col>
+          <ion-col size="2">
             <h5 [ngClass]="candidate.status === 'pending'? 'status-title pending' : 'status-title accepted'">
               {{candidate.status}}</h5>
-            <!-- <div class="status-sub" *ngIf="candidate.status === 'pending'">Last touch 5d ago</div> -->
           </ion-col>
           <ion-col size="2">
-              <p>{{candidate.Department}}</p>
+            <p class="clickable-item" (click)="goToCreateOffer(candidate)">{{candidate.location_name}}</p>
           </ion-col>
           <ion-col size="2">
-              <p>{{candidate.JobLocation}}</p>
-          </ion-col>
-          <ion-col size="2">
-            <p>{{candidate.date_joined}}</p>
-          </ion-col>
-          <ion-col size="3">
             <div class="cell cell-actions">
               <ion-button class="primary-outline-btn" *ngIf="candidate?.status === 'accepted'">Revise</ion-button>
               <ion-button class="primary-outline-btn" *ngIf="candidate?.status === 'pending'"

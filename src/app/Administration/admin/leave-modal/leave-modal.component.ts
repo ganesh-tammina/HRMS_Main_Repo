@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { LeaveService } from '../../services/leaves.services';
 
 @Component({
@@ -19,7 +19,6 @@ export class LeaveModalComponent implements OnInit {
   comp_offs_allocated: number = 0;
   medical_leave_allocated: number = 0;
   paid_leave_allocated: number = 0;
-  
 
   years: number[] = [];
   leaveData: any = null;
@@ -29,19 +28,17 @@ export class LeaveModalComponent implements OnInit {
 
   constructor(
     private leaveService: LeaveService,
-    private alertCtrl: AlertController
-  ) {}
+    private toastCtrl: ToastController
+  ) { }
 
   ngOnInit() {
-    // Generate years from current year to next 10 years
     const currentYear = new Date().getFullYear();
     this.years = Array.from({ length: 11 }, (_, i) => currentYear + i);
-
   }
 
   onSave() {
     if (!this.leave_year_start || !this.leave_year_end) {
-      this.showAlert('Missing Fields', 'Please select both Start Year and End Year.');
+      this.showToast('Please select both Start Year and End Year.', 'warning');
       return;
     }
 
@@ -55,46 +52,29 @@ export class LeaveModalComponent implements OnInit {
       paid_leave_allocated: this.paid_leave_allocated ?? 0,
     };
 
-    console.log('Saving leaves:', leaves);
-
-    // Save leave structure via LeaveService
     this.leaveService.saveLeaves(leaves).subscribe(
-      async (response) => {
-        console.log('Leaves saved successfully:', response);
-
+      () => {
+        this.showToast('Leave structure has been saved successfully!', 'success');
         this.onClose();
-
-        const alert = await this.alertCtrl.create({
-          header: 'Success',
-          message: 'Leave structure has been saved successfully!',
-          buttons: ['OK']
-        });
-        await alert.present();
       },
-      async (error) => {
+      (error) => {
         console.error('Error saving leaves:', error);
-
-        const alert = await this.alertCtrl.create({
-          header: 'Error',
-          message: 'Failed to save leave structure. Please try again.',
-          buttons: ['OK']
-        });
-        await alert.present();
+        this.showToast('Failed to save leave structure. Please try again.', 'danger');
       }
     );
   }
-  
+
   onClose() {
     this.closeModal.emit();
   }
 
-
-  private async showAlert(header: string, message: string) {
-    const alert = await this.alertCtrl.create({
-      header,
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastCtrl.create({
       message,
-      buttons: ['OK']
+      duration: 3000,
+      position: 'top',
+      color
     });
-    await alert.present();
+    await toast.present();
   }
 }

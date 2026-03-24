@@ -3,8 +3,14 @@
     <app-onboarding-mainheader></app-onboarding-mainheader>
   </ion-header>
   <ion-content class="pre-on-boarding-block" fullscreen>
-      <p class="page-header mb-8"> Org > Onboarding > Past Offers </p>
-      <ion-row class="mt-30 mb-15">
+  <p class="page-header mt-0 mb-8">
+    <a routerLink="/preonboarding-cards" (click)="org()">Org /</a>
+    <a routerLink="/pre-onboarding-setup" (click)="onboard()">Onboarding /</a>
+    Past Offers
+  </p>
+
+      <!-- <p class="page-header mb-8"> Org / Onboarding / Past Offers </p> -->
+      <ion-row class="mt-20 mb-10">
         <ion-col>
          <p class="page-sub-header">Past Offers</p>
         </ion-col>
@@ -58,7 +64,7 @@
     <div class="table">
         <ion-row class="table-header">
             <ion-col size="2" class="row-left">
-                <ion-checkbox class="pr-15"></ion-checkbox>
+                <!-- <ion-checkbox class="pr-15"></ion-checkbox> -->
                 <p>Candidate Name</p>
               </ion-col>
           <ion-col size="2">

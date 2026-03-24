@@ -9,7 +9,7 @@ describe('AttendanceLogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AttendanceLogComponent ],
+      declarations: [AttendanceLogComponent],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 

@@ -2,519 +2,434 @@
   <!-- <app-header></app-header> -->
 </ion-header>
 <ion-content [fullscreen]="true">
-  <ion-grid class="ion-margin ion-margin-horizontal">
-    <!-- <ion-row>
-      <ion-col size="6" class="welcome-block ion-no-padding row-space-between">
-        <div class="row-left">
-          <p>Welcome {{one[0].full_name}}</p>
-        </div>
-        <img class="bg2" src="../../assets/bg-welcome1.svg" />
-      </ion-col>
-    </ion-row> -->
-    <ion-row class="main-block">
-      <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" class="main-left-block">
-        <ion-card>
-          <p class="card-main-header overview-header">Overview</p>
-          <ion-card-content>
-            <div class="quick-access-card">
-              <ion-item-divider>
-                <div class="avatar-section">
-                  <p class="section-title">On Leave Today</p>
-                  <ion-row class="row-space-between">
-                    <ion-col lines="none" size="12" size-sm="12" size-md="12" size-lg="8" size-xl="8" class="d-flex">
-                      <div class="pr-5 label-block">
-                        <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
-
-                        <ion-label>vamsi kumar</ion-label>
-                      </div>
-
-                      <div class="pr-5 label-block">
-                        <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
-
-                        <ion-label>vamsi kumar</ion-label>
-                      </div>
-                    </ion-col>
-                    <ion-col lines="none" size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4"
-                      class="on-leave-user">
-                      <ion-img src="../../assets/onleave-img.svg" alt="On Leave"></ion-img>
-                    </ion-col>
-                  </ion-row>
-                </div>
-              </ion-item-divider>
-              <div class="avatar-section ion-padding">
-                <p class="section-title">Work From Home</p>
-                <ion-row class="row-space-between">
-                  <ion-col lines="none" size="8" class="d-flex">
-                    <div class="pr-5 label-block">
-                      <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
-
-                      <ion-label>vamsi kumar</ion-label>
-                    </div>
-
-                    <div class="pr-5 label-block">
-                      <img alt="Silhouette of a person's head" src="https://randomuser.me/api/portraits/men/32.jpg" />
-
-                      <ion-label>vamsi kumar</ion-label>
-                    </div>
-                  </ion-col>
-                  <ion-col lines="none" size="4" class="on-leave-user">
-                    <ion-img src="../../assets/WFH-img.svg" alt="WFH" width="110"></ion-img>
-                  </ion-col>
-                </ion-row>
-              </div>
-            </div>
-            <!-- Holiday Section -->
-            <div class="holidays-section" [style.backgroundImage]="'url(' + backgroundImageUrl + ')'">
-              <div class="row-space-between mb-30">
-                <p class="section-title">Upcoming Holidays</p>
-                <a>View All</a>
-              </div>
-
-              <h2 class="card-main-header mb-30">Christmas</h2>
-              <p>Thu, 25 December, 2025</p>
-            </div>
-            <!-- Attendance side block -->
-            <div class="quick-access-card week-card">
-              <p class="section-title pb-8">Attendance</p>
-              <div class="row-left">
-                <h2 class="page-title">95%</h2>
-                <p class="pl-5 text-color">+2% vs Last Month</p>
-              </div>
-
-              <div class="p-8">
-                <ion-list lines="none" class="row-left">
-                  <ion-item *ngFor="let day of days">
-                    <ion-label>
-                      <div [ngClass]="day.status === 'Complete' ? 'complete' : 'remaining'">
-                        <p class="progress"></p>
-                        <p class="text-ellipsis">{{ day.date }}</p>
-                      </div>
-                    </ion-label>
-                  </ion-item>
-                </ion-list>
-              </div>
-            </div>
-
-            <!-- Leave balance side block -->
-            <div class="quick-access-card balance-card">
-              <div class="row-space-between">
-                <p class="section-title">Leave balance</p>
-                <a class="pl-5 text-color">Request Leave</a>
-              </div>
-
-              <div class="p-8">
-                <ion-row lines="none" class="row-left">
-                  <ion-col size="3">
-                    <p class="card-main-header">19</p>
-                    <p class="text">Total</p>
-                    <p class="card-title">24 Leaves</p>
-                  </ion-col>
-                  <ion-col size="3">
-                    <p class="card-main-header">19</p>
-                    <p class="text">Total</p>
-                    <p class="card-title">24 Leaves</p>
-                  </ion-col>
-                  <ion-col size="3">
-                    <p class="card-main-header">19</p>
-                    <p class="text">Total</p>
-                    <p class="card-title">24 Leaves</p>
-                  </ion-col>
-                </ion-row>
-              </div>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <!-- Right side block -->
-      <ion-col size="12" size-sm="12" size-md="12" size-lg="8" size-xl="8" class="main-right-block">
-        <ion-card class="time-actions ion-padding">
+  <ion-grid class="ion-margin main-block">
+    <ion-row>
+      <ion-col size="12" class="welcome-block">
+        <ion-card class="ion-padding">
           <div class="card-pannel">
-            <ion-row class="actions-card row-space-between">
-              <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6">
-                <p class="clock mb-30">Time Today</p>
-                <p class="time">{{currentTime }}</p>
+            <ion-row class="actions-card row-space-between border-bottom">
+
+              <ion-col size="12" size-sm="8" size-md="8" size-lg="8" size-xl="8" class="row-left ion-align-items-start">
+
+                <ion-img [src]="imageUrls" class="profile-img" *ngIf="imageUrls"></ion-img>
+                <ion-img *ngIf="currentEmployee" class="profile-img" [src]="profileImageUrl" width="46" alt="Profile">
+                </ion-img>
+
+                <div>
+                  <!-- ✅ DYNAMIC GREETING -->
+                  <p class="greeting">{{ greeting }}</p>
+                  <p class="name" *ngIf="currentEmployee as emp">
+                    {{ emp.FullName }}
+                  </p>
+                  <!-- ✅ DYNAMIC DATE -->
+                  <p class="date">
+                    <span>{{ todayDate }}</span>
+                    <span>
+                      <span *ngIf="currentEmployee as emp">
+                        {{ emp.location_name}}
+                      </span>
+                    </span>
+                  </p>
+
+                  <ion-buttons>
+                    <ion-button *ngIf="!isCEO()" (click)="attendance()">
+                      <ion-img src="../../assets/home-icons/attend-icon.svg"></ion-img>
+                      My Attendance
+                    </ion-button>
+
+                    <ion-button *ngIf="!isCEO()" (click)="leaves()">
+                      <ion-img src="../../assets/home-icons/noun-flight-1442230 1.svg"></ion-img>
+                      Apply Leave
+                    </ion-button>
+
+                    <ion-button (click)="myteam()">
+                      <ion-img src="../../assets/home-icons/Users-icon.svg"></ion-img>
+                      My Team
+                    </ion-button>
+                  </ion-buttons>
+                </div>
+
               </ion-col>
 
-              <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" class="row-right">
-                <app-clock-button></app-clock-button>
+              <ion-col size="12" size-sm="4" size-md="4" size-lg="4" size-xl="4" class="time-block">
+                <p class="clock mb-30">Current Time</p>
+                <p class="time">{{ currentTime }}</p>
+                <app-clock-button *ngIf="!isCEO()"></app-clock-button>
+              </ion-col>
 
-                <ion-button id="popover-button">Others<img src="../../assets/Icons/chevron-down-outline.svg"
-                    width="20" /></ion-button>
-                <ion-popover trigger="popover-button" [dismissOnSelect]="true">
-                  <ng-template>
-                    <ion-content>
-                      <ion-list>
-                        <ion-item [button]="true" [detail]="false">Remote Clock-in</ion-item>
-                        <ion-item [button]="true" [detail]="false">Work From Home</ion-item>
-                        <ion-item [button]="true" [detail]="false">Partial Day</ion-item>
-                      </ion-list>
-                    </ion-content>
-                  </ng-template>
-                </ion-popover>
+            </ion-row>
+          </div>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <!-- Today Overview card -->
+        <ion-card class="overview-block" *ngIf="monthlyAttendanceReport.length">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Today’s Overview</h3>
+              <p class="card-dec">Your attendance, progress, and status at a glance</p>
+            </div>
+            <!-- <div class="label">
+              <p>On Time • {{ weeklyAttendanceRate }}% this Week</p>
+            </div> -->
+          </div>
+
+          <div class="card-content">
+            <ion-row>
+              <ion-col size="7">
+                <div class="row-space-between">
+                  <p class="label-test">Clock In</p>
+                  <p class="time">{{ (todayAttendance?.first_check_in | date:'h:mm a') || '--:--' }}</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Last Punch Out</p>
+                  <p class="time">{{ (todayAttendance?.last_check_out | date:'h:mm a') || '--:--' }}</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Status</p>
+                  <p class="status">{{ getStatusLabel() }}</p>
+                </div>
+
+
+              </ion-col>
+              <ion-col size="5">
+                <div class="row-space-between">
+                  <p class="label-test">Gross Hours</p>
+                  <p class="time">{{ todayAttendance?.gross_hours || '0h 0m' }}</p>
+                </div>
+                <div class="row-space-between">
+                  <p class="label-test">Effective Hours</p>
+                  <p class="time">{{ todayEffectivePercentage }}.00</p>
+                </div>
+                <div class="label" *ngIf="todayAttendance?.work_mode">
+                  <p class="w-auto">Mode: {{todayAttendance.work_mode}}</p>
+                </div>
+                <!-- <div class="time-block">
+                  <div>
+                    <p>This Week</p>
+                    <p>{{ weeklyGrossHours }}</p>
+                  </div>
+                  <ion-icon name="time-outline"></ion-icon>
+                </div> -->
+
               </ion-col>
             </ion-row>
           </div>
         </ion-card>
-        <!-- reporting section -->
-        <ion-card class="reporting-block ion-padding">
-          <ion-row>
-            <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" class="left-block">
-              <p class="card-main-header mb-30">Reporting manager</p>
+        <!-- 
+        <ion-card class="overview-block">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Attendance overview</h3>
+              <p class="card-dec">Last 7 working days hours logged</p>
+            </div>
+            <div class="label">
+              <p>Stable : 96% presence</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="row-space-between mt-8">
               <div class="row-left">
-                <img alt="Silhouette of a person's head" src="../../assets/user.svg" width="46" />
-
-                <ion-label class="pl-5">
-                  <p class="name pb-8">Viswanatha Sastry Kvsj</p>
-                  <p class="designation">VP of Delivery Technology</p>
-                </ion-label>
+                <img src="../../assets/leave-icons/day.svg" width="28" class="mr-8">
+                Shift : 09:00 AM - 06:00 PM
               </div>
-            </ion-col>
-            <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="6" class="right-block">
-              <p class="card-main-header">Your Clients </p>
-              <div class="row-space-between">
-                <div>
-                  <img alt="Silhouette of a person's head" src="../../assets/user.svg" width="46" />
-                  <p class="name mt-8">Client</p>
+              <p>Week off : Sat & Sun</p>
+            </div>
+
+            <p class="note">You're consistently hitting 7.5-8.5 hours per day. Great balance.</p>
+
+          </div>
+        </ion-card> -->
+
+        <ion-card class="overview-block">
+          <!-- Leave balance card -->
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Leave balance</h3>
+              <p class="card-dec">Quick view of your available time off</p>
+            </div>
+            <div class="label">
+              <p>Cycle : Mar - Feb</p>
+            </div>
+          </div>
+
+          <div class="p-8 card-content">
+            <!-- <ion-row lines="none" class="row-center">
+              <ion-col size="4" class="ion-text-center">
+                <img src="../../assets/leave-icons/CL.svg" width="60">
+                <p class="text">Casual Leaves</p>
+                <p class="number">12/12</p>
+              </ion-col>
+              <ion-col size="4" class="ion-text-center">
+                <img src="../../assets/leave-icons/SL.svg" width="60">
+                <p class="text">sick Leaves</p>
+                <p class="number">06/06</p>
+              </ion-col>
+              <ion-col size="4" class="ion-text-center">
+                <img src="../../assets/leave-icons/CO.svg" width="60">
+                <p class="text">Comp Offs Leaves</p>
+                <p class="number">03/03</p>
+              </ion-col>
+            </ion-row> -->
+            <ion-row lines="none">
+              <ion-col size="3" class="ion-text-center" *ngFor="let leave of leaveCards; trackBy: trackById">
+                <ion-img [src]="leave.icon" class="leave-img"></ion-img>
+                <p class="text">{{ leave.title }}</p>
+                <p class="number">{{ leave.used }}/ {{ leave.available}} <small>days left</small></p>
+              </ion-col>
+            </ion-row>
+            <!-- <ion-col size="2" class="card-block" *ngFor="let leave of leaveCards">
+                <p class="card-header">{{ leave.title }}</p>
+
+                <ion-img [src]="leave.icon"></ion-img>
+                <div class="txt-color">
+                  <p>{{ leave.used }}/ {{ leave.available}}</p>
                 </div>
-
-                <img alt="Silhouette of a person's head" src="../../assets/undraw_global-team_8jok 1.svg" />
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-card>
-        <!-- Performance section -->
-        <ion-card class="week-card ion-padding">
-          <ion-row>
-            <ion-col size="12" size-sm="12" size-md="5" size-lg="5" size-xl="5" class="left-block">
-              <p class="card-main-header pb-8">Performance</p>
-              <div class="row-left">
-                <h2 class="page-title">88%</h2>
-                <p class="pl-5 text-color">+3% vs Last Quarter</p>
-              </div>
-            </ion-col>
-            <ion-col size="12" size-sm="12" size-md="7" size-lg="7" size-xl="7" class="left-block">
-              <img src="../../assets/chart-graphic.svg" />
-            </ion-col>
-          </ion-row>
-        </ion-card>
-        <!-- Announcements section -->
-        <ion-card class="week-card ion-padding">
-          <p class="card-main-header pb-8">Announcements</p>
-          <div class="pb-8 row-center">
-            <img class="pb-8" src="../../assets/undraw_letter_ombg 1.svg" />
+                <p class="label">days available</p>
+              </ion-col>
+            </ion-row> -->
+            <p class="note">Plan ahead: peak leave usage is expected during upcoming festival weeks.</p>
           </div>
         </ion-card>
 
-        <ion-card class="tabs-block ion-padding">
-          <ion-row class="">
-            <ion-col size="12">
-              <ion-tabs>
-                <ion-tab-bar slot="top">
-                  <ion-tab-button tab="birthday">
-                    <div class="row-left">
-                      <img src="../../assets/Icons/cake.svg" width="18" height="18">
-                      <p class="pl-5">0 Birthday</p>
-                    </div>
-                  </ion-tab-button>
-                  <ion-tab-button tab="Work">
-                    <div class="row-left">
-                      <img src="../../assets/Icons/celebration.svg" width="18" height="18">
-                      <p class="pl-5">0 Work Anniversaries</p>
-                    </div>
-                  </ion-tab-button>
-                  <ion-tab-button tab="new-joiners">
-                    <div class="row-left">
-                      <img src="../../assets/Icons/groups.svg" width="18" height="18">
-                      <p class="pl-5"> 0 New Joiners</p>
-                    </div>
-                  </ion-tab-button>
-                  <ion-tab-button tab="praise">
-                    <div class="row-left">
-                      <img src="../../assets/Icons/license.svg" width="18" height="18">
-                      <p class="pl-5">0 Praise</p>
-                    </div>
-                  </ion-tab-button>
-                </ion-tab-bar>
-                <ion-tab tab="birthday">
-                  <div id="birthday-page">
-                    <ion-content>
-                      <div class="avatar-section">
+        <ion-card class="overview-block">
+          <!-- Up Comming holidays card -->
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Holidays</h3>
+              <p class="card-dec">Next few company and regional holidays</p>
+            </div>
+            <div class="label">
+              <p>Location : Vizag</p>
+            </div>
+          </div>
+          <div class="holidays-coming-soon">
+            <div class="coming-soon-content">
+              <!-- Professional GIF animation -->
+              <img src="https://media.tenor.com/_7n1_44wGisAAAAC/coming-soon-loading.gif" alt="Coming Soon GIF"
+                class="coming-soon-gif">
 
-                        <ion-row class="d-flex">
-                          <ion-col lines="none" size="6">
-                            <p class="section-header">Birthdays Today</p>
-                            <div class="d-flex">
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Raj</ion-label>
-                                <span>Wish</span>
-                              </div>
-
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                              </div>
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span>Wish</span>
-                              </div>
-                            </div>
-                            <p class="section-header">Upcoming Birthdays</p>
-                            <div class="d-flex">
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">09 Sep</span>
-                              </div>
-
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">07 Mar</span>
-                              </div>
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">05 Sept</span>
-                              </div>
-                            </div>
-                          </ion-col>
-                          <ion-col lines="none" size="6" class="on-leave-user">
-                            <ion-img src="../../assets/birthday-pic.svg" alt="On Leave"></ion-img>
-                          </ion-col>
-                        </ion-row>
-                      </div>
-
-
-                    </ion-content>
-                  </div>
-                </ion-tab>
-                <ion-tab tab="Work">
-                  <div id="Work-page">
-
-                    <ion-content>
-                      <div class="avatar-section">
-
-                        <ion-row class="d-flex">
-                          <ion-col lines="none" size="6">
-                            <p class="section-header">Work Anniversaries today
-
-                            </p>
-                            <div class="d-flex">
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Raj</ion-label>
-                                <span>Wish</span>
-                              </div>
-
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                              </div>
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span>Wish</span>
-                              </div>
-                            </div>
-                            <p class="section-header">Upcoming Work Anniversaries</p>
-                            <div class="d-flex">
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">09 Sep</span>
-                              </div>
-
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">07 Mar</span>
-                              </div>
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">05 Sept</span>
-                              </div>
-                            </div>
-                          </ion-col>
-                          <ion-col lines="none" size="6" class="on-leave-user">
-                            <ion-img src="../../assets/birthday-pic.svg" alt="On Leave"></ion-img>
-                          </ion-col>
-                        </ion-row>
-                      </div>
-
-                    </ion-content>
-                  </div>
-                </ion-tab>
-                <ion-tab tab="new-joiners">
-                  <div id="new-joiners-page">
-
-                    <ion-content>
-                      <div class="avatar-section">
-
-                        <ion-row class="d-flex">
-                          <ion-col lines="none" size="6">
-                            <p class="section-header">New joinees today
-                            </p>
-                            <div class="d-flex">
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Raj</ion-label>
-                                <span>Wish</span>
-                              </div>
-
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                              </div>
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span>Wish</span>
-                              </div>
-                            </div>
-                            <p class="section-header">Recent joinees</p>
-                            <div class="d-flex">
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">09 Sep</span>
-                              </div>
-
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/Icons/Frame 15.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">07 Mar</span>
-                              </div>
-                              <div class="pr-5 label-block">
-                                <img alt="Silhouette of a person's head" src="../../assets/user.svg" />
-
-                                <ion-label>Ravi</ion-label>
-                                <span class="gray">05 Sept</span>
-                              </div>
-                            </div>
-                          </ion-col>
-                          <ion-col lines="none" size="6" class="on-leave-user">
-                            <ion-img src="../../assets/birthday-pic.svg" alt="On Leave"></ion-img>
-                          </ion-col>
-                        </ion-row>
-                      </div>
-                    </ion-content>
-                  </div>
-                </ion-tab>
-                <ion-tab tab="praise">
-                  <div id="praise-page">
-
-                    <ion-content>
-                      <div class="example-content">praise content</div>
-                    </ion-content>
-                  </div>
-                </ion-tab>
-
-
-              </ion-tabs>
-            </ion-col>
-          </ion-row>
-
+              <h2 class="card-main-header">Upcoming Holidays</h2>
+              <p class="coming-soon-text">We're updating the festive list for you!</p>
+              <div class="glow-tag">COMING SOON</div>
+            </div>
+          </div>
         </ion-card>
-        <ion-card class="post-main-block">
-          <ion-row class="tabs-block">
-            <ion-col size="12">
-              <ion-tabs>
-                <ion-tab-bar slot="top">
-                  <ion-tab-button tab="Posts">
-                    <div class="row-left">
-                      <p class="pl-5">Posts</p>
-                    </div>
-                  </ion-tab-button>
-                  <ion-tab-button tab="new-post">
-                    <div class="row-left">
-                      <p class="pl-5">New Post</p>
-                    </div>
-                  </ion-tab-button>
-                </ion-tab-bar>
-                <ion-tab tab="Posts">
-                  <div id="Posts-page">
-                    <ion-content class="post-block">
-                      <!-- <p class="post-title">Posts</p> -->
-                      <div class="post-content d-flex ion-align-items-start ion-padding">
-                        <img src="../../assets/user.svg" width="35">
-                        <div class="pl-30">
-                          <p class="text-time">Ranjeeth Kumar Mantrala praised Yogesh Rajendra Dixit</p>
-                          <h2>a year ago</h2>
-                          <p class="comment-text">Your tireless efforts in supporting both clients and internal projects
-                            are
-                            commendable. Your dedication is truly appreciated.
+      </ion-col>
+      <ion-col size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <!-- Quick links card -->
+        <ion-card class="overview-block d-none">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Quick links</h3>
+              <p class="card-dec">Jump into the tools you use the most</p>
+            </div>
+            <div class="label">
+              <p>Shortcusts</p>
+            </div>
+          </div>
 
-                            Thank you for going above and beyond!</p>
-                        </div>
-                      </div>
-                      <ion-row class="comment-box p-8">
-                        <ion-col size="6" class=" row-left">
-                          <div class="row-left">
-                            <img src="../../assets/Icons/thumb-up.svg">
-                            <p class="pl-5">Like</p>
-                          </div>
-                          <div class="row-left pl-15">
-                            <img src="../../assets/Icons/chat-bubble-outline.svg">
-                            <p class="pl-5">Comment</p>
-                          </div>
-                        </ion-col>
-                        <ion-col size="6" class=" row-right">
-                          <p>38 reactions</p>
-                          <p class="pl-15">0 comments</p>
-                        </ion-col>
-                      </ion-row>
-
-                      <ion-item>
-                        <img src="../../assets/user.svg">
-                        <ion-input label="" placeholder="Write your comment here"></ion-input>
-                      </ion-item>
-                    </ion-content>
-                  </div>
-                </ion-tab>
-                <ion-tab tab="new-post">
-                  <div id="new-post-page" class="Create-post-block">
-                    <ion-content>
-                      <p class="post-title">Create Post</p>
-                      <div class="post-content ion-padding">
-                        <ion-textarea label="" placeholder="Write your post here" rows="6"></ion-textarea>
-                        <div class="action-btns">
-                          <ion-button>Cancel</ion-button>
-                          <ion-button>Post</ion-button>
-                        </div>
-                      </div>
-                    </ion-content>
-                  </div>
-                </ion-tab>
-              </ion-tabs>
-            </ion-col>
-          </ion-row>
+          <div class="card-content leave-block">
+            <ion-row class="row-left">
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/WFH_request.svg" width="36" class="mr-8">
+                    WFH request</p>
+                  <p>Request remote work</p>
+                </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Documents.svg" width="36" class="mr-8">
+                    Documents</p>
+                  <p>Payslips, letters, policies</p>
+                </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Policies.svg" width="36" class="mr-8">
+                    Policies</p>
+                  <p>HR, IT & security</p>
+                </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Helpdesk.svg" width="36" class="mr-8">
+                    Helpdesk</p>
+                  <p>Raise a ticket</p>
+                </div>
+              </ion-col>
+              <ion-col>
+                <div class="card-box">
+                  <p><img src="../../assets/home-icons/Assets.svg" width="36" class="mr-8">
+                    Assets</p>
+                  <p>Assigned hardware & morek</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </div>
         </ion-card>
-        <!-- Tabs section -->
+        <!-- Announcements card -->
+        <ion-card class="overview-block carousel-parent">
+          <div class="row-space-between border-bottom">
+            <div>
+              <h3 class="card-header">Announcements</h3>
+              <p class="card-dec">Stay updated with company news</p>
+            </div>
+            <div class="label" *ngIf="announcements.length > 0">
+              <p>{{ announcements.length }} latest</p>
+            </div>
+          </div>
+
+          <div class="card-content carousel-viewport">
+            <!-- Empty State -->
+            <div *ngIf="announcements.length === 0" class="no-announcements">
+              <p>No new announcements at this time.</p>
+            </div>
+
+            <!-- Carousel Wrapper -->
+            <div class="carousel-track" *ngIf="announcements.length > 0"
+              [style.transform]="'translateX(-' + (currentAnnounceIndex * 100) + '%)'">
+              <div class="carousel-slide" *ngFor="let announce of announcements; let i = index">
+                <div class="Announcement-card">
+                  <div class="announce-icon">
+                    <img src="../../assets/home-icons/sample-announce.svg" width="50">
+                  </div>
+                  <div class="announce-body">
+                    <p class="title">{{ announce.title }}</p>
+                    <p class="body-text">{{ announce.body }}</p>
+                    <div class="row-left comments-block">
+                      <!-- <p class="time">{{ announce.relativeTime }}</p> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Indicator Dots -->
+            <div class="carousel-indicators" *ngIf="announcements.length > 1">
+              <span *ngFor="let dot of announcements; let dotIdx = index" class="dot"
+                [class.active]="dotIdx === currentAnnounceIndex" (click)="setAnnounce(dotIdx)">
+              </span>
+            </div>
+          </div>
+        </ion-card>
+        <!-- Birthdays & work anniversaries card -->
+        <ion-card class="overview-block milestone-container">
+          <div class="row-space-between border-bottom pb-12">
+            <div>
+              <h3 class="card-header">Birthdays & Work Anniversaries</h3>
+              <p class="card-dec">Celebrate your teammates' special moments</p>
+            </div>
+            <!-- <div class="milestone-badge">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Next 7 days</span>
+            </div> -->
+          </div>
+
+          <div class="card-content milestone-list">
+            <!-- Empty State -->
+            <div *ngIf="birthdays.length === 0" class="empty-milestones">
+              <ion-icon name="sparkles-outline"></ion-icon>
+              <p>No milestones coming up this week. Keep the spirits high!</p>
+            </div>
+
+            <!-- Milestone Item -->
+            <div class="milestone-item" *ngFor="let milestone of birthdays; trackBy: trackById"
+              [class.today]="milestone.isToday">
+              <div class="item-main">
+                <div class="avatar-block">
+                  <img [src]="milestone.fullImageUrl" [alt]="milestone.FirstName">
+                  <div class="event-icon-badge" [class.birthday-badge]="milestone.eventType === 'Birthday'"
+                    [class.anniversary-badge]="milestone.eventType === 'Anniversary'">
+                    <ion-icon [name]="milestone.eventType === 'Birthday' ? 'gift' : 'medal'"></ion-icon>
+                  </div>
+                </div>
+
+                <div class="info-block" (click)="$event.stopPropagation()">
+                  <div class="name-row">
+                    <span class="emp-name">{{ milestone.FirstName }} {{ milestone.LastName }}</span>
+                    <span class="today-tag" *ngIf="milestone.isToday">TODAY</span>
+                  </div>
+                  <p class="event-desc">
+                    <span class="event-type">{{ milestone.eventType }}</span>
+                    <span class="dot-separator">•</span>
+                    <span class="event-date">{{ milestone.originalDate | date:'MMM dd' }}</span>
+                    <span class="anniversary-years" *ngIf="milestone.eventType === 'Anniversary'">
+                      <span class="dot-separator">•</span>
+                      {{ milestone.years }} {{ milestone.years > 1 ? 'years' : 'year' }}
+                    </span>
+                  </p>
+                </div>
+
+                <div class="action-block" *ngIf="activeWishEmployeeId !== milestone.id">
+                  <ion-button fill="clear" (click)="viewWishes(milestone)" class="view-btn" title="View Wishes">
+                    <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" (click)="showWishInput(milestone.id)" class="wish-btn" title="Send Wish">
+                    <ion-icon slot="icon-only" name="paper-plane-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+
+              <!-- Inline Wish Input -->
+              <div class="wish-reveal-input" *ngIf="activeWishEmployeeId === milestone.id">
+                <ion-input [(ngModel)]="wishMessages[milestone.id]" placeholder="Write a warm note..."></ion-input>
+                <div class="reveal-actions">
+                  <ion-button fill="clear" color="medium" (click)="hideWishInput()">Cancel</ion-button>
+                  <ion-button fill="solid" class="send-small-btn" (click)="sendWish(milestone.id)">Send</ion-button>
+                </div>
+              </div>
+
+              <!-- Wishes Summary Indicator -->
+              <div class="mini-wish-list" *ngIf="milestone.isToday">
+                <div class="wish-count" (click)="viewWishes(milestone)">
+                  <ion-icon name="heart" color="danger"></ion-icon>
+                  <span>See celebration notes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-card>
+
+        <!-- View Wishes Modal -->
+        <ion-modal [isOpen]="isViewingWishes" (didDismiss)="closeWishesModal()" class="wishes-modal">
+          <ng-template>
+            <ion-header class="ion-no-border">
+              <ion-toolbar>
+                <ion-title>Wishes for {{ viewingMilestoneName }}</ion-title>
+                <ion-buttons slot="end">
+                  <ion-button (click)="closeWishesModal()">
+                    <ion-icon slot="icon-only" name="close"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+              <div class="modal-wishes-list" *ngIf="wishesToView.length > 0; else noWishes">
+                <div class="wish-card-item" *ngFor="let wish of wishesToView">
+                  <div class="wish-header">
+                    <span class="sender">{{ wish.sender_name }}</span>
+                    <span class="time">{{ wish.created_at | date:'MMM dd, h:mm a' }}</span>
+                  </div>
+                  <p class="wish-text">{{ wish.message }}</p>
+                </div>
+              </div>
+              <ng-template #noWishes>
+                <div class="no-wishes-state">
+                  <ion-icon name="heart-dislike-outline"></ion-icon>
+                  <p>No celebrations yet. Be the first to send a note!</p>
+                </div>
+              </ng-template>
+            </ion-content>
+          </ng-template>
+        </ion-modal>
+
+
       </ion-col>
     </ion-row>
-
-
-
-
   </ion-grid>
 </ion-content>

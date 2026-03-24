@@ -71,7 +71,8 @@ export class salaryStaructureComponent implements OnInit {
     const hra = annualSalary * 0.16;
     const medical = 15000;
     const transport = 19200;
-    const special = annualSalary - (basic + hra + medical + transport);
+
+    const special = Math.max(0, annualSalary - (basic + hra + medical + transport));
 
     const pfEmployer = basic * 0.12;
     const pfEmployee = basic * 0.12;
@@ -87,9 +88,32 @@ export class salaryStaructureComponent implements OnInit {
       pfEmployee,
       total: basic + hra + medical + transport + special + pfEmployer,
     };
-
-    console.log('💰 Calculated Salary Structure:', this.salaryStructure);
   }
+  // calculateSalary(annualSalary: number) {
+  //   const basic = annualSalary * 0.4;
+  //   const hra = annualSalary * 0.16;
+  //   const medical = 15000;
+  //   const transport = 19200;
+  //   // const special = annualSalary - (basic + hra + medical + transport);
+  //   const special = Math.max(0,annualSalary - (basic + hra + medical + transport));
+
+  //   const pfEmployer = basic * 0.12;
+  //   const pfEmployee = basic * 0.12;
+
+  //   this.salaryStructure = {
+  //     basic,
+  //     hra,
+  //     medical,
+  //     transport,
+  //     special,
+  //     subtotal: basic + hra + medical + transport + special,
+  //     pfEmployer,
+  //     pfEmployee,
+  //     total: basic + hra + medical + transport + special + pfEmployer,
+  //   };
+
+  //   console.log('💰 Calculated Salary Structure:', this.salaryStructure);
+  // }
 
   // ✅ View salary preview
   onViewSalary() {
@@ -130,17 +154,16 @@ export class salaryStaructureComponent implements OnInit {
       total_annual: annualSalary,
     };
 
-    console.log('📤 Sending salary structure payload:', salaryData);
+    // Update candidate object with salary data for the final API call
+    this.candidate.offered_ctc = annualSalary;
+    this.candidate.annual_salary = annualSalary;
+    this.candidate.salary_breakup = {
+      basic: this.salaryStructure.basic,
+      hra: this.salaryStructure.hra,
+      special: this.salaryStructure.special
+    };
 
-    // ✅ Trigger API call (asynchronous)
-    this.candidateService.createSalaryStructure(salaryData).subscribe({
-      next: (res: any) => {
-        console.log('✅ Salary structure saved successfully:', res);
-      },
-      error: (err: any) => {
-        console.error('❌ Error saving salary structure:', err);
-      },
-    });
+    console.log('✅ Candidate updated with salary data:', this.candidate);
 
     // ✅ Immediately navigate to OfferDetailsComponent
     this.router.navigate(

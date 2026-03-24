@@ -1,4 +1,3 @@
-
 <div *ngFor="let reqGroup of attendanceRequestsHistory" class="request-card">
   <ion-card>
     <ion-card-header class="row-space-between">
@@ -7,42 +6,46 @@
     </ion-card-header>
 
     <ion-card-content>
-      <!-- Check if this group's records are empty -->
+      <!-- DATA -->
       <ng-container *ngIf="reqGroup.records.length > 0; else noRequests">
-        <ion-grid class="requests-table">
+        <ion-grid class="table-block">
           <ion-row class="table-header">
             <ion-col size="2">Date</ion-col>
             <ion-col size="2">Request</ion-col>
             <ion-col size="2">Requested On</ion-col>
-            <ion-col size="2">Note</ion-col>
-            <ion-col size="1">Reason</ion-col>
-            <ion-col size="1">Status</ion-col>
-            <ion-col size="1">Last Action</ion-col>
-            <ion-col size="1">Next Approver</ion-col>
+            <!-- <ion-col size="2">Note</ion-col> -->
+            <ion-col size="2">Status</ion-col>
+            <ion-col size="4">Reason</ion-col>
+            <!-- <ion-col size="1">Last Action</ion-col>
+            <ion-col size="2">Next Approver</ion-col> -->
           </ion-row>
 
-          <ion-row *ngFor="let record of reqGroup.records" class="table-row">
-            <ion-col size="2">{{ record.date }}</ion-col>
-            <ion-col size="2">{{ record.request }}</ion-col>
-            <ion-col size="2">{{ record.requestedOn }}</ion-col>
-            <ion-col size="2">{{ record.note }}</ion-col>
-            <ion-col size="1">{{ record.reason || '-' }}</ion-col>
-            <ion-col size="1">
+          <ion-row *ngFor="let record of reqGroup.records" class="table-list-row">
+            <ion-col size="2"><p>{{ record.date }}</p></ion-col>
+            <ion-col size="2"><p>{{ record.request }}</p></ion-col>
+            <ion-col size="2"><p>{{ record.requestedOn }}</p></ion-col>
+            <!-- <ion-col size="2">{{ record.note }}</ion-col> -->           
+            <ion-col size="2">
               <span class="status" [ngClass]="record.status.toLowerCase()">
                 {{ record.status }}
               </span>
             </ion-col>
-            <ion-col size="1">{{ record.lastAction }}</ion-col>
-            <ion-col size="1">{{ record.nextApprover || '-' }}</ion-col>
+            <ion-col size="4" class="text-wrap"><p>{{ record.reason || '-' }}</p></ion-col>
+            <!-- <ion-col size="1">{{ record.lastAction }}</ion-col>
+            <ion-col size="2">{{ record.nextApprover || '-' }}</ion-col> -->
           </ion-row>
         </ion-grid>
       </ng-container>
 
-      <!-- Show "No Requests" message -->
+      <!-- EMPTY -->
       <ng-template #noRequests>
-        <ion-item color="light">
-          <ion-label class="no-data">No {{ reqGroup.type }} Available.</ion-label>
-        </ion-item>
+        <div class="no-leaves-img">
+        <p class="empty-data">
+          <ion-img src="../../../assets/no_leavedata_img.svg"></ion-img>
+          No {{ reqGroup.type }} Available
+        </p>
+        </div>
+
       </ng-template>
     </ion-card-content>
   </ion-card>

@@ -1,59 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from '../../shared/header/header.component';
+
 import {
   CandidateService,
   Candidate,
 } from '../../services/pre-onboarding.service';
+
 import {
   AttendanceService,
   AttendanceRecord,
   AttendanceEvent,
 } from '../../services/attendance.service';
+
 import { EmployeeHeaderComponent } from './employee-header/employee-header.component';
 import { ClockButtonComponent } from '../../services/clock-button/clock-button.component';
 import { AttendanceLogComponent } from './attendance-log/attendance-log.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { RadialTimeGraphComponent } from './radial-time-graph/radial-time-graph.component';
-import { RouteGuardService } from 'src/app/services/route-guard/route-service/route-guard.service';
 
-interface AttendanceRequest {
-  type: string;
-  dateRange: string;
-  items: string[];
-}
-interface AttendanceRequestHistory {
-  date: string;
-  request: string;
-  requestedOn: string;
-  note: string;
-  reason?: string;
-  status: string;
-  lastAction: string;
-  nextApprover?: string;
-}
-interface AttendanceLog {
-  date: string;
-  progress: number;
-  effective: string;
-  gross: string;
-  arrival: string;
-  details: {
-    shift: string;
-    shiftTime: string;
-    location: string;
-    logs: { in: string; out: string }[];
-    webClockIn?: { in: string; out: string };
-  };
-}
-interface CalendarDay {
-  day: number | '';
-  timing: string;
-  isOff: boolean;
-  date?: Date;
-}
+import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
+import { RemoteClockinModalComponent } from './remote-clockin-modal.component';
+import { AttendanceApiService } from '../../services/attendance-api.service';
+import { AdminService } from 'src/app/services/admin-functionality/admin.service.service';
+import { EmployeeService } from 'src/app/services/employee.service';
+import { TimeFormatPipe } from './time-format.pipe';
+import { LeaverequestService } from 'src/app/services/leaverequest.service';
 
 @Component({
   selector: 'app-me',
@@ -62,526 +35,435 @@ interface CalendarDay {
   standalone: true,
   imports: [
     IonicModule,
-    ClockButtonComponent,
-    HeaderComponent,
-    EmployeeHeaderComponent,
     CommonModule,
+    ClockButtonComponent,
+    EmployeeHeaderComponent,
     AttendanceLogComponent,
     CalendarComponent,
     AttendanceRequestComponent,
     RadialTimeGraphComponent,
+    RemoteClockinModalComponent,
+    TimeFormatPipe,
   ],
+  // ...existing code...
 })
 export class MePage implements OnInit {
+  @ViewChild(ClockButtonComponent) clockButton!: ClockButtonComponent;
+  public async openRemoteClockinModal() {
+    const modal = await this.modalCtrl.create({
+      component: RemoteClockinModalComponent,
+      cssClass: 'checkinInfo-popup side-custom-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data?.success) {
+      this.showToast('Remote Clock-In request submitted', 'success');
+      // Always trigger attendance log refresh
+      this.attendanceRefresh = Date.now();
+      // Debug: Log ViewChild and data
+      console.log('Remote modal dismissed with:', data, 'clockButton:', this.clockButton);
+      // If remote clock-in was successful, update clock button UI instantly
+      if (data.forceRemote && this.clockButton) {
+        console.log('Calling clockButton.clockIn(true)');
+        // Set clock button to Remote mode and show Remote Clock-Out instantly
+        this.clockButton.workMode = 'Remote';
+        this.clockButton.isClockedIn = true;
+        this.clockButton.remoteActive = true;
+      } else if (data.forceRemote) {
+        console.warn('clockButton ViewChild not set!');
+      }
+    }
+  }
+  attendanceRefresh = 0;
+
   employee?: Candidate;
   record?: AttendanceRecord;
-  shiftData?: any;
-  week_off_days: string[] = [];
-  shift_check_in = '';
-  shift_check_out = '';
 
+  // ================= SHIFT =================
+  shift_id: any;
+  allShiftPolicies: any[] = [];
+  shift_policy: any;
+
+  // ================= WEEKEND =================
+  weekend_id: any;
+  allWeekendPolicies: any[] = [];
+  serverWeekOff: string[] = [];
+
+  // ================= UI =================
   shiftDuration = '9h 0m';
   breakMinutes = 60;
-  effectiveHours = '0h 0m';
-  grossHours = '0h 0m';
-  timeSinceLastLogin = '0h 0m 0s';
+  effectiveHours = '00:00';
+  grossHours = '00:00';
   status = 'Absent';
 
-  currentTime = '';
-  currentDate = '';
   history: AttendanceEvent[] = [];
-  selectedRange: 'TODAY' | 'WEEK' | 'MONTH' | 'ALL' = 'TODAY';
+  activeTab = 'log';
   progressValue = 0.85;
 
-  activeTab = 'log';
-  currentMonth = new Date();
-  weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-  allWeekDays = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-  calendarDays: CalendarDay[] = [];
-  attendanceRequests: AttendanceRequest[] = [];
-  selectedLog: AttendanceLog | null = null;
-  showPopover = false;
-  attendanceLogs: AttendanceLog[] = [];
   days: Date[] = [];
   today: Date = new Date();
-  attendanceRequestsHistory: {
-    type: string;
-    dateRange: string;
-    records: AttendanceRequestHistory[];
-  }[] = [];
+  currentMonthName: string = '';
+
+  monthlySummary: any = {
+    total_days: 0,
+    present_days: 0,
+    absent_days: 0,
+    half_days: 0,
+    avg_work_hours: 0,
+    total_effective_hours: 0,
+    total_gross_hours: 0
+  };
 
   constructor(
     private candidateService: CandidateService,
     private attendanceService: AttendanceService,
-    private router: RouteGuardService
+    private modalCtrl: ModalController,
+    private attendanceApi: AttendanceApiService,
+    private adminService: AdminService,
+    private employeeService: EmployeeService,
+    private toastCtrl: ToastController,
+    private leaveService: LeaverequestService
   ) {
-    this.generateCalendar(this.currentMonth);
     this.generateDays();
   }
 
-  // ---------------------------------------------------------
-  // 🔥 FIX: load data EVERY TIME page is opened
-  // ---------------------------------------------------------
-  ionViewWillEnter() {
-    console.log('Me Page - ionViewWillEnter');
-
-    // setTimeout(() => {
-    //   this.initializePage();
-    // }, 50);
-  }
-
-  // ---------------------------------------------------------
-  // RUN ONLY ONE-TIME LOGIC HERE
-  // ---------------------------------------------------------
+  // ================= INIT =================
   ngOnInit() {
-   
+    this.loadShiftPolicies();
+    this.loadWeekendPolicies();
+    this.loadEmployeeProfile();
+    this.loadTodayAttendance();
+    this.loadMonthlySummary();
   }
 
-  // ---------------------------------------------------------
-  // 🔥 FULL INITIALIZATION (was inside ngOnInit before)
-  // ---------------------------------------------------------
-  initializePage() {
-    this.loadCandidateById();
+  // ================= DATA LOADERS =================
 
-    this.employee = this.candidateService.getCurrentCandidate() || undefined;
-    if (!this.employee) return;
-
-    this.attendanceService.record$.subscribe((record) => {
-      if (record && record.employeeId === this.employee?.id) {
-        this.record = record;
-        this.updateTimes();
-        this.loadHistory();
-      }
+  loadShiftPolicies() {
+    this.adminService.getShiftPolicies().subscribe(res => {
+      this.allShiftPolicies = res || [];
+      this.matchEmployeeShift();
     });
+  }
 
-    this.attendanceService.response$.subscribe((response) => {
-      if (response) {
-        console.log('Clock action detected in main page:', response.action);
+  loadWeekendPolicies() {
+    this.adminService.getWeeklyOffPolicies().subscribe(res => {
+      this.allWeekendPolicies = res || [];
+      this.matchEmployeeWeekend();
+    });
+  }
 
-        if (response.optimistic) {
-          this.updateTimes();
-          this.loadHistory();
+  loadEmployeeProfile() {
+    this.employeeService.getMyProfile().subscribe(profile => {
+      this.shift_id = profile.shift_policy_id;
+      this.weekend_id = profile.weekly_off_policy_id;
+      this.matchEmployeeShift();
+      this.matchEmployeeWeekend();
+    });
+  }
+
+  loadTodayAttendance() {
+    this.attendanceApi.getTodayAttendance().subscribe({
+      next: (res: any) => {
+        this.status = res?.attendance?.status || 'Absent';
+
+        const pipe = new TimeFormatPipe();
+
+        if (res?.attendance) {
+          let gross = parseFloat(res.attendance.gross_hours || 0);
+          let effective = parseFloat(res.attendance.total_work_hours || 0);
+
+          // If currently clocked in, calculate live hours
+          if (res.last_punch_type === 'in' && res.punches?.length > 0) {
+            const lastPunch = res.punches[res.punches.length - 1];
+            const startTime = new Date(lastPunch.punch_time).getTime();
+            const now = new Date().getTime();
+            const diffHours = (now - startTime) / (1000 * 60 * 60);
+
+            // Add live session to effective & gross
+            effective += diffHours;
+
+            // For gross, if it was null, calculate from first punch to now
+            const firstPunch = res.punches[0];
+            const firstTime = new Date(firstPunch.punch_time).getTime();
+            gross = (now - firstTime) / (1000 * 60 * 60);
+          }
+
+          this.grossHours = pipe.transform(gross);
+          this.effectiveHours = pipe.transform(effective);
+        } else {
+          this.grossHours = '00:00';
+          this.effectiveHours = '00:00';
         }
+      },
+      error: () => {
+        this.status = 'Absent';
+        this.grossHours = '00:00';
+        this.effectiveHours = '00:00';
+      },
+    });
+  }
 
-        if (response.confirmed || response.data) {
-          // Server confirmed response - immediate update
-          console.log(
-            'Server response confirmed, updating main page immediately...'
-          );
-          this.updateTimes();
-          this.loadHistory();
+  lastAttendance: any[] = [];
+  lastLeaves: any[] = [];
 
-          // Handle force refresh for immediate backend sync
-          if (response.forceRefresh) {
-            console.log('Force refresh in main page, updating all data...');
-            setTimeout(() => {
-              this.updateTimes();
-              this.loadHistory();
-            }, 100);
+  loadMonthlySummary() {
+    const d = new Date();
+    this.currentMonthName = d.toLocaleString('default', { month: 'long' });
+
+    this.attendanceApi.getMonthlyAttendanceSummary().subscribe({
+      next: (res: any) => {
+        if (res?.summary) {
+          this.monthlySummary = res.summary;
+          this.lastAttendance = res?.attendance || [];
+
+          // Fallback if backend /my-report wasn't restarted
+          if (res?.leaves) {
+            this.lastLeaves = res.leaves;
+            this.recalculateSummary();
+          } else {
+            this.leaveService.getMyLeaves(d.getFullYear()).subscribe({
+              next: (leaves: any) => {
+                this.lastLeaves = leaves.filter((l: any) => (l.status || '').toUpperCase() === 'APPROVED');
+                this.recalculateSummary();
+              },
+              error: () => {
+                this.lastLeaves = [];
+                this.recalculateSummary();
+              }
+            });
           }
         }
+      },
+      error: (err) => console.error('Error loading monthly summary:', err)
+    });
+  }
 
-        if (response.action === 'refresh') {
-          // Refresh action - update immediately
-          console.log('Refresh detected in main page...');
-          this.updateTimes();
-          this.loadHistory();
-        }
+  recalculateSummary() {
+    // Wait until weekend policy is loaded to correctly calculate absent days
+    if (!this.serverWeekOff) {
+      console.log('recalculateSummary aborted: serverWeekOff not yet loaded.');
+      return;
+    }
 
-        if (response.error) {
-          this.updateTimes();
-          this.loadHistory();
-        }
+    if (!this.lastAttendance || !this.monthlySummary) {
+      console.log('recalculateSummary aborted: lastAttendance or monthlySummary not loaded.');
+      return;
+    }
+
+    console.log('recalculateSummary running. att count:', this.lastAttendance.length, 'leaves count:', this.lastLeaves.length);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const todayNum = now.getDate();
+
+    const leaveSet = new Set();
+    this.lastLeaves.forEach((l: any) => {
+      const from = new Date(l.start_date || l.from_date);
+      const to = new Date(l.end_date || l.to_date || l.start_date);
+      let curr = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+      while (curr <= end) {
+        leaveSet.add(new Date(curr).toDateString());
+        curr.setDate(curr.getDate() + 1);
       }
     });
 
-    this.attendanceService.getRecord(this.employee.id);
+    const attMap = new Set();
+    const presentCount = { full: 0, half: 0 };
+    this.lastAttendance.forEach((a: any) => {
+      const dStr = new Date(a.attendance_date).toDateString();
+      attMap.add(dStr);
 
-    setInterval(() => {
-      this.updateTimes();
-      if (new Date().getSeconds() % 5 === 0) {
-        this.loadHistory();
+      // Do not count as Present if the employee is on an approved leave
+      if (!leaveSet.has(dStr)) {
+        if (a.status === 'half-day') presentCount.half++;
+        else presentCount.full++; // Assuming everything else in DB is present
       }
-    }, 1000);
+    });
 
-    this.initRequestsAndLogs();
-  }
+    let absentCount = 0;
+    let leaveCount = 0;
 
-  // ------------------------------------------
-  // Methods below are unchanged
-  // ------------------------------------------
+    for (let i = 1; i <= todayNum; i++) {
+      const d = new Date(currentYear, currentMonth, i);
+      const dateStr = d.toDateString();
 
-  onClockStatusChanged(record: AttendanceRecord) {
-    this.record = record;
-    this.updateTimes();
-    this.loadHistory();
-  }
-
-  setTab(tab: string) {
-    this.activeTab = tab;
-  }
-
-  prevMonth() {
-    this.currentMonth = new Date(
-      this.currentMonth.setMonth(this.currentMonth.getMonth() - 1)
-    );
-    this.generateCalendar(this.currentMonth);
-  }
-
-  nextMonth() {
-    this.currentMonth = new Date(
-      this.currentMonth.setMonth(this.currentMonth.getMonth() + 1)
-    );
-    this.generateCalendar(this.currentMonth);
-  }
-
-  generateCalendar(date: Date) {
-    this.calendarDays = [];
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
-    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++)
-      this.calendarDays.push({ day: '', timing: '', isOff: false });
-
-    for (let day = 1; day <= lastDate; day++) {
-      let timing = '9:30 AM - 6:30 PM';
-      let isOff = false;
-      const d = new Date(year, month, day).getDay();
-      if (d === 0 || d === 6) {
-        timing = '';
-        isOff = true;
+      if (leaveSet.has(dateStr)) {
+        leaveCount++;
+        continue;
       }
-      this.calendarDays.push({
-        day,
-        timing,
-        isOff,
-        date: new Date(year, month, day),
-      });
+
+      if (this.isWeekOffDay(d)) {
+        continue;
+      }
+
+      if (attMap.has(dateStr)) {
+        continue;
+      }
+
+      // It is an absent day
+      absentCount++;
     }
+
+    setTimeout(() => {
+      this.monthlySummary = {
+        ...this.monthlySummary,
+        present_days: presentCount.full,
+        half_days: presentCount.half,
+        absent_days: absentCount,
+        leave_days: leaveCount
+      };
+
+      console.log('Final Summary Updated -> Present:', presentCount.full, 'Absent:', absentCount, 'Leaves:', leaveCount);
+    }, 0);
   }
+
+  // ================= MATCHERS =================
+
+  matchEmployeeShift() {
+    if (!this.shift_id || !this.allShiftPolicies.length) return;
+    this.shift_policy = this.allShiftPolicies.find(
+      (p: any) => p.id === this.shift_id
+    );
+  }
+
+  matchEmployeeWeekend() {
+    if (!this.weekend_id || !this.allWeekendPolicies.length) {
+      console.log('Weekend match skipped:', {
+        weekend_id: this.weekend_id,
+        policies: this.allWeekendPolicies.length,
+      });
+      return;
+    }
+
+    const policy = this.allWeekendPolicies.find(
+      (p: any) => p.id === this.weekend_id
+    );
+
+    console.log('Matched Weekend Policy 👉', policy);
+
+    if (!policy) {
+      console.warn('No weekend policy found for weekend_id:', this.weekend_id);
+      return;
+    }
+
+    const weekMap = [
+      { key: 'sunday_off', label: 'sunday' },
+      { key: 'monday_off', label: 'monday' },
+      { key: 'tuesday_off', label: 'tuesday' },
+      { key: 'wednesday_off', label: 'wednesday' },
+      { key: 'thursday_off', label: 'thursday' },
+      { key: 'friday_off', label: 'friday' },
+      { key: 'saturday_off', label: 'saturday' },
+    ];
+
+    this.serverWeekOff = weekMap
+      .filter(day => policy[day.key] === 1)
+      .map(day => day.label);
+
+    console.log('Server Week Off Days 👉', this.serverWeekOff);
+    this.recalculateSummary();
+  }
+  trackByDate(index: number, day: Date): string {
+    return day.toDateString();
+  }
+
+  // ================= WFH CLOCK-IN =================
+
+  wfhClockIn() {
+    this.attendanceApi.checkTodayWFH().subscribe({
+      next: (res: any) => {
+        if (!res?.has_wfh) {
+          this.showToast('WFH not approved for today', 'warning');
+          return;
+        }
+
+        this.attendanceApi.apiPunchIn({
+          work_mode: 'WFH',
+          location: 'Home',
+          notes: 'WFH Clock-In',
+        }).subscribe({
+          next: () => {
+            this.showToast('WFH Clock-In successful', 'success');
+            this.loadTodayAttendance();
+            // Set clock button to WFH mode and show WFH Clock-Out
+            if (this.clockButton) {
+              this.clockButton.workMode = 'WFH';
+              this.clockButton.isClockedIn = true;
+            }
+            // Always trigger attendance log refresh
+            this.attendanceRefresh = Date.now();
+          },
+          error: err => {
+            this.showToast(err?.error?.message || 'WFH Clock-In failed', 'danger');
+          },
+        });
+      },
+      error: () => this.showToast('WFH check failed', 'danger'),
+    });
+  }
+
+  // ================= HELPERS =================
 
   generateDays() {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    const firstDayOfWeek = new Date(today.setDate(diff));
+    const start = new Date(today.setDate(diff));
 
+    this.days = [];
     for (let i = 0; i < 7; i++) {
-      const date = new Date(firstDayOfWeek);
-      date.setDate(firstDayOfWeek.getDate() + i);
-      this.days.push(date);
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      this.days.push(d);
     }
   }
 
-  isTodayCalendarDay(cd: CalendarDay) {
-    return cd.date
-      ? cd.date.toDateString() === this.today.toDateString()
-      : false;
-  }
   isToday(day: Date) {
     return day.toDateString() === this.today.toDateString();
   }
-  get employeeName() {
-    return this.employee?.personalDetails?.FirstName || '';
+
+  isWeekOffDay(day: Date): boolean {
+    const weekday = day.toLocaleDateString('en-US', {
+      weekday: 'long',
+    }).toLowerCase();
+    return this.serverWeekOff.includes(weekday);
   }
 
-  openLogDetails(log: AttendanceLog) {
-    this.selectedLog = log;
-    this.showPopover = true;
-  }
-  closePopover() {
-    this.showPopover = false;
-    this.selectedLog = null;
+  onClockStatusChanged(record: AttendanceRecord) {
+    this.record = record;
+    this.attendanceRefresh = Date.now(); // trigger refresh
+    this.loadTodayAttendance();
+    this.loadMonthlySummary();
   }
 
-  updateTimes() {
-    if (!this.record) return;
-
-    const now = new Date();
-    this.currentTime = now.toLocaleTimeString('en-US', { hour12: true });
-    this.currentDate = now.toDateString();
-
-    const dailyMs = this.record.dailyAccumulatedMs?.[this.currentDate] || 0;
-    let totalMs = dailyMs;
-    let sessionMs = 0;
-
-    if (this.record.isClockedIn && this.record.clockInTime) {
-      sessionMs = Math.max(
-        0,
-        now.getTime() - new Date(this.record.clockInTime).getTime()
-      );
-      totalMs += sessionMs;
-    }
-
-    this.timeSinceLastLogin = this.formatHMS(sessionMs);
-    const grossMinutes = Math.max(0, Math.floor(totalMs / 60000));
-    this.grossHours = this.formatHoursMinutes(grossMinutes);
-    const effectiveMinutes = Math.max(grossMinutes - this.breakMinutes, 0);
-    this.effectiveHours = this.formatHoursMinutes(effectiveMinutes);
-    this.status = totalMs > 0 ? 'Present' : 'Absent';
-  }
-
-  loadHistory() {
-    if (!this.record) return;
-    const rawHistory = this.attendanceService.getHistoryByRange(
-      this.record,
-      this.selectedRange
-    );
-    this.history = rawHistory.map((event) => ({
-      ...event,
-      displayTime: new Date(event.time).toLocaleTimeString('en-US', {
-        hour12: true,
-      }),
-    }));
-  }
-
-  changeRange(range: 'TODAY' | 'WEEK' | 'MONTH' | 'ALL') {
-    this.selectedRange = range;
-    this.loadHistory();
-  }
-
-  formatHoursMinutes(totalMinutes: number) {
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${hours}h ${minutes}m`;
-  }
-
-  formatHMS(milliseconds: number) {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours}h ${minutes}m ${seconds}s`;
-  }
-
-  private initRequestsAndLogs() {
-    this.attendanceRequestsHistory = [
-      {
-        type: 'Work From Home / On Duty Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '26 Aug 2025',
-            request: 'Work From Home - 1 Day',
-            requestedOn: '26 Aug 2025 12:30 PM by XYZ',
-            note: 'working from home on this day.',
-            reason: 'Personal',
-            status: 'Approved',
-            lastAction: 'ABC on 26 Aug',
-          },
-        ],
-      },
-      {
-        type: 'Regularization Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [],
-      },
-      {
-        type: 'Remote Clock In Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [
-          {
-            date: '19 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '19 Aug 2025 by Employee',
-            note: 'I am working on some high-priority tasks.',
-            status: 'Approved',
-            lastAction: 'ABC on 19 Aug',
-          },
-          {
-            date: '22 Aug 2025',
-            request: 'Remote Clock In',
-            requestedOn: '22 Aug 2025 by Employee',
-            note: 'Working on some issues.',
-            status: 'Approved',
-            lastAction: 'ABC on 22 Aug',
-          },
-        ],
-      },
-      {
-        type: 'Partial Day Requests',
-        dateRange: '19 Aug 2025 - 02 Oct 2025',
-        records: [],
-      },
-    ];
-
-    this.attendanceRequests = [
-      {
-        type: 'Work From Home / On Duty Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: [],
-      },
-      {
-        type: 'Regularization Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: ['Request #101 | Pending Approval'],
-      },
-      {
-        type: 'Remote Clock In Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: [],
-      },
-      {
-        type: 'Partial Day Requests',
-        dateRange: '09 Aug 2025 - 22 Sep 2025',
-        items: [],
-      },
-    ];
-
-    this.attendanceLogs = [
-      {
-        date: 'Mon, 01 Sept',
-        progress: 0.7,
-        effective: '6h 44m',
-        gross: '8h 42m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (01 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-          logs: [
-            { in: '09:16:48', out: '12:01:14' },
-            { in: '12:13:29', out: '13:25:47' },
-          ],
-          webClockIn: { in: '09:19:14', out: 'MISSING' },
-        },
-      },
-      {
-        date: 'Tue, 02 Sept',
-        progress: 0.5,
-        effective: '3h 56m',
-        gross: '4h 9m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (02 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: '4th Floor SVS Towers',
-          logs: [{ in: '09:10:00', out: '14:30:00' }],
-        },
-      },
-      {
-        date: 'Wed, 03 Sept',
-        progress: 0.75,
-        effective: '6h 38m',
-        gross: '8h 46m',
-        arrival: 'On Time',
-        details: {
-          shift: 'Day shift 1 (03 Sept)',
-          shiftTime: '9:30 - 18:30',
-          location: 'HQ',
-          logs: [{ in: '09:20:00', out: '18:15:00' }],
-        },
-      },
-    ];
-  }
-
-  loadCandidateById() {
-    const employeeId = localStorage.getItem('employee_id');
-    if (employeeId) {
-      this.candidateService.getEmpDet().subscribe({
-        next: (response) => {
-          if (response.data && response.data[0]) {
-            const employees = response.data[0];
-            const currentEmployee = employees.find(
-              (emp: any) => emp.employee_id == employeeId
-            );
-
-            if (currentEmployee) {
-              console.log('Found employee details:', currentEmployee);
-
-              if (currentEmployee.shift_policy_name) {
-                this.candidateService
-                  .getShiftByName(currentEmployee.shift_policy_name)
-                  .subscribe({
-                    next: (shiftData) => {
-                      this.shiftData = shiftData;
-                      this.shift_check_in = shiftData.data.check_in;
-                      this.shift_check_out = shiftData.data.check_out;
-                    },
-                    error: (error) => {
-                      console.error('Error getting shift details:', error);
-                    },
-                  });
-              }
-
-              if (currentEmployee.weekly_off_policy_name) {
-                this.candidateService.getAllWeeklyOffPolicies().subscribe({
-                  next: (weekoffData) => {
-                    console.log('weekOffs: ', weekoffData);
-
-                    const policies = Array.isArray(weekoffData)
-                      ? weekoffData
-                      : [];
-
-                    console.log('policies: ', policies);
-
-                    const matchedPolicy = policies.find(
-                      (p) =>
-                        p?.week_off_policy_name?.toLowerCase() ==
-                        currentEmployee.weekly_off_policy_name?.toLowerCase()
-                    );
-
-                    console.log('Filtered Policy:', matchedPolicy);
-
-                    this.week_off_days =
-                      matchedPolicy?.week_off_days?.split(',');
-                    console.log('week_off_days: ', this.week_off_days);
-                  },
-                  error: (error) => {
-                    console.error('Error getting shift details:', error);
-                  },
-                });
-              }
-            }
-          }
-        },
-        error: (error) => {
-          console.error('Error getting employee details:', error);
-        },
-      });
+  setTab(tab: string) {
+    this.activeTab = tab;
+    if (tab === 'log') {
+      this.attendanceRefresh = Date.now();
     }
   }
 
-  trackByDate(index: number, d: Date) {
-    return d?.toDateString() || index;
+  async wfh() {
+    const modal = await this.modalCtrl.create({
+      component: WorkFromHomeComponent,
+      cssClass: 'side-custom-popup',
+      backdropDismiss: false,
+    });
+    await modal.present();
   }
 
-  formatShiftTime(val: string | null): string {
-    if (!val) return '';
-
-    try {
-      if (/\d{2}:\d{2}(:\d{2})?/.test(val) && !/[T\-]/.test(val)) {
-        const [hh, mm] = val.split(':');
-        const date = new Date();
-        date.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
-        return date.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        });
-      } else {
-        const d = new Date(val);
-        if (!isNaN(d.getTime())) {
-          return d.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-          });
-        }
-        return String(val);
-      }
-    } catch {
-      return String(val);
-    }
+  async showToast(
+    message: string,
+    color: 'success' | 'warning' | 'danger'
+  ) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2500,
+      position: 'top',
+      color,
+    });
+    await toast.present();
   }
 }
