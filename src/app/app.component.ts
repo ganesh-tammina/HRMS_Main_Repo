@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -55,7 +55,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private employeeService: EmployeeService,
     private service: AdminService,
     private navCtrl: NavController,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.currentUser = this.candidateService.currentCandidate$;
     this.router.events.pipe(
@@ -73,6 +74,13 @@ export class AppComponent implements OnInit, OnDestroy {
         
         this.handleIntroLogic();
         this.fetchProfileInfoIfNeeded();
+
+        // Ionic specific fix: Force a global layout recalculation after routing
+        // This permanently prevents the 'stuck scroll' or 'invisible overflow' issue
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+          this.cdr.detectChanges();
+        }, 200);
       }
     });
     this.currentUrl = this.router.url;
@@ -128,6 +136,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   dismissIntro() {
     this.showIntro = false;
+    // Force layout recalculation and change detection
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      this.cdr.detectChanges();
+    }, 100);
   }
 
   shouldShowWorkTrack(): boolean {

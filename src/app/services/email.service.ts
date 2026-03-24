@@ -10,7 +10,7 @@ export class EmailService {
 
 	private beURL = `http://${environment.apiURL}/send-email`;
 	// ✅ The candidate-facing app URL (used in email links)
-	private candidateAppURL = `http://${environment.candidateURL}`;
+	private candidateAppURL = `http://${environment.apiURL}`;
 
 	constructor(private http: HttpClient) { }
 

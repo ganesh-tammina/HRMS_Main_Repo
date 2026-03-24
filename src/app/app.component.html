@@ -20,8 +20,8 @@
         <ion-content class="menu-content sidenav-content">
           <ion-list class="side-menu-list">
             
-            <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())" auto-hide="false">
-              <ion-item routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
+              <ion-menu-toggle *ngIf="!isAdminOnly() && (isManagerOrAbove() || isHROnly() || isEmployee())" auto-hide="false">
+              <ion-item routerDirection="root" routerLink="/Home" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/Home') ? 'selected ion-activatable' : ''">
                 <div class="row-left">
                   <lord-icon src="https://cdn.lordicon.com/wmwqvixz.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu"></lord-icon>
@@ -32,7 +32,7 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowLeave()" auto-hide="false">
-              <ion-item [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
+              <ion-item routerDirection="root" [routerLink]="['/leaves']" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/leaves') ? 'selected ion-activatable' : ''">
                 <div class="row-left">
                   <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="Leave"></lord-icon>
@@ -44,7 +44,7 @@
 
             <ng-container *ngIf="isHROnly()">
               <ion-menu-toggle auto-hide="false" id="menu-button">
-                <ion-item lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
+                <ion-item routerDirection="root" lines="none" detail="false" routerLink="/pre-onboarding-cards" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/pre-onboarding-cards') ? 'selected ion-activatable' : ''">
                   <div class="row-left">
                     <ion-icon name="person-add-outline" class="inactive-menu"></ion-icon>
@@ -57,7 +57,7 @@
                 <ng-template>
                   <ion-content>
                     <ion-menu-toggle auto-hide="false">
-                      <ion-item routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false">
+                      <ion-item routerDirection="root" routerLink="/pre-onboarding-cards" (click)="preonboard()" lines="none" detail="false">
                         <lord-icon src="https://cdn.lordicon.com/kdduutun.json" trigger="hover" colors="primary:#121331,secondary:#08a88a" style="width:24px;height:24px;margin-right:8px;"></lord-icon>
                         <ion-label>Pre Onboarding</ion-label>
                       </ion-item>
@@ -82,7 +82,7 @@
 
             <ng-container *ngIf="!isAdminOnly()">
               <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
+                <ion-item routerDirection="root" routerLink="/org-tree" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/org-tree') ? 'selected ion-activatable' : ''">
                   <div class="row-left">
                     <ion-icon name="git-branch-outline" class="inactive-menu"></ion-icon>
@@ -95,7 +95,7 @@
 
             <ng-container *ngIf="isAdminOnly() || isHROnly()">
               <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
+                <ion-item routerDirection="root" routerLink="/admin" lines="none" detail="false" routerLinkActive="selected"
                   [ngClass]="(currentUrl=='/admin') ? 'selected ion-activatable' : ''">
                   <div class="row-left">
                     <lord-icon src="https://cdn.lordicon.com/wzwygmng.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="Admin"></lord-icon>
@@ -107,7 +107,7 @@
             </ng-container>
 
             <ion-menu-toggle *ngIf="!isAdminOnly() && shouldShowWorkTrack()" auto-hide="false">
-              <ion-item [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
+              <ion-item routerDirection="root" [routerLink]="['/workTrack']" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/workTrack') ? 'selected ion-activatable' : ''">
                 <div class="row-left">
                   <lord-icon src="https://cdn.lordicon.com/qjuahhae.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="Work Track"></lord-icon>
@@ -118,7 +118,7 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false" id="menu-finances">
-              <ion-item lines="none" detail="false" routerLinkActive="selected"
+              <ion-item routerDirection="root" lines="none" detail="false" routerLinkActive="selected"
                 [ngClass]="(currentUrl=='/payslip') ? 'selected ion-activatable' : ''">
                 <div class="row-left">
                   <lord-icon src="https://cdn.lordicon.com/qhviklyi.json" trigger="hover" colors="primary:#94a3b8" class="inactive-menu" title="My Finances"></lord-icon>
@@ -131,10 +131,10 @@
               <ng-template>
                 <ion-content>
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item routerLink="/MyPay" lines="none" detail="false">
+                    <ion-item routerDirection="root" routerLink="/MyPay" lines="none" detail="false">
                       <ion-label>My Pay</ion-label>
                     </ion-item>
-                    <ion-item *ngIf="isAdminOnly()" routerLink="/finance-admin" lines="none" detail="false">
+                    <ion-item routerDirection="root" *ngIf="isAdminOnly()" routerLink="/finance-admin" lines="none" detail="false">
                       <ion-label>Finance Admin</ion-label>
                     </ion-item>
                   </ion-menu-toggle>
