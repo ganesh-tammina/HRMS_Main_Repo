@@ -102,6 +102,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  private announcementsFetched = false;
+
   private fetchProfileInfoIfNeeded() {
     if (!this.userDesignation && this.userRole && !this.isLoginPage && this.routeGaurdService.isLoggedIn) {
       this.employeeService.getMyProfile().pipe(takeUntil(this.destroy$)).subscribe({
@@ -117,15 +119,15 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
     }
+
+    if (!this.announcementsFetched && !this.isLoginPage && this.routeGaurdService.isLoggedIn) {
+      this.announcementsFetched = true;
+      this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));
+    }
   }
 
   ngOnInit(): void {
     this.updateRoleInfo();
-
-    // Only fetch announcements if user is logged in and not on login page
-    if (this.routeGaurdService.isLoggedIn && !this.isLoginPage) {
-      this.service.getAnnouncements().pipe(takeUntil(this.destroy$)).subscribe((r: any) => console.log('📢 Announcements:', r));
-    }
   }
 
   private updateRoleInfo(): void {

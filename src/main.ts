@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules, withInMemoryScrolling } from '@angular/router';
+import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules, withInMemoryScrolling, withHashLocation } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -24,7 +24,8 @@ bootstrapApplication(AppComponent, {
     ),
     provideAnimations(),
     provideRouter(routes, withPreloading(PreloadAllModules), 
-      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
+      withHashLocation()
     ),
     importProvidersFrom(QuillModule.forRoot()),
     provideCharts(withDefaultRegisterables())
